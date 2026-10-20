@@ -41,6 +41,17 @@ class Settings(BaseSettings):
     contradicted_penalty: float = 0.6
     exclude_contradicted: bool = False
 
+    pricing_policy: str = "prefer_free"
+    tier_order: list[str] = Field(
+        default_factory=lambda: ["free", "freemium", "paid", "unknown"]
+    )
+    doc_quality_weight: float = 0.4
+    mapping_coverage_weight: float = 0.3
+    chain_fit_weight: float = 0.3
+    min_rating_count: int = 3
+    rating_floor: float = 0.5
+    require_known_licence: bool = False
+
     trust_signal_weights: dict[str, float] = Field(
         default_factory=lambda: {
             "probe": 1.0,

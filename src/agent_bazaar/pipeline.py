@@ -107,6 +107,61 @@ def tool_id_for_spec(spec: NormalizedSpec, existing: set[str] | None = None) -> 
     return f"{base}-{counter}"
 
 
+def listing_facts(spec: NormalizedSpec) -> dict[str, Any]:
+    """The commercial, access and documentation facts captured during ingestion."""
+    listing = spec.metadata.get("listing")
+    return dict(listing) if isinstance(listing, dict) else {}
+
+
+def mapping_coverage_of(result: MapResult) -> float:
+    """Share of the listing's fields the Mapper typed, weighted by confidence.
+
+    Same formula as ``kg.quality.mapping_coverage``, but computed from the
+    mapping result because the unmapped fields are not written to the graph.
+    """
+    mappings = list(result.mappings)
+    if not mappings:
+        return 0.0
+    mapped = 0
+    confidence_total = 0.0
+    for mapping in mappings:
+        status = mapping.status.value if hasattr(mapping.status, "value") else str(mapping.status)
+        if status in ("mapped", "repaired", "drift_remapped"):
+            mapped += 1
+        confidence_total += float(mapping.confidence or 0.0)
+    coverage = mapped / len(mappings)
+    mean_confidence = confidence_total / len(mappings)
+    return round(coverage * (0.5 + 0.5 * min(1.0, mean_confidence)), 4)
+
+
+def apply_listing_facts(record: ToolRecord, spec: NormalizedSpec, result: MapResult) -> ToolRecord:
+    """Carry the listing metadata and the mapping statistics into the tool record."""
+    listing = listing_facts(spec)
+    sub_scores = listing.get("doc_sub_scores")
+    price_amount = listing.get("price_amount")
+    probe_budget = listing.get("probe_budget_per_minute")
+    record.pricing_tier = str(listing.get("pricing_tier") or "unknown")
+    record.access_requirement = str(listing.get("access_requirement") or "unknown")
+    record.price_amount = float(price_amount) if isinstance(price_amount, (int, float)) else None
+    record.price_currency = str(listing.get("price_currency") or "")
+    record.rate_limit_policy = str(listing.get("rate_limit_policy") or "")
+    record.probe_budget_per_minute = int(probe_budget) if isinstance(probe_budget, (int, float)) else None
+    record.licence = str(listing.get("licence") or "")
+    record.terms_url = str(listing.get("terms_url") or "")
+    record.doc_quality = float(listing.get("doc_quality") or 0.0)
+    record.doc_sub_scores = (
+        {str(key): float(value) for key, value in sub_scores.items()} if isinstance(sub_scores, dict) else {}
+    )
+    record.tier_evidence = [str(item) for item in listing.get("tier_evidence") or []]
+    record.access_evidence = [str(item) for item in listing.get("access_evidence") or []]
+    metadata = dict(record.metadata)
+    metadata["mapping_coverage"] = mapping_coverage_of(result)
+    provenance = listing.get("provenance")
+    metadata["provenance"] = dict(provenance) if isinstance(provenance, dict) else {}
+    record.metadata = metadata
+    return record
+
+
 def onboard_spec(
     spec: NormalizedSpec,
     mapper: MapperAgent,
@@ -127,6 +182,7 @@ def onboard_spec(
         trust=trust,
     )
     record.tool_id = tool_id
+    apply_listing_facts(record, spec, result)
     written = False
     error = ""
     if write:

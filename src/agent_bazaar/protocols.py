@@ -13,7 +13,7 @@ from typing import Any, Iterable, Protocol, runtime_checkable
 
 from pydantic import BaseModel
 
-from agent_bazaar.models import ConceptInfo, ToolRecord, ToolSummary
+from agent_bazaar.models import ConceptInfo, ToolQualityProfile, ToolRecord, ToolSummary
 
 ONTOLOGY_TERMS = "ontology_terms"
 TOOL_DESCRIPTIONS = "tool_descriptions"
@@ -165,6 +165,21 @@ class GraphStore(Protocol):
         ...
 
     def list_tools(self) -> list[ToolSummary]:
+        ...
+
+    def tool_quality_profile(self, tool_id: str) -> ToolQualityProfile:
+        ...
+
+    def tools_by_access(self, access_requirement: str) -> list[ToolSummary]:
+        ...
+
+    def tools_by_pricing_tier(self, tier: str) -> list[ToolSummary]:
+        ...
+
+    def executable_tools(self) -> list[ToolSummary]:
+        ...
+
+    def candidate_facts(self, tool_ids: list[str]) -> dict[str, ToolQualityProfile]:
         ...
 
     def update_mapping(

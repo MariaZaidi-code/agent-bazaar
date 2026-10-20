@@ -54,6 +54,40 @@ function breakerBadge(value) {
   return `<span class="badge ${normalized}">${esc(value)}</span>`;
 }
 
+function tierBadge(tier) {
+  const normalized = String(tier || "unknown").toLowerCase();
+  const css = { free: "verified", freemium: "supported", paid: "contradicted" }[normalized] || "unsupported";
+  return `<span class="badge ${css}">${esc(normalized)}</span>`;
+}
+
+function accessBadge(access) {
+  const normalized = String(access || "unknown").toLowerCase();
+  const css = normalized === "keyless" ? "neutral" : "contradicted";
+  return `<span class="badge ${css}">${esc(normalized.replace(/_/g, " "))}</span>`;
+}
+
+function hasProfile(tool) {
+  const tier = String(tool.pricing_tier || "unknown").toLowerCase();
+  const access = String(tool.access_requirement || "unknown").toLowerCase();
+  return tier !== "unknown" || access !== "unknown";
+}
+
+function executionReason(tool) {
+  if (!hasProfile(tool) || tool.is_executable) return "";
+  const tier = String(tool.pricing_tier || "unknown").toLowerCase();
+  if (tier !== "free") return `not executable: ${tier} tier`;
+  return "not executable: requires an api key";
+}
+
+function ratingLabel(tool) {
+  const value = tool.rating_value;
+  if (value === null || value === undefined) {
+    return '<span class="muted">no ratings</span>';
+  }
+  const count = Number(tool.rating_count || 0);
+  return `<span class="mono">rating ${Number(value).toFixed(2)}</span> <span class="muted">(${count} review(s))</span>`;
+}
+
 function scoreBadge(value) {
   return `<span class="mono">${Number(value || 0).toFixed(2)}</span>`;
 }
@@ -445,9 +479,25 @@ async function loadTools() {
         const validation = (tool.validation || []).length
           ? `<span class="badge contradicted">${tool.validation.length} violation(s)</span>`
           : '<span class="badge supported">valid</span>';
+        const reason = executionReason(tool);
+        const notExecutable = reason
+          ? `<span class="badge contradicted">${esc(reason)}</span>`
+          : "";
+        const offering = [
+          tierBadge(tool.pricing_tier),
+          accessBadge(tool.access_requirement),
+          `<span class="mono">price ${Number(tool.price || 0).toFixed(2)}</span>`,
+          notExecutable,
+        ]
+          .filter(Boolean)
+          .join(" ");
+        const quality = [
+          ratingLabel(tool),
+          `<span class="mono">docs ${Number(tool.doc_quality || 0).toFixed(2)}</span>`,
+        ].join(" ");
         return `<tr>
-          <td><strong>${esc(tool.name)}</strong><br><code>${esc(tool.provider_id)}</code></td>
-          <td><code>${esc(tool.capability)}</code><br>${validation}</td>
+          <td><strong>${esc(tool.name)}</strong><br><code>${esc(tool.provider_id)}</code><br>${offering}</td>
+          <td><code>${esc(tool.capability)}</code><br>${validation}<br>${quality}</td>
           <td>${badge(label)}</td>
           <td><span class="mono">${Number(tool.trust || 0.5).toFixed(3)}</span></td>
         </tr>`;

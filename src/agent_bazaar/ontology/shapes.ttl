@@ -204,3 +204,69 @@ ab:UnitFamilyShape a sh:NodeShape ;
         sh:datatype xsd:string ;
         sh:message "A unit family has exactly one family code." ;
     ] .
+
+ab:OfferingShape a sh:NodeShape ;
+    sh:targetClass ab:Offering ;
+    sh:property [
+        sh:path ab:pricingTier ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:in ( "free" "freemium" "paid" "unknown" ) ;
+        sh:message "An offering declares exactly one pricing tier." ;
+    ] ;
+    sh:property [
+        sh:path ab:accessRequirement ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:in ( "keyless" "api_key" "paid_key" "unknown" ) ;
+        sh:message "An offering declares exactly one access requirement." ;
+    ] ;
+    sh:property [
+        sh:path ab:ratingValue ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:message "A rating value is a decimal between 0 and 1." ;
+    ] ;
+    sh:property [
+        sh:path ab:ratingCount ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:message "A rating count is a non-negative integer." ;
+    ] ;
+    sh:property [
+        sh:path ab:docQuality ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:message "Documentation quality is a decimal between 0 and 1." ;
+    ] ;
+    sh:property [
+        sh:path ab:mappingCoverage ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:message "Mapping coverage is a decimal between 0 and 1." ;
+    ] ;
+    sh:property [
+        sh:path ab:probeBudgetPerMinute ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 1 ;
+        sh:message "A probe budget is a positive number of calls per minute." ;
+    ] .
+
+ab:ToolOfferingShape a sh:NodeShape ;
+    sh:targetClass ab:Tool ;
+    sh:property [
+        sh:path ab:hasOffering ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A tool declares at most one offering." ;
+    ] .

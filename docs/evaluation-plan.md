@@ -5,8 +5,14 @@ drift re-mapping, and the cost of the mapping paths. It separates what the code
 supports today from what still has to be built. No accuracy, F1, or learning-curve
 result is claimed in this repository while the gold set has no labels.
 
+Sections 1 to 10 cover the knowledge-layer mapping evaluation. Section 11
+covers the free-first ranking evaluation of the application layer, which is a
+separate suite with its own dataset, its own metrics and its own ablations.
+
 Code: `src/agent_bazaar/evaluation/` (`dataset.py`, `metrics.py`,
-`learning_curve.py`), `scripts/run_eval.py`, `data/eval/mapping_gold.jsonl`.
+`learning_curve.py`), `scripts/run_eval.py`, `data/eval/mapping_gold.jsonl`,
+`app/evaluation/run_ranking.py`, `app/evaluation/metrics.py`,
+`app/evaluation/data/ranking_tasks.jsonl`.
 
 ## 1. Current dataset status
 
@@ -366,6 +372,160 @@ Current blockers: 0 gold labels, no direction field, the runner does not filter
 failed mappings, the template covers only the 8 seed tools, no unit metric, no
 drift dataset, no controlled LLM benchmark, and no agreed numeric target.
 
+## 11. Ranking evaluation: free-first ranking
+
+The mapping evaluation above measures the knowledge layer. A second suite
+measures the ranking behaviour that the commercial, access and documentation
+facts feed: does the Client put a free tool above a paid one, does it keep the
+ranking executable, and is the order the one a human would choose?
+
+Code: `app/evaluation/run_ranking.py`, `app/evaluation/data/ranking_tasks.jsonl`,
+`app/agents/ranking_policy.py`, `app/evaluation/metrics.py` (`mean`, `ratio`).
+
+```powershell
+python -m app.evaluation.run_ranking
+```
+
+The suite replays a hand-checked dataset of ranking tasks through
+`rank_candidates()` and writes `reports/ranking.json`. It is offline and
+deterministic; it is not part of `app.evaluation.run_all`, so it is run
+separately.
+
+### 11.1 The dataset
+
+`app/evaluation/data/ranking_tasks.jsonl` holds one JSON object per line with
+a `task`, a `capability`, a list of `candidates`, an `expected_order` and a
+`notes` field explaining the expected order in words.
+
+| Property | Value |
+| --- | --- |
+| Tasks | 48 |
+| Capabilities | 8, 6 tasks each: `GeocodeLocation`, `GetWeatherForecast`, `ConvertCurrency`, `GetCountryFacts`, `GetPublicHolidays`, `SearchResearchPapers`, `QueryStructuredData`, `AnswerFromDocument` |
+| Candidate rows | 149 |
+| Distinct tool ids | 46 |
+| Candidates per task | 3 in 43 tasks, 4 in 5 tasks |
+| Candidate tiers | free 92, paid 34, freemium 15, unknown 8 |
+| Candidate access requirements | keyless 103, api_key 20, paid_key 26 |
+| Tasks with at least one free candidate | 48 of 48 |
+| Claim labels | supported 137, unsupported 8, contradicted 4 |
+| Candidates with a demoted provider | 3 |
+| Candidates with an open circuit breaker | 1 |
+| Candidates with fewer than 3 reviews | 34 |
+
+Each candidate carries the facts the policy weighs: `relevance`, `trust`,
+`pricing_tier`, `access_requirement`, `rating_value`, `rating_count`,
+`doc_quality`, `mapping_coverage`, `chain_fit`, `claim_label`, `demoted`,
+`breaker_open` and `licence`.
+
+The dataset is hand-written, so the numbers below describe the policy on a
+curated set of 48 tasks. They are not a claim about live internet behaviour and
+not a claim about the 98-document corpus.
+
+### 11.2 The metrics
+
+| Metric | Definition |
+| --- | --- |
+| `mrr` | Mean reciprocal rank of the expected best tool, the first entry of the task's `expected_order`, in the ranked list |
+| `ndcg_at_10` | Normalised discounted cumulative gain at 10 with graded gains: the gain of a ranked candidate is `len(expected_order) - position` in the expected order, so the expected best tool carries the largest gain. `DCG = sum(gain_i / log2(i + 1))` over the first ten positions, `IDCG` is the same sum over the expected order itself |
+| `free_first_rate` | Share of tasks that had at least one free candidate and whose top ranked candidate is in the free tier |
+| `executable_top_rate` | Share of tasks whose top ranked candidate is executable, that is free and keyless under the policy in force |
+| `tier_separation_accuracy` | Share of tasks whose ranked list never places a candidate from a lower tier above a candidate from a higher tier, using the canonical tier order free > freemium > paid > unknown |
+
+Graded gains are what make the NDCG sensitive to a wrong order. Because the
+expected order is a full permutation of the candidates, binary gains would be
+1.0 for every ranking.
+
+### 11.3 The ablations
+
+| Configuration | Override |
+| --- | --- |
+| `full` | The default policy |
+| `no_tier` | `pricing_policy="ignore"`: the tier stops being a sort key |
+| `no_quality` | The documentation, mapping and chain-fit weights are zero |
+| `no_rating` | `min_rating_count` is raised so the rating factor is always neutral |
+
+### 11.4 The measured results
+
+Command: `python -m app.evaluation.run_ranking`, dataset
+`app/evaluation/data/ranking_tasks.jsonl`, default policy.
+
+| Configuration | MRR | NDCG@10 | Free-first rate | Executable-top rate | Tier separation accuracy |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `full` | 1.0000 | 1.0000 | 1.0000 | 0.9583 | 1.0000 |
+| `no_tier` | 0.6771 | 0.8823 | 0.3542 | 0.3333 | 0.2292 |
+| `no_quality` | 0.7049 | 0.9478 | 1.0000 | 0.9375 | 1.0000 |
+| `no_rating` | 0.9896 | 0.9984 | 1.0000 | 0.9583 | 1.0000 |
+
+The report's failure list is empty: `failures: 0`. A failure is a task that is
+not free-first or whose ranked order differs from the expected order.
+
+Per capability, with the full policy:
+
+| Capability | Tasks | MRR | NDCG@10 | Free-first rate | Executable-top rate | Tier separation accuracy |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `AnswerFromDocument` | 6 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| `ConvertCurrency` | 6 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| `GeocodeLocation` | 6 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| `GetCountryFacts` | 6 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| `GetPublicHolidays` | 6 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| `GetWeatherForecast` | 6 | 1.0000 | 1.0000 | 1.0000 | 0.8333 | 1.0000 |
+| `QueryStructuredData` | 6 | 1.0000 | 1.0000 | 1.0000 | 0.8333 | 1.0000 |
+| `SearchResearchPapers` | 6 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+
+### 11.5 How the free-first behaviour is validated
+
+The free-first behaviour is validated in four independent ways:
+
+1. **The free-first rate.** Every one of the 48 tasks has at least one free
+   candidate, and with the full policy the top ranked candidate is free in all
+   48. The `no_tier` ablation drops the rate to 0.3542, so the number is a
+   property of the tier partition and not of the dataset.
+2. **Tier separation accuracy.** With the full policy no task ever places a
+   lower tier above a higher one (1.0000); without the partition 0.2292 of the
+   tasks do.
+3. **The executable-top rate.** 46 of 48 tasks have an executable top
+   candidate. The two exceptions are tasks whose strongest free candidate needs
+   a key: `key-required-weather-pro` for "What is the weekend temperature in
+   Berlin?" and `campus-sql-cloud-tier` for "How many students are enrolled in
+   the university database?". Both keep the expected order and both are
+   recorded as not executable, so the Client skips them and continues down the
+   shortlist.
+4. **The stored reasons.** Every ranked candidate records the reasons of its
+   decision, including the pricing tier, the access requirement, the rating
+   (or the reason the rating was not used), the documentation quality, the
+   mapping coverage, the chain fit, the trust, and the reason a candidate is
+   not executable. A ranking that cannot explain itself fails the requirement,
+   and the reasons are part of the report rows.
+
+The `no_quality` ablation isolates the quality factors: the free-first rate
+stays at 1.0000 while the MRR falls from 1.0000 to 0.7049 and the NDCG@10 from
+1.0000 to 0.9478. The `no_rating` ablation isolates the rating: the MRR falls
+to 0.9896 and the NDCG@10 to 0.9984, because 34 of the 149 candidate rows
+carry fewer than three reviews and are already ignored by the default policy.
+
+### 11.6 Threats to validity
+
+| Threat | Effect | Mitigation |
+| --- | --- | --- |
+| The dataset is hand-written | The expected orders encode one reviewer reading | The notes field states the reason for each expected order; extend the dataset and re-run |
+| 48 tasks over 46 tool ids | A single tool family dominates some capabilities | Add tasks per capability as the corpus grows; report the composition with every run |
+| The candidates are synthetic | The corpus tools have no ratings and no mapping coverage | The suite measures the policy, not the corpus; it does not claim corpus quality |
+| No live calls | The executable-top rate says nothing about live availability | The live behaviour is the manual integration check; the suite is deterministic and offline |
+| The rating has no effect in practice | The corpus holds no ratings | The `no_rating` ablation quantifies what the rating is worth once it exists |
+
+### 11.7 Open items
+
+- The dataset covers the 8 curated capabilities of the application only. The
+  corpus's other capabilities are not represented.
+- The rating ablation is small because the dataset's ratings are few and
+  mostly below the minimum review count. A dataset with realistic rating
+  distributions would give the rating a sharper measurement.
+- There is no metric for the reason quality itself. The reasons are recorded
+  and checked for presence, but there is no automated measure of whether a
+  reason explains the right thing.
+- The ranking suite is not part of `run_all`; a reviewer who only runs the
+  application suites will not see it.
+
 ## References
 
 - Dataset helpers: `src/agent_bazaar/evaluation/dataset.py`
@@ -373,5 +533,9 @@ drift dataset, no controlled LLM benchmark, and no agreed numeric target.
 - Learning curve and ablations: `src/agent_bazaar/evaluation/learning_curve.py`
 - Runner: `scripts/run_eval.py`
 - Template: `data/eval/mapping_gold.jsonl`
+- Ranking runner: `app/evaluation/run_ranking.py`
+- Ranking dataset: `app/evaluation/data/ranking_tasks.jsonl`
+- Ranking policy: `app/agents/ranking_policy.py`
 - Mapper protocol: [mapper-protocol.md](mapper-protocol.md)
+- Sourcing and reasoning: [api-sourcing-and-reasoning.md](api-sourcing-and-reasoning.md)
 - Decisions: [decisions.md](decisions.md)

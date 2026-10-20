@@ -21,10 +21,13 @@ from typing import TYPE_CHECKING, Any
 from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import RDF
 
+from agent_bazaar.kg.quality import build_profile
 from agent_bazaar.kg.queries import is_subclass_or_equal
 from agent_bazaar.kg.store import KgStore
-from agent_bazaar.models import ToolSummary
+from agent_bazaar.models import ToolQualityProfile, ToolSummary
 from agent_bazaar.ontology.ns import AB, tool_iri
+from app.agents.ranking_policy import CandidateFacts, RankingPolicy, is_executable
+from app.config import Settings
 from app.integration.canonical import (
     CURATED_CAPABILITIES,
     canonical_capability,
@@ -54,6 +57,9 @@ class RdfToolGraph:
         self.local_graph = local_graph
         self.ontology = ontology
         self._added: dict[str, ToolSpec] = {}
+        self._policy = RankingPolicy(
+            require_known_licence=Settings().require_known_licence
+        )
 
     def add(self, tool: ToolSpec) -> None:
         """Keep a tool that is not part of the RDF graph reachable."""
@@ -181,6 +187,7 @@ class RdfToolGraph:
     def _spec(self, summary: ToolSummary) -> ToolSpec:
         node = URIRef(summary.iri) if summary.iri else tool_iri(summary.tool_id)
         inputs, outputs = self._fields(node)
+        profile = build_profile(self.store.graph, summary.tool_id)
         return ToolSpec(
             id=summary.tool_id,
             name=summary.name or summary.tool_id,
@@ -191,7 +198,26 @@ class RdfToolGraph:
             outputs=outputs,
             claims=self._claims(node),
             execution="fixture",
+            price=profile.price_amount or 0.0,
+            pricing_tier=profile.pricing_tier,
+            access_requirement=profile.access_requirement,
+            rating_value=profile.rating_value,
+            rating_count=profile.rating_count,
+            doc_quality=profile.doc_quality,
+            mapping_coverage=profile.mapping_coverage,
+            licence=profile.licence,
+            is_executable=self._executable(profile),
         )
+
+    def _executable(self, profile: ToolQualityProfile) -> bool:
+        """Free and keyless tools may run; a known licence is required by the policy."""
+        facts = CandidateFacts(
+            tool_id=profile.tool_id,
+            pricing_tier=profile.pricing_tier,
+            access_requirement=profile.access_requirement,
+            licence=profile.licence,
+        )
+        return is_executable(facts, self._policy)
 
     def _description(self, node: URIRef) -> str:
         value = self.store.graph.value(node, AB.description)

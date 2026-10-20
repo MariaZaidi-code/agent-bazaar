@@ -88,6 +88,40 @@ Alternatively use `OPENROUTER_API_KEY` and select the matching provider in
 `.env.example` to `.env` does **not** load it automatically. Export the variable,
 use a dotenv loader, or configure the key in your process manager.
 
+### 4.1 The free-first ranking settings
+
+The ranking policy is configured with the same `AB_` prefix. All of them have
+defaults, so nothing has to be set for the default behaviour:
+
+| Setting | Default | Effect |
+| --- | --- | --- |
+| `AB_PRICING_POLICY` | `prefer_free` | `prefer_free` keeps the tier partition; `ignore` removes it |
+| `AB_TIER_ORDER` | `free, freemium, paid, unknown` | The order of the tier partition. `unknown` is always appended if it is missing |
+| `AB_DOC_QUALITY_WEIGHT` | `0.4` | Weight of the documentation quality in the quality factor |
+| `AB_MAPPING_COVERAGE_WEIGHT` | `0.3` | Weight of the mapping coverage in the quality factor |
+| `AB_CHAIN_FIT_WEIGHT` | `0.3` | Weight of the chain fit in the quality factor |
+| `AB_MIN_RATING_COUNT` | `3` | Reviews needed before a rating is used at all |
+| `AB_RATING_FLOOR` | `0.5` | The lowest value the rating factor can take |
+| `AB_REQUIRE_KNOWN_LICENCE` | `false` | When true, a tool with an unknown licence is never executed |
+
+`AB_TIER_ORDER` is a list, so in a `.env` file it is written as a JSON array:
+
+```dotenv
+AB_TIER_ORDER=["free","freemium","paid","unknown"]
+AB_MIN_RATING_COUNT=3
+```
+
+The same settings drive the evaluation suite, so an experiment can be run
+without a code change:
+
+```powershell
+$env:AB_PRICING_POLICY = "ignore"
+python -m app.evaluation.run_ranking
+```
+
+See [api-sourcing-and-reasoning.md](api-sourcing-and-reasoning.md) for what the
+policy does with these values.
+
 ## 5. Build the offline artifacts
 
 Run from the repository root, in this order:
@@ -141,9 +175,20 @@ small review run overwrites `data/out/logs/ontology_build.json` and
 python -m pytest
 ```
 
-Expected: `89 passed`. The suite covers messages, ingestion, ontology generation,
-units, validation, graph store and queries, vectors, Mapper rules/repair/staging,
-evaluation metrics, and the end-to-end seed path.
+Expected: 223 tests collected - 128 knowledge-layer, 52 application and 43
+integration. The suite covers messages, ingestion, ontology generation, units,
+validation, graph store and queries, the quality profiles and offerings,
+vectors, Mapper rules/repair/staging, the corpus sources and the extraction
+rules, the ranking policy and the ranking evaluation, evaluation metrics, and
+the end-to-end seed path.
+
+On the current checkout one test fails:
+`tests/test_kg_quality.py::test_executable_tools_lists_only_free_keyless_tools`.
+The test expects the `executable_tools()` query to exclude a free keyless tool
+whose licence is unknown, while the query only requires free and keyless. The
+disagreement is recorded in
+[decisions.md](decisions.md#known-limitations-and-open-items); it is not a
+regression of the onboarding path.
 
 Check the artifacts directly:
 
@@ -170,6 +215,21 @@ python scripts/seed_graph.py --offline --hash-embeddings
 Do not mix a sentence-transformer run (384-dimensional model by default) with a
 different embedding model without rebuilding; drift distances are not comparable
 across models.
+
+### 6.1 Run the ranking evaluation
+
+The free-first ranking policy has its own offline suite, separate from the
+mapping evaluation:
+
+```powershell
+python -m app.evaluation.run_ranking
+```
+
+It replays 48 hand-checked ranking tasks over the 8 curated capabilities,
+writes `reports/ranking.json` and prints the metric table for the full policy
+and for the `no_tier`, `no_quality` and `no_rating` ablations. The suite is
+deterministic and needs no network. The metrics are defined in
+[evaluation-plan.md](evaluation-plan.md#112-the-metrics).
 
 ## 7. Run the offline Mapper demonstration
 
@@ -291,6 +351,140 @@ Important side effects:
 See [mapper-protocol.md](mapper-protocol.md) for statuses, repair, corrections,
 and known gaps.
 
+### 8.1 The commercial, access and documentation facts of a new listing
+
+A new listing now carries its commercial facts into the graph as well as its
+mappings. The path is automatic; nothing extra has to be passed to
+`onboard_spec()`.
+
+```text
+IngestionUtility.ingest(spec)
+  -> extract_listing_metadata(document, tool_id)     # the facts and their evidence
+  -> spec.metadata["listing"]                        # the facts travel with the spec
+  -> apply_listing_facts(record, spec, result)       # facts + mapping coverage -> ToolRecord
+  -> KgStore.write_tool(record)
+  -> _write_offering()                               # the offering node in the graph
+  -> SHACL validation
+```
+
+What the ingestion adds to the record:
+
+| Field | Meaning |
+| --- | --- |
+| `pricing_tier` | `free`, `freemium`, `paid` or `unknown` |
+| `access_requirement` | `keyless`, `api_key` or `paid_key` |
+| `price_amount`, `price_currency` | The published price, when the document states one |
+| `rate_limit_policy` | The published limit, in words |
+| `probe_budget_per_minute` | Requests per minute this project may send |
+| `licence`, `terms_url` | The document's own declarations |
+| `doc_quality`, `doc_sub_scores` | The reproducible documentation quality and its seven sub-scores |
+| `tier_evidence`, `access_evidence` | The matched fragments that produced the tier and the access requirement |
+| `metadata["mapping_coverage"]` | The share of the listing's fields the Mapper typed, weighted by confidence |
+
+What reaches the graph:
+
+- the tool keeps its identity, capabilities, claims and mappings as before;
+- one `ab:Offering` node is written with all the facts above, linked from the
+  tool with `ab:hasOffering`;
+- the write goes through the same SHACL validation as every other write, so an
+  offering with an invalid tier, access requirement, rating or probe budget is
+  rejected and the graph is left untouched.
+
+Three rules to remember while onboarding:
+
+1. **Absence of evidence is never free.** A document that says nothing about
+   pricing produces `pricing_tier="unknown"` and the evidence
+   `"no pricing statement found"`.
+2. **A tool without an established access requirement keeps no offering.** If
+   the access requirement is not `keyless`, `api_key` or `paid_key`, the
+   offering is skipped entirely rather than written with a guess.
+3. **A keyless listing is the only one that may be probed live.** The curated
+   probe set is `data/specs/probe_set.json`, and it holds exactly the tools
+   whose corrected extraction finds no security scheme, no global security
+   requirement, no required credential parameter, no platform host and no
+   authentication statement in the prose.
+
+To see the facts of a listing before it is written:
+
+```python
+from pathlib import Path
+from agent_bazaar.config import ensure_directories
+from agent_bazaar.ingestion.utility import IngestionUtility
+
+settings = ensure_directories()
+spec = IngestionUtility(settings.ingestion).ingest(Path("path/to/spec.json"))
+listing = spec.metadata["listing"]
+print(listing["pricing_tier"], listing["access_requirement"])
+print(listing["tier_evidence"])
+print(listing["access_evidence"])
+print(listing["doc_quality"], listing["doc_sub_scores"])
+```
+
+To read the facts back out of the graph:
+
+```python
+from agent_bazaar.kg import KgStore
+
+store = KgStore.build_default()
+profile = store.tool_quality_profile("my-tool")
+print(profile.pricing_tier, profile.access_requirement, profile.is_executable)
+print(profile.rate_limit_policy, profile.licence, profile.terms_url)
+print(store.tools_by_pricing_tier("free"))
+print(store.tools_by_access("keyless"))
+print([tool.tool_id for tool in store.executable_tools()])
+```
+
+### 8.2 What a provider must check before use
+
+The proposal requires that a provider's terms, rate limits and pricing are
+checked before the tool is used. The extraction records what the document
+says; a human still has to confirm it against the provider's own pages.
+
+Before a tool is used, check:
+
+1. **The terms.** Read the provider's terms page, not only the `info` block of
+   the specification. The `ab:termsUrl` recorded on the offering points at the
+   page; `ab:licence` records the licence the document declares. A document's
+   own declaration is provider metadata, not a legal review.
+2. **The rate limit.** The `ab:rateLimit` string is what the document claims.
+   The `ab:probeBudgetPerMinute` number is the ceiling this project imposes on
+   itself, derived from that claim. Respect the stricter of the two, and check
+   whether a valid `User-Agent` or `Referer` is required, as some keyless
+   providers require one for attribution.
+3. **The licence.** Record the licence of the data and of the API separately
+   when they differ. A licence that is unknown must stay unknown: the
+   `licence` field of a listing stays empty rather than being guessed, and
+   `AB_REQUIRE_KNOWN_LICENCE=true` refuses to execute a tool whose licence is
+   unknown.
+4. **The commercial terms.** A free tier that is free for non-commercial use
+   only is not free for a commercial deployment. `pricing_tier="free"` records
+   the tier, not the permission; the permission is in the terms.
+5. **The credential.** Never store a credential in the repository or in
+   `data/specs/`. The corpus holds unauthenticated specifications, and a
+   listing that needs a key is catalogued with `access_requirement="api_key"`
+   and is never executed.
+
+Where the human answer differs from the extracted one, record it in
+`data/overrides/pricing.yaml`, which always wins over the extraction. Each
+entry carries `reviewer`, `checked_at` and `note`:
+
+```yaml
+tools:
+  my-tool:
+    pricing_tier: free
+    access_requirement: keyless
+    licence: MIT
+    terms_url: https://example.org/terms
+    reviewer: ""
+    checked_at: "2026-10-21"
+    note: >-
+      The terms page states that the API is free and keyless for non-commercial use.
+```
+
+An empty `reviewer` means nobody has signed the entry off; the corpus manifest
+then keeps `licence_reviewed_at` empty as well. Every current entry in that
+file still has an empty `reviewer`.
+
 ## 9. Fetch or refresh the corpus
 
 ```powershell
@@ -310,6 +504,54 @@ The script:
 Do not edit the corpus manifest by hand. If the upstream list changes, record the
 new counts and the retrieval date. Existing files are reused unless `--force` is
 given; the manifest is rewritten from the current selection.
+
+### 9.1 The manifest, the facts and the diff
+
+The manifest is version 2. Every entry carries the commercial, access and
+documentation facts of the document in addition to its descriptive fields:
+`pricing_tier`, `access_requirement`, `price_amount`, `price_currency`,
+`rate_limit_policy`, `probe_budget_per_minute`, `licence`, `terms_url`,
+`doc_quality`, `operation_count`, `deprecated_operations`, `spec_version`,
+`source`, `selection_rule_version` and `licence_reviewed_at`.
+
+Two modes rebuild the manifest without network access:
+
+```powershell
+python scripts/fetch_specs.py --metadata-only   # re-extract the facts of the downloaded specs
+python scripts/fetch_specs.py --refresh          # rebuild the manifest and write the diff
+```
+
+`--refresh` writes `data/out/logs/corpus_refresh.json` with the added, removed,
+changed and version-changed entries and their counts. The committed report
+records the upgrade from manifest v1 to v2 over the same 98 documents: 0 added,
+0 removed, 98 changed and 98 version-changed. A `changed` count of 98 on that
+run is expected, because every entry gained the v2 fact fields.
+
+Other switches:
+
+| Switch | Purpose |
+| --- | --- |
+| `--overrides <path>` | Use a different curated override file (default `data/overrides/pricing.yaml`) |
+| `--source local --local-dir <dir>` | Ingest provider-submitted specifications instead of the public directory |
+| `--report <path>` | Write the refresh report somewhere else |
+| `--limit`, `--seed`, `--seed-files`, `--timeout` | Corpus size, selection seed, committed seed size, request timeout |
+
+### 9.2 The curated overrides
+
+`data/overrides/pricing.yaml` is the human layer over the extraction rules. A
+curated entry always wins over the extracted value and carries `reviewer`,
+`checked_at` and `note`. The file currently covers the eight live application
+providers and three corpus tools whose earlier classification the corrected
+rules changed. Every entry still has an empty `reviewer`, so no licence has
+been signed off yet.
+
+### 9.3 The live probe set
+
+`data/specs/probe_set.json` lists the tools that may be called live. It holds 11
+keyless tools, one short of the 12 to 15 the proposal asks for, because the
+corpus holds 98 documents and only 11 of them are keyless. Adding a tool to
+that file without a keyless classification would make the probe fail without a
+credential, so the file follows the corrected extraction rules exactly.
 
 ## 10. Build with an LLM (optional)
 
@@ -349,6 +591,9 @@ build. Re-run the full command before seeding the graph.
 | 512 vs 467 mismatch | mapping IRI collapse | expected; report both values |
 | two `ab:recordedAt` values | onboarding maps then writes the tool; both add a timestamp | expected in the seed artifact; do not read it as two events |
 | no `demo_mapper.txt` update | demo prints, does not write a log | redirect output yourself (`*>` for stdout+stderr) |
+| a tool is written without an offering | the access requirement is not `keyless`, `api_key` or `paid_key` | expected; the graph never guesses a commercial fact. Check `spec.metadata["listing"]` and add a curated override if the document is wrong |
+| a paid tool is ranked but never called | the executability gate | expected; the tool stays visible with the reason `not executable: <tier> tier` |
+| a free tool is ranked but never called | it needs a key, or `AB_REQUIRE_KNOWN_LICENCE=true` and its licence is unknown | expected; check `access_requirement` and `licence` on the offering |
 | PowerShell activation blocked | execution policy | `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` |
 | `python` not found | not on PATH | use `py -3.11` or the venv interpreter |
 
@@ -373,6 +618,7 @@ corpus and manifest are generated. Do not remove `data/specs/seed` or
 - Ontology and units: [ontology.md](ontology.md)
 - Graph schema and queries: [graph-schema.md](graph-schema.md)
 - Mapper behaviour: [mapper-protocol.md](mapper-protocol.md)
+- API sourcing, quality profiling and free-first reasoning: [api-sourcing-and-reasoning.md](api-sourcing-and-reasoning.md)
 - Decisions and limitations: [decisions.md](decisions.md)
 - Evaluation plan: [evaluation-plan.md](evaluation-plan.md)
 - Corpus provenance: [`../data/specs/README.md`](../data/specs/README.md)

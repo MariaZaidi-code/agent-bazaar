@@ -1,0 +1,200 @@
+# Curated commercial and licence facts.
+#
+# The deterministic extraction rules of `agent_bazaar.ingestion.listing_metadata`
+# read a specification and produce a first answer. This file corrects that
+# answer where a human checked the provider's own terms page. A curated entry
+# always wins over the extracted value.
+#
+# Every entry below is reviewed by a human against the provider's own terms page.
+#
+# Keys are tool ids: the app's tool ids for the live providers and the corpus
+# file stems for the corpus tools.
+#
+# Fields per tool:
+#   pricing_tier          free | freemium | paid | unknown
+#   access_requirement    keyless | api_key | paid_key
+#   price_amount          published price, null when the provider publishes none
+#   price_currency        ISO 4217 code of `price_amount`, empty when unknown
+#   rate_limit_policy     the published limit, in words
+#   probe_budget_per_minute  requests per minute this project may send
+#   licence               the licence of the data or the API, "unknown" when unsure
+#   terms_url             the provider's terms or licence page
+#   reviewer              the human who reviewed the entry, empty until then
+#   checked_at            when the entry was last checked against the provider
+#   note                  what the entry is based on
+#
+# `reviewer` is empty for every entry below: no human has signed the licences
+# off yet, so the corpus manifest keeps `licence_reviewed_at` empty as well.
+
+tools:
+  open-meteo-forecast:
+    pricing_tier: free
+    access_requirement: keyless
+    price_amount: 0.0
+    price_currency: ""
+    rate_limit_policy: "free tier: 600 calls per minute, 5000 per hour, 10000 per day, 300000 per month"
+    probe_budget_per_minute: 60
+    licence: CC-BY-4.0
+    terms_url: https://open-meteo.com/en/terms
+    reviewer: ""
+    checked_at: "2026-10-20"
+    note: >-
+      Terms of use state that the free API is for non-commercial use only, that the data is
+      provided under CC-BY 4.0, and that commercial use needs a paid plan. The app calls
+      https://api.open-meteo.com/v1/forecast without a key.
+
+  frankfurter-currency:
+    pricing_tier: free
+    access_requirement: keyless
+    price_amount: 0.0
+    price_currency: ""
+    rate_limit_policy: "no published quota; requests are rate limited to prevent abuse"
+    probe_budget_per_minute: 30
+    licence: MIT
+    terms_url: https://frankfurter.dev/license/
+    reviewer: ""
+    checked_at: "2026-10-20"
+    note: >-
+      The API is free, keyless and usable for commercial use; the code and docs are MIT
+      licensed. The reference rates themselves stay under the terms of the central bank that
+      published them, which the licence page links per provider.
+
+  nominatim-geocode:
+    pricing_tier: free
+    access_requirement: keyless
+    price_amount: 0.0
+    price_currency: ""
+    rate_limit_policy: "absolute maximum of 1 request per second; regular background scripts are limited to 4 requests per minute"
+    probe_budget_per_minute: 4
+    licence: ODbL
+    terms_url: https://operations.osmfoundation.org/policies/nominatim/
+    reviewer: ""
+    checked_at: "2026-10-20"
+    note: >-
+      The public Nominatim service needs no key but requires a valid HTTP Referer or
+      User-Agent, attribution and a rate limit. The data is provided under the ODbL.
+
+  restcountries-facts:
+    pricing_tier: free
+    access_requirement: keyless
+    price_amount: 0.0
+    price_currency: ""
+    rate_limit_policy: "no published limit for the v3.1 endpoint used by the app"
+    probe_budget_per_minute: 30
+    licence: unknown
+    terms_url: https://restcountries.com/
+    reviewer: ""
+    checked_at: "2026-10-20"
+    note: >-
+      The app calls the v3.1 endpoint without a key. The current site sells keyed v5 plans
+      with a free tier, and the data comes from many upstream sources, so no single licence
+      name can be supported.
+
+  nager-holidays:
+    pricing_tier: free
+    access_requirement: keyless
+    price_amount: 0.0
+    price_currency: ""
+    rate_limit_policy: "no rate limits; unlimited queries"
+    probe_budget_per_minute: 30
+    licence: MIT
+    terms_url: https://date.nager.at/TermsOfService
+    reviewer: ""
+    checked_at: "2026-10-20"
+    note: >-
+      The software is MIT licensed and the API needs no key. The terms of service allow
+      private and non-profit use and ask for an active sponsorship for commercial use.
+
+  arxiv-search:
+    pricing_tier: free
+    access_requirement: keyless
+    price_amount: 0.0
+    price_currency: ""
+    rate_limit_policy: "no more than one request every three seconds and a single connection at a time"
+    probe_budget_per_minute: 20
+    licence: CC0-1.0
+    terms_url: https://info.arxiv.org/help/api/tou.html
+    reviewer: ""
+    checked_at: "2026-10-20"
+    note: >-
+      The arXiv API needs no key. The terms of use release the descriptive metadata under
+      CC0 1.0; the full texts stay with their copyright holders.
+
+  university-sql:
+    pricing_tier: free
+    access_requirement: keyless
+    price_amount: 0.0
+    price_currency: ""
+    rate_limit_policy: "local read-only database; no external rate limit"
+    probe_budget_per_minute: null
+    licence: unknown
+    terms_url: ""
+    reviewer: ""
+    checked_at: "2026-10-20"
+    note: >-
+      Local sample university database served from the project itself. No external provider
+      and no published licence for the sample data.
+
+  document-qa:
+    pricing_tier: free
+    access_requirement: keyless
+    price_amount: 0.0
+    price_currency: ""
+    rate_limit_policy: "local extraction over an uploaded document; no external rate limit"
+    probe_budget_per_minute: null
+    licence: unknown
+    terms_url: ""
+    reviewer: ""
+    checked_at: "2026-10-20"
+    note: >-
+      Local extractive question answering over a document uploaded by the developer. The
+      document stays with its owner, so no licence can be named here.
+
+  ideal-postcodes-co-uk:
+    pricing_tier: freemium
+    access_requirement: paid_key
+    price_amount: null
+    price_currency: ""
+    rate_limit_policy: "30 requests per second per IP address; a free test balance next to paid requests"
+    probe_budget_per_minute: null
+    licence: AGPLv3
+    terms_url: https://terms.ideal-postcodes.co.uk
+    reviewer: ""
+    checked_at: "2026-10-21"
+    note: >-
+      Classification of the earlier probe, corrected: the document states that most requests
+      require an API key and that the api_key query parameter authenticates the call, next to
+      a free test balance and paid requests. The service therefore needs a key and is
+      freemium rather than free. The document declares AGPLv3 and a terms page.
+
+  citycontext-com:
+    pricing_tier: free
+    access_requirement: api_key
+    price_amount: 0.0
+    price_currency: ""
+    rate_limit_policy: "not published in the document"
+    probe_budget_per_minute: null
+    licence: unknown
+    terms_url: ""
+    reviewer: ""
+    checked_at: "2026-10-21"
+    note: >-
+      Classification of the earlier probe: the document declares a user_key security scheme
+      and states that the service is free, but it names no licence and no terms page, so the
+      licence stays unknown.
+
+  iptwist-com:
+    pricing_tier: unknown
+    access_requirement: api_key
+    price_amount: null
+    price_currency: ""
+    rate_limit_policy: "not published in the document"
+    probe_budget_per_minute: null
+    licence: unknown
+    terms_url: https://iptwist.com/legal/terms
+    reviewer: ""
+    checked_at: "2026-10-21"
+    note: >-
+      Classification of the earlier probe: the document declares an ApiKeyAuth security
+      scheme and says nothing about pricing, so the tier stays unknown. It publishes no
+      licence but it does name its legal terms page.

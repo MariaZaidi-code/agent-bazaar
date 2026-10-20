@@ -72,6 +72,14 @@ class ToolSpec(BaseModel):
     keywords: list[str] = Field(default_factory=list)
     docs_url: str = ""
     price: float = 0.0
+    pricing_tier: str = "unknown"
+    access_requirement: str = "unknown"
+    rating_value: float | None = None
+    rating_count: int = 0
+    doc_quality: float = 0.0
+    mapping_coverage: float = 0.0
+    licence: str = ""
+    is_executable: bool = False
     probe_eligible: bool = True
     execution: Literal["live", "fixture", "mock"] = "live"
     tags: list[str] = Field(default_factory=list)

@@ -94,6 +94,22 @@ def _load_document(source: Path, raw_text: str, spec_format: str) -> dict[str, A
     return loaded
 
 
+def load_spec_document(source: Path, raw_text: str, spec_format: str) -> dict[str, Any]:
+    """Load the raw specification text into a plain document mapping.
+
+    The parsed document is the input of the listing metadata extraction, so it
+    has to be the very same document the endpoints are parsed from.
+    """
+    document = _load_document(source, raw_text, spec_format)
+    if "openapi" not in document and "swagger" not in document:
+        raise IngestionError(
+            "not_openapi",
+            "Document is not an OpenAPI or Swagger specification",
+            source=str(source),
+        )
+    return document
+
+
 def _base_url(document: dict[str, Any]) -> str:
     servers = document.get("servers")
     if isinstance(servers, list) and servers:
@@ -402,14 +418,14 @@ def _parse_endpoints(
     return endpoints
 
 
-def parse_openapi(source: Path, raw_text: str, spec_format: str) -> NormalizedSpec:
-    document = _load_document(source, raw_text, spec_format)
-    if "openapi" not in document and "swagger" not in document:
-        raise IngestionError(
-            "not_openapi",
-            "Document is not an OpenAPI or Swagger specification",
-            source=str(source),
-        )
+def parse_openapi(
+    source: Path,
+    raw_text: str,
+    spec_format: str,
+    document: dict[str, Any] | None = None,
+) -> NormalizedSpec:
+    if document is None:
+        document = load_spec_document(source, raw_text, spec_format)
     info = document.get("info")
     info_dict = info if isinstance(info, dict) else {}
     resolver = _ReferenceResolver(document)

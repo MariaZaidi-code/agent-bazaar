@@ -9,8 +9,9 @@ from typing import Literal, cast
 
 from agent_bazaar.config import IngestionSettings, get_settings
 from agent_bazaar.ingestion.documents import parse_document
+from agent_bazaar.ingestion.listing_metadata import extract_listing_metadata
 from agent_bazaar.ingestion.models import IngestionErrorInfo, NormalizedSpec
-from agent_bazaar.ingestion.openapi import parse_openapi
+from agent_bazaar.ingestion.openapi import load_spec_document, parse_openapi
 from agent_bazaar.protocols import IngestionError
 
 _OPENAPI_FORMATS = frozenset({"openapi_json", "openapi_yaml"})
@@ -76,10 +77,12 @@ class IngestionUtility:
     def ingest(self, source: str | Path, spec_format: str = "auto") -> NormalizedSpec:
         path = Path(source)
         resolved = _resolve_format(path, spec_format)
+        document: dict | None = None
         try:
             if resolved in _OPENAPI_FORMATS:
                 raw_text = path.read_text(encoding="utf-8", errors="replace")
-                spec = parse_openapi(path, raw_text, resolved)
+                document = load_spec_document(path, raw_text, resolved)
+                spec = parse_openapi(path, raw_text, resolved, document)
             else:
                 document_kind = cast(Literal["pdf", "docx", "text"], resolved)
                 spec = parse_document(path, document_kind, self.settings)
@@ -110,6 +113,8 @@ class IngestionUtility:
         if resolved in _OPENAPI_FORMATS:
             metadata["endpoint_count"] = len(spec.endpoints)
             metadata["field_count"] = len(spec.fields)
+        if document is not None:
+            metadata["listing"] = extract_listing_metadata(document, spec.tool_id).model_dump()
         spec.metadata = metadata
         if getattr(spec, "retrieved_at", None) is None:
             spec.retrieved_at = datetime.now(timezone.utc)

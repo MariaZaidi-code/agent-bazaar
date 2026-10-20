@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import re
 from collections import deque
-from typing import Iterable
+from collections.abc import Iterable
 
 from rdflib import Graph, Node, URIRef
 from rdflib.namespace import RDF, RDFS, SKOS
 
+from agent_bazaar.kg.quality import is_executable, mapping_coverage
 from agent_bazaar.models import ConceptInfo, ToolSummary
 from agent_bazaar.ontology.ns import AB, tool_iri
 
@@ -112,16 +113,82 @@ def _trust(graph: Graph, node: Node) -> float | None:
         return None
 
 
+def _offering(graph: Graph, node: Node) -> Node | None:
+    return graph.value(node, AB.hasOffering)
+
+
+def _text_fact(graph: Graph, node: Node, predicate: URIRef, default: str = "") -> str:
+    value = graph.value(node, predicate)
+    return str(value) if value is not None else default
+
+
+def _decimal_fact(graph: Graph, node: Node, predicate: URIRef) -> float | None:
+    value = graph.value(node, predicate)
+    if value is None:
+        return None
+    try:
+        return float(str(value))
+    except ValueError:
+        return None
+
+
+def _integer_fact(graph: Graph, node: Node, predicate: URIRef) -> int:
+    value = graph.value(node, predicate)
+    if value is None:
+        return 0
+    try:
+        return int(float(str(value)))
+    except ValueError:
+        return 0
+
+
+def _pricing_tier(graph: Graph, node: Node) -> str:
+    offering = _offering(graph, node)
+    if offering is None:
+        return "unknown"
+    return _text_fact(graph, offering, AB.pricingTier, "unknown") or "unknown"
+
+
+def _access_requirement(graph: Graph, node: Node) -> str:
+    offering = _offering(graph, node)
+    if offering is None:
+        return "unknown"
+    return _text_fact(graph, offering, AB.accessRequirement, "unknown") or "unknown"
+
+
+def _licence(graph: Graph, node: Node) -> str:
+    offering = _offering(graph, node)
+    if offering is None:
+        return ""
+    return _text_fact(graph, offering, AB.licence)
+
+
 def tool_summary(graph: Graph, node: Node) -> ToolSummary:
+    tool_id = _tool_id(graph, node)
+    offering = _offering(graph, node)
+    pricing_tier = _pricing_tier(graph, node)
+    access_requirement = _access_requirement(graph, node)
+    licence = _licence(graph, node)
+    rating_value = _decimal_fact(graph, offering, AB.ratingValue) if offering is not None else None
+    rating_count = _integer_fact(graph, offering, AB.ratingCount) if offering is not None else 0
+    doc_quality = _decimal_fact(graph, offering, AB.docQuality) if offering is not None else None
     return ToolSummary(
-        tool_id=_tool_id(graph, node),
+        tool_id=tool_id,
         iri=str(node),
-        name=str(graph.value(node, AB.name) or _tool_id(graph, node)),
+        name=str(graph.value(node, AB.name) or tool_id),
         capabilities=_capability_names(graph, node),
         provider_id=_provider_id(graph, node),
         trust=_trust(graph, node),
         score=None,
         reason="",
+        pricing_tier=pricing_tier,
+        access_requirement=access_requirement,
+        rating_value=rating_value,
+        rating_count=rating_count,
+        doc_quality=doc_quality or 0.0,
+        mapping_coverage=mapping_coverage(graph, tool_id),
+        is_executable=is_executable(pricing_tier, access_requirement, licence),
+        licence=licence,
     )
 
 
@@ -168,6 +235,37 @@ def tools_by_io(graph: Graph, input_concept: str, output_concept: str) -> list[T
         outputs = {str(value) for value in graph.objects(node, AB.hasOutput)}
         if inputs & acceptable_inputs and outputs & acceptable_outputs:
             nodes.append(node)
+    return tool_summaries(graph, nodes)
+
+
+def tools_by_access(graph: Graph, access_requirement: str) -> list[ToolSummary]:
+    """Tools whose offering declares the given access requirement."""
+    nodes = [node for node in _tool_nodes(graph) if _access_requirement(graph, node) == access_requirement]
+    return tool_summaries(graph, nodes)
+
+
+def tools_by_pricing_tier(graph: Graph, pricing_tier: str) -> list[ToolSummary]:
+    """Tools whose offering declares the given pricing tier."""
+    nodes = [node for node in _tool_nodes(graph) if _pricing_tier(graph, node) == pricing_tier]
+    return tool_summaries(graph, nodes)
+
+
+def executable_tools(graph: Graph, *, require_known_licence: bool = False) -> list[ToolSummary]:
+    """Tools that may be executed: free and keyless.
+
+    A known licence is only demanded when the caller asks for it, which keeps
+    this rule identical to the Client policy default.
+    """
+    nodes = [
+        node
+        for node in _tool_nodes(graph)
+        if is_executable(
+            _pricing_tier(graph, node),
+            _access_requirement(graph, node),
+            _licence(graph, node),
+            require_known_licence=require_known_licence,
+        )
+    ]
     return tool_summaries(graph, nodes)
 
 

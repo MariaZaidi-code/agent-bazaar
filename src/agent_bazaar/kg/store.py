@@ -3,30 +3,63 @@
 from __future__ import annotations
 
 import hashlib
+import json
+from collections.abc import Iterable
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 from rdflib import Graph, Literal, Node, URIRef
 from rdflib.namespace import RDF, RDFS, XSD
 
 from agent_bazaar.config import Settings, get_settings
+from agent_bazaar.kg.quality import build_profile, offering_iri, offering_triples
 from agent_bazaar.kg.queries import (
     compatible_substitutes as query_compatible_substitutes,
     concept_for_field as query_concept_for_field,
     concept_info as query_concept_info,
     concept_local_name,
     describe_graph as query_describe_graph,
+    executable_tools as query_executable_tools,
     list_concepts as query_list_concepts,
     list_tools as query_list_tools,
     subclass_closure as query_subclass_closure,
+    tools_by_access as query_tools_by_access,
     tools_by_capability as query_tools_by_capability,
     tools_by_io as query_tools_by_io,
+    tools_by_pricing_tier as query_tools_by_pricing_tier,
 )
-from agent_bazaar.models import ConceptInfo, MappedField, ToolRecord, ToolSummary
+from agent_bazaar.models import (
+    ConceptInfo,
+    MappedField,
+    ToolQualityProfile,
+    ToolRecord,
+    ToolSummary,
+)
 from agent_bazaar.ontology.ns import AB, STANDARD_PREFIXES, tool_iri, unit_iri
 from agent_bazaar.ontology.upper import upper_with_units
 from agent_bazaar.ontology.validator import load_shapes, validate_graph
 from agent_bazaar.protocols import ValidationResult
+
+VALID_ACCESS_REQUIREMENTS = frozenset({"keyless", "api_key", "paid_key"})
+
+_OFFERING_FACT_PREDICATES = (
+    AB.pricingTier,
+    AB.accessRequirement,
+    AB.priceAmount,
+    AB.priceCurrency,
+    AB.rateLimit,
+    AB.probeBudgetPerMinute,
+    AB.docQuality,
+    AB.docSubScores,
+    AB.mappingCoverage,
+    AB.licence,
+    AB.termsUrl,
+    AB.tierEvidence,
+    AB.accessEvidence,
+    AB.provenance,
+    AB.lastSeen,
+)
 
 
 class GraphValidationError(Exception):
@@ -163,6 +196,61 @@ class KgStore:
             graph.add((tool, AB.hasOutput, concept))
         return mapping
 
+    def _write_offering(self, graph: Graph, record: ToolRecord) -> None:
+        """Write the commercial and documentation facts of a tool as an offering.
+
+        An offering asserts a known access requirement, so a record without one
+        keeps no offering: absence of evidence is never read as "free".
+        """
+        if record.access_requirement not in VALID_ACCESS_REQUIREMENTS:
+            return
+        offering = offering_iri(record.tool_id)
+        for predicate in _OFFERING_FACT_PREDICATES:
+            self._replace(graph, offering, predicate, None)
+        metadata = record.metadata if isinstance(record.metadata, dict) else {}
+        offering_triples(
+            graph,
+            record.tool_id,
+            pricing_tier=record.pricing_tier,
+            access_requirement=record.access_requirement,
+            price_amount=record.price_amount,
+            price_currency=record.price_currency,
+            rate_limit_policy=record.rate_limit_policy,
+            probe_budget_per_minute=record.probe_budget_per_minute,
+            doc_quality=record.doc_quality,
+            doc_sub_scores=record.doc_sub_scores or None,
+            mapping_coverage_value=self._optional_float(metadata.get("mapping_coverage")),
+            licence=record.licence,
+            terms_url=record.terms_url,
+            tier_evidence=record.tier_evidence,
+            access_evidence=record.access_evidence,
+            provenance=self._optional_mapping(metadata.get("provenance")),
+            last_seen=record.retrieved_at.isoformat(),
+        )
+
+    @staticmethod
+    def _optional_float(value: Any) -> float | None:
+        if value is None or isinstance(value, bool):
+            return None
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
+    @staticmethod
+    def _optional_mapping(value: Any) -> dict[str, Any] | None:
+        return dict(value) if isinstance(value, dict) else None
+
+    @staticmethod
+    def _stored_count(graph: Graph, subject: Node, predicate: URIRef) -> int:
+        value = graph.value(subject, predicate)
+        if value is None:
+            return 0
+        try:
+            return int(float(str(value)))
+        except ValueError:
+            return 0
+
     def write_tool(self, record: ToolRecord) -> None:
         candidate = self._candidate()
         tool = tool_iri(record.tool_id)
@@ -194,6 +282,7 @@ class KgStore:
             candidate.add((tool, AB.makesClaim, claim_node))
         for field in [*record.inputs, *record.outputs]:
             self._add_mapping(candidate, tool, record.tool_id, field, recorded_by="mapper")
+        self._write_offering(candidate, record)
         self._commit(candidate)
 
     def _find_mapping(self, graph: Graph, tool: URIRef, field_path: str, direction: str | None) -> Node | None:
@@ -269,6 +358,87 @@ class KgStore:
 
     def tools_by_io(self, input_concept: str, output_concept: str) -> list[ToolSummary]:
         return query_tools_by_io(self.graph, input_concept, output_concept)
+
+    def tools_by_access(self, access_requirement: str) -> list[ToolSummary]:
+        return query_tools_by_access(self.graph, access_requirement)
+
+    def tools_by_pricing_tier(self, pricing_tier: str) -> list[ToolSummary]:
+        return query_tools_by_pricing_tier(self.graph, pricing_tier)
+
+    def executable_tools(self, *, require_known_licence: bool = False) -> list[ToolSummary]:
+        return query_executable_tools(self.graph, require_known_licence=require_known_licence)
+
+    def tool_quality_profile(self, tool_id: str) -> ToolQualityProfile:
+        return build_profile(self.graph, tool_id)
+
+    def candidate_facts(self, tool_ids: Iterable[str]) -> dict[str, ToolQualityProfile]:
+        return {tool_id: build_profile(self.graph, tool_id) for tool_id in tool_ids}
+
+    def update_tool_quality(
+        self,
+        tool_id: str,
+        *,
+        rating_value: float | None = None,
+        rating_count: int | None = None,
+        rating_source: str = "",
+        doc_quality: float | None = None,
+        mapping_coverage: float | None = None,
+        licence: str | None = None,
+        pricing_tier: str | None = None,
+        access_requirement: str | None = None,
+        provenance: dict[str, Any] | None = None,
+    ) -> ToolQualityProfile:
+        """Update the offering facts of a tool in one validated write.
+
+        The write goes through the same SHACL-validating path as every other
+        write, so an offering that violates the shapes is rejected and the
+        graph stays untouched.
+        """
+        candidate = self._candidate()
+        tool = tool_iri(tool_id)
+        if (tool, RDF.type, AB.Tool) not in candidate:
+            raise ValueError(f"Unknown tool: {tool_id}")
+        offering = candidate.value(tool, AB.hasOffering)
+        if offering is None:
+            if access_requirement is None:
+                raise ValueError(
+                    f"access_requirement is required to create the offering of {tool_id}"
+                )
+            offering = offering_iri(tool_id)
+            candidate.add((tool, AB.hasOffering, offering))
+            candidate.add((offering, RDF.type, AB.Offering))
+            candidate.add((offering, AB.pricingTier, Literal("unknown")))
+        if pricing_tier is not None:
+            self._replace(candidate, offering, AB.pricingTier, Literal(str(pricing_tier)))
+        if access_requirement is not None:
+            self._replace(candidate, offering, AB.accessRequirement, Literal(str(access_requirement)))
+        if rating_value is not None:
+            self._replace(candidate, offering, AB.ratingValue, self._decimal(float(rating_value)))
+            count = (
+                rating_count
+                if rating_count is not None
+                else self._stored_count(candidate, offering, AB.ratingCount)
+            )
+            self._replace(candidate, offering, AB.ratingCount, Literal(int(count), datatype=XSD.integer))
+        elif rating_count is not None:
+            self._replace(candidate, offering, AB.ratingCount, Literal(int(rating_count), datatype=XSD.integer))
+        if rating_source:
+            self._replace(candidate, offering, AB.ratingSource, Literal(str(rating_source)))
+        if doc_quality is not None:
+            self._replace(candidate, offering, AB.docQuality, self._decimal(float(doc_quality)))
+        if mapping_coverage is not None:
+            self._replace(candidate, offering, AB.mappingCoverage, self._decimal(float(mapping_coverage)))
+        if licence is not None:
+            self._replace(candidate, offering, AB.licence, Literal(str(licence)))
+        if provenance is not None:
+            self._replace(
+                candidate,
+                offering,
+                AB.provenance,
+                Literal(json.dumps(provenance, sort_keys=True, default=str)),
+            )
+        self._commit(candidate)
+        return build_profile(self.graph, tool_id)
 
     def compatible_substitutes(self, tool_id: str) -> list[ToolSummary]:
         return query_compatible_substitutes(self.graph, tool_id)

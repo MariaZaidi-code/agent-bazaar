@@ -1,6 +1,6 @@
 {
   "suite": "ablations",
-  "generated_at": "2026-10-20T15:54:37.857632+00:00",
+  "generated_at": "2026-10-20T20:48:54.772031+00:00",
   "mode": "offline",
   "configurations": 7,
   "selected_chain_tasks": [
@@ -18,7 +18,7 @@
     "chain_success_rate": 1.0,
     "recovery_rate": 0.7143,
     "substitution_rate": 0.7143,
-    "avg_latency_ms": 30.1525
+    "avg_latency_ms": 22.4443
   },
   "rows": [
     {
@@ -29,62 +29,62 @@
       "recovered_from_failure": true,
       "substitution_used": true,
       "failure_status": "completed",
-      "avg_latency_ms": 26.4088,
+      "avg_latency_ms": 20.9838,
       "rows": [
         {
           "task_id": "c01",
           "status": "completed",
           "missing": [],
-          "duration_ms": 53.28,
+          "duration_ms": 33.56,
           "success": true
         },
         {
           "task_id": "c04",
           "status": "completed",
           "missing": [],
-          "duration_ms": 20.55,
+          "duration_ms": 14.89,
           "success": true
         },
         {
           "task_id": "c05",
           "status": "completed",
           "missing": [],
-          "duration_ms": 17.13,
+          "duration_ms": 14.84,
           "success": true
         },
         {
           "task_id": "c06",
           "status": "completed",
           "missing": [],
-          "duration_ms": 16.99,
+          "duration_ms": 13.22,
           "success": true
         },
         {
           "task_id": "c07",
           "status": "completed",
           "missing": [],
-          "duration_ms": 22.84,
+          "duration_ms": 15.37,
           "success": true
         },
         {
           "task_id": "c08",
           "status": "completed",
           "missing": [],
-          "duration_ms": 11.53,
+          "duration_ms": 15.99,
           "success": true
         },
         {
           "task_id": "c09",
           "status": "completed",
           "missing": [],
-          "duration_ms": 35.67,
+          "duration_ms": 24.01,
           "success": true
         },
         {
           "task_id": "c13",
           "status": "completed",
           "missing": [],
-          "duration_ms": 33.28,
+          "duration_ms": 35.99,
           "success": true
         }
       ]
@@ -99,62 +99,62 @@
       "recovered_from_failure": true,
       "substitution_used": true,
       "failure_status": "completed",
-      "avg_latency_ms": 31.375,
+      "avg_latency_ms": 21.685,
       "rows": [
         {
           "task_id": "c01",
           "status": "completed",
           "missing": [],
-          "duration_ms": 45.5,
+          "duration_ms": 34.19,
           "success": true
         },
         {
           "task_id": "c04",
           "status": "completed",
           "missing": [],
-          "duration_ms": 26.1,
+          "duration_ms": 16.41,
           "success": true
         },
         {
           "task_id": "c05",
           "status": "completed",
           "missing": [],
-          "duration_ms": 16.68,
+          "duration_ms": 15.1,
           "success": true
         },
         {
           "task_id": "c06",
           "status": "completed",
           "missing": [],
-          "duration_ms": 23.16,
+          "duration_ms": 17.07,
           "success": true
         },
         {
           "task_id": "c07",
           "status": "completed",
           "missing": [],
-          "duration_ms": 33.52,
+          "duration_ms": 18.95,
           "success": true
         },
         {
           "task_id": "c08",
           "status": "completed",
           "missing": [],
-          "duration_ms": 19.62,
+          "duration_ms": 14.63,
           "success": true
         },
         {
           "task_id": "c09",
           "status": "completed",
           "missing": [],
-          "duration_ms": 34.54,
+          "duration_ms": 24.38,
           "success": true
         },
         {
           "task_id": "c13",
           "status": "completed",
           "missing": [],
-          "duration_ms": 51.88,
+          "duration_ms": 32.75,
           "success": true
         }
       ]
@@ -169,62 +169,62 @@
       "recovered_from_failure": false,
       "substitution_used": false,
       "failure_status": "completed",
-      "avg_latency_ms": 28.19,
+      "avg_latency_ms": 19.4387,
       "rows": [
         {
           "task_id": "c01",
           "status": "completed",
           "missing": [],
-          "duration_ms": 58.94,
+          "duration_ms": 35.41,
           "success": true
         },
         {
           "task_id": "c04",
           "status": "completed",
           "missing": [],
-          "duration_ms": 16.84,
+          "duration_ms": 13.27,
           "success": true
         },
         {
           "task_id": "c05",
           "status": "completed",
           "missing": [],
-          "duration_ms": 19.31,
+          "duration_ms": 14.12,
           "success": true
         },
         {
           "task_id": "c06",
           "status": "completed",
           "missing": [],
-          "duration_ms": 20.72,
+          "duration_ms": 12.13,
           "success": true
         },
         {
           "task_id": "c07",
           "status": "completed",
           "missing": [],
-          "duration_ms": 20.59,
+          "duration_ms": 13.29,
           "success": true
         },
         {
           "task_id": "c08",
           "status": "completed",
           "missing": [],
-          "duration_ms": 16.68,
+          "duration_ms": 14.07,
           "success": true
         },
         {
           "task_id": "c09",
           "status": "completed",
           "missing": [],
-          "duration_ms": 27.77,
+          "duration_ms": 20.37,
           "success": true
         },
         {
           "task_id": "c13",
           "status": "completed",
           "missing": [],
-          "duration_ms": 44.67,
+          "duration_ms": 32.85,
           "success": true
         }
       ]
@@ -239,62 +239,62 @@
       "recovered_from_failure": true,
       "substitution_used": true,
       "failure_status": "completed",
-      "avg_latency_ms": 25.515,
+      "avg_latency_ms": 20.7087,
       "rows": [
         {
           "task_id": "c01",
           "status": "completed",
           "missing": [],
-          "duration_ms": 38.44,
+          "duration_ms": 39.96,
           "success": true
         },
         {
           "task_id": "c04",
           "status": "completed",
           "missing": [],
-          "duration_ms": 18.68,
+          "duration_ms": 16.44,
           "success": true
         },
         {
           "task_id": "c05",
           "status": "completed",
           "missing": [],
-          "duration_ms": 18.48,
+          "duration_ms": 14.08,
           "success": true
         },
         {
           "task_id": "c06",
           "status": "completed",
           "missing": [],
-          "duration_ms": 17.4,
+          "duration_ms": 11.3,
           "success": true
         },
         {
           "task_id": "c07",
           "status": "completed",
           "missing": [],
-          "duration_ms": 19.56,
+          "duration_ms": 16.9,
           "success": true
         },
         {
           "task_id": "c08",
           "status": "completed",
           "missing": [],
-          "duration_ms": 15.37,
+          "duration_ms": 12.86,
           "success": true
         },
         {
           "task_id": "c09",
           "status": "completed",
           "missing": [],
-          "duration_ms": 29.39,
+          "duration_ms": 22.37,
           "success": true
         },
         {
           "task_id": "c13",
           "status": "completed",
           "missing": [],
-          "duration_ms": 46.8,
+          "duration_ms": 31.76,
           "success": true
         }
       ]
@@ -309,62 +309,62 @@
       "recovered_from_failure": true,
       "substitution_used": true,
       "failure_status": "completed",
-      "avg_latency_ms": 28.8713,
+      "avg_latency_ms": 20.4312,
       "rows": [
         {
           "task_id": "c01",
           "status": "completed",
           "missing": [],
-          "duration_ms": 47.87,
+          "duration_ms": 39.37,
           "success": true
         },
         {
           "task_id": "c04",
           "status": "completed",
           "missing": [],
-          "duration_ms": 18.07,
+          "duration_ms": 14.17,
           "success": true
         },
         {
           "task_id": "c05",
           "status": "completed",
           "missing": [],
-          "duration_ms": 15.61,
+          "duration_ms": 13.77,
           "success": true
         },
         {
           "task_id": "c06",
           "status": "completed",
           "missing": [],
-          "duration_ms": 21.31,
+          "duration_ms": 14.69,
           "success": true
         },
         {
           "task_id": "c07",
           "status": "completed",
           "missing": [],
-          "duration_ms": 24.21,
+          "duration_ms": 16.83,
           "success": true
         },
         {
           "task_id": "c08",
           "status": "completed",
           "missing": [],
-          "duration_ms": 20.62,
+          "duration_ms": 12.54,
           "success": true
         },
         {
           "task_id": "c09",
           "status": "completed",
           "missing": [],
-          "duration_ms": 31.42,
+          "duration_ms": 18.45,
           "success": true
         },
         {
           "task_id": "c13",
           "status": "completed",
           "missing": [],
-          "duration_ms": 51.86,
+          "duration_ms": 33.63,
           "success": true
         }
       ]
@@ -379,62 +379,62 @@
       "recovered_from_failure": false,
       "substitution_used": false,
       "failure_status": "partial",
-      "avg_latency_ms": 33.5987,
+      "avg_latency_ms": 31.2563,
       "rows": [
         {
           "task_id": "c01",
           "status": "completed",
           "missing": [],
-          "duration_ms": 67.39,
+          "duration_ms": 51.29,
           "success": true
         },
         {
           "task_id": "c04",
           "status": "completed",
           "missing": [],
-          "duration_ms": 25.84,
+          "duration_ms": 49.95,
           "success": true
         },
         {
           "task_id": "c05",
           "status": "completed",
           "missing": [],
-          "duration_ms": 20.0,
+          "duration_ms": 16.88,
           "success": true
         },
         {
           "task_id": "c06",
           "status": "completed",
           "missing": [],
-          "duration_ms": 23.43,
+          "duration_ms": 16.86,
           "success": true
         },
         {
           "task_id": "c07",
           "status": "completed",
           "missing": [],
-          "duration_ms": 22.44,
+          "duration_ms": 21.05,
           "success": true
         },
         {
           "task_id": "c08",
           "status": "completed",
           "missing": [],
-          "duration_ms": 28.11,
+          "duration_ms": 15.58,
           "success": true
         },
         {
           "task_id": "c09",
           "status": "completed",
           "missing": [],
-          "duration_ms": 35.38,
+          "duration_ms": 27.57,
           "success": true
         },
         {
           "task_id": "c13",
           "status": "completed",
           "missing": [],
-          "duration_ms": 46.2,
+          "duration_ms": 50.87,
           "success": true
         }
       ]
@@ -449,62 +449,62 @@
       "recovered_from_failure": true,
       "substitution_used": true,
       "failure_status": "completed",
-      "avg_latency_ms": 37.1088,
+      "avg_latency_ms": 22.6063,
       "rows": [
         {
           "task_id": "c01",
           "status": "completed",
           "missing": [],
-          "duration_ms": 52.29,
+          "duration_ms": 37.82,
           "success": true
         },
         {
           "task_id": "c04",
           "status": "completed",
           "missing": [],
-          "duration_ms": 19.55,
+          "duration_ms": 14.8,
           "success": true
         },
         {
           "task_id": "c05",
           "status": "completed",
           "missing": [],
-          "duration_ms": 22.05,
+          "duration_ms": 13.15,
           "success": true
         },
         {
           "task_id": "c06",
           "status": "completed",
           "missing": [],
-          "duration_ms": 22.23,
+          "duration_ms": 12.98,
           "success": true
         },
         {
           "task_id": "c07",
           "status": "completed",
           "missing": [],
-          "duration_ms": 29.71,
+          "duration_ms": 17.86,
           "success": true
         },
         {
           "task_id": "c08",
           "status": "completed",
           "missing": [],
-          "duration_ms": 20.29,
+          "duration_ms": 12.44,
           "success": true
         },
         {
           "task_id": "c09",
           "status": "completed",
           "missing": [],
-          "duration_ms": 38.63,
+          "duration_ms": 27.41,
           "success": true
         },
         {
           "task_id": "c13",
           "status": "completed",
           "missing": [],
-          "duration_ms": 92.12,
+          "duration_ms": 44.39,
           "success": true
         }
       ]

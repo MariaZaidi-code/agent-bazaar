@@ -1,6 +1,6 @@
 {
   "suite": "substitution",
-  "generated_at": "2026-10-20T15:54:20.740014+00:00",
+  "generated_at": "2026-10-20T20:48:43.615785+00:00",
   "mode": "offline",
   "cases": 7,
   "metrics": {
@@ -8,7 +8,7 @@
     "substitute_accuracy": 0.8571,
     "unexpected_recovery_rate": 0.0,
     "trace_coverage": 0.8571,
-    "avg_latency_ms": 35.2643
+    "avg_latency_ms": 24.3114
   },
   "failures": [],
   "rows": [
@@ -25,9 +25,9 @@
       "substitute_used": true,
       "outcome_correct": true,
       "trace_has_substitution": true,
-      "answer": "Weather for Lahore on 2026-10-21: high 37.9 C, low 28.3 C, 6% chance of precipitation. A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
+      "answer": "Weather for Lahore on 2026-10-22: high 37.9 C, low 28.3 C, 6% chance of precipitation. A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
       "error": null,
-      "duration_ms": 42.79
+      "duration_ms": 35.33
     },
     {
       "case_id": "s02",
@@ -42,9 +42,9 @@
       "substitute_used": true,
       "outcome_correct": true,
       "trace_has_substitution": true,
-      "answer": "Weather for Lahore on 2026-10-21: high 37.9 C, low 28.3 C, 6% chance of precipitation. A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
+      "answer": "Weather for Lahore on 2026-10-22: high 37.9 C, low 28.3 C, 6% chance of precipitation. A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
       "error": null,
-      "duration_ms": 53.18
+      "duration_ms": 40.16
     },
     {
       "case_id": "s03",
@@ -59,9 +59,9 @@
       "substitute_used": true,
       "outcome_correct": true,
       "trace_has_substitution": true,
-      "answer": "200.00 USD is approximately 55,700.00 PKR at rate 278.5 (2026-10-20). A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
+      "answer": "200.00 USD is approximately 55,700.00 PKR at rate 278.5 (2026-10-21). A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
       "error": null,
-      "duration_ms": 38.32
+      "duration_ms": 22.53
     },
     {
       "case_id": "s04",
@@ -78,7 +78,7 @@
       "trace_has_substitution": true,
       "answer": "5 public holidays found. 2026-02-05 Kashmir Solidarity Day; 2026-03-23 Pakistan Day; 2026-05-01 Labour Day; 2026-08-14 Independence Day; 2026-12-25 Christmas Day. A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
       "error": null,
-      "duration_ms": 32.73
+      "duration_ms": 19.72
     },
     {
       "case_id": "s05",
@@ -95,7 +95,7 @@
       "trace_has_substitution": true,
       "answer": "Japan: capital Tokyo, population 125,681,593, region Asia. A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
       "error": null,
-      "duration_ms": 27.71
+      "duration_ms": 17.89
     },
     {
       "case_id": "s06",
@@ -112,7 +112,7 @@
       "trace_has_substitution": true,
       "answer": "Top research results: Retrieval and verification patterns for GraphRAG (https://arxiv.org/search/?query=GraphRAG&searchtype=all); Knowledge-graph grounding for tool-using agents: GraphRAG (https://arxiv.org/search/?query=GraphRAG&searchtype=all). A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
       "error": null,
-      "duration_ms": 28.55
+      "duration_ms": 16.76
     },
     {
       "case_id": "s07",
@@ -129,7 +129,7 @@
       "trace_has_substitution": false,
       "answer": "Some steps failed: QueryStructuredData: Injected provider outage for the demonstration.",
       "error": "Injected provider outage for the demonstration.",
-      "duration_ms": 23.57
+      "duration_ms": 17.79
     }
   ]
 }

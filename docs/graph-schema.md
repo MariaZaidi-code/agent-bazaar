@@ -22,6 +22,7 @@ and `validator.py` (validation).
 | `ab:capability-<slug>` | `ab:Capability` | `rdfs:label`; shared by tools with the same capability |
 | `ab:claim-<tool_id>-<index>` | `ab:Claim` | `ab:claimId`, `ab:claimText`, `ab:source` |
 | `ab:mapping-<12 hex>` | `ab:Mapping` | `ab:fieldPath`, `ab:direction`, `ab:mapsTo`, `ab:confidence`, `ab:reason`, `ab:status`, `ab:attempts`, `ab:recordedAt`, `ab:recordedBy`, `ab:tool`, optional `ab:unit` |
+| `ab:offering-<tool_id>` | `ab:Offering` | `ab:pricingTier`, `ab:accessRequirement`, `ab:priceAmount`, `ab:priceCurrency`, `ab:rateLimit`, `ab:probeBudgetPerMinute`, `ab:ratingValue`, `ab:ratingCount`, `ab:ratingSource`, `ab:docQuality`, `ab:docSubScores`, `ab:mappingCoverage`, `ab:licence`, `ab:termsUrl`, `ab:provenance`, `ab:lastSeen`, `ab:tierEvidence`, `ab:accessEvidence`; linked from the tool with `ab:hasOffering` |
 
 Unit instances live in the `unit:` namespace (`unit:Celsius`), but unit
 families live in the ontology namespace (`ab:TemperatureUnit`), because
@@ -224,6 +225,33 @@ first IRI wins.
   start node; `superclass_closure` and `descendant_closure` are available from
   `kg/queries.py` but are not part of the public store Protocol.
 
+### Commercial and access queries
+
+These helpers read the offering of a tool. They are the graph-side view of the
+free-first policy; the policy itself lives in the Client
+(`app/agents/ranking_policy.py`).
+
+| Method | Returns |
+| --- | --- |
+| `tools_by_pricing_tier(tier)` | The tools whose offering declares that pricing tier (`free`, `freemium`, `paid`, `unknown`) |
+| `tools_by_access(access_requirement)` | The tools whose offering declares that access requirement (`keyless`, `api_key`, `paid_key`) |
+| `executable_tools()` | The tools that may be executed: free and keyless. The licence is only required when the caller asks for it, so a free keyless tool with an unknown licence is included by default |
+| `tool_quality_profile(tool_id)` | The `ToolQualityProfile` of one tool: tier, access requirement, price, rate limit, probe budget, rating and its confidence, documentation quality and sub-scores, mapping coverage, licence, terms URL, evidence lists, provenance and the executability flag |
+| `candidate_facts(tool_ids)` | The profiles of several tools at once, as a dictionary keyed by tool id |
+| `update_tool_quality(tool_id, ...)` | Updates the offering of a tool in one validated write and returns the refreshed profile |
+
+`ToolSummary` carries `pricing_tier`, `access_requirement` and `rating_value`
+alongside the identity fields, so a caller that only needs the tier does not
+have to build the whole profile.
+
+`update_tool_quality()` accepts `rating_value`, `rating_count`,
+`rating_source`, `doc_quality`, `mapping_coverage`, `licence`, `pricing_tier`,
+`access_requirement` and `provenance`. It works on a candidate copy of the
+graph and commits through the same `_commit()` path as every other write, so an
+offering that violates the shapes is rejected and the current graph is left
+untouched. Creating an offering for a tool that has none requires
+`access_requirement`; without it the call raises `ValueError`.
+
 ## 4. Seed counts and what they mean
 
 `data/out/logs/seed_graph.json` records:
@@ -277,14 +305,143 @@ answering, research papers and the metadata classes - are listed in
 `EXTERNAL_CONCEPTS` and are covered by the app's fallback ontology
 `app/data/ontology.json`.
 
+## 7. Offering nodes: commercial, access and documentation facts
+
+The commercial, access, reputation and documentation facts of a tool live on one
+`ab:Offering` node per tool, reached from the tool with `ab:hasOffering`.
+
+### 7.1 Status of the extension
+
+This is a **versioned upper-level extension added after the Week 3 ontology
+freeze**. The frozen 60-concept domain layer and the minimum shape set are
+unchanged; the extension adds one class, one object property, eighteen datatype
+properties and two shapes to the upper layer. `src/agent_bazaar/ontology/upper.ttl`
+carries the note in a comment above the offering section, and the ontology
+artifacts are extended rather than rewritten, so the existing evaluation stays
+valid.
+
+There is still no committed graph migration mechanism. Rebuilding the graph with
+`scripts/seed_graph.py` remains the reset path.
+
+### 7.2 The node
+
+| Property | Range | Meaning |
+| --- | --- | --- |
+| `ab:hasOffering` | `ab:Offering` | From the tool to its offering. A tool has **at most one** offering |
+| `ab:pricingTier` | string | `free`, `freemium`, `paid` or `unknown`. Absence of evidence is never `free` |
+| `ab:accessRequirement` | string | `keyless`, `api_key` or `paid_key` |
+| `ab:priceAmount` | `xsd:decimal` | The published price, when the document states one |
+| `ab:priceCurrency` | string | ISO 4217 code of the price |
+| `ab:rateLimit` | string | The published limit, in words |
+| `ab:probeBudgetPerMinute` | `xsd:integer` | Requests per minute this project may send |
+| `ab:ratingValue` | `xsd:decimal` | The shrunk developer rating, between 0 and 1 |
+| `ab:ratingCount` | `xsd:integer` | The number of reviews behind the rating |
+| `ab:ratingSource` | string | Where the rating came from |
+| `ab:docQuality` | `xsd:decimal` | The reproducible documentation quality, between 0 and 1 |
+| `ab:docSubScores` | string | JSON object of the seven documentation sub-scores |
+| `ab:mappingCoverage` | `xsd:decimal` | The share of the listing's fields the Mapper typed, between 0 and 1 |
+| `ab:licence` | string | The declared licence of the API or its data |
+| `ab:termsUrl` | string | The provider's terms or licence page |
+| `ab:provenance` | string | JSON record of how the facts were obtained and reviewed |
+| `ab:lastSeen` | `xsd:dateTime` | When the facts were last written |
+| `ab:tierEvidence` | string | The matched pricing fragments, joined with a pipe character |
+| `ab:accessEvidence` | string | The matched access signals, joined with a pipe character |
+
+The offering IRI is deterministic: `ab:offering-<tool_id>`, built by
+`kg.quality.offering_iri()`. A tool without an established access requirement
+keeps **no** offering node at all, so the graph never asserts a commercial fact
+that was not established.
+
+### 7.3 The shapes
+
+`ab:OfferingShape` (`sh:targetClass ab:Offering`):
+
+| Path | Constraint |
+| --- | --- |
+| `ab:pricingTier` | Exactly one, of type `xsd:string`, in (`free`, `freemium`, `paid`, `unknown`) |
+| `ab:accessRequirement` | Exactly one, of type `xsd:string`, in (`keyless`, `api_key`, `paid_key`, `unknown`) |
+| `ab:ratingValue` | At most one, `xsd:decimal`, between 0 and 1 |
+| `ab:ratingCount` | At most one, `xsd:integer`, at least 0 |
+| `ab:docQuality` | At most one, `xsd:decimal`, between 0 and 1 |
+| `ab:mappingCoverage` | At most one, `xsd:decimal`, between 0 and 1 |
+| `ab:probeBudgetPerMinute` | At most one, `xsd:integer`, at least 1 |
+
+`ab:ToolOfferingShape` (`sh:targetClass ab:Tool`):
+
+| Path | Constraint |
+| --- | --- |
+| `ab:hasOffering` | At most one, and the value must be an IRI |
+
+The remaining predicates are free strings; they carry no value constraint, so
+any writer may set them. The values this repository produces are listed in
+Section 7.2.
+
+### 7.4 Turtle example
+
+The example below is the real output of `kg.quality.offering_triples()` for a
+free, keyless tool with a licence, a terms page, a rate limit and a probe
+budget:
+
+```turtle
+@prefix ab: <https://agent-bazaar.local/ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://agent-bazaar.local/tool/example-tool> a ab:Tool ;
+    ab:hasOffering ab:offering-example-tool .
+
+ab:offering-example-tool a ab:Offering ;
+    ab:accessEvidence "no security scheme, credential parameter or platform rule matched" ;
+    ab:accessRequirement "keyless" ;
+    ab:docQuality 0.8125 ;
+    ab:docSubScores "{\"breadth\": 1.0, \"description\": 0.5, \"examples\": 0.0, \"field_descriptions\": 1.0, \"not_deprecated\": 1.0, \"response_schemas\": 1.0, \"typed_io\": 1.0}" ;
+    ab:lastSeen "2026-10-21T09:30:00+00:00"^^xsd:dateTime ;
+    ab:licence "CC-BY-4.0" ;
+    ab:mappingCoverage 0.9 ;
+    ab:priceAmount 0.0 ;
+    ab:pricingTier "free" ;
+    ab:probeBudgetPerMinute 60 ;
+    ab:provenance "{\"method\": \"deterministic_rules\", \"source\": \"openapi_document\"}" ;
+    ab:rateLimit "600 calls per minute, 5000 per hour" ;
+    ab:termsUrl "https://example.org/terms" ;
+    ab:tierEvidence "free tier" .
+```
+
+The rating triples are written together with the rating value: a rating always
+carries its count, and the source is written when it is known.
+
+### 7.5 Derived values
+
+Two values are computed from the graph rather than stored:
+
+- **Rating shrinkage.** `kg.quality.shrunk_rating(sum, count)` returns
+  `(sum + 0.5 * 2) / (count + 2)` and a confidence of `count / (count + 2)`.
+  With no ratings at all it returns the prior mean 0.5 and a confidence of 0.
+  The store does not apply it on its own: the caller computes the shrunk value
+  and passes it to `update_tool_quality(rating_value=..., rating_count=...,
+  rating_source=...)`.
+- **Mapping coverage.** `kg.quality.mapping_coverage(graph, tool_id)` is the
+  share of the tool's mappings that the Mapper typed successfully
+  (status `mapped`, `repaired` or `drift_remapped`), multiplied by
+  `0.5 + 0.5 * mean confidence`. The onboarding path computes the same number
+  from the mapping result, because the unmapped fields are never written to the
+  graph.
+
+`ToolQualityProfile.is_executable` is true when the tier is `free` and the
+access requirement is `keyless`. A known licence is only required when the
+caller asks for it, which is the same default the Client policy uses
+(`AB_REQUIRE_KNOWN_LICENCE=false`).
+
 ## References
 
 - Store and write path: `src/agent_bazaar/kg/store.py`
 - Queries: `src/agent_bazaar/kg/queries.py`
+- Quality profile and offering triples: `src/agent_bazaar/kg/quality.py`
 - Loader: `src/agent_bazaar/kg/loader.py`
 - Models: `src/agent_bazaar/models.py`
 - Shapes: `src/agent_bazaar/ontology/shapes.ttl`
 - Validation: `src/agent_bazaar/ontology/validator.py`
 - Seed script: `scripts/seed_graph.py`
-- Tests: `tests/test_kg_store.py`, `tests/test_kg_queries.py`
+- Tests: `tests/test_kg_store.py`, `tests/test_kg_queries.py`,
+  `tests/test_kg_quality.py`
 - Application name mapping: `app/integration/canonical.py`
+- Sourcing and reasoning: [api-sourcing-and-reasoning.md](api-sourcing-and-reasoning.md)

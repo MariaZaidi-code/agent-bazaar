@@ -22,6 +22,7 @@ data/cache/
 data/specs/*
 !data/specs/seed/
 !data/specs/README.md
+!data/specs/probe_set.json
 data/vectors/
 data/memory/
 data/staging/

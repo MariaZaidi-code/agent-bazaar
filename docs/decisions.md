@@ -1,9 +1,10 @@
 # Decisions and known limitations
 
 Status: accepted decisions recorded on 2026-10-20 for the Week 1-2 knowledge
-layer and Mapper. Each entry states the context, the decision, alternatives
-considered, consequences, and the evidence in this repository. Later changes
-should add a new entry rather than rewrite history.
+layer and Mapper, and on 2026-10-21 for the API sourcing, quality profiling and
+free-first reasoning work. Each entry states the context, the decision,
+alternatives considered, consequences, and the evidence in this repository. Later
+changes should add a new entry rather than rewrite history.
 
 ## ADR-001: One RDF graph with SHACL-validated writes
 
@@ -386,6 +387,243 @@ mapping enum but is never assigned.
 **Evidence.** `mapper/agent.py:256-364`, `pipeline.py:110-141`,
 `tests/test_end_to_end.py`.
 
+## ADR-016: The free-first tier partition is a sort key, not a factor
+
+**Context.** Proposal Section 7 and NFR1 require that the marketplace prefers
+free APIs and never spends money on calls. The commercial tier of a candidate
+is one input among several (relevance, trust, documentation quality, mapping
+coverage, rating), and a weighted factor cannot express "a free tool is ranked
+above a paid one" because any finite weight can be outweighed by a large
+relevance or trust value.
+
+**Decision.** The pricing tier is a **partition** applied before the score:
+`sort key = (tier_rank, -score, tool_id)` with the canonical order
+`free > freemium > paid > unknown`. The score inside a tier remains
+`relevance x trust x quality x rating factor`. `pricing_policy="ignore"`
+removes the partition, and `tier_order` is configurable.
+
+**Alternatives.** A pricing multiplier or a large additive bonus (rejected:
+both can be outweighed, and the behaviour depends on the scale of the other
+factors). Sorting only by score and filtering the paid tools out of the list
+(rejected: the proposal wants paid tools catalogued and visible). Lexicographic
+sorting on a hand-written list of tool ids (rejected: not a policy, and it
+would not generalise to new listings).
+
+**Consequences.** A paid tool with the strongest raw score in a task still
+sits behind every free candidate, which is the behaviour the proposal asks
+for. The partition also means a wrongly classified tool is badly placed: a
+free tool classified as `unknown` loses to every classified tool, so the
+curated override file matters. The measured effect on the 48-task ranking
+dataset: the free-first rate is 1.0000 with the partition and 0.3542 without
+it, and the tier separation accuracy is 1.0000 against 0.2292.
+
+**Evidence.** `app/agents/ranking_policy.py` (`tier_rank`, `rank_candidates`),
+`app/evaluation/run_ranking.py` (`no_tier` ablation),
+`app/evaluation/data/ranking_tasks.jsonl`, `docs/api-sourcing-and-reasoning.md`.
+
+## ADR-017: Paid tools are catalogued but never executed
+
+**Context.** The marketplace should show what exists, including APIs that cost
+money, but the project must not incur costs and must not call a service whose
+provider did not hand over a credential. A paid API and a keyed API also fail
+for different reasons: one for a commercial reason, one for a missing secret.
+
+**Decision.** The graph, the manifest and the shortlist carry paid, freemium
+and keyed tools. The executability gate is a boolean on stored facts: a tool may
+be executed only when it is free **and** keyless (and, when
+`require_known_licence` is enabled, when its licence is known). A
+non-executable candidate keeps its position in the shortlist and carries the
+reason `not executable: <tier> tier` or `not executable: requires an api key`.
+The composition step and the substitution path both apply the gate, so a
+non-executable candidate is never called. A `paid_key` access requirement
+distinguishes a keyed service that also sells a paid plan from a free service
+that merely needs a key.
+
+**Alternatives.** Hiding paid tools entirely (rejected: the proposal asks for
+a catalogue, and hiding them removes the reason a developer would look). Let
+the ranking decide and call whatever wins (rejected: violates NFR1). Make the
+gate an LLM decision (rejected: the gate is a comparison of two stored strings
+and must be deterministic).
+
+**Consequences.** The candidate list is honest about what exists while the
+project stays free of paid calls. A task whose only free candidates need a
+key fails with an explicit reason instead of silently calling a keyed service.
+The measured executable-top rate on the ranking dataset is 0.9583: two tasks
+have a free but keyed candidate on top, and the Client skips it and continues
+down the shortlist.
+
+**Evidence.** `app/agents/ranking_policy.py` (`is_executable`),
+`app/agents/client.py` (`_compose`, `_recover`, `_not_executable_reason`),
+`src/agent_bazaar/kg/quality.py` (`is_executable`),
+`src/agent_bazaar/ingestion/listing_metadata.py` (access requirement),
+`tests/test_ranking_policy.py`.
+
+## ADR-018: Ratings come from our own trust registry, never from a marketplace
+
+**Context.** A candidate's reputation could be taken from a public directory,
+a marketplace listing or an API review site. Such a number is not reproducible,
+is not attributable, cannot be recomputed by a reviewer, and in a marketplace
+context it can be gamed. The project also needs a rating that cannot be moved
+by one review.
+
+**Decision.** Ratings are produced by this project's own trust registry and
+stored on the offering as `ab:ratingValue`, `ab:ratingCount` and
+`ab:ratingSource`. The stored value is shrunk towards a Beta prior:
+`kg.quality.shrunk_rating(sum, count)` computes `(sum + 0.5 * 2) / (count + 2)`
+with a confidence of `count / (count + 2)`, and the caller passes the result to
+`KgStore.update_tool_quality(rating_value=..., rating_count=...,
+rating_source=...)`. The ranking factor ignores the rating below
+`min_rating_count` (default 3) and never drops below `rating_floor` (default
+0.5), so one review cannot move the order and a badly rated tool stays visible
+behind a better one. Ratings are never scraped from a marketplace or a review
+site.
+
+**Alternatives.** Scraping an external rating (rejected: not reproducible, not
+attributable, and outside the trust registry the project already owns).
+Using the raw average without a prior (rejected: a single review moves the
+order). Dropping ratings from the score entirely (rejected: the trust registry
+already produces the evidence; only the weighting would be lost).
+
+**Consequences.** The rating starts cold in the corpus: the 98 corpus documents
+carry no rating and the committed graph artifact was built before the offering
+extension, so the factor is neutral for every corpus tool and the policy
+currently ranks on relevance, trust, quality and tier. The application's local
+tool catalogue does carry curated ratings for its 9 providers, so the factor is
+engaged there. Nothing in this repository wires the trust registry's rating
+aggregate into `update_tool_quality()` yet, so those catalogue values are
+curated rather than computed. The shrinkage, the minimum count and the floor
+are implemented and exercised by the `no_rating` ablation, which moves the MRR
+from 1.0000 to 0.9896 on the 48-task dataset. A tool without a rating is
+treated as neutral, not as bad.
+
+**Evidence.** `src/agent_bazaar/kg/quality.py` (`shrunk_rating`),
+`app/agents/ranking_policy.py` (`rating_factor`),
+`src/agent_bazaar/kg/store.py` (`update_tool_quality`),
+`app/evaluation/run_ranking.py` (`no_rating` ablation),
+`app/core/trust_registry.py`.
+
+## ADR-019: Cross-node invariants are enforced as deterministic rule checks
+
+**Context.** SHACL shapes validate one node against its own class. Several
+invariants of the new offering layer span nodes: a tool must not have two
+offerings, an offering's tier and access requirement must come from the same
+extraction, the facts of a tool must be consistent with the mappings of that
+tool. Some of these are expressible as shapes (`ab:ToolOfferingShape` allows at
+most one `ab:hasOffering`); others need a rule.
+
+**Decision.** Keep the per-node constraints in `shapes.ttl` and express every
+cross-node invariant as a deterministic rule check in Python that runs beside
+the shape validation, exactly as ADR-011 did for the unit-family and
+mapping-unit checks. The rule is a comparison of stored facts with a defined
+outcome, is covered by a test, and never depends on a model. The write path
+commits only when the shapes and the rules both pass, so a rejected candidate
+leaves the current graph untouched.
+
+**Alternatives.** Express every invariant as a SPARQL-constrained SHACL shape
+(rejected: the per-target validation cost is exactly what ADR-011 moved away
+from). Validate only on save rather than on every write (rejected: an invalid
+graph would then exist in memory). Let the Mapper or the policy repair the
+inconsistency silently (rejected: the correction must be visible and the
+graph must stay reproducible).
+
+**Consequences.** A violation is reported with the offending node instead of
+corrupting the graph, and the same rule runs in the corpus builder, in the
+Mapper path and in the evaluation. The cost is that the invariant set is split
+between two files, so a new cross-node rule needs both a shape and a rule and
+a test for each.
+
+**Evidence.** `src/agent_bazaar/ontology/shapes.ttl` (`ab:OfferingShape`,
+`ab:ToolOfferingShape`), `src/agent_bazaar/ontology/validator.py`,
+`src/agent_bazaar/kg/store.py` (`_commit`, `_write_offering`),
+`src/agent_bazaar/kg/quality.py`, `tests/test_kg_quality.py`.
+
+## ADR-020: The commercial facts are a versioned upper-level extension
+
+**Context.** The upper ontology was frozen at the end of Week 2 with twelve
+classes and the domain layer was frozen with 60 curated concepts. The
+commercial, access, reputation and documentation facts of a tool need a home in
+the graph, but reopening the frozen layer would invalidate the ontology
+artifacts, the shapes and the evaluation that were built on top of it.
+
+**Decision.** Add the facts as a versioned **upper-level extension** that
+leaves the frozen layer alone: one new class `ab:Offering`, one new object
+property `ab:hasOffering` with the domain `ab:Tool` and the range
+`ab:Offering`, eighteen new datatype properties
+(`ab:pricingTier`, `ab:accessRequirement`, `ab:priceAmount`,
+`ab:priceCurrency`, `ab:rateLimit`, `ab:probeBudgetPerMinute`,
+`ab:ratingValue`, `ab:ratingCount`, `ab:ratingSource`, `ab:docQuality`,
+`ab:docSubScores`, `ab:mappingCoverage`, `ab:licence`, `ab:termsUrl`,
+`ab:provenance`, `ab:lastSeen`, `ab:tierEvidence`, `ab:accessEvidence`), and two
+new shapes (`ab:OfferingShape`, `ab:ToolOfferingShape`). The 60-concept domain
+layer and the minimum shape set are unchanged. A tool has at most one offering.
+
+**Alternatives.** Reopen the frozen upper layer (rejected: the freeze is a
+deliverable and the domain artifacts depend on it). Put the facts on the tool
+node itself (rejected: the offering is a separate fact bundle with its own
+identity and lifetime, and one offering per tool keeps the link explicit).
+Keep the facts outside the graph, in the manifest only (rejected: the Client
+reads the graph, and a second source of truth would drift).
+
+**Consequences.** The ontology artifacts are extended rather than rewritten, so
+the freeze still holds and the existing evaluation stays valid. The new class
+is upper level and carries no domain concepts, which means the domain layer
+needs no migration. A tool whose access requirement is unknown keeps **no**
+offering at all, so the graph never asserts a commercial fact that was not
+established. The extension is versioned in the source comment; there is still
+no committed graph migration mechanism, so rebuilding from
+`scripts/seed_graph.py` remains the reset path.
+
+**Evidence.** `src/agent_bazaar/ontology/upper.ttl` (offering section),
+`src/agent_bazaar/ontology/shapes.ttl` (`ab:OfferingShape`,
+`ab:ToolOfferingShape`), `src/agent_bazaar/kg/quality.py`
+(`offering_iri`, `offering_triples`), `src/agent_bazaar/kg/store.py`
+(`_write_offering`), `docs/graph-schema.md`.
+
+## ADR-021: The corpus manifest carries the facts, and a curated file overrides them
+
+**Context.** The corpus builder had to answer three questions that the old
+manifest did not hold: what does the API cost, does it need a credential, and
+what do its terms say. The answers come from the document itself, so they must
+be reproducible; but a rule that reads a pricing page badly would then be
+frozen into the corpus, and a human who checked the provider's terms page knows
+better than the rule.
+
+**Decision.** Two artefacts, two responsibilities:
+
+- **Manifest v2** (`scripts/fetch_specs.py`, `MANIFEST_VERSION = 2`) records the
+  extracted facts of every document next to the descriptive fields, plus
+  `source`, `selection_rule_version` and `licence_reviewed_at`. It is
+  regenerated deterministically by `--metadata-only` and `--refresh`, and the
+  refresh writes a diff (`added`, `removed`, `changed`, `version_changed`) to
+  `data/out/logs/corpus_refresh.json`.
+- **`data/overrides/pricing.yaml`** holds the human layer. A curated entry
+  always wins over the extracted value and carries `reviewer`, `checked_at` and
+  `note`. The rules stay in code, the human decisions stay in a file, and the
+  manifest records which entries were reviewed through `licence_reviewed_at`.
+
+**Alternatives.** One combined file (rejected: the extracted facts would be
+hand-editable, and the diff between rule output and human decision would be
+lost). Curated values only in the graph (rejected: the corpus must be
+reproducible without the graph). Storing the rules as configuration (rejected:
+the rules are code with tests; a configuration file would make them
+unreviewable).
+
+**Consequences.** The corpus is reproducible from a seed, and every deviation
+from the rule output is visible and attributable. The upstream corpus changes
+over time, so the manifest and the refresh report are the record of what was
+seen when. `licence_reviewed_at` is empty for every current entry, because no
+human has signed the licences off; the facts are recorded, not approved.
+Because the rules treat an optional credential parameter as keyless, the
+earlier classification of `ideal-postcodes-co-uk` was wrong and the curated
+file corrects it to `freemium`/`paid_key`; the same correction removed five
+tools from the live probe set.
+
+**Evidence.** `scripts/fetch_specs.py` (`MANIFEST_VERSION`, `manifest_entry`,
+`diff_manifests`, `refresh_report`, `select_seed_files`),
+`data/overrides/pricing.yaml`, `data/out/logs/corpus_refresh.json`,
+`data/specs/probe_set.json`, `src/agent_bazaar/ingestion/listing_metadata.py`,
+`tests/test_corpus_sources.py`.
+
 ## Known limitations and open items
 
 | Item | Impact | Current status / next action |
@@ -410,6 +648,12 @@ mapping enum but is never assigned.
 | No controlled performance benchmark | 0.37 s claim is indicative only | Re-measure with a fixed script and report variance |
 | LLM depends on external quota | Demo can fall back silently | Keep cache/offline path; log the actual proposer (the `source` field currently labels fallback mappings `llm` when `use_llm` is true) |
 | PDF/DOCX are chunk-only | Not field-mapped | Document limitation; add extraction before claiming coverage |
+| 89 of the 98 corpus documents have an unknown pricing tier | The tier partition cannot place them | Review the terms pages of the most-used candidates and add curated overrides |
+| Only 11 corpus documents are keyless | The live probe set is one tool short of the 12 to 15 the proposal asks for | Add keyless documents to the corpus; no extraction rule can close the gap |
+| No rating exists for any corpus tool | The rating factor is neutral for every corpus tool; the application's catalogue does carry curated ratings | Feed the trust registry's aggregate into `ab:ratingValue` and `ab:ratingCount` |
+| Every `data/overrides/pricing.yaml` entry has an empty `reviewer` | The licence facts are recorded but not approved; `licence_reviewed_at` is empty throughout the manifest | Name a reviewer per entry and re-check the provider's terms |
+| `kg.quality.is_executable()` does not require a known licence by default | The `executable_tools()` query and its docstring disagree, and `tests/test_kg_quality.py::test_executable_tools_lists_only_free_keyless_tools` fails on the current checkout | Decide whether the knowledge layer requires a licence or not, then align the code, the docstring and the test |
+| `docs/architecture.md` still describes the score as `relevance x trust` | The document predates the free-first policy | Update the ranking section to the tier partition and the quality factors |
 
 ## References
 
@@ -418,4 +662,5 @@ mapping enum but is never assigned.
 - [ontology.md](ontology.md)
 - [graph-schema.md](graph-schema.md)
 - [mapper-protocol.md](mapper-protocol.md)
+- [api-sourcing-and-reasoning.md](api-sourcing-and-reasoning.md)
 - [evaluation-plan.md](evaluation-plan.md)

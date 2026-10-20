@@ -4,8 +4,10 @@ import time
 from collections.abc import Sequence
 from typing import Any
 
+from app.agents import ranking_policy
 from app.agents.auditor_stub import AuditorStub
 from app.agents.planner import TaskPlanner
+from app.agents.ranking_policy import CandidateFacts, RankedCandidate, RankingPolicy
 from app.config import Settings
 from app.core.circuit_breaker import CircuitBreakerRegistry
 from app.core.message_bus import MessageBus
@@ -93,6 +95,23 @@ class ClientAgent:
         self.planner = planner
         self.bus = bus
         self.traces = traces
+
+    def ranking_policy(self) -> RankingPolicy:
+        """Build the free-first ranking policy from the settings."""
+        tier_order = list(self.settings.tier_order)
+        if "unknown" not in tier_order:
+            tier_order.append("unknown")
+        return RankingPolicy(
+            pricing_policy=self.settings.pricing_policy,
+            tier_order=tuple(tier_order),
+            doc_quality_weight=self.settings.doc_quality_weight,
+            mapping_coverage_weight=self.settings.mapping_coverage_weight,
+            chain_fit_weight=self.settings.chain_fit_weight,
+            min_rating_count=self.settings.min_rating_count,
+            rating_floor=self.settings.rating_floor,
+            contradicted_penalty=self.settings.contradicted_penalty,
+            require_known_licence=self.settings.require_known_licence,
+        )
 
     async def run(self, task: str) -> TaskResult:
         task_id = new_id("task")
@@ -322,22 +341,6 @@ class ClientAgent:
                     ],
                 )
             )
-        self._trace(
-            task_id,
-            "graphrag_shortlist",
-            "client",
-            f"Retrieved {len(retrieved)} candidate(s) for {subgoal.capability}; "
-            f"{len(candidates)} survived the filter.",
-            {
-                "subgoal_id": subgoal.id,
-                "query": query,
-                "retrieved": [
-                    {"tool_id": tool.id, "relevance": relevance, "reasons": reasons}
-                    for tool, relevance, reasons in retrieved
-                ],
-                "filtered": filtered,
-            },
-        )
         if self.settings.use_auditor and candidates:
             verify_started = time.perf_counter()
             await self._publish(
@@ -402,33 +405,10 @@ class ClientAgent:
             candidate.demoted = bool(trust_state.get("demoted", False))
             key = self.breakers.link_key("client", provider_id)
             candidate.breaker_state = self.breakers.state(key)
-            score = candidate.relevance * candidate.trust
-            if self.settings.use_auditor and candidate.claim_label == ClaimLabel.contradicted:
-                score *= self.settings.contradicted_penalty
-                candidate.reasons.append("contradicted claim penalty applied")
-            if self.settings.use_trust and candidate.demoted:
-                score = 0.0
-                candidate.eligible = False
-                candidate.reasons.append("provider demoted by the trust registry")
-            if (
-                self.settings.use_circuit_breaker
-                and candidate.breaker_state == BreakerStatus.open
-            ):
-                score = 0.0
-                candidate.eligible = False
-                candidate.reasons.append("circuit breaker open")
-            if (
-                self.settings.use_auditor
-                and self.settings.exclude_contradicted
-                and candidate.claim_label == ClaimLabel.contradicted
-            ):
-                candidate.eligible = False
-                score = 0.0
-                candidate.reasons.append("contradicted tools excluded by configuration")
-            candidate.score = round(score, 4)
-            candidate.reasons.append(f"trust {candidate.trust:.2f}")
             candidate.reasons.append(f"claim label {candidate.claim_label.value}")
-        candidates.sort(key=lambda item: (item.eligible, item.score), reverse=True)
+        policy = self.ranking_policy()
+        facts = self.candidate_facts(candidates, subgoal, subgoals)
+        candidates = self._apply_policy(candidates, facts, policy)
         for rank, candidate in enumerate(candidates, start=1):
             candidate.rank = rank
         candidate_list = CandidateList(
@@ -443,6 +423,53 @@ class ClientAgent:
         await self._publish(candidate_list, task_id)
         self._trace(
             task_id,
+            "graphrag_shortlist",
+            "client",
+            f"Retrieved {len(retrieved)} candidate(s) for {subgoal.capability}; "
+            f"{len(candidates)} survived the filter.",
+            {
+                "subgoal_id": subgoal.id,
+                "query": query,
+                "retrieved": [
+                    {"tool_id": tool.id, "relevance": relevance, "reasons": reasons}
+                    for tool, relevance, reasons in retrieved
+                ],
+                "filtered": filtered,
+                "free_first_compliance": ranking_policy.free_first_compliance(
+                    facts, policy
+                ),
+                "policy": {
+                    "pricing_policy": policy.pricing_policy,
+                    "tier_order": list(policy.tier_order),
+                    "doc_quality_weight": policy.doc_quality_weight,
+                    "mapping_coverage_weight": policy.mapping_coverage_weight,
+                    "chain_fit_weight": policy.chain_fit_weight,
+                    "min_rating_count": policy.min_rating_count,
+                    "rating_floor": policy.rating_floor,
+                    "contradicted_penalty": policy.contradicted_penalty,
+                    "require_known_licence": policy.require_known_licence,
+                },
+                "ranked": [
+                    {
+                        "tool_id": item.tool.id,
+                        "name": item.tool.name,
+                        "pricing_tier": item.tool.pricing_tier,
+                        "access_requirement": item.tool.access_requirement,
+                        "score": item.score,
+                        "relevance": item.relevance,
+                        "trust": item.trust,
+                        "claim_label": item.claim_label.value,
+                        "eligible": item.eligible,
+                        "executable": self._executable(item.tool, policy),
+                        "breaker": item.breaker_state.value,
+                        "reasons": item.reasons,
+                    }
+                    for item in candidates
+                ],
+            },
+        )
+        self._trace(
+            task_id,
             "candidate_ranking",
             "client",
             f"Ranked {len(candidates)} candidate(s) for {subgoal.capability}.",
@@ -455,6 +482,8 @@ class ClientAgent:
                         "score": item.score,
                         "relevance": item.relevance,
                         "trust": item.trust,
+                        "pricing_tier": item.tool.pricing_tier,
+                        "executable": self._executable(item.tool, policy),
                         "claim_label": item.claim_label.value,
                         "eligible": item.eligible,
                         "breaker": item.breaker_state.value,
@@ -464,6 +493,164 @@ class ClientAgent:
             },
         )
         return candidate_list
+
+    def rank_candidates(
+        self,
+        candidates: list[Candidate],
+        subgoal: SubGoal,
+        subgoals: list[SubGoal],
+        policy: RankingPolicy | None = None,
+    ) -> list[Candidate]:
+        """Rank the candidates free-first and attach the policy reasons to them."""
+        policy = policy or self.ranking_policy()
+        facts = self.candidate_facts(candidates, subgoal, subgoals)
+        return self._apply_policy(candidates, facts, policy)
+
+    def candidate_facts(
+        self,
+        candidates: list[Candidate],
+        subgoal: SubGoal,
+        subgoals: list[SubGoal],
+    ) -> list[CandidateFacts]:
+        """Collect the stored facts the ranking policy weighs for the candidates."""
+        return [
+            self._candidate_facts(candidate, subgoal, subgoals) for candidate in candidates
+        ]
+
+    def _apply_policy(
+        self,
+        candidates: list[Candidate],
+        facts: list[CandidateFacts],
+        policy: RankingPolicy,
+    ) -> list[Candidate]:
+        """Sort the candidates with the policy and attach the policy reasons to them."""
+        ranked = ranking_policy.rank_candidates(facts, policy)
+        by_id = {candidate.tool.id: candidate for candidate in candidates}
+        ordered: list[Candidate] = []
+        for item in ranked:
+            candidate = by_id[item.tool_id]
+            score = item.score
+            eligible = item.eligible
+            if (
+                self.settings.use_auditor
+                and self.settings.exclude_contradicted
+                and candidate.claim_label == ClaimLabel.contradicted
+            ):
+                score = 0.0
+                eligible = False
+            candidate.score = score
+            candidate.eligible = eligible
+            candidate.reasons = self._policy_reasons(candidate, item, policy)
+            ordered.append(candidate)
+        return ordered
+
+    def _candidate_facts(
+        self,
+        candidate: Candidate,
+        subgoal: SubGoal,
+        subgoals: list[SubGoal],
+    ) -> CandidateFacts:
+        """Collect the stored facts the ranking policy weighs for one candidate."""
+        tool = candidate.tool
+        if self._has_profile(tool):
+            doc_quality = tool.doc_quality
+            mapping_coverage = tool.mapping_coverage
+            chain_fit = self._chain_fit(tool, subgoal, subgoals)
+        else:
+            doc_quality = 1.0
+            mapping_coverage = 1.0
+            chain_fit = 1.0
+        return CandidateFacts(
+            tool_id=tool.id,
+            relevance=candidate.relevance,
+            trust=candidate.trust,
+            pricing_tier=tool.pricing_tier,
+            access_requirement=tool.access_requirement,
+            rating_value=tool.rating_value,
+            rating_count=tool.rating_count,
+            doc_quality=doc_quality,
+            mapping_coverage=mapping_coverage,
+            chain_fit=chain_fit,
+            claim_label=candidate.claim_label.value.lower(),
+            demoted=bool(candidate.demoted) and self.settings.use_trust,
+            breaker_open=(
+                self.settings.use_circuit_breaker
+                and candidate.breaker_state == BreakerStatus.open
+            ),
+            licence=tool.licence,
+        )
+
+    def _policy_reasons(
+        self,
+        candidate: Candidate,
+        item: RankedCandidate,
+        policy: RankingPolicy,
+    ) -> list[str]:
+        """Combine the retrieval reasons with the reasons of the ranking policy."""
+        reasons = list(candidate.reasons)
+        executable = self._executable(candidate.tool, policy)
+        for reason in item.reasons:
+            if executable and reason.startswith("not executable:"):
+                continue
+            reasons.append(reason)
+        if not executable and not any(
+            reason.startswith("not executable:") for reason in reasons
+        ):
+            reasons.append(self._not_executable_reason(candidate.tool))
+        if (
+            self.settings.use_auditor
+            and self.settings.exclude_contradicted
+            and candidate.claim_label == ClaimLabel.contradicted
+        ):
+            reasons.append("contradicted tools excluded by configuration")
+        return reasons
+
+    def _chain_fit(
+        self,
+        tool: ToolSpec,
+        subgoal: SubGoal,
+        subgoals: list[SubGoal],
+    ) -> float:
+        """Share of the required inputs the chain can supply for this tool."""
+        required = [item for item in tool.inputs if item.required]
+        if not required:
+            return 1.0
+        available = self._available_concepts(subgoal, subgoals)
+        satisfied = 0
+        for item in required:
+            if item.name in subgoal.slots:
+                satisfied += 1
+                continue
+            if any(
+                self.ontology.check_link(concept, None, item.concept, None).valid
+                for concept in available
+            ):
+                satisfied += 1
+        return round(satisfied / len(required), 6)
+
+    def _executable(self, tool: ToolSpec, policy: RankingPolicy) -> bool:
+        """Free and keyless tools may run; a tool without a profile keeps the old behaviour."""
+        if not self._has_profile(tool):
+            return True
+        facts = CandidateFacts(
+            tool_id=tool.id,
+            pricing_tier=tool.pricing_tier,
+            access_requirement=tool.access_requirement,
+            licence=tool.licence,
+        )
+        return ranking_policy.is_executable(facts, policy)
+
+    @staticmethod
+    def _has_profile(tool: ToolSpec) -> bool:
+        """True when the tool carries a curated commercial profile."""
+        return tool.pricing_tier != "unknown" or tool.access_requirement != "unknown"
+
+    @staticmethod
+    def _not_executable_reason(tool: ToolSpec) -> str:
+        """The reason a tool is not executed, as the policy words it."""
+        if tool.pricing_tier != "free":
+            return f"not executable: {tool.pricing_tier} tier"
+        return "not executable: requires an api key"
 
     def _compose(
         self,
@@ -477,13 +664,19 @@ class ClientAgent:
         ordered = self._topological_order(subgoals)
         candidates_by_subgoal = {item.subgoal_id: item.candidates for item in candidate_lists}
         steps_by_subgoal: dict[str, PlanStep] = {}
+        policy = self.ranking_policy()
         for subgoal in ordered:
             candidates = candidates_by_subgoal.get(subgoal.id, [])
-            eligible = [item for item in candidates if item.eligible]
+            eligible = [
+                item
+                for item in candidates
+                if item.eligible and self._executable(item.tool, policy)
+            ]
             if not eligible:
                 reason = (
                     f"No eligible tool for {subgoal.capability}. "
-                    "Every candidate was filtered, demoted or blocked by an open breaker."
+                    "Every candidate was filtered, demoted, blocked by an open breaker "
+                    "or is not executable."
                 )
                 errors.append(reason)
                 step = PlanStep(
@@ -503,7 +696,16 @@ class ClientAgent:
             selected: Candidate | None = None
             selected_bindings: dict[str, str] = {}
             selected_checks: list[LinkCheck] = []
-            rejected: list[dict[str, Any]] = []
+            rejected: list[dict[str, Any]] = [
+                {
+                    "tool_id": item.tool.id,
+                    "binding_errors": [],
+                    "link_errors": [],
+                    "reason": self._not_executable_reason(item.tool),
+                }
+                for item in candidates
+                if not self._executable(item.tool, policy)
+            ]
             for candidate in eligible:
                 dependency_steps = [
                     steps_by_subgoal[dep]
@@ -879,11 +1081,14 @@ class ClientAgent:
             exclude={original_tool, step.tool_id},
         )
         evaluated: list[tuple[float, ToolSpec]] = []
+        policy = self.ranking_policy()
         for tool in candidates:
             if tool.id == original_tool:
                 continue
             provider = self.providers.by_tool(tool.id)
             if provider is None:
+                continue
+            if not self._executable(tool, policy):
                 continue
             if self.settings.use_auditor and ClaimLabel.contradicted in tool.claim_labels():
                 continue

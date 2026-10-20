@@ -1,0 +1,6382 @@
+{
+ "manifest_version": 2,
+ "previous_manifest_version": 1,
+ "selection_rule_version": "seed-selection-v2",
+ "source": "apis-guru",
+ "manifest_path": "data/specs/manifest.json",
+ "overrides": "data/overrides/pricing.yaml",
+ "counts": {
+  "added": 0,
+  "removed": 0,
+  "changed": 98,
+  "version_changed": 98,
+  "previous": 98,
+  "current": 98
+ },
+ "added": [],
+ "removed": [],
+ "changed": {
+  "adyen-com-accountservice.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 1.0
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 20
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "6"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://www.adyen.com/legal/terms-and-conditions"
+   }
+  },
+  "amazonaws-com-appsync.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.57
+   },
+   "licence": {
+    "before": null,
+    "after": "Apache 2.0 License"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 51
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2017-07-25"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://www.apache.org/licenses/"
+   }
+  },
+  "amazonaws-com-inspector.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6969
+   },
+   "licence": {
+    "before": null,
+    "after": "Apache 2.0 License"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 37
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2016-02-16"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://www.apache.org/licenses/"
+   }
+  },
+  "amazonaws-com-kinesisanalytics.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.75
+   },
+   "licence": {
+    "before": null,
+    "after": "Apache 2.0 License"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 20
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2015-08-14"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://www.apache.org/licenses/"
+   }
+  },
+  "amazonaws-com-sdb.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.75
+   },
+   "licence": {
+    "before": null,
+    "after": "Apache 2.0 License"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 20
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2009-04-15"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://www.apache.org/licenses/"
+   }
+  },
+  "apideck-com-pos.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "paid_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5745
+   },
+   "licence": {
+    "before": null,
+    "after": "Apache 2.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 46
+   },
+   "price_amount": {
+    "before": null,
+    "after": 5.0
+   },
+   "price_currency": {
+    "before": null,
+    "after": "USD"
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "freemium"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "9.3.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://www.apache.org/licenses/LICENSE-2.0.html"
+   }
+  },
+  "apisetu-gov-in-biharboard.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5575
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 2
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-bput.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5575
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-civilsupplieskerala.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.565
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-enibandhanjh.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5737
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 3
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-epramanhp.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.7138
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 14
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-godigit.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5631
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 3
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-gujaratvidyapith.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5725
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-hpsssb.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5494
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-hsbte.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5212
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-insvalsura.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5156
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 2
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-lawcollegeandaman.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.4781
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-maxlifeinsurance.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5019
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-mbose.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5487
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 2
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-meark.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5575
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-mizorampolice.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.4919
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-mpmsu.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.4956
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 2
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-negd.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5294
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-statisticsrajasthan.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5425
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 3
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-swavlambancard.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5394
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 2
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-transportga.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 2
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-transportjh.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 2
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-transportmh.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 2
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-transportpy.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 2
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "apisetu-gov-in-vhseker.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5506
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://apisetu.gov.in/terms.php"
+   }
+  },
+  "azure-com-advisor.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6419
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 15
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2017-04-19"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "azure-com-apimanagement-apimnamedvalues.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.705
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 7
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2019-12-01-preview"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "azure-com-automation-credential.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.625
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 5
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2015-10-31"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "azure-com-automation-hybridrunbookworkergroup.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.61
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 4
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2015-10-31"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "azure-com-azsadmin-alert.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5997
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 4
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2016-05-01"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "azure-com-azsadmin-fabric.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.4369
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2016-05-01"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "azure-com-azsadmin-resourcehealth.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.61
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 2
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2016-05-01"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "azure-com-network-networkwatcher.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.875
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 24
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2019-07-01"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "azure-com-policyinsights-remediations.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5563
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 24
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2019-07-01"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "azure-com-powerbiembedded.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5971
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 12
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2016-01-29"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "azure-com-recoveryservices-vaultusages.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.415
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2016-06-01"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "azure-com-security-automations.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6388
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 6
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2019-01-01-preview"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "azure-com-security-discoveredsecuritysolutions.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5685
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 3
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2015-06-01-preview"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "azure-com-sql-databasevulnerabilityassessments.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6644
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 4
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2017-03-01-preview"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "azure-com-web-recommendations.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6171
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 15
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2018-02-01"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "azure-com-windowsesu.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6194
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 7
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2019-09-16-preview"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "balldontlie-io.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.355
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 7
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "citycontext-com.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5297
+   },
+   "licence": {
+    "before": null,
+    "after": "unknown"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 3
+   },
+   "price_amount": {
+    "before": null,
+    "after": 0.0
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "free"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": "not published in the document"
+   },
+   "seed": {
+    "before": null,
+    "after": true
+   },
+   "seed_reason": {
+    "before": null,
+    "after": "carried over from the previous seed corpus"
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "crediwatch-com-covid19.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.4525
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 5
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.3.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "cybertaxonomy-eu.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5128
+   },
+   "licence": {
+    "before": null,
+    "after": "Mozilla Public License 2.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 2
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://www.mozilla.org/MPL/2.0/"
+   }
+  },
+  "deutschebahn-com-fahrplan.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6076
+   },
+   "licence": {
+    "before": null,
+    "after": "DB Data Portal"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 4
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "free"
+   },
+   "probe_budget_per_minute": {
+    "before": null,
+    "after": 10
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": "10 requests per minute"
+   },
+   "seed": {
+    "before": null,
+    "after": true
+   },
+   "seed_reason": {
+    "before": null,
+    "after": "keyless + free tier; preferred seed file; keyword score 0 (no keyword match)"
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://data.deutschebahn.com/pages/nutzungsbedingungen"
+   }
+  },
+  "deutschebahn-com-flinkster.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.75
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 10
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "free"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://developer.deutschebahn.com/store/"
+   }
+  },
+  "ebay-com-sell-logistics.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.89
+   },
+   "licence": {
+    "before": null,
+    "after": "eBay API License Agreement"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 6
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1_beta.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://go.developer.ebay.com/api-license-agreement"
+   }
+  },
+  "edrv-io.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.4213
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 57
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "europeana-eu.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.7
+   },
+   "licence": {
+    "before": null,
+    "after": "API terms of use"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 9
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "version unknown"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://www.europeana.eu/en/rights/api-terms-of-use"
+   }
+  },
+  "geodatasource-com.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6119
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "gisgraphy-com.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.8808
+   },
+   "licence": {
+    "before": null,
+    "after": "LGPL license V3."
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 6
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "free"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "seed": {
+    "before": null,
+    "after": true
+   },
+   "seed_reason": {
+    "before": null,
+    "after": "carried over from the previous seed corpus"
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "4.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://www.gisgraphy.com/license.html"
+   }
+  },
+  "googleapis-com-chat.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.7555
+   },
+   "licence": {
+    "before": null,
+    "after": "Creative Commons Attribution 3.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 8
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://creativecommons.org/licenses/by/3.0/"
+   }
+  },
+  "googleapis-com-civicinfo.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.7104
+   },
+   "licence": {
+    "before": null,
+    "after": "Creative Commons Attribution 3.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 5
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v2"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://creativecommons.org/licenses/by/3.0/"
+   }
+  },
+  "googleapis-com-clouddebugger.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.7319
+   },
+   "licence": {
+    "before": null,
+    "after": "Creative Commons Attribution 3.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 8
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v2"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://creativecommons.org/licenses/by/3.0/"
+   }
+  },
+  "googleapis-com-datastore.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6494
+   },
+   "licence": {
+    "before": null,
+    "after": "Creative Commons Attribution 3.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 2
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1beta1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://creativecommons.org/licenses/by/3.0/"
+   }
+  },
+  "googleapis-com-documentai.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.8157
+   },
+   "licence": {
+    "before": null,
+    "after": "Creative Commons Attribution 3.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 21
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1beta3"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://creativecommons.org/licenses/by/3.0/"
+   }
+  },
+  "googleapis-com-essentialcontacts.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.655
+   },
+   "licence": {
+    "before": null,
+    "after": "Creative Commons Attribution 3.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 7
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://creativecommons.org/licenses/by/3.0/"
+   }
+  },
+  "googleapis-com-fcmdata.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6263
+   },
+   "licence": {
+    "before": null,
+    "after": "Creative Commons Attribution 3.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1beta1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://creativecommons.org/licenses/by/3.0/"
+   }
+  },
+  "googleapis-com-my-business.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.7634
+   },
+   "licence": {
+    "before": null,
+    "after": "Creative Commons Attribution 3.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 50
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v4"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://creativecommons.org/licenses/by/3.0/"
+   }
+  },
+  "googleapis-com-mybusinessverifications.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.7094
+   },
+   "licence": {
+    "before": null,
+    "after": "Creative Commons Attribution 3.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 6
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://creativecommons.org/licenses/by/3.0/"
+   }
+  },
+  "googleapis-com-recommender.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.685
+   },
+   "licence": {
+    "before": null,
+    "after": "Creative Commons Attribution 3.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 9
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1beta1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://creativecommons.org/licenses/by/3.0/"
+   }
+  },
+  "googleapis-com-replicapool.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.7765
+   },
+   "licence": {
+    "before": null,
+    "after": "Creative Commons Attribution 3.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 10
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1beta1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://creativecommons.org/licenses/by/3.0/"
+   }
+  },
+  "googleapis-com-servicedirectory.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.7491
+   },
+   "licence": {
+    "before": null,
+    "after": "Creative Commons Attribution 3.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 14
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1beta1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://creativecommons.org/licenses/by/3.0/"
+   }
+  },
+  "googleapis-com-streetviewpublish.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.8269
+   },
+   "licence": {
+    "before": null,
+    "after": "Creative Commons Attribution 3.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 14
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://creativecommons.org/licenses/by/3.0/"
+   }
+  },
+  "googleapis-com-transcoder.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.7231
+   },
+   "licence": {
+    "before": null,
+    "after": "Creative Commons Attribution 3.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 6
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://creativecommons.org/licenses/by/3.0/"
+   }
+  },
+  "googleapis-com-vmmigration.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.7482
+   },
+   "licence": {
+    "before": null,
+    "after": "Creative Commons Attribution 3.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 31
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1alpha1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://creativecommons.org/licenses/by/3.0/"
+   }
+  },
+  "gov-bc-ca-bcdc.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6
+   },
+   "licence": {
+    "before": null,
+    "after": "Open Government License - British Columbia"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 22
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.0.1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61"
+   }
+  },
+  "ideaconsult-net-nanoreg.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5781
+   },
+   "licence": {
+    "before": null,
+    "after": "API available under GNU Lesser General Public License"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 13
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "free"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "4.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://www.gnu.org/licenses/lgpl.html"
+   }
+  },
+  "ideal-postcodes-co-uk.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.8997
+   },
+   "licence": {
+    "before": null,
+    "after": "AGPLv3"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 26
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "freemium"
+   },
+   "probe_budget_per_minute": {
+    "before": null,
+    "after": 1800
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": "free test balance; paid plans are described by the provider"
+   },
+   "seed": {
+    "before": null,
+    "after": true
+   },
+   "seed_reason": {
+    "before": null,
+    "after": "carried over from the previous seed corpus"
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.7.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://terms.ideal-postcodes.co.uk"
+   }
+  },
+  "impala-travel-hotels.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.9273
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 10
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.003"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://impala.travel/terms-and-conditions/"
+   }
+  },
+  "interzoid-com-getzipinfo.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.46
+   },
+   "licence": {
+    "before": null,
+    "after": "Interzoid license"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "seed": {
+    "before": null,
+    "after": true
+   },
+   "seed_reason": {
+    "before": null,
+    "after": "keyless + unknown tier; preferred seed file; keyword score 5 (zip)"
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://www.interzoid.com/license"
+   }
+  },
+  "iptwist-com.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.3975
+   },
+   "licence": {
+    "before": null,
+    "after": "unknown"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": "not published in the document"
+   },
+   "seed": {
+    "before": null,
+    "after": true
+   },
+   "seed_reason": {
+    "before": null,
+    "after": "carried over from the previous seed corpus"
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "miataru-com.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.811
+   },
+   "licence": {
+    "before": null,
+    "after": "Public Domain"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 5
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "seed": {
+    "before": null,
+    "after": true
+   },
+   "seed_reason": {
+    "before": null,
+    "after": "keyless + unknown tier; preferred seed file; keyword score 5 (location)"
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://raw.githubusercontent.com/miataru/miataru-protocol-specification/master/LICENSE"
+   }
+  },
+  "moderatecontent-com.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.2888
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "free"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://www.moderatecontent.com/documentation/terms"
+   }
+  },
+  "ndhm-gov-in-ndhm-hiu.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6934
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 32
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "0.5"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "nexmo-com-pricing.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5416
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 3
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "0.0.3"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "nytimes-com-geo-api.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5594
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "free"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "seed": {
+    "before": null,
+    "after": true
+   },
+   "seed_reason": {
+    "before": null,
+    "after": "carried over from the previous seed corpus"
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "http://developer.nytimes.com/tou"
+   }
+  },
+  "oceandrivers-com.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.3844
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 10
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "parliament-uk-bills.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5675
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 19
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "parliament-uk-search.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.3643
+   },
+   "licence": {
+    "before": null,
+    "after": "Open Parliament Licence"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 3
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "probe_budget_per_minute": {
+    "before": null,
+    "after": 600
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": "10 requests per second"
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "Live"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://www.parliament.uk/site-information/copyright-parliament/open-parliament-licence"
+   }
+  },
+  "sportsdata-io-mlb-v3-projections.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.4675
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 7
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "sportsdata-io-nascar-v2.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.44
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 6
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "staging-ecotaco-com.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "keyless"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.8
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 27
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.0.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "tfl-gov-uk.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.7511
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 84
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "thebluealliance-com.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.6276
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 65
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "3.8.2"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "twilio-com-twilio-autopilot-v1.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.7219
+   },
+   "licence": {
+    "before": null,
+    "after": "Apache 2.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 52
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.42.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://www.apache.org/licenses/LICENSE-2.0.html"
+   }
+  },
+  "twilio-com-twilio-lookups-v2.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5869
+   },
+   "licence": {
+    "before": null,
+    "after": "Apache 2.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.42.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://www.apache.org/licenses/LICENSE-2.0.html"
+   }
+  },
+  "twilio-com-twilio-sync-v1.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.7219
+   },
+   "licence": {
+    "before": null,
+    "after": "Apache 2.0"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 48
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.42.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://www.apache.org/licenses/LICENSE-2.0.html"
+   }
+  },
+  "twitter-com-current.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5452
+   },
+   "licence": {
+    "before": null,
+    "after": "Twitter Developer Agreement and Policy"
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 80
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "2.61"
+   },
+   "terms_url": {
+    "before": null,
+    "after": "https://developer.twitter.com/en/developer-terms/agreement-and-policy.html"
+   }
+  },
+  "va-gov-confirmation.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.7706
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 1
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "probe_budget_per_minute": {
+    "before": null,
+    "after": 60
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": "60 requests per minute"
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "0.0.1"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "vtex-local-pricing-hub.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.8682
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 2
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "1.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  },
+  "warwick-ac-uk-enterobase.json": {
+   "access_requirement": {
+    "before": null,
+    "after": "api_key"
+   },
+   "deprecated_operations": {
+    "before": null,
+    "after": 0
+   },
+   "doc_quality": {
+    "before": null,
+    "after": 0.5917
+   },
+   "licence": {
+    "before": null,
+    "after": ""
+   },
+   "licence_reviewed_at": {
+    "before": null,
+    "after": ""
+   },
+   "manifest_version": {
+    "before": null,
+    "after": 2
+   },
+   "operation_count": {
+    "before": null,
+    "after": 26
+   },
+   "price_currency": {
+    "before": null,
+    "after": ""
+   },
+   "pricing_tier": {
+    "before": null,
+    "after": "unknown"
+   },
+   "rate_limit_policy": {
+    "before": null,
+    "after": ""
+   },
+   "selection_rule_version": {
+    "before": null,
+    "after": "seed-selection-v2"
+   },
+   "source": {
+    "before": null,
+    "after": "apis-guru"
+   },
+   "spec_version": {
+    "before": null,
+    "after": "v2.0"
+   },
+   "terms_url": {
+    "before": null,
+    "after": ""
+   }
+  }
+ },
+ "version_changed": {
+  "adyen-com-accountservice.json": {
+   "spec_version": {
+    "before": "",
+    "after": "6"
+   }
+  },
+  "amazonaws-com-appsync.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2017-07-25"
+   }
+  },
+  "amazonaws-com-inspector.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2016-02-16"
+   }
+  },
+  "amazonaws-com-kinesisanalytics.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2015-08-14"
+   }
+  },
+  "amazonaws-com-sdb.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2009-04-15"
+   }
+  },
+  "apideck-com-pos.json": {
+   "spec_version": {
+    "before": "",
+    "after": "9.3.0"
+   }
+  },
+  "apisetu-gov-in-biharboard.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-bput.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-civilsupplieskerala.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-enibandhanjh.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-epramanhp.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-godigit.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-gujaratvidyapith.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-hpsssb.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-hsbte.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-insvalsura.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-lawcollegeandaman.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-maxlifeinsurance.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-mbose.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-meark.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-mizorampolice.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-mpmsu.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-negd.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-statisticsrajasthan.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-swavlambancard.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-transportga.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-transportjh.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-transportmh.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-transportpy.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "apisetu-gov-in-vhseker.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.0"
+   }
+  },
+  "azure-com-advisor.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2017-04-19"
+   }
+  },
+  "azure-com-apimanagement-apimnamedvalues.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2019-12-01-preview"
+   }
+  },
+  "azure-com-automation-credential.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2015-10-31"
+   }
+  },
+  "azure-com-automation-hybridrunbookworkergroup.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2015-10-31"
+   }
+  },
+  "azure-com-azsadmin-alert.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2016-05-01"
+   }
+  },
+  "azure-com-azsadmin-fabric.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2016-05-01"
+   }
+  },
+  "azure-com-azsadmin-resourcehealth.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2016-05-01"
+   }
+  },
+  "azure-com-network-networkwatcher.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2019-07-01"
+   }
+  },
+  "azure-com-policyinsights-remediations.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2019-07-01"
+   }
+  },
+  "azure-com-powerbiembedded.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2016-01-29"
+   }
+  },
+  "azure-com-recoveryservices-vaultusages.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2016-06-01"
+   }
+  },
+  "azure-com-security-automations.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2019-01-01-preview"
+   }
+  },
+  "azure-com-security-discoveredsecuritysolutions.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2015-06-01-preview"
+   }
+  },
+  "azure-com-sql-databasevulnerabilityassessments.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2017-03-01-preview"
+   }
+  },
+  "azure-com-web-recommendations.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2018-02-01"
+   }
+  },
+  "azure-com-windowsesu.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2019-09-16-preview"
+   }
+  },
+  "balldontlie-io.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.0.0"
+   }
+  },
+  "citycontext-com.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.0.0"
+   }
+  },
+  "crediwatch-com-covid19.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.3.0"
+   }
+  },
+  "cybertaxonomy-eu.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.0"
+   }
+  },
+  "deutschebahn-com-fahrplan.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1"
+   }
+  },
+  "deutschebahn-com-flinkster.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1"
+   }
+  },
+  "ebay-com-sell-logistics.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1_beta.0.0"
+   }
+  },
+  "edrv-io.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1"
+   }
+  },
+  "europeana-eu.json": {
+   "spec_version": {
+    "before": "",
+    "after": "version unknown"
+   }
+  },
+  "geodatasource-com.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.0"
+   }
+  },
+  "gisgraphy-com.json": {
+   "spec_version": {
+    "before": "",
+    "after": "4.0.0"
+   }
+  },
+  "googleapis-com-chat.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1"
+   }
+  },
+  "googleapis-com-civicinfo.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v2"
+   }
+  },
+  "googleapis-com-clouddebugger.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v2"
+   }
+  },
+  "googleapis-com-datastore.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1beta1"
+   }
+  },
+  "googleapis-com-documentai.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1beta3"
+   }
+  },
+  "googleapis-com-essentialcontacts.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1"
+   }
+  },
+  "googleapis-com-fcmdata.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1beta1"
+   }
+  },
+  "googleapis-com-my-business.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v4"
+   }
+  },
+  "googleapis-com-mybusinessverifications.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1"
+   }
+  },
+  "googleapis-com-recommender.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1beta1"
+   }
+  },
+  "googleapis-com-replicapool.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1beta1"
+   }
+  },
+  "googleapis-com-servicedirectory.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1beta1"
+   }
+  },
+  "googleapis-com-streetviewpublish.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1"
+   }
+  },
+  "googleapis-com-transcoder.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1"
+   }
+  },
+  "googleapis-com-vmmigration.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1alpha1"
+   }
+  },
+  "gov-bc-ca-bcdc.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.0.1"
+   }
+  },
+  "ideaconsult-net-nanoreg.json": {
+   "spec_version": {
+    "before": "",
+    "after": "4.0.0"
+   }
+  },
+  "ideal-postcodes-co-uk.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.7.0"
+   }
+  },
+  "impala-travel-hotels.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.003"
+   }
+  },
+  "interzoid-com-getzipinfo.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.0.0"
+   }
+  },
+  "iptwist-com.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.0.0"
+   }
+  },
+  "miataru-com.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.0.0"
+   }
+  },
+  "moderatecontent-com.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.0.0"
+   }
+  },
+  "ndhm-gov-in-ndhm-hiu.json": {
+   "spec_version": {
+    "before": "",
+    "after": "0.5"
+   }
+  },
+  "nexmo-com-pricing.json": {
+   "spec_version": {
+    "before": "",
+    "after": "0.0.3"
+   }
+  },
+  "nytimes-com-geo-api.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.0.0"
+   }
+  },
+  "oceandrivers-com.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.0"
+   }
+  },
+  "parliament-uk-bills.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1"
+   }
+  },
+  "parliament-uk-search.json": {
+   "spec_version": {
+    "before": "",
+    "after": "Live"
+   }
+  },
+  "sportsdata-io-mlb-v3-projections.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.0"
+   }
+  },
+  "sportsdata-io-nascar-v2.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.0"
+   }
+  },
+  "staging-ecotaco-com.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.0.0"
+   }
+  },
+  "tfl-gov-uk.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v1"
+   }
+  },
+  "thebluealliance-com.json": {
+   "spec_version": {
+    "before": "",
+    "after": "3.8.2"
+   }
+  },
+  "twilio-com-twilio-autopilot-v1.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.42.0"
+   }
+  },
+  "twilio-com-twilio-lookups-v2.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.42.0"
+   }
+  },
+  "twilio-com-twilio-sync-v1.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.42.0"
+   }
+  },
+  "twitter-com-current.json": {
+   "spec_version": {
+    "before": "",
+    "after": "2.61"
+   }
+  },
+  "va-gov-confirmation.json": {
+   "spec_version": {
+    "before": "",
+    "after": "0.0.1"
+   }
+  },
+  "vtex-local-pricing-hub.json": {
+   "spec_version": {
+    "before": "",
+    "after": "1.0"
+   }
+  },
+  "warwick-ac-uk-enterobase.json": {
+   "spec_version": {
+    "before": "",
+    "after": "v2.0"
+   }
+  }
+ }
+}

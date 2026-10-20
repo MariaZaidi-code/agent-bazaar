@@ -1,6 +1,6 @@
 {
   "suite": "summary",
-  "generated_at": "2026-10-20T15:54:37.873843+00:00",
+  "generated_at": "2026-10-20T20:48:54.772031+00:00",
   "mode": "offline",
   "headline": {
     "matching_mrr": 1.0,
@@ -17,7 +17,7 @@
   "suites": {
     "matching": {
       "suite": "matching",
-      "generated_at": "2026-10-20T15:53:46.388871+00:00",
+      "generated_at": "2026-10-20T20:48:20.135230+00:00",
       "mode": "offline",
       "tasks": 50,
       "expected_links": 67,
@@ -1024,7 +1024,7 @@
     },
     "chains": {
       "suite": "chains",
-      "generated_at": "2026-10-20T15:53:49.083515+00:00",
+      "generated_at": "2026-10-20T20:48:22.299015+00:00",
       "mode": "offline",
       "tasks": 15,
       "metrics": {
@@ -1033,7 +1033,7 @@
         "answer_rate": 1.0,
         "trace_coverage": 1.0,
         "completion_event_rate": 1.0,
-        "avg_latency_ms": 33.1607,
+        "avg_latency_ms": 27.6767,
         "avg_steps": 1.6667
       },
       "failures": [],
@@ -1048,28 +1048,28 @@
               "capability": "GeocodeLocation",
               "tool_id": "nominatim-geocode",
               "status": "completed",
-              "latency_ms": 1.03,
+              "latency_ms": 0.78,
               "substituted_from": null
             },
             {
               "capability": "GetWeatherForecast",
               "tool_id": "open-meteo-forecast",
               "status": "completed",
-              "latency_ms": 0.7,
+              "latency_ms": 0.67,
               "substituted_from": null
             },
             {
               "capability": "ConvertCurrency",
               "tool_id": "frankfurter-currency",
               "status": "completed",
-              "latency_ms": 0.58,
+              "latency_ms": 0.75,
               "substituted_from": null
             }
           ],
           "missing": [],
           "trace_events": 20,
           "has_completion_event": true,
-          "duration_ms": 52.32,
+          "duration_ms": 46.92,
           "mode": "offline"
         },
         {
@@ -1089,14 +1089,14 @@
               "capability": "GetWeatherForecast",
               "tool_id": "open-meteo-forecast",
               "status": "completed",
-              "latency_ms": 0.19,
+              "latency_ms": 0.17,
               "substituted_from": null
             }
           ],
           "missing": [],
           "trace_events": 15,
           "has_completion_event": true,
-          "duration_ms": 36.01,
+          "duration_ms": 30.52,
           "mode": "offline"
         },
         {
@@ -1109,14 +1109,14 @@
               "capability": "ConvertCurrency",
               "tool_id": "frankfurter-currency",
               "status": "completed",
-              "latency_ms": 0.17,
+              "latency_ms": 0.16,
               "substituted_from": null
             }
           ],
           "missing": [],
           "trace_events": 10,
           "has_completion_event": true,
-          "duration_ms": 19.63,
+          "duration_ms": 16.85,
           "mode": "offline"
         },
         {
@@ -1129,14 +1129,14 @@
               "capability": "GetPublicHolidays",
               "tool_id": "nager-holidays",
               "status": "completed",
-              "latency_ms": 0.87,
+              "latency_ms": 0.55,
               "substituted_from": null
             }
           ],
           "missing": [],
           "trace_events": 10,
           "has_completion_event": true,
-          "duration_ms": 17.86,
+          "duration_ms": 18.73,
           "mode": "offline"
         },
         {
@@ -1149,14 +1149,14 @@
               "capability": "GetCountryFacts",
               "tool_id": "restcountries-facts",
               "status": "completed",
-              "latency_ms": 0.67,
+              "latency_ms": 0.59,
               "substituted_from": null
             }
           ],
           "missing": [],
           "trace_events": 10,
           "has_completion_event": true,
-          "duration_ms": 18.76,
+          "duration_ms": 16.78,
           "mode": "offline"
         },
         {
@@ -1169,14 +1169,14 @@
               "capability": "SearchResearchPapers",
               "tool_id": "arxiv-search",
               "status": "completed",
-              "latency_ms": 0.68,
+              "latency_ms": 0.6,
               "substituted_from": null
             }
           ],
           "missing": [],
           "trace_events": 10,
           "has_completion_event": true,
-          "duration_ms": 18.25,
+          "duration_ms": 19.25,
           "mode": "offline"
         },
         {
@@ -1189,14 +1189,14 @@
               "capability": "QueryStructuredData",
               "tool_id": "university-sql",
               "status": "completed",
-              "latency_ms": 3.22,
+              "latency_ms": 3.65,
               "substituted_from": null
             }
           ],
           "missing": [],
           "trace_events": 10,
           "has_completion_event": true,
-          "duration_ms": 30.32,
+          "duration_ms": 18.9,
           "mode": "offline"
         },
         {
@@ -1209,14 +1209,14 @@
               "capability": "AnswerFromDocument",
               "tool_id": "document-qa",
               "status": "completed",
-              "latency_ms": 2.14,
+              "latency_ms": 1.64,
               "substituted_from": null
             }
           ],
           "missing": [],
           "trace_events": 10,
           "has_completion_event": true,
-          "duration_ms": 24.68,
+          "duration_ms": 17.15,
           "mode": "offline"
         },
         {
@@ -1229,21 +1229,21 @@
               "capability": "GetCountryFacts",
               "tool_id": "restcountries-facts",
               "status": "completed",
-              "latency_ms": 0.17,
+              "latency_ms": 0.14,
               "substituted_from": null
             },
             {
               "capability": "SearchResearchPapers",
               "tool_id": "arxiv-search",
               "status": "completed",
-              "latency_ms": 0.18,
+              "latency_ms": 0.15,
               "substituted_from": null
             }
           ],
           "missing": [],
           "trace_events": 15,
           "has_completion_event": true,
-          "duration_ms": 32.04,
+          "duration_ms": 30.15,
           "mode": "offline"
         },
         {
@@ -1256,21 +1256,21 @@
               "capability": "ConvertCurrency",
               "tool_id": "frankfurter-currency",
               "status": "completed",
-              "latency_ms": 0.81,
+              "latency_ms": 0.88,
               "substituted_from": null
             },
             {
               "capability": "GetPublicHolidays",
               "tool_id": "nager-holidays",
               "status": "completed",
-              "latency_ms": 0.28,
+              "latency_ms": 0.2,
               "substituted_from": null
             }
           ],
           "missing": [],
           "trace_events": 15,
           "has_completion_event": true,
-          "duration_ms": 42.81,
+          "duration_ms": 31.18,
           "mode": "offline"
         },
         {
@@ -1283,28 +1283,28 @@
               "capability": "GeocodeLocation",
               "tool_id": "nominatim-geocode",
               "status": "completed",
-              "latency_ms": 0.58,
+              "latency_ms": 0.69,
               "substituted_from": null
             },
             {
               "capability": "GetWeatherForecast",
               "tool_id": "open-meteo-forecast",
               "status": "completed",
-              "latency_ms": 0.67,
+              "latency_ms": 0.72,
               "substituted_from": null
             },
             {
               "capability": "GetCountryFacts",
               "tool_id": "restcountries-facts",
               "status": "completed",
-              "latency_ms": 2.73,
+              "latency_ms": 0.67,
               "substituted_from": null
             }
           ],
           "missing": [],
           "trace_events": 20,
           "has_completion_event": true,
-          "duration_ms": 63.84,
+          "duration_ms": 54.92,
           "mode": "offline"
         },
         {
@@ -1317,21 +1317,21 @@
               "capability": "SearchResearchPapers",
               "tool_id": "arxiv-search",
               "status": "completed",
-              "latency_ms": 0.77,
+              "latency_ms": 0.72,
               "substituted_from": null
             },
             {
               "capability": "QueryStructuredData",
               "tool_id": "university-sql",
               "status": "completed",
-              "latency_ms": 2.03,
+              "latency_ms": 1.85,
               "substituted_from": null
             }
           ],
           "missing": [],
           "trace_events": 15,
           "has_completion_event": true,
-          "duration_ms": 46.8,
+          "duration_ms": 32.8,
           "mode": "offline"
         },
         {
@@ -1344,28 +1344,28 @@
               "capability": "GeocodeLocation",
               "tool_id": "nominatim-geocode",
               "status": "completed",
-              "latency_ms": 0.76,
+              "latency_ms": 0.7,
               "substituted_from": null
             },
             {
               "capability": "GetWeatherForecast",
               "tool_id": "open-meteo-forecast",
               "status": "completed",
-              "latency_ms": 0.72,
+              "latency_ms": 0.75,
               "substituted_from": null
             },
             {
               "capability": "AnswerFromDocument",
               "tool_id": "document-qa",
               "status": "completed",
-              "latency_ms": 1.8,
+              "latency_ms": 1.4,
               "substituted_from": null
             }
           ],
           "missing": [],
           "trace_events": 20,
           "has_completion_event": true,
-          "duration_ms": 53.53,
+          "duration_ms": 44.67,
           "mode": "offline"
         },
         {
@@ -1378,14 +1378,14 @@
               "capability": "ConvertCurrency",
               "tool_id": "frankfurter-currency",
               "status": "completed",
-              "latency_ms": 5.25,
+              "latency_ms": 0.68,
               "substituted_from": null
             }
           ],
           "missing": [],
           "trace_events": 10,
           "has_completion_event": true,
-          "duration_ms": 23.08,
+          "duration_ms": 19.48,
           "mode": "offline"
         },
         {
@@ -1398,21 +1398,21 @@
               "capability": "ConvertCurrency",
               "tool_id": "frankfurter-currency",
               "status": "completed",
-              "latency_ms": 0.79,
+              "latency_ms": 0.73,
               "substituted_from": null
             }
           ],
           "missing": [],
           "trace_events": 10,
           "has_completion_event": true,
-          "duration_ms": 17.48,
+          "duration_ms": 16.85,
           "mode": "offline"
         }
       ]
     },
     "baselines": {
       "suite": "baselines",
-      "generated_at": "2026-10-20T15:54:02.373201+00:00",
+      "generated_at": "2026-10-20T20:48:32.705264+00:00",
       "mode": "offline",
       "tasks": 15,
       "metrics": {
@@ -1429,7 +1429,7 @@
           "chain_success_rate": 1.0,
           "expected_tool_selection_accuracy": 1.0,
           "answer_rate": 1.0,
-          "avg_latency_ms": 30.4413,
+          "avg_latency_ms": 25.2733,
           "rows": [
             {
               "task_id": "c01",
@@ -1448,7 +1448,7 @@
               "selected_matches": 3,
               "all_expected_selected": true,
               "answer_chars": 156,
-              "duration_ms": 48.82
+              "duration_ms": 45.8
             },
             {
               "task_id": "c02",
@@ -1465,7 +1465,7 @@
               "selected_matches": 2,
               "all_expected_selected": true,
               "answer_chars": 86,
-              "duration_ms": 34.97
+              "duration_ms": 26.15
             },
             {
               "task_id": "c03",
@@ -1480,7 +1480,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 69,
-              "duration_ms": 23.0
+              "duration_ms": 15.96
             },
             {
               "task_id": "c04",
@@ -1495,7 +1495,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 162,
-              "duration_ms": 19.4
+              "duration_ms": 17.86
             },
             {
               "task_id": "c05",
@@ -1510,7 +1510,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 58,
-              "duration_ms": 21.46
+              "duration_ms": 19.98
             },
             {
               "task_id": "c06",
@@ -1525,7 +1525,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 246,
-              "duration_ms": 18.29
+              "duration_ms": 17.1
             },
             {
               "task_id": "c07",
@@ -1540,7 +1540,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 109,
-              "duration_ms": 25.32
+              "duration_ms": 20.2
             },
             {
               "task_id": "c08",
@@ -1555,7 +1555,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 145,
-              "duration_ms": 17.78
+              "duration_ms": 18.19
             },
             {
               "task_id": "c09",
@@ -1572,7 +1572,7 @@
               "selected_matches": 2,
               "all_expected_selected": true,
               "answer_chars": 305,
-              "duration_ms": 37.24
+              "duration_ms": 27.42
             },
             {
               "task_id": "c10",
@@ -1589,7 +1589,7 @@
               "selected_matches": 2,
               "all_expected_selected": true,
               "answer_chars": 232,
-              "duration_ms": 33.33
+              "duration_ms": 24.71
             },
             {
               "task_id": "c11",
@@ -1608,7 +1608,7 @@
               "selected_matches": 3,
               "all_expected_selected": true,
               "answer_chars": 148,
-              "duration_ms": 49.38
+              "duration_ms": 44.06
             },
             {
               "task_id": "c12",
@@ -1625,7 +1625,7 @@
               "selected_matches": 2,
               "all_expected_selected": true,
               "answer_chars": 356,
-              "duration_ms": 42.98
+              "duration_ms": 29.69
             },
             {
               "task_id": "c13",
@@ -1644,7 +1644,7 @@
               "selected_matches": 3,
               "all_expected_selected": true,
               "answer_chars": 234,
-              "duration_ms": 52.48
+              "duration_ms": 44.09
             },
             {
               "task_id": "c14",
@@ -1659,7 +1659,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 67,
-              "duration_ms": 15.42
+              "duration_ms": 12.46
             },
             {
               "task_id": "c15",
@@ -1674,7 +1674,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 69,
-              "duration_ms": 16.75
+              "duration_ms": 15.43
             }
           ],
           "fault_case": {
@@ -1693,7 +1693,7 @@
           "chain_success_rate": 1.0,
           "expected_tool_selection_accuracy": 1.0,
           "answer_rate": 1.0,
-          "avg_latency_ms": 4.6087,
+          "avg_latency_ms": 5.1013,
           "rows": [
             {
               "task_id": "c01",
@@ -1712,7 +1712,7 @@
               "selected_matches": 3,
               "all_expected_selected": true,
               "answer_chars": 559,
-              "duration_ms": 8.38
+              "duration_ms": 19.92
             },
             {
               "task_id": "c02",
@@ -1729,7 +1729,7 @@
               "selected_matches": 2,
               "all_expected_selected": true,
               "answer_chars": 378,
-              "duration_ms": 3.66
+              "duration_ms": 3.07
             },
             {
               "task_id": "c03",
@@ -1744,7 +1744,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 180,
-              "duration_ms": 1.92
+              "duration_ms": 1.89
             },
             {
               "task_id": "c04",
@@ -1759,7 +1759,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 770,
-              "duration_ms": 2.63
+              "duration_ms": 2.81
             },
             {
               "task_id": "c05",
@@ -1774,7 +1774,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 167,
-              "duration_ms": 2.91
+              "duration_ms": 2.57
             },
             {
               "task_id": "c06",
@@ -1789,7 +1789,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 704,
-              "duration_ms": 2.86
+              "duration_ms": 2.22
             },
             {
               "task_id": "c07",
@@ -1804,7 +1804,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 184,
-              "duration_ms": 6.53
+              "duration_ms": 4.96
             },
             {
               "task_id": "c08",
@@ -1819,7 +1819,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 942,
-              "duration_ms": 3.14
+              "duration_ms": 3.32
             },
             {
               "task_id": "c09",
@@ -1836,7 +1836,7 @@
               "selected_matches": 2,
               "all_expected_selected": true,
               "answer_chars": 872,
-              "duration_ms": 4.6
+              "duration_ms": 3.88
             },
             {
               "task_id": "c10",
@@ -1853,7 +1853,7 @@
               "selected_matches": 2,
               "all_expected_selected": true,
               "answer_chars": 951,
-              "duration_ms": 5.55
+              "duration_ms": 5.01
             },
             {
               "task_id": "c11",
@@ -1872,7 +1872,7 @@
               "selected_matches": 3,
               "all_expected_selected": true,
               "answer_chars": 556,
-              "duration_ms": 8.1
+              "duration_ms": 7.32
             },
             {
               "task_id": "c12",
@@ -1889,7 +1889,7 @@
               "selected_matches": 2,
               "all_expected_selected": true,
               "answer_chars": 888,
-              "duration_ms": 5.59
+              "duration_ms": 6.61
             },
             {
               "task_id": "c13",
@@ -1908,7 +1908,7 @@
               "selected_matches": 3,
               "all_expected_selected": true,
               "answer_chars": 1323,
-              "duration_ms": 7.29
+              "duration_ms": 7.37
             },
             {
               "task_id": "c14",
@@ -1923,7 +1923,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 181,
-              "duration_ms": 2.9
+              "duration_ms": 2.94
             },
             {
               "task_id": "c15",
@@ -1938,7 +1938,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 180,
-              "duration_ms": 3.07
+              "duration_ms": 2.63
             }
           ],
           "fault_case": {
@@ -1957,7 +1957,7 @@
           "chain_success_rate": 1.0,
           "expected_tool_selection_accuracy": 1.0,
           "answer_rate": 1.0,
-          "avg_latency_ms": 3.5447,
+          "avg_latency_ms": 3.224,
           "rows": [
             {
               "task_id": "c01",
@@ -1976,7 +1976,7 @@
               "selected_matches": 3,
               "all_expected_selected": true,
               "answer_chars": 559,
-              "duration_ms": 5.32
+              "duration_ms": 5.94
             },
             {
               "task_id": "c02",
@@ -1993,7 +1993,7 @@
               "selected_matches": 2,
               "all_expected_selected": true,
               "answer_chars": 378,
-              "duration_ms": 1.53
+              "duration_ms": 3.28
             },
             {
               "task_id": "c03",
@@ -2008,7 +2008,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 180,
-              "duration_ms": 0.74
+              "duration_ms": 1.49
             },
             {
               "task_id": "c04",
@@ -2023,7 +2023,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 770,
-              "duration_ms": 1.93
+              "duration_ms": 2.25
             },
             {
               "task_id": "c05",
@@ -2038,7 +2038,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 167,
-              "duration_ms": 3.97
+              "duration_ms": 2.81
             },
             {
               "task_id": "c06",
@@ -2053,7 +2053,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 704,
-              "duration_ms": 2.95
+              "duration_ms": 2.25
             },
             {
               "task_id": "c07",
@@ -2068,7 +2068,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 184,
-              "duration_ms": 4.81
+              "duration_ms": 4.65
             },
             {
               "task_id": "c08",
@@ -2083,7 +2083,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 942,
-              "duration_ms": 2.57
+              "duration_ms": 2.94
             },
             {
               "task_id": "c09",
@@ -2100,7 +2100,7 @@
               "selected_matches": 2,
               "all_expected_selected": true,
               "answer_chars": 872,
-              "duration_ms": 4.15
+              "duration_ms": 2.88
             },
             {
               "task_id": "c10",
@@ -2117,7 +2117,7 @@
               "selected_matches": 2,
               "all_expected_selected": true,
               "answer_chars": 951,
-              "duration_ms": 4.43
+              "duration_ms": 3.57
             },
             {
               "task_id": "c11",
@@ -2136,7 +2136,7 @@
               "selected_matches": 3,
               "all_expected_selected": true,
               "answer_chars": 556,
-              "duration_ms": 6.24
+              "duration_ms": 4.96
             },
             {
               "task_id": "c12",
@@ -2153,7 +2153,7 @@
               "selected_matches": 2,
               "all_expected_selected": true,
               "answer_chars": 888,
-              "duration_ms": 5.97
+              "duration_ms": 3.13
             },
             {
               "task_id": "c13",
@@ -2172,7 +2172,7 @@
               "selected_matches": 3,
               "all_expected_selected": true,
               "answer_chars": 1323,
-              "duration_ms": 6.27
+              "duration_ms": 5.88
             },
             {
               "task_id": "c14",
@@ -2187,7 +2187,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 181,
-              "duration_ms": 1.15
+              "duration_ms": 1.17
             },
             {
               "task_id": "c15",
@@ -2202,7 +2202,7 @@
               "selected_matches": 1,
               "all_expected_selected": true,
               "answer_chars": 180,
-              "duration_ms": 1.14
+              "duration_ms": 1.16
             }
           ],
           "fault_case": {
@@ -2219,7 +2219,7 @@
     },
     "substitution": {
       "suite": "substitution",
-      "generated_at": "2026-10-20T15:54:20.740014+00:00",
+      "generated_at": "2026-10-20T20:48:43.615785+00:00",
       "mode": "offline",
       "cases": 7,
       "metrics": {
@@ -2227,7 +2227,7 @@
         "substitute_accuracy": 0.8571,
         "unexpected_recovery_rate": 0.0,
         "trace_coverage": 0.8571,
-        "avg_latency_ms": 35.2643
+        "avg_latency_ms": 24.3114
       },
       "failures": [],
       "rows": [
@@ -2244,9 +2244,9 @@
           "substitute_used": true,
           "outcome_correct": true,
           "trace_has_substitution": true,
-          "answer": "Weather for Lahore on 2026-10-21: high 37.9 C, low 28.3 C, 6% chance of precipitation. A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
+          "answer": "Weather for Lahore on 2026-10-22: high 37.9 C, low 28.3 C, 6% chance of precipitation. A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
           "error": null,
-          "duration_ms": 42.79
+          "duration_ms": 35.33
         },
         {
           "case_id": "s02",
@@ -2261,9 +2261,9 @@
           "substitute_used": true,
           "outcome_correct": true,
           "trace_has_substitution": true,
-          "answer": "Weather for Lahore on 2026-10-21: high 37.9 C, low 28.3 C, 6% chance of precipitation. A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
+          "answer": "Weather for Lahore on 2026-10-22: high 37.9 C, low 28.3 C, 6% chance of precipitation. A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
           "error": null,
-          "duration_ms": 53.18
+          "duration_ms": 40.16
         },
         {
           "case_id": "s03",
@@ -2278,9 +2278,9 @@
           "substitute_used": true,
           "outcome_correct": true,
           "trace_has_substitution": true,
-          "answer": "200.00 USD is approximately 55,700.00 PKR at rate 278.5 (2026-10-20). A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
+          "answer": "200.00 USD is approximately 55,700.00 PKR at rate 278.5 (2026-10-21). A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
           "error": null,
-          "duration_ms": 38.32
+          "duration_ms": 22.53
         },
         {
           "case_id": "s04",
@@ -2297,7 +2297,7 @@
           "trace_has_substitution": true,
           "answer": "5 public holidays found. 2026-02-05 Kashmir Solidarity Day; 2026-03-23 Pakistan Day; 2026-05-01 Labour Day; 2026-08-14 Independence Day; 2026-12-25 Christmas Day. A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
           "error": null,
-          "duration_ms": 32.73
+          "duration_ms": 19.72
         },
         {
           "case_id": "s05",
@@ -2314,7 +2314,7 @@
           "trace_has_substitution": true,
           "answer": "Japan: capital Tokyo, population 125,681,593, region Asia. A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
           "error": null,
-          "duration_ms": 27.71
+          "duration_ms": 17.89
         },
         {
           "case_id": "s06",
@@ -2331,7 +2331,7 @@
           "trace_has_substitution": true,
           "answer": "Top research results: Retrieval and verification patterns for GraphRAG (https://arxiv.org/search/?query=GraphRAG&searchtype=all); Knowledge-graph grounding for tool-using agents: GraphRAG (https://arxiv.org/search/?query=GraphRAG&searchtype=all). A provider failed during execution, so the Client recovered the chain with a type-compatible substitute behind the circuit breaker.",
           "error": null,
-          "duration_ms": 28.55
+          "duration_ms": 16.76
         },
         {
           "case_id": "s07",
@@ -2348,13 +2348,13 @@
           "trace_has_substitution": false,
           "answer": "Some steps failed: QueryStructuredData: Injected provider outage for the demonstration.",
           "error": "Injected provider outage for the demonstration.",
-          "duration_ms": 23.57
+          "duration_ms": 17.79
         }
       ]
     },
     "trust": {
       "suite": "trust",
-      "generated_at": "2026-10-20T15:54:20.856559+00:00",
+      "generated_at": "2026-10-20T20:48:43.693905+00:00",
       "mode": "offline",
       "scenarios": 6,
       "metrics": {
@@ -2464,7 +2464,7 @@
     },
     "ablations": {
       "suite": "ablations",
-      "generated_at": "2026-10-20T15:54:37.857632+00:00",
+      "generated_at": "2026-10-20T20:48:54.772031+00:00",
       "mode": "offline",
       "configurations": 7,
       "selected_chain_tasks": [
@@ -2482,7 +2482,7 @@
         "chain_success_rate": 1.0,
         "recovery_rate": 0.7143,
         "substitution_rate": 0.7143,
-        "avg_latency_ms": 30.1525
+        "avg_latency_ms": 22.4443
       },
       "rows": [
         {
@@ -2493,62 +2493,62 @@
           "recovered_from_failure": true,
           "substitution_used": true,
           "failure_status": "completed",
-          "avg_latency_ms": 26.4088,
+          "avg_latency_ms": 20.9838,
           "rows": [
             {
               "task_id": "c01",
               "status": "completed",
               "missing": [],
-              "duration_ms": 53.28,
+              "duration_ms": 33.56,
               "success": true
             },
             {
               "task_id": "c04",
               "status": "completed",
               "missing": [],
-              "duration_ms": 20.55,
+              "duration_ms": 14.89,
               "success": true
             },
             {
               "task_id": "c05",
               "status": "completed",
               "missing": [],
-              "duration_ms": 17.13,
+              "duration_ms": 14.84,
               "success": true
             },
             {
               "task_id": "c06",
               "status": "completed",
               "missing": [],
-              "duration_ms": 16.99,
+              "duration_ms": 13.22,
               "success": true
             },
             {
               "task_id": "c07",
               "status": "completed",
               "missing": [],
-              "duration_ms": 22.84,
+              "duration_ms": 15.37,
               "success": true
             },
             {
               "task_id": "c08",
               "status": "completed",
               "missing": [],
-              "duration_ms": 11.53,
+              "duration_ms": 15.99,
               "success": true
             },
             {
               "task_id": "c09",
               "status": "completed",
               "missing": [],
-              "duration_ms": 35.67,
+              "duration_ms": 24.01,
               "success": true
             },
             {
               "task_id": "c13",
               "status": "completed",
               "missing": [],
-              "duration_ms": 33.28,
+              "duration_ms": 35.99,
               "success": true
             }
           ]
@@ -2563,62 +2563,62 @@
           "recovered_from_failure": true,
           "substitution_used": true,
           "failure_status": "completed",
-          "avg_latency_ms": 31.375,
+          "avg_latency_ms": 21.685,
           "rows": [
             {
               "task_id": "c01",
               "status": "completed",
               "missing": [],
-              "duration_ms": 45.5,
+              "duration_ms": 34.19,
               "success": true
             },
             {
               "task_id": "c04",
               "status": "completed",
               "missing": [],
-              "duration_ms": 26.1,
+              "duration_ms": 16.41,
               "success": true
             },
             {
               "task_id": "c05",
               "status": "completed",
               "missing": [],
-              "duration_ms": 16.68,
+              "duration_ms": 15.1,
               "success": true
             },
             {
               "task_id": "c06",
               "status": "completed",
               "missing": [],
-              "duration_ms": 23.16,
+              "duration_ms": 17.07,
               "success": true
             },
             {
               "task_id": "c07",
               "status": "completed",
               "missing": [],
-              "duration_ms": 33.52,
+              "duration_ms": 18.95,
               "success": true
             },
             {
               "task_id": "c08",
               "status": "completed",
               "missing": [],
-              "duration_ms": 19.62,
+              "duration_ms": 14.63,
               "success": true
             },
             {
               "task_id": "c09",
               "status": "completed",
               "missing": [],
-              "duration_ms": 34.54,
+              "duration_ms": 24.38,
               "success": true
             },
             {
               "task_id": "c13",
               "status": "completed",
               "missing": [],
-              "duration_ms": 51.88,
+              "duration_ms": 32.75,
               "success": true
             }
           ]
@@ -2633,62 +2633,62 @@
           "recovered_from_failure": false,
           "substitution_used": false,
           "failure_status": "completed",
-          "avg_latency_ms": 28.19,
+          "avg_latency_ms": 19.4387,
           "rows": [
             {
               "task_id": "c01",
               "status": "completed",
               "missing": [],
-              "duration_ms": 58.94,
+              "duration_ms": 35.41,
               "success": true
             },
             {
               "task_id": "c04",
               "status": "completed",
               "missing": [],
-              "duration_ms": 16.84,
+              "duration_ms": 13.27,
               "success": true
             },
             {
               "task_id": "c05",
               "status": "completed",
               "missing": [],
-              "duration_ms": 19.31,
+              "duration_ms": 14.12,
               "success": true
             },
             {
               "task_id": "c06",
               "status": "completed",
               "missing": [],
-              "duration_ms": 20.72,
+              "duration_ms": 12.13,
               "success": true
             },
             {
               "task_id": "c07",
               "status": "completed",
               "missing": [],
-              "duration_ms": 20.59,
+              "duration_ms": 13.29,
               "success": true
             },
             {
               "task_id": "c08",
               "status": "completed",
               "missing": [],
-              "duration_ms": 16.68,
+              "duration_ms": 14.07,
               "success": true
             },
             {
               "task_id": "c09",
               "status": "completed",
               "missing": [],
-              "duration_ms": 27.77,
+              "duration_ms": 20.37,
               "success": true
             },
             {
               "task_id": "c13",
               "status": "completed",
               "missing": [],
-              "duration_ms": 44.67,
+              "duration_ms": 32.85,
               "success": true
             }
           ]
@@ -2703,62 +2703,62 @@
           "recovered_from_failure": true,
           "substitution_used": true,
           "failure_status": "completed",
-          "avg_latency_ms": 25.515,
+          "avg_latency_ms": 20.7087,
           "rows": [
             {
               "task_id": "c01",
               "status": "completed",
               "missing": [],
-              "duration_ms": 38.44,
+              "duration_ms": 39.96,
               "success": true
             },
             {
               "task_id": "c04",
               "status": "completed",
               "missing": [],
-              "duration_ms": 18.68,
+              "duration_ms": 16.44,
               "success": true
             },
             {
               "task_id": "c05",
               "status": "completed",
               "missing": [],
-              "duration_ms": 18.48,
+              "duration_ms": 14.08,
               "success": true
             },
             {
               "task_id": "c06",
               "status": "completed",
               "missing": [],
-              "duration_ms": 17.4,
+              "duration_ms": 11.3,
               "success": true
             },
             {
               "task_id": "c07",
               "status": "completed",
               "missing": [],
-              "duration_ms": 19.56,
+              "duration_ms": 16.9,
               "success": true
             },
             {
               "task_id": "c08",
               "status": "completed",
               "missing": [],
-              "duration_ms": 15.37,
+              "duration_ms": 12.86,
               "success": true
             },
             {
               "task_id": "c09",
               "status": "completed",
               "missing": [],
-              "duration_ms": 29.39,
+              "duration_ms": 22.37,
               "success": true
             },
             {
               "task_id": "c13",
               "status": "completed",
               "missing": [],
-              "duration_ms": 46.8,
+              "duration_ms": 31.76,
               "success": true
             }
           ]
@@ -2773,62 +2773,62 @@
           "recovered_from_failure": true,
           "substitution_used": true,
           "failure_status": "completed",
-          "avg_latency_ms": 28.8713,
+          "avg_latency_ms": 20.4312,
           "rows": [
             {
               "task_id": "c01",
               "status": "completed",
               "missing": [],
-              "duration_ms": 47.87,
+              "duration_ms": 39.37,
               "success": true
             },
             {
               "task_id": "c04",
               "status": "completed",
               "missing": [],
-              "duration_ms": 18.07,
+              "duration_ms": 14.17,
               "success": true
             },
             {
               "task_id": "c05",
               "status": "completed",
               "missing": [],
-              "duration_ms": 15.61,
+              "duration_ms": 13.77,
               "success": true
             },
             {
               "task_id": "c06",
               "status": "completed",
               "missing": [],
-              "duration_ms": 21.31,
+              "duration_ms": 14.69,
               "success": true
             },
             {
               "task_id": "c07",
               "status": "completed",
               "missing": [],
-              "duration_ms": 24.21,
+              "duration_ms": 16.83,
               "success": true
             },
             {
               "task_id": "c08",
               "status": "completed",
               "missing": [],
-              "duration_ms": 20.62,
+              "duration_ms": 12.54,
               "success": true
             },
             {
               "task_id": "c09",
               "status": "completed",
               "missing": [],
-              "duration_ms": 31.42,
+              "duration_ms": 18.45,
               "success": true
             },
             {
               "task_id": "c13",
               "status": "completed",
               "missing": [],
-              "duration_ms": 51.86,
+              "duration_ms": 33.63,
               "success": true
             }
           ]
@@ -2843,62 +2843,62 @@
           "recovered_from_failure": false,
           "substitution_used": false,
           "failure_status": "partial",
-          "avg_latency_ms": 33.5987,
+          "avg_latency_ms": 31.2563,
           "rows": [
             {
               "task_id": "c01",
               "status": "completed",
               "missing": [],
-              "duration_ms": 67.39,
+              "duration_ms": 51.29,
               "success": true
             },
             {
               "task_id": "c04",
               "status": "completed",
               "missing": [],
-              "duration_ms": 25.84,
+              "duration_ms": 49.95,
               "success": true
             },
             {
               "task_id": "c05",
               "status": "completed",
               "missing": [],
-              "duration_ms": 20.0,
+              "duration_ms": 16.88,
               "success": true
             },
             {
               "task_id": "c06",
               "status": "completed",
               "missing": [],
-              "duration_ms": 23.43,
+              "duration_ms": 16.86,
               "success": true
             },
             {
               "task_id": "c07",
               "status": "completed",
               "missing": [],
-              "duration_ms": 22.44,
+              "duration_ms": 21.05,
               "success": true
             },
             {
               "task_id": "c08",
               "status": "completed",
               "missing": [],
-              "duration_ms": 28.11,
+              "duration_ms": 15.58,
               "success": true
             },
             {
               "task_id": "c09",
               "status": "completed",
               "missing": [],
-              "duration_ms": 35.38,
+              "duration_ms": 27.57,
               "success": true
             },
             {
               "task_id": "c13",
               "status": "completed",
               "missing": [],
-              "duration_ms": 46.2,
+              "duration_ms": 50.87,
               "success": true
             }
           ]
@@ -2913,62 +2913,62 @@
           "recovered_from_failure": true,
           "substitution_used": true,
           "failure_status": "completed",
-          "avg_latency_ms": 37.1088,
+          "avg_latency_ms": 22.6063,
           "rows": [
             {
               "task_id": "c01",
               "status": "completed",
               "missing": [],
-              "duration_ms": 52.29,
+              "duration_ms": 37.82,
               "success": true
             },
             {
               "task_id": "c04",
               "status": "completed",
               "missing": [],
-              "duration_ms": 19.55,
+              "duration_ms": 14.8,
               "success": true
             },
             {
               "task_id": "c05",
               "status": "completed",
               "missing": [],
-              "duration_ms": 22.05,
+              "duration_ms": 13.15,
               "success": true
             },
             {
               "task_id": "c06",
               "status": "completed",
               "missing": [],
-              "duration_ms": 22.23,
+              "duration_ms": 12.98,
               "success": true
             },
             {
               "task_id": "c07",
               "status": "completed",
               "missing": [],
-              "duration_ms": 29.71,
+              "duration_ms": 17.86,
               "success": true
             },
             {
               "task_id": "c08",
               "status": "completed",
               "missing": [],
-              "duration_ms": 20.29,
+              "duration_ms": 12.44,
               "success": true
             },
             {
               "task_id": "c09",
               "status": "completed",
               "missing": [],
-              "duration_ms": 38.63,
+              "duration_ms": 27.41,
               "success": true
             },
             {
               "task_id": "c13",
               "status": "completed",
               "missing": [],
-              "duration_ms": 92.12,
+              "duration_ms": 44.39,
               "success": true
             }
           ]

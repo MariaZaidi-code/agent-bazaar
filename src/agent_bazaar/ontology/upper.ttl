@@ -203,3 +203,93 @@ ab:recordedBy a owl:DatatypeProperty ;
 
 ab:note a owl:DatatypeProperty ;
     rdfs:range xsd:string .
+
+# ---- offering (commercial, access, reputation and documentation facts) -----
+# Added after the Week 3 ontology freeze as a versioned upper-level extension.
+# The frozen domain layer and the minimum shape set are unchanged.
+
+ab:Offering a owl:Class ;
+    rdfs:label "Offering" ;
+    rdfs:comment "The commercial, access, reputation and documentation facts of one tool." .
+
+ab:hasOffering a owl:ObjectProperty ;
+    rdfs:domain ab:Tool ;
+    rdfs:range ab:Offering .
+
+ab:pricingTier a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:string ;
+    rdfs:comment "One of free, freemium, paid, unknown. Absence of evidence is never free." .
+
+ab:accessRequirement a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:string ;
+    rdfs:comment "One of keyless, api_key, paid_key." .
+
+ab:priceAmount a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:decimal .
+
+ab:priceCurrency a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:string .
+
+ab:rateLimit a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:string .
+
+ab:probeBudgetPerMinute a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:integer .
+
+ab:ratingValue a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "Bayesian-shrunk developer rating between 0 and 1." .
+
+ab:ratingCount a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:integer .
+
+ab:ratingSource a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:string .
+
+ab:docQuality a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "Reproducible documentation quality of the listing between 0 and 1." .
+
+ab:docSubScores a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:string .
+
+ab:mappingCoverage a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "Share of the listing's fields that the Mapper typed successfully." .
+
+ab:licence a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:string .
+
+ab:termsUrl a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:string .
+
+ab:provenance a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:string ;
+    rdfs:comment "JSON record of how the offering facts were obtained and reviewed." .
+
+ab:lastSeen a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:dateTime .
+
+ab:tierEvidence a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:string .
+
+ab:accessEvidence a owl:DatatypeProperty ;
+    rdfs:domain ab:Offering ;
+    rdfs:range xsd:string .

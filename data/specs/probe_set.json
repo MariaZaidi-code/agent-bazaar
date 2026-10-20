@@ -1,0 +1,72 @@
+{
+  "selection_rule": "Keyless means the corrected extraction rules of agent_bazaar.ingestion.listing_metadata find no security scheme, no global security requirement, no required credential parameter, no platform host and no statement about a key in the prose. Only such a tool may be probed live, because a probe of a keyed tool fails without a credential; the earlier list of this file wrongly kept ideal-postcodes-co-uk, geodatasource-com, interzoid-com-getzipinfo, nexmo-com-pricing and europeana-eu, and the corrected rules now detect the credential in each of them and drop all five. The set holds 11 of the 12 to 15 tools the proposal asks for: the corpus in data/specs holds 98 documents and exactly 11 of them are keyless, so the shortfall is one tool and no further extraction rule can close it - the corpus needs another keyless document. 8 of the 11 map onto a curated capability of the application (GeocodeLocation: deutschebahn-com-fahrplan, deutschahn-com-flinkster, miataru-com; GetWeatherForecast: oceandrivers-com; SearchResearchPapers: cybertaxonomy-eu, ideaconsult-net-nanoreg, parliament-uk-search, parliament-uk-bills). balldontlie-io, crediwatch-com-covid19 and moderatecontent-com are keyless but cover none of the curated capabilities, so they are kept as mechanical keyless probes with an empty capability_hint. ConvertCurrency and GetPublicHolidays are not covered by this probe set: nexmo-com-pricing was the only currency source in the corpus and it needs api_key and api_secret parameters, and no keyless document in the corpus publishes public holidays, which the application covers with the Nager.Date provider instead.",
+  "selected_at": "2026-10-21",
+  "tools": [
+    {
+      "tool_id": "deutschebahn-com-fahrplan",
+      "file": "deutschebahn-com-fahrplan.json",
+      "capability_hint": "GeocodeLocation",
+      "reason": "Keyless per the corrected extraction rules and declared free: the document offers a FREE plan with a maximum of 10 requests per minute and asks the reader to ignore the console message about an access token. /location/{name} resolves a place name to a location with coordinates, which covers GeocodeLocation, and /arrivalBoard and /departureBoard cover a live transport answer."
+    },
+    {
+      "tool_id": "deutschebahn-com-flinkster",
+      "file": "deutschebahn-com-flinkster.json",
+      "capability_hint": "GeocodeLocation",
+      "reason": "Keyless per the corrected extraction rules and declared free. /areas and /bookingproposals search mobility stations around a coordinate pair and return the stations with their coordinates, so the tool answers a location lookup without a key."
+    },
+    {
+      "tool_id": "miataru-com",
+      "file": "miataru-com.json",
+      "capability_hint": "GeocodeLocation",
+      "reason": "Keyless per the corrected extraction rules, public domain document. /GetLocation and /GetLocationGeoJSON/{deviceID} return the latitude and longitude of a device, which is a location lookup that can be probed with an identifier only."
+    },
+    {
+      "tool_id": "oceandrivers-com",
+      "file": "oceandrivers-com.json",
+      "capability_hint": "GetWeatherForecast",
+      "reason": "Keyless per the corrected extraction rules. /v1.0/getForecastTimeSeries/{latitude}/{longitude} returns forecast time series for a coordinate pair and needs no credential, so it is the only weather forecast source in the corpus."
+    },
+    {
+      "tool_id": "cybertaxonomy-eu",
+      "file": "cybertaxonomy-eu.json",
+      "capability_hint": "SearchResearchPapers",
+      "reason": "Keyless per the corrected extraction rules. /search queries the Unified Taxonomic Information Service and returns scientific records with references, which is the publication search pattern of SearchResearchPapers."
+    },
+    {
+      "tool_id": "ideaconsult-net-nanoreg",
+      "file": "ideaconsult-net-nanoreg.json",
+      "capability_hint": "SearchResearchPapers",
+      "reason": "Keyless per the corrected extraction rules and declared free. The document describes free text and faceted search over studies, and /select and /enm/{db}/query/* return study records, so it covers the research paper search of SearchResearchPapers."
+    },
+    {
+      "tool_id": "parliament-uk-search",
+      "file": "parliament-uk-search.json",
+      "capability_hint": "SearchResearchPapers",
+      "reason": "Keyless per the corrected extraction rules and licensed under the Open Parliament Licence. /query implements an OpenSearch search over the parliament.uk domain, which is the document search pattern of SearchResearchPapers."
+    },
+    {
+      "tool_id": "parliament-uk-bills",
+      "file": "parliament-uk-bills.json",
+      "capability_hint": "SearchResearchPapers",
+      "reason": "Keyless per the corrected extraction rules. The document describes an API to get and search Bills, their stages, amendments and publications, so it returns published documents the way a paper search does."
+    },
+    {
+      "tool_id": "balldontlie-io",
+      "file": "balldontlie-io.json",
+      "capability_hint": "",
+      "reason": "Keyless per the corrected extraction rules: the document declares no security scheme, no required credential parameter and no platform host. /api/v1/players takes a free text search term and returns player records. The tool covers none of the curated capabilities of the application, so it is kept only as a mechanical probe of a keyless call."
+    },
+    {
+      "tool_id": "crediwatch-com-covid19",
+      "file": "crediwatch-com-covid19.json",
+      "capability_hint": "",
+      "reason": "Keyless per the corrected extraction rules: the document declares no security scheme, no required credential parameter and no platform host. /api/v1/verify/name takes a business name with a state and a city and returns the verification status. That is a fact lookup but not a country fact, so the tool is kept only as a mechanical probe of a keyless call."
+    },
+    {
+      "tool_id": "moderatecontent-com",
+      "file": "moderatecontent-com.json",
+      "capability_hint": "",
+      "reason": "Keyless per the corrected extraction rules and declared free: the document describes a FREE API that takes no credential and GET / takes the url of an image and returns a moderation verdict. The tool covers none of the curated capabilities of the application, so it is kept only as a mechanical probe of a keyless call."
+    }
+  ]
+}
