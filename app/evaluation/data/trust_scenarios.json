@@ -1,0 +1,83 @@
+[
+  {
+    "id": "t01",
+    "name": "consistent success",
+    "operations": [
+      {"signal": "call", "success": true, "reason": "successful call"},
+      {"signal": "call", "success": true, "reason": "successful call"},
+      {"signal": "call", "success": true, "reason": "successful call"},
+      {"signal": "schema", "success": true, "reason": "schema valid"},
+      {"signal": "rating", "success": true, "weight": 0.9, "reason": "developer rating"}
+    ],
+    "expected_demoted": false,
+    "min_score": 0.7
+  },
+  {
+    "id": "t02",
+    "name": "persistent outage",
+    "operations": [
+      {"signal": "call", "success": false, "reason": "provider timeout"},
+      {"signal": "call", "success": false, "reason": "provider timeout"},
+      {"signal": "call", "success": false, "reason": "provider timeout"},
+      {"signal": "call", "success": false, "reason": "provider timeout"}
+    ],
+    "expected_demoted": true,
+    "max_score": 0.4
+  },
+  {
+    "id": "t03",
+    "name": "contradicted claims",
+    "operations": [
+      {"signal": "contradiction", "success": false, "reason": "documented unit mismatch"},
+      {"signal": "contradiction", "success": false, "reason": "documented unit mismatch"}
+    ],
+    "expected_demoted": true,
+    "max_score": 0.3
+  },
+  {
+    "id": "t04",
+    "name": "mixed evidence",
+    "operations": [
+      {"signal": "call", "success": true, "reason": "success"},
+      {"signal": "call", "success": true, "reason": "success"},
+      {"signal": "call", "success": true, "reason": "success"},
+      {"signal": "call", "success": true, "reason": "success"},
+      {"signal": "call", "success": true, "reason": "success"},
+      {"signal": "call", "success": false, "reason": "transient failure"},
+      {"signal": "call", "success": false, "reason": "transient failure"}
+    ],
+    "expected_demoted": false,
+    "min_score": 0.6
+  },
+  {
+    "id": "t05",
+    "name": "recovery after failures",
+    "operations": [
+      {"signal": "call", "success": false, "reason": "outage"},
+      {"signal": "call", "success": false, "reason": "outage"},
+      {"signal": "call", "success": false, "reason": "outage"},
+      {"signal": "call", "success": false, "reason": "outage"},
+      {"signal": "call", "success": true, "reason": "recovered"},
+      {"signal": "call", "success": true, "reason": "recovered"},
+      {"signal": "call", "success": true, "reason": "recovered"},
+      {"signal": "call", "success": true, "reason": "recovered"},
+      {"signal": "call", "success": true, "reason": "recovered"},
+      {"signal": "call", "success": true, "reason": "recovered"},
+      {"signal": "call", "success": true, "reason": "recovered"},
+      {"signal": "call", "success": true, "reason": "recovered"}
+    ],
+    "expected_demoted": false,
+    "min_score": 0.6
+  },
+  {
+    "id": "t06",
+    "name": "weak but not demoted",
+    "operations": [
+      {"signal": "call", "success": false, "reason": "two failures"},
+      {"signal": "call", "success": false, "reason": "two failures"}
+    ],
+    "expected_demoted": false,
+    "min_score": 0.2,
+    "max_score": 0.5
+  }
+]
