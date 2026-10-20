@@ -1,0 +1,58 @@
+[
+  {
+    "id": "s01",
+    "task": "What is the weather in Lahore tomorrow?",
+    "fail_tool": "open-meteo-forecast",
+    "expected_capability": "GetWeatherForecast",
+    "expected_substitute": "open-meteo-forecast-backup",
+    "expected_recovered": true
+  },
+  {
+    "id": "s02",
+    "task": "What is the weather in Lahore tomorrow?",
+    "fail_tool": "nominatim-geocode",
+    "expected_capability": "GeocodeLocation",
+    "expected_substitute": "nominatim-geocode-backup",
+    "expected_recovered": true
+  },
+  {
+    "id": "s03",
+    "task": "How much is 200 USD in PKR?",
+    "fail_tool": "frankfurter-currency",
+    "expected_capability": "ConvertCurrency",
+    "expected_substitute": "frankfurter-currency-backup",
+    "expected_recovered": true
+  },
+  {
+    "id": "s04",
+    "task": "Which public holidays does Pakistan have in 2026?",
+    "fail_tool": "nager-holidays",
+    "expected_capability": "GetPublicHolidays",
+    "expected_substitute": "nager-holidays-backup",
+    "expected_recovered": true
+  },
+  {
+    "id": "s05",
+    "task": "What is the population of Japan?",
+    "fail_tool": "restcountries-facts",
+    "expected_capability": "GetCountryFacts",
+    "expected_substitute": "restcountries-facts-backup",
+    "expected_recovered": true
+  },
+  {
+    "id": "s06",
+    "task": "Find recent research papers on GraphRAG.",
+    "fail_tool": "arxiv-search",
+    "expected_capability": "SearchResearchPapers",
+    "expected_substitute": "arxiv-search-backup",
+    "expected_recovered": true
+  },
+  {
+    "id": "s07",
+    "task": "How many students are enrolled in the BS Artificial Intelligence program?",
+    "fail_tool": "university-sql",
+    "expected_capability": "QueryStructuredData",
+    "expected_substitute": null,
+    "expected_recovered": false
+  }
+]

@@ -1,3 +1,4 @@
+# Knowledge layer and Mapper
 pydantic>=2.5
 rdflib>=7.0
 pyshacl>=0.25
@@ -7,4 +8,15 @@ requests>=2.31
 pypdf>=4.0
 python-docx>=1.1
 sentence-transformers>=2.5
+
+# Client, provider and interface
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.30,<1.0
+pydantic-settings>=2.5,<3.0
+httpx>=0.27,<1.0
+jinja2>=3.1,<4.0
+python-multipart>=0.0.9,<1.0
+
+# Tests
 pytest>=8.0
+pytest-asyncio>=0.24,<1.0

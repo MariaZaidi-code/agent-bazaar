@@ -1,0 +1,110 @@
+{
+  "suite": "trust",
+  "generated_at": "2026-10-20T15:54:20.856559+00:00",
+  "mode": "offline",
+  "scenarios": 6,
+  "metrics": {
+    "pass_rate": 1.0,
+    "demotion_accuracy": 1.0,
+    "replay_consistency": 1.0
+  },
+  "failures": [],
+  "rows": [
+    {
+      "scenario": "t01",
+      "name": "consistent success",
+      "operations": 5,
+      "score": 0.8438,
+      "demoted": false,
+      "contradictions": 0,
+      "expected_demoted": false,
+      "checks": {
+        "demotion": true,
+        "min_score": true,
+        "max_score": true,
+        "replay_matches": true
+      },
+      "passed": true
+    },
+    {
+      "scenario": "t02",
+      "name": "persistent outage",
+      "operations": 4,
+      "score": 0.1667,
+      "demoted": true,
+      "contradictions": 0,
+      "expected_demoted": true,
+      "checks": {
+        "demotion": true,
+        "min_score": true,
+        "max_score": true,
+        "replay_matches": true
+      },
+      "passed": true
+    },
+    {
+      "scenario": "t03",
+      "name": "contradicted claims",
+      "operations": 2,
+      "score": 0.1667,
+      "demoted": true,
+      "contradictions": 2,
+      "expected_demoted": true,
+      "checks": {
+        "demotion": true,
+        "min_score": true,
+        "max_score": true,
+        "replay_matches": true
+      },
+      "passed": true
+    },
+    {
+      "scenario": "t04",
+      "name": "mixed evidence",
+      "operations": 7,
+      "score": 0.6667,
+      "demoted": false,
+      "contradictions": 0,
+      "expected_demoted": false,
+      "checks": {
+        "demotion": true,
+        "min_score": true,
+        "max_score": true,
+        "replay_matches": true
+      },
+      "passed": true
+    },
+    {
+      "scenario": "t05",
+      "name": "recovery after failures",
+      "operations": 12,
+      "score": 0.6429,
+      "demoted": false,
+      "contradictions": 0,
+      "expected_demoted": false,
+      "checks": {
+        "demotion": true,
+        "min_score": true,
+        "max_score": true,
+        "replay_matches": true
+      },
+      "passed": true
+    },
+    {
+      "scenario": "t06",
+      "name": "weak but not demoted",
+      "operations": 2,
+      "score": 0.25,
+      "demoted": false,
+      "contradictions": 0,
+      "expected_demoted": false,
+      "checks": {
+        "demotion": true,
+        "min_score": true,
+        "max_score": true,
+        "replay_matches": true
+      },
+      "passed": true
+    }
+  ]
+}

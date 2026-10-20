@@ -1,0 +1,131 @@
+{
+  "version": "0.1-local",
+  "description": "Local fallback ontology used by the Client when Maria's validated ontology export is unavailable.",
+  "concepts": {
+    "Entity": {"parents": [], "description": "Root of the upper ontology."},
+    "Service": {"parents": ["Entity"], "description": "A callable third-party service."},
+    "Capability": {"parents": ["Entity"], "description": "What a service can do."},
+    "Claim": {"parents": ["Entity"], "description": "A provider statement about its service."},
+    "Evidence": {"parents": ["Entity"], "description": "Documentation or probe evidence."},
+    "Provider": {"parents": ["Entity"], "description": "The party offering a service."},
+    "LocationName": {"parents": ["Entity"], "description": "A place name supplied by a user."},
+    "CityName": {"parents": ["LocationName"], "description": "A city or settlement name."},
+    "CountryName": {"parents": ["LocationName"], "description": "A country name."},
+    "Coordinates": {
+      "parents": ["Entity"],
+      "description": "A latitude and longitude pair.",
+      "fields": ["latitude", "longitude", "display_name", "country_code"]
+    },
+    "Temperature": {
+      "parents": ["Entity"],
+      "description": "An air temperature with a unit.",
+      "fields": ["temperature", "temp_max", "temp_min", "unit"]
+    },
+    "Money": {
+      "parents": ["Entity"],
+      "description": "A monetary amount in a currency.",
+      "fields": ["amount", "currency", "rate", "from", "to"]
+    },
+    "MoneyAmount": {"parents": ["Number"], "description": "A numeric amount of money."},
+    "CurrencyCode": {"parents": ["Entity"], "description": "An ISO 4217 currency code."},
+    "CountryCode": {"parents": ["Entity"], "description": "An ISO 3166 country code."},
+    "Country": {
+      "parents": ["Entity"],
+      "description": "A country and its public facts.",
+      "fields": ["name", "capital", "population", "region", "currencies", "country_code"]
+    },
+    "Holiday": {
+      "parents": ["Entity"],
+      "description": "A public holiday.",
+      "fields": ["date", "name", "local_name", "country_code"]
+    },
+    "ResearchPaper": {
+      "parents": ["Entity"],
+      "description": "A research paper record.",
+      "fields": ["title", "summary", "url", "published"]
+    },
+    "ResearchTopic": {"parents": ["Entity"], "description": "A research search topic."},
+    "NaturalLanguageQuery": {
+      "parents": ["Entity"],
+      "description": "A question over structured data."
+    },
+    "TabularAnswer": {
+      "parents": ["Entity"],
+      "description": "Rows and columns returned by a database query.",
+      "fields": ["columns", "rows", "sql", "row_count"]
+    },
+    "DocumentReference": {
+      "parents": ["Entity"],
+      "description": "An identifier for an uploaded document."
+    },
+    "DocumentQuestion": {
+      "parents": ["Entity"],
+      "description": "A question about an uploaded document."
+    },
+    "AnswerFromDocument": {
+      "parents": ["Entity"],
+      "description": "An extractive answer grounded in a document.",
+      "fields": ["answer", "citations", "document_id"]
+    },
+    "DateTimeISO": {"parents": ["Entity"], "description": "An ISO 8601 date or timestamp."},
+    "Number": {"parents": ["Entity"], "description": "A numeric literal."},
+    "Text": {"parents": ["Entity"], "description": "Plain text."}
+  },
+  "units": {
+    "C": {"dimension": "temperature", "convertible": ["F", "K"]},
+    "F": {"dimension": "temperature", "convertible": ["C", "K"]},
+    "K": {"dimension": "temperature", "convertible": ["C", "F"]},
+    "degrees": {"dimension": "angle", "convertible": []},
+    "USD": {"dimension": "currency", "convertible": ["PKR", "EUR", "GBP", "JPY", "INR", "AED"]},
+    "PKR": {"dimension": "currency", "convertible": ["USD", "EUR", "GBP", "JPY", "INR", "AED"]},
+    "EUR": {"dimension": "currency", "convertible": ["USD", "PKR", "GBP", "JPY", "INR", "AED"]},
+    "GBP": {"dimension": "currency", "convertible": ["USD", "PKR", "EUR", "JPY", "INR", "AED"]},
+    "JPY": {"dimension": "currency", "convertible": ["USD", "PKR", "EUR", "GBP", "INR", "AED"]},
+    "INR": {"dimension": "currency", "convertible": ["USD", "PKR", "EUR", "GBP", "JPY", "AED"]},
+    "AED": {"dimension": "currency", "convertible": ["USD", "PKR", "EUR", "GBP", "JPY", "INR"]},
+    "ISO8601": {"dimension": "time", "convertible": []},
+    "year": {"dimension": "time", "convertible": []}
+  },
+  "capabilities": {
+    "GeocodeLocation": {
+      "description": "Resolve a place name to coordinates.",
+      "inputs": ["LocationName"],
+      "outputs": ["Coordinates"]
+    },
+    "GetWeatherForecast": {
+      "description": "Return a weather forecast for coordinates.",
+      "inputs": ["Coordinates"],
+      "outputs": ["Temperature"]
+    },
+    "ConvertCurrency": {
+      "description": "Convert an amount between currencies.",
+      "inputs": ["MoneyAmount", "CurrencyCode"],
+      "outputs": ["Money"]
+    },
+    "GetCountryFacts": {
+      "description": "Return facts about a country.",
+      "inputs": ["CountryName"],
+      "outputs": ["Country"]
+    },
+    "GetPublicHolidays": {
+      "description": "Return public holidays for a country and year.",
+      "inputs": ["CountryCode", "Number"],
+      "outputs": ["Holiday"]
+    },
+    "SearchResearchPapers": {
+      "description": "Search scholarly papers by topic.",
+      "inputs": ["ResearchTopic"],
+      "outputs": ["ResearchPaper"]
+    },
+    "QueryStructuredData": {
+      "description": "Answer a question using a read-only SQL database.",
+      "inputs": ["NaturalLanguageQuery"],
+      "outputs": ["TabularAnswer"]
+    },
+    "AnswerFromDocument": {
+      "description": "Answer a question from an uploaded document.",
+      "inputs": ["DocumentQuestion", "DocumentReference"],
+      "outputs": ["AnswerFromDocument"]
+    }
+  }
+}

@@ -24,7 +24,7 @@ from agent_bazaar.ontology.generator import (
 )
 from agent_bazaar.ontology.upper import upper_with_units
 from agent_bazaar.ontology.validator import validate_graph
-from agent_bazaar.protocols import Violation, ValidationResult
+from agent_bazaar.protocols import ValidationResult, Violation
 
 
 class FakeLLM:

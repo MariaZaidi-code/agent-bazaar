@@ -1,0 +1,369 @@
+[
+  {
+    "id": "m01",
+    "task": "What is the weather in Lahore tomorrow?",
+    "expected": {
+      "GeocodeLocation": "nominatim-geocode",
+      "GetWeatherForecast": "open-meteo-forecast"
+    }
+  },
+  {
+    "id": "m02",
+    "task": "What is the weather in Karachi today?",
+    "expected": {
+      "GeocodeLocation": "nominatim-geocode",
+      "GetWeatherForecast": "open-meteo-forecast"
+    }
+  },
+  {
+    "id": "m03",
+    "task": "What is the weather in Islamabad this weekend?",
+    "expected": {
+      "GeocodeLocation": "nominatim-geocode",
+      "GetWeatherForecast": "open-meteo-forecast"
+    }
+  },
+  {
+    "id": "m04",
+    "task": "What is the weather forecast for London tomorrow?",
+    "expected": {
+      "GeocodeLocation": "nominatim-geocode",
+      "GetWeatherForecast": "open-meteo-forecast"
+    }
+  },
+  {
+    "id": "m05",
+    "task": "What is the temperature in New York today?",
+    "expected": {
+      "GeocodeLocation": "nominatim-geocode",
+      "GetWeatherForecast": "open-meteo-forecast"
+    }
+  },
+  {
+    "id": "m06",
+    "task": "What is the weather in Tokyo tomorrow?",
+    "expected": {
+      "GeocodeLocation": "nominatim-geocode",
+      "GetWeatherForecast": "open-meteo-forecast"
+    }
+  },
+  {
+    "id": "m07",
+    "task": "Will it rain in Dubai today?",
+    "expected": {
+      "GeocodeLocation": "nominatim-geocode",
+      "GetWeatherForecast": "open-meteo-forecast"
+    }
+  },
+  {
+    "id": "m08",
+    "task": "What is the weather forecast for Paris next week?",
+    "expected": {
+      "GeocodeLocation": "nominatim-geocode",
+      "GetWeatherForecast": "open-meteo-forecast"
+    }
+  },
+  {
+    "id": "m09",
+    "task": "How much is 200 USD in PKR?",
+    "expected": {
+      "ConvertCurrency": "frankfurter-currency"
+    }
+  },
+  {
+    "id": "m10",
+    "task": "Convert 50 EUR to GBP.",
+    "expected": {
+      "ConvertCurrency": "frankfurter-currency"
+    }
+  },
+  {
+    "id": "m11",
+    "task": "Convert 1000 JPY to USD.",
+    "expected": {
+      "ConvertCurrency": "frankfurter-currency"
+    }
+  },
+  {
+    "id": "m12",
+    "task": "Convert 75 GBP into CAD.",
+    "expected": {
+      "ConvertCurrency": "frankfurter-currency"
+    }
+  },
+  {
+    "id": "m13",
+    "task": "How much is 10,000 INR in AED?",
+    "expected": {
+      "ConvertCurrency": "frankfurter-currency"
+    }
+  },
+  {
+    "id": "m14",
+    "task": "Convert 300 SAR to PKR.",
+    "expected": {
+      "ConvertCurrency": "frankfurter-currency"
+    }
+  },
+  {
+    "id": "m15",
+    "task": "How much is 125 AUD in EUR?",
+    "expected": {
+      "ConvertCurrency": "frankfurter-currency"
+    }
+  },
+  {
+    "id": "m16",
+    "task": "Convert 99 CHF to USD.",
+    "expected": {
+      "ConvertCurrency": "frankfurter-currency"
+    }
+  },
+  {
+    "id": "m17",
+    "task": "Which public holidays does Pakistan have in 2026?",
+    "expected": {
+      "GetPublicHolidays": "nager-holidays"
+    }
+  },
+  {
+    "id": "m18",
+    "task": "List public holidays in the United States for 2026.",
+    "expected": {
+      "GetPublicHolidays": "nager-holidays"
+    }
+  },
+  {
+    "id": "m19",
+    "task": "What national holidays does India have in 2025?",
+    "expected": {
+      "GetPublicHolidays": "nager-holidays"
+    }
+  },
+  {
+    "id": "m20",
+    "task": "List public holidays in the United Kingdom for 2026.",
+    "expected": {
+      "GetPublicHolidays": "nager-holidays"
+    }
+  },
+  {
+    "id": "m21",
+    "task": "What holidays does Germany have in 2026?",
+    "expected": {
+      "GetPublicHolidays": "nager-holidays"
+    }
+  },
+  {
+    "id": "m22",
+    "task": "Which public holidays does Canada have in 2026?",
+    "expected": {
+      "GetPublicHolidays": "nager-holidays"
+    }
+  },
+  {
+    "id": "m23",
+    "task": "What is the population of Japan?",
+    "expected": {
+      "GetCountryFacts": "restcountries-facts"
+    }
+  },
+  {
+    "id": "m24",
+    "task": "What is the capital of France?",
+    "expected": {
+      "GetCountryFacts": "restcountries-facts"
+    }
+  },
+  {
+    "id": "m25",
+    "task": "Give me facts about Brazil.",
+    "expected": {
+      "GetCountryFacts": "restcountries-facts"
+    }
+  },
+  {
+    "id": "m26",
+    "task": "What are the population and capital of Canada?",
+    "expected": {
+      "GetCountryFacts": "restcountries-facts"
+    }
+  },
+  {
+    "id": "m27",
+    "task": "Provide country facts for Germany.",
+    "expected": {
+      "GetCountryFacts": "restcountries-facts"
+    }
+  },
+  {
+    "id": "m28",
+    "task": "What is the population of Egypt?",
+    "expected": {
+      "GetCountryFacts": "restcountries-facts"
+    }
+  },
+  {
+    "id": "m29",
+    "task": "Find recent research papers on GraphRAG.",
+    "expected": {
+      "SearchResearchPapers": "arxiv-search"
+    }
+  },
+  {
+    "id": "m30",
+    "task": "Find research on retrieval augmented generation.",
+    "expected": {
+      "SearchResearchPapers": "arxiv-search"
+    }
+  },
+  {
+    "id": "m31",
+    "task": "Search arXiv for papers about ontology alignment.",
+    "expected": {
+      "SearchResearchPapers": "arxiv-search"
+    }
+  },
+  {
+    "id": "m32",
+    "task": "Find studies about LLM agents.",
+    "expected": {
+      "SearchResearchPapers": "arxiv-search"
+    }
+  },
+  {
+    "id": "m33",
+    "task": "Find publications on knowledge graphs.",
+    "expected": {
+      "SearchResearchPapers": "arxiv-search"
+    }
+  },
+  {
+    "id": "m34",
+    "task": "How many students are enrolled in the BS Artificial Intelligence program?",
+    "expected": {
+      "QueryStructuredData": "university-sql"
+    }
+  },
+  {
+    "id": "m35",
+    "task": "List courses in the computer science department.",
+    "expected": {
+      "QueryStructuredData": "university-sql"
+    }
+  },
+  {
+    "id": "m36",
+    "task": "What is the average GPA of students?",
+    "expected": {
+      "QueryStructuredData": "university-sql"
+    }
+  },
+  {
+    "id": "m37",
+    "task": "Which course has the most enrollments?",
+    "expected": {
+      "QueryStructuredData": "university-sql"
+    }
+  },
+  {
+    "id": "m38",
+    "task": "How many students are in the university?",
+    "expected": {
+      "QueryStructuredData": "university-sql"
+    }
+  },
+  {
+    "id": "m39",
+    "task": "Show enrollment by program.",
+    "expected": {
+      "QueryStructuredData": "university-sql"
+    }
+  },
+  {
+    "id": "m40",
+    "task": "According to the uploaded document, what is the main goal of the project?",
+    "expected": {
+      "AnswerFromDocument": "document-qa"
+    }
+  },
+  {
+    "id": "m41",
+    "task": "According to the uploaded document, what does the Auditor do?",
+    "expected": {
+      "AnswerFromDocument": "document-qa"
+    }
+  },
+  {
+    "id": "m42",
+    "task": "According to the uploaded document, which baselines does the project report?",
+    "expected": {
+      "AnswerFromDocument": "document-qa"
+    }
+  },
+  {
+    "id": "m43",
+    "task": "According to the uploaded document, which free resources does the project use?",
+    "expected": {
+      "AnswerFromDocument": "document-qa"
+    }
+  },
+  {
+    "id": "m44",
+    "task": "According to the uploaded document, what does the demonstration chain show?",
+    "expected": {
+      "AnswerFromDocument": "document-qa"
+    }
+  },
+  {
+    "id": "m45",
+    "task": "What is the temperature in Lahore tomorrow, and what is 200 USD in PKR?",
+    "expected": {
+      "GeocodeLocation": "nominatim-geocode",
+      "GetWeatherForecast": "open-meteo-forecast",
+      "ConvertCurrency": "frankfurter-currency"
+    }
+  },
+  {
+    "id": "m46",
+    "task": "Compare the population of Japan and find recent research papers on GraphRAG.",
+    "expected": {
+      "GetCountryFacts": "restcountries-facts",
+      "SearchResearchPapers": "arxiv-search"
+    }
+  },
+  {
+    "id": "m47",
+    "task": "List Pakistan public holidays for 2026 and convert 100 USD to PKR.",
+    "expected": {
+      "GetPublicHolidays": "nager-holidays",
+      "ConvertCurrency": "frankfurter-currency"
+    }
+  },
+  {
+    "id": "m48",
+    "task": "What is the weather in London tomorrow and what is the population of France?",
+    "expected": {
+      "GeocodeLocation": "nominatim-geocode",
+      "GetWeatherForecast": "open-meteo-forecast",
+      "GetCountryFacts": "restcountries-facts"
+    }
+  },
+  {
+    "id": "m49",
+    "task": "How many students are enrolled in the MS Data Science program and find research papers on agents?",
+    "expected": {
+      "QueryStructuredData": "university-sql",
+      "SearchResearchPapers": "arxiv-search"
+    }
+  },
+  {
+    "id": "m50",
+    "task": "What is the temperature in Karachi tomorrow, and according to the uploaded document, what is the main goal?",
+    "expected": {
+      "GeocodeLocation": "nominatim-geocode",
+      "GetWeatherForecast": "open-meteo-forecast",
+      "AnswerFromDocument": "document-qa"
+    }
+  }
+]

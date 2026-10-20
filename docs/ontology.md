@@ -286,6 +286,33 @@ python -m pytest tests/test_ontology_generator.py tests/test_kg_store.py tests/t
 6. Do not edit `data/out/ontology.ttl` by hand. It is generated; `domain.ttl` and
    the build summary are regenerated with it.
 
+## 8. Name mapping in the application layer
+
+The Client/Provider/Interface application carries a small local fallback ontology
+(`app/data/ontology.json`) whose names differ from the ones above.
+`app/integration/canonical.py` is the single translation point between the two
+vocabularies, so no other module has to hard-code an alias.
+
+| Local app name | Canonical name |
+| --- | --- |
+| `LocationName` | `PlaceName` |
+| `CityName` | `City` |
+| `Coordinates` | `Position` |
+| `Money` | `MoneyAmount` |
+| `Text` | `Description` |
+| `Number` | `Count` |
+| `DateTimeISO` | `DateTime` |
+
+The unit names are mapped the same way: `C` to `Celsius`, `F` to `Fahrenheit`,
+`K` to `Kelvin` and `degrees` to `Degree`.
+
+The knowledge layer does not model every concept the application uses. The
+concepts that only the app models - document question answering, research
+papers and the metadata classes - are listed in `EXTERNAL_CONCEPTS` in
+`app/integration/canonical.py` and are covered by the app's fallback ontology
+`app/data/ontology.json`. The RDF ontology stays the source of truth for
+everything it does model.
+
 ## References
 
 - Namespaces: `src/agent_bazaar/ontology/ns.py`
@@ -296,3 +323,5 @@ python -m pytest tests/test_ontology_generator.py tests/test_kg_store.py tests/t
 - Validation: `src/agent_bazaar/ontology/validator.py`
 - Generation: `src/agent_bazaar/ontology/generator.py`
 - Build CLI: `scripts/build_ontology.py`
+- Application name mapping: `app/integration/canonical.py`
+- Application fallback ontology: `app/data/ontology.json`

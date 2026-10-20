@@ -1,4 +1,4 @@
-﻿__pycache__/
+__pycache__/
 *.py[cod]
 *.egg-info/
 .eggs/
@@ -16,6 +16,8 @@ htmlcov/
 .mypy_cache/
 .ruff_cache/
 
+# Knowledge layer artifacts: keep the committed seed corpus and published
+# artifacts, ignore downloaded corpora, caches and runtime state.
 data/cache/
 data/specs/*
 !data/specs/seed/
@@ -23,10 +25,20 @@ data/specs/*
 data/vectors/
 data/memory/
 data/staging/
+data/demo/
+
+# Client, provider and interface runtime state
+data/runtime/
+app/data/uploads/
+*.db
+*.sqlite
+*.sqlite3
+reports/*
+!reports/.gitkeep
+!reports/*.json
 
 *.log
 .DS_Store
 Thumbs.db
-data/demo/
-
-
+.vscode/
+.idea/

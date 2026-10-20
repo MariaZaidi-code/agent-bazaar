@@ -1,0 +1,807 @@
+{
+  "suite": "baselines",
+  "generated_at": "2026-10-20T15:54:02.373201+00:00",
+  "mode": "offline",
+  "tasks": 15,
+  "metrics": {
+    "full_chain_success_rate": 1.0,
+    "best_baseline_chain_success_rate": 1.0,
+    "chain_success_delta": 0.0,
+    "full_fault_recovery": 1.0,
+    "baseline_fault_recovery": 0.0
+  },
+  "runners": [
+    {
+      "runner": "full",
+      "tasks": 15,
+      "chain_success_rate": 1.0,
+      "expected_tool_selection_accuracy": 1.0,
+      "answer_rate": 1.0,
+      "avg_latency_ms": 30.4413,
+      "rows": [
+        {
+          "task_id": "c01",
+          "task": "What is the temperature in Lahore tomorrow, and what is 200 USD in PKR?",
+          "status": "completed",
+          "selected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "expected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "selected_matches": 3,
+          "all_expected_selected": true,
+          "answer_chars": 156,
+          "duration_ms": 48.82
+        },
+        {
+          "task_id": "c02",
+          "task": "What is the weather in Lahore tomorrow?",
+          "status": "completed",
+          "selected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast"
+          },
+          "expected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast"
+          },
+          "selected_matches": 2,
+          "all_expected_selected": true,
+          "answer_chars": 86,
+          "duration_ms": 34.97
+        },
+        {
+          "task_id": "c03",
+          "task": "Convert 200 USD to PKR.",
+          "status": "completed",
+          "selected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "expected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 69,
+          "duration_ms": 23.0
+        },
+        {
+          "task_id": "c04",
+          "task": "Which public holidays does Pakistan have in 2026?",
+          "status": "completed",
+          "selected": {
+            "GetPublicHolidays": "nager-holidays"
+          },
+          "expected": {
+            "GetPublicHolidays": "nager-holidays"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 162,
+          "duration_ms": 19.4
+        },
+        {
+          "task_id": "c05",
+          "task": "What is the population of Japan?",
+          "status": "completed",
+          "selected": {
+            "GetCountryFacts": "restcountries-facts"
+          },
+          "expected": {
+            "GetCountryFacts": "restcountries-facts"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 58,
+          "duration_ms": 21.46
+        },
+        {
+          "task_id": "c06",
+          "task": "Find recent research papers on GraphRAG.",
+          "status": "completed",
+          "selected": {
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "expected": {
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 246,
+          "duration_ms": 18.29
+        },
+        {
+          "task_id": "c07",
+          "task": "How many students are enrolled in the BS Artificial Intelligence program?",
+          "status": "completed",
+          "selected": {
+            "QueryStructuredData": "university-sql"
+          },
+          "expected": {
+            "QueryStructuredData": "university-sql"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 109,
+          "duration_ms": 25.32
+        },
+        {
+          "task_id": "c08",
+          "task": "According to the uploaded document, what is the main goal of the project?",
+          "status": "completed",
+          "selected": {
+            "AnswerFromDocument": "document-qa"
+          },
+          "expected": {
+            "AnswerFromDocument": "document-qa"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 145,
+          "duration_ms": 17.78
+        },
+        {
+          "task_id": "c09",
+          "task": "Compare the population of Japan and find recent research papers on GraphRAG.",
+          "status": "completed",
+          "selected": {
+            "GetCountryFacts": "restcountries-facts",
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "expected": {
+            "GetCountryFacts": "restcountries-facts",
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "selected_matches": 2,
+          "all_expected_selected": true,
+          "answer_chars": 305,
+          "duration_ms": 37.24
+        },
+        {
+          "task_id": "c10",
+          "task": "List Pakistan public holidays for 2026 and convert 100 USD to PKR.",
+          "status": "completed",
+          "selected": {
+            "GetPublicHolidays": "nager-holidays",
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "expected": {
+            "GetPublicHolidays": "nager-holidays",
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "selected_matches": 2,
+          "all_expected_selected": true,
+          "answer_chars": 232,
+          "duration_ms": 33.33
+        },
+        {
+          "task_id": "c11",
+          "task": "What is the weather in London tomorrow and what is the population of France?",
+          "status": "completed",
+          "selected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "GetCountryFacts": "restcountries-facts"
+          },
+          "expected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "GetCountryFacts": "restcountries-facts"
+          },
+          "selected_matches": 3,
+          "all_expected_selected": true,
+          "answer_chars": 148,
+          "duration_ms": 49.38
+        },
+        {
+          "task_id": "c12",
+          "task": "How many students are enrolled in the MS Data Science program and find research papers on agents?",
+          "status": "completed",
+          "selected": {
+            "QueryStructuredData": "university-sql",
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "expected": {
+            "QueryStructuredData": "university-sql",
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "selected_matches": 2,
+          "all_expected_selected": true,
+          "answer_chars": 356,
+          "duration_ms": 42.98
+        },
+        {
+          "task_id": "c13",
+          "task": "What is the temperature in Karachi tomorrow, and according to the uploaded document, what is the main goal?",
+          "status": "completed",
+          "selected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "AnswerFromDocument": "document-qa"
+          },
+          "expected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "AnswerFromDocument": "document-qa"
+          },
+          "selected_matches": 3,
+          "all_expected_selected": true,
+          "answer_chars": 234,
+          "duration_ms": 52.48
+        },
+        {
+          "task_id": "c14",
+          "task": "Convert 50 EUR to GBP.",
+          "status": "completed",
+          "selected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "expected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 67,
+          "duration_ms": 15.42
+        },
+        {
+          "task_id": "c15",
+          "task": "Convert 1000 JPY to USD.",
+          "status": "completed",
+          "selected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "expected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 69,
+          "duration_ms": 16.75
+        }
+      ],
+      "fault_case": {
+        "runner": "full",
+        "task": "What is the temperature in Lahore tomorrow?",
+        "status": "completed",
+        "selected_tool": "open-meteo-forecast-backup",
+        "recovered": true,
+        "answer_chars": 218
+      },
+      "fault_recovery": 1.0
+    },
+    {
+      "runner": "b1",
+      "tasks": 15,
+      "chain_success_rate": 1.0,
+      "expected_tool_selection_accuracy": 1.0,
+      "answer_rate": 1.0,
+      "avg_latency_ms": 4.6087,
+      "rows": [
+        {
+          "task_id": "c01",
+          "task": "What is the temperature in Lahore tomorrow, and what is 200 USD in PKR?",
+          "status": "completed",
+          "selected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "expected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "selected_matches": 3,
+          "all_expected_selected": true,
+          "answer_chars": 559,
+          "duration_ms": 8.38
+        },
+        {
+          "task_id": "c02",
+          "task": "What is the weather in Lahore tomorrow?",
+          "status": "completed",
+          "selected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast"
+          },
+          "expected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast"
+          },
+          "selected_matches": 2,
+          "all_expected_selected": true,
+          "answer_chars": 378,
+          "duration_ms": 3.66
+        },
+        {
+          "task_id": "c03",
+          "task": "Convert 200 USD to PKR.",
+          "status": "completed",
+          "selected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "expected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 180,
+          "duration_ms": 1.92
+        },
+        {
+          "task_id": "c04",
+          "task": "Which public holidays does Pakistan have in 2026?",
+          "status": "completed",
+          "selected": {
+            "GetPublicHolidays": "nager-holidays"
+          },
+          "expected": {
+            "GetPublicHolidays": "nager-holidays"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 770,
+          "duration_ms": 2.63
+        },
+        {
+          "task_id": "c05",
+          "task": "What is the population of Japan?",
+          "status": "completed",
+          "selected": {
+            "GetCountryFacts": "restcountries-facts"
+          },
+          "expected": {
+            "GetCountryFacts": "restcountries-facts"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 167,
+          "duration_ms": 2.91
+        },
+        {
+          "task_id": "c06",
+          "task": "Find recent research papers on GraphRAG.",
+          "status": "completed",
+          "selected": {
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "expected": {
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 704,
+          "duration_ms": 2.86
+        },
+        {
+          "task_id": "c07",
+          "task": "How many students are enrolled in the BS Artificial Intelligence program?",
+          "status": "completed",
+          "selected": {
+            "QueryStructuredData": "university-sql"
+          },
+          "expected": {
+            "QueryStructuredData": "university-sql"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 184,
+          "duration_ms": 6.53
+        },
+        {
+          "task_id": "c08",
+          "task": "According to the uploaded document, what is the main goal of the project?",
+          "status": "completed",
+          "selected": {
+            "AnswerFromDocument": "document-qa"
+          },
+          "expected": {
+            "AnswerFromDocument": "document-qa"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 942,
+          "duration_ms": 3.14
+        },
+        {
+          "task_id": "c09",
+          "task": "Compare the population of Japan and find recent research papers on GraphRAG.",
+          "status": "completed",
+          "selected": {
+            "GetCountryFacts": "restcountries-facts",
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "expected": {
+            "GetCountryFacts": "restcountries-facts",
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "selected_matches": 2,
+          "all_expected_selected": true,
+          "answer_chars": 872,
+          "duration_ms": 4.6
+        },
+        {
+          "task_id": "c10",
+          "task": "List Pakistan public holidays for 2026 and convert 100 USD to PKR.",
+          "status": "completed",
+          "selected": {
+            "GetPublicHolidays": "nager-holidays",
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "expected": {
+            "GetPublicHolidays": "nager-holidays",
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "selected_matches": 2,
+          "all_expected_selected": true,
+          "answer_chars": 951,
+          "duration_ms": 5.55
+        },
+        {
+          "task_id": "c11",
+          "task": "What is the weather in London tomorrow and what is the population of France?",
+          "status": "completed",
+          "selected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "GetCountryFacts": "restcountries-facts"
+          },
+          "expected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "GetCountryFacts": "restcountries-facts"
+          },
+          "selected_matches": 3,
+          "all_expected_selected": true,
+          "answer_chars": 556,
+          "duration_ms": 8.1
+        },
+        {
+          "task_id": "c12",
+          "task": "How many students are enrolled in the MS Data Science program and find research papers on agents?",
+          "status": "completed",
+          "selected": {
+            "QueryStructuredData": "university-sql",
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "expected": {
+            "QueryStructuredData": "university-sql",
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "selected_matches": 2,
+          "all_expected_selected": true,
+          "answer_chars": 888,
+          "duration_ms": 5.59
+        },
+        {
+          "task_id": "c13",
+          "task": "What is the temperature in Karachi tomorrow, and according to the uploaded document, what is the main goal?",
+          "status": "completed",
+          "selected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "AnswerFromDocument": "document-qa"
+          },
+          "expected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "AnswerFromDocument": "document-qa"
+          },
+          "selected_matches": 3,
+          "all_expected_selected": true,
+          "answer_chars": 1323,
+          "duration_ms": 7.29
+        },
+        {
+          "task_id": "c14",
+          "task": "Convert 50 EUR to GBP.",
+          "status": "completed",
+          "selected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "expected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 181,
+          "duration_ms": 2.9
+        },
+        {
+          "task_id": "c15",
+          "task": "Convert 1000 JPY to USD.",
+          "status": "completed",
+          "selected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "expected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 180,
+          "duration_ms": 3.07
+        }
+      ],
+      "fault_case": {
+        "runner": "b1",
+        "task": "What is the temperature in Lahore tomorrow?",
+        "status": "partial",
+        "selected_tool": "open-meteo-forecast",
+        "recovered": false,
+        "answer_chars": 216
+      },
+      "fault_recovery": 0.0
+    },
+    {
+      "runner": "b2",
+      "tasks": 15,
+      "chain_success_rate": 1.0,
+      "expected_tool_selection_accuracy": 1.0,
+      "answer_rate": 1.0,
+      "avg_latency_ms": 3.5447,
+      "rows": [
+        {
+          "task_id": "c01",
+          "task": "What is the temperature in Lahore tomorrow, and what is 200 USD in PKR?",
+          "status": "completed",
+          "selected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "expected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "selected_matches": 3,
+          "all_expected_selected": true,
+          "answer_chars": 559,
+          "duration_ms": 5.32
+        },
+        {
+          "task_id": "c02",
+          "task": "What is the weather in Lahore tomorrow?",
+          "status": "completed",
+          "selected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast"
+          },
+          "expected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast"
+          },
+          "selected_matches": 2,
+          "all_expected_selected": true,
+          "answer_chars": 378,
+          "duration_ms": 1.53
+        },
+        {
+          "task_id": "c03",
+          "task": "Convert 200 USD to PKR.",
+          "status": "completed",
+          "selected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "expected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 180,
+          "duration_ms": 0.74
+        },
+        {
+          "task_id": "c04",
+          "task": "Which public holidays does Pakistan have in 2026?",
+          "status": "completed",
+          "selected": {
+            "GetPublicHolidays": "nager-holidays"
+          },
+          "expected": {
+            "GetPublicHolidays": "nager-holidays"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 770,
+          "duration_ms": 1.93
+        },
+        {
+          "task_id": "c05",
+          "task": "What is the population of Japan?",
+          "status": "completed",
+          "selected": {
+            "GetCountryFacts": "restcountries-facts"
+          },
+          "expected": {
+            "GetCountryFacts": "restcountries-facts"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 167,
+          "duration_ms": 3.97
+        },
+        {
+          "task_id": "c06",
+          "task": "Find recent research papers on GraphRAG.",
+          "status": "completed",
+          "selected": {
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "expected": {
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 704,
+          "duration_ms": 2.95
+        },
+        {
+          "task_id": "c07",
+          "task": "How many students are enrolled in the BS Artificial Intelligence program?",
+          "status": "completed",
+          "selected": {
+            "QueryStructuredData": "university-sql"
+          },
+          "expected": {
+            "QueryStructuredData": "university-sql"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 184,
+          "duration_ms": 4.81
+        },
+        {
+          "task_id": "c08",
+          "task": "According to the uploaded document, what is the main goal of the project?",
+          "status": "completed",
+          "selected": {
+            "AnswerFromDocument": "document-qa"
+          },
+          "expected": {
+            "AnswerFromDocument": "document-qa"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 942,
+          "duration_ms": 2.57
+        },
+        {
+          "task_id": "c09",
+          "task": "Compare the population of Japan and find recent research papers on GraphRAG.",
+          "status": "completed",
+          "selected": {
+            "GetCountryFacts": "restcountries-facts",
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "expected": {
+            "GetCountryFacts": "restcountries-facts",
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "selected_matches": 2,
+          "all_expected_selected": true,
+          "answer_chars": 872,
+          "duration_ms": 4.15
+        },
+        {
+          "task_id": "c10",
+          "task": "List Pakistan public holidays for 2026 and convert 100 USD to PKR.",
+          "status": "completed",
+          "selected": {
+            "GetPublicHolidays": "nager-holidays",
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "expected": {
+            "GetPublicHolidays": "nager-holidays",
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "selected_matches": 2,
+          "all_expected_selected": true,
+          "answer_chars": 951,
+          "duration_ms": 4.43
+        },
+        {
+          "task_id": "c11",
+          "task": "What is the weather in London tomorrow and what is the population of France?",
+          "status": "completed",
+          "selected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "GetCountryFacts": "restcountries-facts"
+          },
+          "expected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "GetCountryFacts": "restcountries-facts"
+          },
+          "selected_matches": 3,
+          "all_expected_selected": true,
+          "answer_chars": 556,
+          "duration_ms": 6.24
+        },
+        {
+          "task_id": "c12",
+          "task": "How many students are enrolled in the MS Data Science program and find research papers on agents?",
+          "status": "completed",
+          "selected": {
+            "QueryStructuredData": "university-sql",
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "expected": {
+            "QueryStructuredData": "university-sql",
+            "SearchResearchPapers": "arxiv-search"
+          },
+          "selected_matches": 2,
+          "all_expected_selected": true,
+          "answer_chars": 888,
+          "duration_ms": 5.97
+        },
+        {
+          "task_id": "c13",
+          "task": "What is the temperature in Karachi tomorrow, and according to the uploaded document, what is the main goal?",
+          "status": "completed",
+          "selected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "AnswerFromDocument": "document-qa"
+          },
+          "expected": {
+            "GeocodeLocation": "nominatim-geocode",
+            "GetWeatherForecast": "open-meteo-forecast",
+            "AnswerFromDocument": "document-qa"
+          },
+          "selected_matches": 3,
+          "all_expected_selected": true,
+          "answer_chars": 1323,
+          "duration_ms": 6.27
+        },
+        {
+          "task_id": "c14",
+          "task": "Convert 50 EUR to GBP.",
+          "status": "completed",
+          "selected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "expected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 181,
+          "duration_ms": 1.15
+        },
+        {
+          "task_id": "c15",
+          "task": "Convert 1000 JPY to USD.",
+          "status": "completed",
+          "selected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "expected": {
+            "ConvertCurrency": "frankfurter-currency"
+          },
+          "selected_matches": 1,
+          "all_expected_selected": true,
+          "answer_chars": 180,
+          "duration_ms": 1.14
+        }
+      ],
+      "fault_case": {
+        "runner": "b2",
+        "task": "What is the temperature in Lahore tomorrow?",
+        "status": "partial",
+        "selected_tool": "open-meteo-forecast",
+        "recovered": false,
+        "answer_chars": 216
+      },
+      "fault_recovery": 0.0
+    }
+  ]
+}

@@ -1,0 +1,441 @@
+[
+  {
+    "id": "nominatim-geocode",
+    "name": "OpenStreetMap Nominatim Geocoder",
+    "provider_id": "nominatim",
+    "description": "Resolve a city or place name to latitude, longitude and a display name using the public OpenStreetMap Nominatim search API.",
+    "capability": "GeocodeLocation",
+    "inputs": [
+      {
+        "name": "location",
+        "concept": "LocationName",
+        "datatype": "string",
+        "required": true,
+        "description": "City, address or place name to resolve."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "coordinates",
+        "concept": "Coordinates",
+        "unit": "degrees",
+        "datatype": "object",
+        "fields": ["latitude", "longitude", "display_name", "country_code"],
+        "description": "WGS84 coordinates for the resolved place."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Resolves place names without an API key.",
+        "label": "Verified",
+        "evidence": "Seeded demo evidence from the public Nominatim endpoint; the live Auditor replaces this."
+      },
+      {
+        "text": "Returns coordinates in WGS84 degrees.",
+        "label": "Supported",
+        "evidence": "Nominatim API documentation."
+      }
+    ],
+    "keywords": ["geocode", "geocoding", "location", "city", "place", "map", "coordinates", "latitude", "longitude", "address"],
+    "docs_url": "https://nominatim.org/release-docs/latest/api/Search/",
+    "price": 0.0,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["api", "geospatial", "backup-eligible"]
+  },
+  {
+    "id": "open-meteo-forecast",
+    "name": "Open-Meteo Weather Forecast",
+    "provider_id": "open-meteo",
+    "description": "Return a daily weather forecast with maximum and minimum temperature, rain probability and timezone for a coordinate pair.",
+    "capability": "GetWeatherForecast",
+    "inputs": [
+      {
+        "name": "coordinates",
+        "concept": "Coordinates",
+        "unit": "degrees",
+        "datatype": "object",
+        "required": true,
+        "description": "Latitude and longitude from a geocoder."
+      },
+      {
+        "name": "date",
+        "concept": "DateTimeISO",
+        "datatype": "string",
+        "required": false,
+        "description": "ISO date to forecast; tomorrow by default."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "forecast",
+        "concept": "Temperature",
+        "unit": "C",
+        "datatype": "object",
+        "fields": ["temperature", "temp_max", "temp_min", "precipitation_probability", "date", "timezone"],
+        "description": "Daily forecast values in degrees Celsius."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Returns temperatures in Celsius.",
+        "label": "Verified",
+        "evidence": "Seeded demo evidence from the public forecast endpoint; the live Auditor replaces this."
+      },
+      {
+        "text": "No API key is required.",
+        "label": "Verified",
+        "evidence": "Open-Meteo free endpoint documentation."
+      },
+      {
+        "text": "Provides a daily forecast for the requested location.",
+        "label": "Supported",
+        "evidence": "Open-Meteo forecast API documentation."
+      }
+    ],
+    "keywords": ["weather", "temperature", "forecast", "rain", "precipitation", "tomorrow", "celsius", "hot", "cold", "climate"],
+    "docs_url": "https://open-meteo.com/en/docs",
+    "price": 0.0,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["api", "weather", "backup-eligible"]
+  },
+  {
+    "id": "frankfurter-currency",
+    "name": "Frankfurter Currency Converter",
+    "provider_id": "frankfurter",
+    "description": "Convert a monetary amount between currencies using keyless reference exchange rates.",
+    "capability": "ConvertCurrency",
+    "inputs": [
+      {
+        "name": "amount",
+        "concept": "MoneyAmount",
+        "datatype": "number",
+        "required": true,
+        "description": "Amount to convert."
+      },
+      {
+        "name": "from_currency",
+        "concept": "CurrencyCode",
+        "datatype": "string",
+        "required": true,
+        "description": "ISO 4217 source currency code."
+      },
+      {
+        "name": "to_currency",
+        "concept": "CurrencyCode",
+        "datatype": "string",
+        "required": true,
+        "description": "ISO 4217 target currency code."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "conversion",
+        "concept": "Money",
+        "datatype": "object",
+        "fields": ["amount", "currency", "rate", "from", "to", "date"],
+        "description": "Converted amount and exchange rate."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Converts an amount between supported currencies without an API key.",
+        "label": "Supported",
+        "evidence": "Frankfurter documentation; PKR is served by the documented keyless fallback."
+      },
+      {
+        "text": "The output states the effective rate and date.",
+        "label": "Supported",
+        "evidence": "Provider response schema."
+      }
+    ],
+    "keywords": ["currency", "exchange", "rate", "convert", "money", "usd", "pkr", "eur", "dollar", "rupee", "conversion"],
+    "docs_url": "https://www.frankfurter.app/docs/",
+    "price": 0.0,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["api", "finance", "backup-eligible"]
+  },
+  {
+    "id": "restcountries-facts",
+    "name": "REST Countries Fact Service",
+    "provider_id": "rest-countries",
+    "description": "Return country facts such as capital, population, region and currencies by country name.",
+    "capability": "GetCountryFacts",
+    "inputs": [
+      {
+        "name": "country",
+        "concept": "CountryName",
+        "datatype": "string",
+        "required": true,
+        "description": "Country name to look up."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "country",
+        "concept": "Country",
+        "datatype": "object",
+        "fields": ["name", "capital", "population", "region", "currencies", "country_code"],
+        "description": "Country facts."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Returns population and capital without an API key.",
+        "label": "Supported",
+        "evidence": "REST Countries public API documentation."
+      },
+      {
+        "text": "Returns ISO country codes.",
+        "label": "Supported",
+        "evidence": "REST Countries response schema."
+      }
+    ],
+    "keywords": ["country", "population", "capital", "nation", "facts", "region", "currency", "japan", "pakistan", "germany"],
+    "docs_url": "https://restcountries.com/",
+    "price": 0.0,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["api", "reference", "backup-eligible"]
+  },
+  {
+    "id": "nager-holidays",
+    "name": "Nager.Date Public Holidays",
+    "provider_id": "nager-date",
+    "description": "List public holidays for a country and year, including local names and dates.",
+    "capability": "GetPublicHolidays",
+    "inputs": [
+      {
+        "name": "country_code",
+        "concept": "CountryCode",
+        "datatype": "string",
+        "required": true,
+        "description": "ISO 3166-1 alpha-2 country code."
+      },
+      {
+        "name": "year",
+        "concept": "Number",
+        "datatype": "integer",
+        "required": true,
+        "description": "Calendar year."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "holidays",
+        "concept": "Holiday",
+        "datatype": "array",
+        "fields": ["date", "name", "local_name", "country_code"],
+        "description": "Public holidays for the requested country and year."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Returns public holidays by country and year.",
+        "label": "Supported",
+        "evidence": "Nager.Date API documentation."
+      },
+      {
+        "text": "No API key is required.",
+        "label": "Supported",
+        "evidence": "Nager.Date public endpoint."
+      }
+    ],
+    "keywords": ["holiday", "holidays", "public holiday", "national holiday", "calendar", "eid", "christmas", "pakistan", "country"],
+    "docs_url": "https://date.nager.at/Api",
+    "price": 0.0,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["api", "calendar", "backup-eligible"]
+  },
+  {
+    "id": "arxiv-search",
+    "name": "arXiv Research Search",
+    "provider_id": "arxiv",
+    "description": "Search recent research papers on arXiv by topic and return titles, summaries, authors and links.",
+    "capability": "SearchResearchPapers",
+    "inputs": [
+      {
+        "name": "query",
+        "concept": "ResearchTopic",
+        "datatype": "string",
+        "required": true,
+        "description": "Research topic or keywords."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "papers",
+        "concept": "ResearchPaper",
+        "datatype": "array",
+        "fields": ["title", "summary", "url", "published", "authors"],
+        "description": "Ranked paper records."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Searches arXiv metadata without an API key.",
+        "label": "Supported",
+        "evidence": "arXiv API documentation."
+      },
+      {
+        "text": "Returns titles, summaries and links.",
+        "label": "Supported",
+        "evidence": "arXiv Atom feed schema."
+      }
+    ],
+    "keywords": ["research", "paper", "papers", "arxiv", "study", "literature", "graphrag", "ontology", "llm", "publication", "science"],
+    "docs_url": "https://info.arxiv.org/help/api/index.html",
+    "price": 0.0,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["api", "research", "backup-eligible"]
+  },
+  {
+    "id": "university-sql",
+    "name": "University Read-only SQL Provider",
+    "provider_id": "university-db",
+    "description": "Answer questions about students, programs, courses and enrolment using a local read-only university SQL database.",
+    "capability": "QueryStructuredData",
+    "inputs": [
+      {
+        "name": "question",
+        "concept": "NaturalLanguageQuery",
+        "datatype": "string",
+        "required": true,
+        "description": "Question about the sample university database."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "table",
+        "concept": "TabularAnswer",
+        "datatype": "object",
+        "fields": ["columns", "rows", "sql", "row_count"],
+        "description": "Query result rows with the SQL that produced them."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Uses a read-only connection to the local sample database.",
+        "label": "Verified",
+        "evidence": "Enforced in the Provider with a query-only connection."
+      },
+      {
+        "text": "Rejects writes and non-allow-listed tables.",
+        "label": "Verified",
+        "evidence": "SQL guard and allow-list checked before execution."
+      }
+    ],
+    "keywords": ["database", "sql", "students", "student", "program", "programs", "enrolment", "enrollment", "gpa", "courses", "university", "count", "rows"],
+    "docs_url": "",
+    "price": 0.0,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["database", "local"]
+  },
+  {
+    "id": "document-qa",
+    "name": "Uploaded Document Question Answering",
+    "provider_id": "document-service",
+    "description": "Answer questions over a document uploaded by the developer, returning extractive citations from the document.",
+    "capability": "AnswerFromDocument",
+    "inputs": [
+      {
+        "name": "question",
+        "concept": "DocumentQuestion",
+        "datatype": "string",
+        "required": true,
+        "description": "Question about the document."
+      },
+      {
+        "name": "document_id",
+        "concept": "DocumentReference",
+        "datatype": "string",
+        "required": false,
+        "description": "Uploaded document identifier; the most recent document is used by default."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "answer",
+        "concept": "AnswerFromDocument",
+        "datatype": "object",
+        "fields": ["answer", "citations", "document_id"],
+        "description": "Answer grounded in quoted document passages."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Answers from the uploaded document with citations.",
+        "label": "Supported",
+        "evidence": "Local extractive QA implementation; every answer includes a passage."
+      },
+      {
+        "text": "Does not send document text to a paid service.",
+        "label": "Supported",
+        "evidence": "Local parsing and retrieval; the optional LLM is disabled by default."
+      }
+    ],
+    "keywords": ["document", "file", "uploaded", "upload", "pdf", "docx", "text", "according", "document says", "paper", "report", "notes"],
+    "docs_url": "",
+    "price": 0.0,
+    "probe_eligible": false,
+    "execution": "live",
+    "tags": ["document", "local"]
+  },
+  {
+    "id": "mock-weather-fahrenheit",
+    "name": "Mock Weather Adversary",
+    "provider_id": "mock-weather-fahrenheit",
+    "description": "A deliberately misleading weather tool that claims Celsius but returns Fahrenheit values, used to test claim badges and unit checks.",
+    "capability": "GetWeatherForecast",
+    "inputs": [
+      {
+        "name": "coordinates",
+        "concept": "Coordinates",
+        "unit": "degrees",
+        "datatype": "object",
+        "required": true,
+        "description": "Latitude and longitude."
+      },
+      {
+        "name": "date",
+        "concept": "DateTimeISO",
+        "datatype": "string",
+        "required": false,
+        "description": "ISO date."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "forecast",
+        "concept": "Temperature",
+        "unit": "F",
+        "datatype": "object",
+        "fields": ["temperature", "temp_max", "temp_min", "unit"],
+        "description": "Forecast values in Fahrenheit despite the Celsius claim."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Returns temperature in Celsius.",
+        "label": "Contradicted",
+        "evidence": "Seeded adversarial provider: the payload unit is Fahrenheit."
+      },
+      {
+        "text": "No API key is required.",
+        "label": "Verified",
+        "evidence": "Mock provider is local."
+      }
+    ],
+    "keywords": ["weather", "temperature", "mock", "fahrenheit", "unreliable", "forecast"],
+    "docs_url": "",
+    "price": 0.0,
+    "probe_eligible": true,
+    "execution": "mock",
+    "tags": ["mock", "adversarial", "weather"]
+  }
+]

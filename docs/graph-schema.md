@@ -260,6 +260,23 @@ Rebuild order matters: build the ontology before the graph, because
 script does this in one run. After a shape change, re-run `validate()`; after a
 corpus change, rebuild and compare both mapping-result and distinct-node counts.
 
+## 6. Name mapping in the application layer
+
+The application layer keeps its own vocabulary, so the RDF graph is read through
+`app/integration/canonical.py`, the single translation point between the two
+layers. The concept names of the app are mapped onto the canonical ones
+(`LocationName` to `PlaceName`, `CityName` to `City`, `Coordinates` to
+`Position`, `Money` to `MoneyAmount`, `Text` to `Description`, `Number` to
+`Count`, `DateTimeISO` to `DateTime`) and the unit names likewise (`C` to
+`Celsius`, `F` to `Fahrenheit`, `K` to `Kelvin`, `degrees` to `Degree`).
+`app/integration/graph_adapter.py` applies that mapping when it serves the
+graph to the Client.
+
+The concepts the knowledge layer does not model yet - document question
+answering, research papers and the metadata classes - are listed in
+`EXTERNAL_CONCEPTS` and are covered by the app's fallback ontology
+`app/data/ontology.json`.
+
 ## References
 
 - Store and write path: `src/agent_bazaar/kg/store.py`
@@ -270,3 +287,4 @@ corpus change, rebuild and compare both mapping-result and distinct-node counts.
 - Validation: `src/agent_bazaar/ontology/validator.py`
 - Seed script: `scripts/seed_graph.py`
 - Tests: `tests/test_kg_store.py`, `tests/test_kg_queries.py`
+- Application name mapping: `app/integration/canonical.py`

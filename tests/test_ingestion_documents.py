@@ -63,7 +63,7 @@ def test_chunking_uses_configured_size_and_overlap(tmp_path: Path) -> None:
         (21, 26),
     ]
     assert all(content[chunk.start : chunk.end] == chunk.text for chunk in chunks)
-    for previous, current in zip(chunks, chunks[1:]):
+    for previous, current in zip(chunks, chunks[1:], strict=False):
         assert current.start == previous.end - 3
         assert previous.text[-3:] == current.text[:3]
 

@@ -1,0 +1,117 @@
+[
+  {
+    "id": "c01",
+    "task": "What is the temperature in Lahore tomorrow, and what is 200 USD in PKR?",
+    "expected": {
+      "GeocodeLocation": "nominatim-geocode",
+      "GetWeatherForecast": "open-meteo-forecast",
+      "ConvertCurrency": "frankfurter-currency"
+    }
+  },
+  {
+    "id": "c02",
+    "task": "What is the weather in Lahore tomorrow?",
+    "expected": {
+      "GeocodeLocation": "nominatim-geocode",
+      "GetWeatherForecast": "open-meteo-forecast"
+    }
+  },
+  {
+    "id": "c03",
+    "task": "Convert 200 USD to PKR.",
+    "expected": {
+      "ConvertCurrency": "frankfurter-currency"
+    }
+  },
+  {
+    "id": "c04",
+    "task": "Which public holidays does Pakistan have in 2026?",
+    "expected": {
+      "GetPublicHolidays": "nager-holidays"
+    }
+  },
+  {
+    "id": "c05",
+    "task": "What is the population of Japan?",
+    "expected": {
+      "GetCountryFacts": "restcountries-facts"
+    }
+  },
+  {
+    "id": "c06",
+    "task": "Find recent research papers on GraphRAG.",
+    "expected": {
+      "SearchResearchPapers": "arxiv-search"
+    }
+  },
+  {
+    "id": "c07",
+    "task": "How many students are enrolled in the BS Artificial Intelligence program?",
+    "expected": {
+      "QueryStructuredData": "university-sql"
+    }
+  },
+  {
+    "id": "c08",
+    "task": "According to the uploaded document, what is the main goal of the project?",
+    "expected": {
+      "AnswerFromDocument": "document-qa"
+    }
+  },
+  {
+    "id": "c09",
+    "task": "Compare the population of Japan and find recent research papers on GraphRAG.",
+    "expected": {
+      "GetCountryFacts": "restcountries-facts",
+      "SearchResearchPapers": "arxiv-search"
+    }
+  },
+  {
+    "id": "c10",
+    "task": "List Pakistan public holidays for 2026 and convert 100 USD to PKR.",
+    "expected": {
+      "GetPublicHolidays": "nager-holidays",
+      "ConvertCurrency": "frankfurter-currency"
+    }
+  },
+  {
+    "id": "c11",
+    "task": "What is the weather in London tomorrow and what is the population of France?",
+    "expected": {
+      "GeocodeLocation": "nominatim-geocode",
+      "GetWeatherForecast": "open-meteo-forecast",
+      "GetCountryFacts": "restcountries-facts"
+    }
+  },
+  {
+    "id": "c12",
+    "task": "How many students are enrolled in the MS Data Science program and find research papers on agents?",
+    "expected": {
+      "QueryStructuredData": "university-sql",
+      "SearchResearchPapers": "arxiv-search"
+    }
+  },
+  {
+    "id": "c13",
+    "task": "What is the temperature in Karachi tomorrow, and according to the uploaded document, what is the main goal?",
+    "expected": {
+      "GeocodeLocation": "nominatim-geocode",
+      "GetWeatherForecast": "open-meteo-forecast",
+      "AnswerFromDocument": "document-qa"
+    }
+  },
+  {
+    "id": "c14",
+    "task": "Convert 50 EUR to GBP.",
+    "expected": {
+      "ConvertCurrency": "frankfurter-currency"
+    }
+  },
+  {
+    "id": "c15",
+    "task": "Convert 1000 JPY to USD.",
+    "expected": {
+      "ConvertCurrency": "frankfurter-currency"
+    }
+  }
+]

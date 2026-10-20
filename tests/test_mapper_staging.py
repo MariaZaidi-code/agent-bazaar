@@ -72,8 +72,12 @@ def test_bad_correction_is_rejected_and_not_promoted(tmp_path: Path) -> None:
 def test_rejected_share_math(tmp_path: Path) -> None:
     memory = CorrectionMemory(tmp_path / "memory")
     staging = StagingQueue(tmp_path / "staging")
-    check = lambda item: [] if item.corrected_concept == "Temperature" else ["bad concept"]
-    promote = lambda item: memory.add(_memory_entry(item))
+
+    def check(item):
+        return [] if item.corrected_concept == "Temperature" else ["bad concept"]
+
+    def promote(item):
+        return memory.add(_memory_entry(item))
 
     staging.submit(_correction(), check, promote)
     for _ in range(3):
@@ -90,8 +94,12 @@ def test_rejected_share_math(tmp_path: Path) -> None:
 def test_decisions_persist_across_queue_instances(tmp_path: Path) -> None:
     memory = CorrectionMemory(tmp_path / "memory")
     staging = StagingQueue(tmp_path / "staging")
-    check = lambda item: [] if item.corrected_concept == "Temperature" else ["bad concept"]
-    promote = lambda item: memory.add(_memory_entry(item))
+
+    def check(item):
+        return [] if item.corrected_concept == "Temperature" else ["bad concept"]
+
+    def promote(item):
+        return memory.add(_memory_entry(item))
 
     staging.submit(_correction(), check, promote)
     staging.submit(_correction("NoSuchConcept"), check, promote)
