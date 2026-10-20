@@ -1,0 +1,581 @@
+@prefix ab: <https://agent-bazaar.local/ontology#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ab:Address a owl:Class,
+        ab:Concept ;
+    rdfs:label "Address" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "formatted_address",
+        "street_address" ;
+    ab:hasDataType "string" .
+
+ab:AreaSize a owl:Class,
+        ab:Concept ;
+    rdfs:label "Area" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "area",
+        "land_area",
+        "surface_area" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#SquareKilometre> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:AreaUnit .
+
+ab:BaseCurrency a owl:Class,
+        ab:Concept ;
+    rdfs:label "Base currency" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "base",
+        "from_currency" ;
+    ab:hasDataType "string" .
+
+ab:BooleanFlag a owl:Class,
+        ab:Concept ;
+    rdfs:label "Boolean flag" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "enabled",
+        "has_more",
+        "is_active",
+        "success" ;
+    ab:hasDataType "boolean" .
+
+ab:Capital a owl:Class,
+        ab:Concept ;
+    rdfs:label "Capital" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "capital_city" ;
+    ab:hasDataType "string" .
+
+ab:City a owl:Class,
+        ab:Concept ;
+    rdfs:label "City" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "city_name",
+        "municipality",
+        "town" ;
+    ab:hasDataType "string" .
+
+ab:CloudCover a owl:Class,
+        ab:Concept ;
+    rdfs:label "Cloud cover" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "cloud_cover",
+        "cloudiness",
+        "clouds" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Percent> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:PercentageUnit .
+
+ab:Count a owl:Class,
+        ab:Concept ;
+    rdfs:label "Count" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "number_of_results",
+        "total",
+        "total_count" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Count> ;
+    ab:hasDataType "integer" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:CountUnit .
+
+ab:Country a owl:Class,
+        ab:Concept ;
+    rdfs:label "Country" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "country_info",
+        "country_record" ;
+    ab:hasDataType "object" .
+
+ab:CountryName a owl:Class,
+        ab:Concept ;
+    rdfs:label "Country name" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "country_name",
+        "nation" ;
+    ab:hasDataType "string" .
+
+ab:Currency a owl:Class,
+        ab:Concept ;
+    rdfs:label "Currency" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "currency_name" ;
+    ab:hasDataType "string" .
+
+ab:CurrencyCode a owl:Class,
+        ab:Concept ;
+    rdfs:label "Currency code" ;
+    rdfs:subClassOf ab:CountryCode ;
+    skos:altLabel "currency_code",
+        "iso_currency" ;
+    ab:hasDataType "string" .
+
+ab:DateTime a owl:Class,
+        ab:Concept ;
+    rdfs:label "Date-time instant" ;
+    rdfs:subClassOf ab:ISODate ;
+    skos:altLabel "datetime_utc",
+        "iso_time",
+        "time",
+        "timestamp" ;
+    ab:hasDataType "datetime" .
+
+ab:Description a owl:Class,
+        ab:Concept ;
+    rdfs:label "Description" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "details",
+        "summary",
+        "text" ;
+    ab:hasDataType "string" .
+
+ab:DewPoint a owl:Class,
+        ab:Concept ;
+    rdfs:label "Dew point" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "dew_point",
+        "dewpoint" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Celsius> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:TemperatureUnit .
+
+ab:Distance a owl:Class,
+        ab:Concept ;
+    rdfs:label "Distance" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "distance_km",
+        "range" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Metre> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:LengthUnit .
+
+ab:Duration a owl:Class,
+        ab:Concept ;
+    rdfs:label "Duration" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "duration_s",
+        "elapsed",
+        "length" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Second> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:DurationUnit .
+
+ab:Elevation a owl:Class,
+        ab:Concept ;
+    rdfs:label "Elevation" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "altitude",
+        "height" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Metre> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:LengthUnit .
+
+ab:Email a owl:Class,
+        ab:Concept ;
+    rdfs:label "Email" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "email_address" ;
+    ab:hasDataType "string" .
+
+ab:ExchangeRate a owl:Class,
+        ab:Concept ;
+    rdfs:label "Exchange rate" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "conversion_rate",
+        "exchange_rate",
+        "fx_rate",
+        "rate" ;
+    ab:hasDataType "float" .
+
+ab:FeelsLikeTemperature a owl:Class,
+        ab:Concept ;
+    rdfs:label "Feels-like temperature" ;
+    rdfs:subClassOf ab:Temperature ;
+    skos:altLabel "apparent_temperature",
+        "feels_like",
+        "heat_index" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Celsius> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:TemperatureUnit .
+
+ab:FlagUrl a owl:Class,
+        ab:Concept ;
+    rdfs:label "Flag URL" ;
+    rdfs:subClassOf ab:Url ;
+    skos:altLabel "flag",
+        "flag_link" ;
+    ab:hasDataType "string" .
+
+ab:Forecast a owl:Class,
+        ab:Concept ;
+    rdfs:label "Forecast" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "daily",
+        "forecast_data",
+        "prediction" ;
+    ab:hasDataType "object" .
+
+ab:Holiday a owl:Class,
+        ab:Concept ;
+    rdfs:label "Holiday" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "holiday_record",
+        "public_holiday" ;
+    ab:hasDataType "object" .
+
+ab:HolidayDate a owl:Class,
+        ab:Concept ;
+    rdfs:label "Holiday date" ;
+    rdfs:subClassOf ab:ISODate ;
+    skos:altLabel "holiday_date",
+        "local_date" ;
+    ab:hasDataType "date" .
+
+ab:HolidayName a owl:Class,
+        ab:Concept ;
+    rdfs:label "Holiday name" ;
+    rdfs:subClassOf ab:Name ;
+    skos:altLabel "holiday_name" ;
+    ab:hasDataType "string" .
+
+ab:Humidity a owl:Class,
+        ab:Concept ;
+    rdfs:label "Relative humidity" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "relative_humidity",
+        "rh" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Percent> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:PercentageUnit .
+
+ab:Identifier a owl:Class,
+        ab:Concept ;
+    rdfs:label "Identifier" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "code",
+        "id",
+        "key" ;
+    ab:hasDataType "string" .
+
+ab:Language a owl:Class,
+        ab:Concept ;
+    rdfs:label "Language" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "language_code",
+        "languages" ;
+    ab:hasDataType "string" .
+
+ab:Latitude a owl:Class,
+        ab:Concept ;
+    rdfs:label "Latitude" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "lat" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Degree> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:AngleUnit .
+
+ab:Longitude a owl:Class,
+        ab:Concept ;
+    rdfs:label "Longitude" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "lng",
+        "lon",
+        "long" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Degree> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:AngleUnit .
+
+ab:Mass a owl:Class,
+        ab:Concept ;
+    rdfs:label "Mass" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "weight" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Kilogram> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:MassUnit .
+
+ab:MoneyAmount a owl:Class,
+        ab:Concept ;
+    rdfs:label "Money amount" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "amount",
+        "money",
+        "price",
+        "value" ;
+    ab:hasDataType "float" .
+
+ab:Percentage a owl:Class,
+        ab:Concept ;
+    rdfs:label "Percentage" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "percent",
+        "ratio",
+        "share" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Percent> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:PercentageUnit .
+
+ab:PhoneNumber a owl:Class,
+        ab:Concept ;
+    rdfs:label "Phone number" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "phone",
+        "telephone" ;
+    ab:hasDataType "string" .
+
+ab:PlaceName a owl:Class,
+        ab:Concept ;
+    rdfs:label "Place name" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "display_name",
+        "location_name",
+        "place" ;
+    ab:hasDataType "string" .
+
+ab:Population a owl:Class,
+        ab:Concept ;
+    rdfs:label "Population" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "pop",
+        "population_count" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Count> ;
+    ab:hasDataType "integer" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:CountUnit .
+
+ab:Position a owl:Class,
+        ab:Concept ;
+    rdfs:label "Position" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "coordinates",
+        "coords",
+        "geometry",
+        "location" ;
+    ab:hasDataType "object" .
+
+ab:PostalCode a owl:Class,
+        ab:Concept ;
+    rdfs:label "Postal code" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "postcode",
+        "zip",
+        "zip_code" ;
+    ab:hasDataType "string" .
+
+ab:Precipitation a owl:Class,
+        ab:Concept ;
+    rdfs:label "Precipitation" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "precip",
+        "precipitation_sum",
+        "rain",
+        "rainfall" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Millimetre> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:PrecipitationUnit .
+
+ab:Pressure a owl:Class,
+        ab:Concept ;
+    rdfs:label "Atmospheric pressure" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "barometric_pressure",
+        "pressure_msl",
+        "surface_pressure" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Hectopascal> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:PressureUnit .
+
+ab:QuoteCurrency a owl:Class,
+        ab:Concept ;
+    rdfs:label "Quote currency" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "quote",
+        "target_currency",
+        "to_currency" ;
+    ab:hasDataType "string" .
+
+ab:Rank a owl:Class,
+        ab:Concept ;
+    rdfs:label "Rank" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "index",
+        "order",
+        "position_rank" ;
+    ab:hasDataType "integer" .
+
+ab:Rating a owl:Class,
+        ab:Concept ;
+    rdfs:label "Rating" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "score",
+        "stars" ;
+    ab:hasDataType "float" .
+
+ab:Region a owl:Class,
+        ab:Concept ;
+    rdfs:label "Region" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "county",
+        "province",
+        "state" ;
+    ab:hasDataType "string" .
+
+ab:Speed a owl:Class,
+        ab:Concept ;
+    rdfs:label "Speed" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "velocity" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#MetrePerSecond> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:SpeedUnit .
+
+ab:SunriseTime a owl:Class,
+        ab:Concept ;
+    rdfs:label "Sunrise time" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "sunrise" ;
+    ab:hasDataType "datetime" .
+
+ab:SunsetTime a owl:Class,
+        ab:Concept ;
+    rdfs:label "Sunset time" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "sunset" ;
+    ab:hasDataType "datetime" .
+
+ab:Timezone a owl:Class,
+        ab:Concept ;
+    rdfs:label "Timezone" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "time_zone",
+        "timezone_id",
+        "tz" ;
+    ab:hasDataType "string" .
+
+ab:UVIndex a owl:Class,
+        ab:Concept ;
+    rdfs:label "UV index" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "uv",
+        "uv_index" ;
+    ab:hasDataType "float" .
+
+ab:Visibility a owl:Class,
+        ab:Concept ;
+    rdfs:label "Visibility" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "visibility_distance" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Metre> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:LengthUnit .
+
+ab:WeatherCode a owl:Class,
+        ab:Concept ;
+    rdfs:label "Weather code" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "condition_code",
+        "weather_code",
+        "wmo_code" ;
+    ab:hasDataType "integer" .
+
+ab:WeatherCondition a owl:Class,
+        ab:Concept ;
+    rdfs:label "Weather condition" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "condition",
+        "weather",
+        "weather_description" ;
+    ab:hasDataType "string" .
+
+ab:WindDirection a owl:Class,
+        ab:Concept ;
+    rdfs:label "Wind direction" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "wind_deg",
+        "wind_direction",
+        "winddir" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Degree> ;
+    ab:hasDataType "integer" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:AngleUnit .
+
+ab:WindSpeed a owl:Class,
+        ab:Concept ;
+    rdfs:label "Wind speed" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "wind_speed",
+        "wind_speed_10m",
+        "windspeed" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#MetrePerSecond> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:SpeedUnit .
+
+ab:CountryCode a owl:Class,
+        ab:Concept ;
+    rdfs:label "Country code" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "alpha2",
+        "alpha3",
+        "cc",
+        "country_code",
+        "iso_code" ;
+    ab:hasDataType "string" .
+
+ab:Name a owl:Class,
+        ab:Concept ;
+    rdfs:label "Name" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "display_name_text",
+        "label",
+        "title" ;
+    ab:hasDataType "string" .
+
+ab:Temperature a owl:Class,
+        ab:Concept ;
+    rdfs:label "Temperature" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "temp",
+        "temp_c",
+        "temperature_2m",
+        "temperature_c" ;
+    ab:defaultUnit <https://agent-bazaar.local/unit#Celsius> ;
+    ab:hasDataType "float" ;
+    ab:unitBearing true ;
+    ab:unitFamily ab:TemperatureUnit .
+
+ab:Url a owl:Class,
+        ab:Concept ;
+    rdfs:label "URL" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "href",
+        "link",
+        "website" ;
+    ab:hasDataType "string" .
+
+ab:ISODate a owl:Class,
+        ab:Concept ;
+    rdfs:label "ISO date" ;
+    rdfs:subClassOf ab:Concept ;
+    skos:altLabel "calendar_date",
+        "date",
+        "day" ;
+    ab:hasDataType "date" .
+

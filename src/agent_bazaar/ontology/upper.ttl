@@ -1,0 +1,205 @@
+@prefix ab: <https://agent-bazaar.local/ontology#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://agent-bazaar.local/ontology> a owl:Ontology ;
+    rdfs:label "Agent Bazaar upper ontology" ;
+    rdfs:comment "Hand-written upper layer, frozen at the end of Week 2 (Proposal v1.3 Section 8.1)." .
+
+# ---- upper classes -------------------------------------------------------
+
+ab:Service a owl:Class ;
+    rdfs:label "Service" .
+
+ab:Tool a owl:Class ;
+    rdfs:subClassOf ab:Service ;
+    rdfs:label "Tool" ;
+    rdfs:comment "A callable third-party service listed in the bazaar." .
+
+ab:Provider a owl:Class ;
+    rdfs:label "Provider" .
+
+ab:Capability a owl:Class ;
+    rdfs:label "Capability" .
+
+ab:Concept a owl:Class ;
+    rdfs:label "Concept" ;
+    rdfs:comment "A typed domain concept. Domain concepts are classes typed as ab:Concept." .
+
+ab:Input a owl:Class ;
+    rdfs:subClassOf ab:Concept ;
+    rdfs:label "Input" .
+
+ab:Output a owl:Class ;
+    rdfs:subClassOf ab:Concept ;
+    rdfs:label "Output" .
+
+ab:Claim a owl:Class ;
+    rdfs:label "Claim" .
+
+ab:Evidence a owl:Class ;
+    rdfs:label "Evidence" .
+
+ab:Mapping a owl:Class ;
+    rdfs:label "Mapping" ;
+    rdfs:comment "One field-to-concept mapping record with provenance." .
+
+ab:UnitFamily a owl:Class ;
+    rdfs:label "Unit family" .
+
+ab:Unit a owl:Class ;
+    rdfs:label "Unit" .
+
+# ---- object properties ----------------------------------------------------
+
+ab:hasCapability a owl:ObjectProperty ;
+    rdfs:domain ab:Tool ;
+    rdfs:range ab:Capability .
+
+ab:hasInput a owl:ObjectProperty ;
+    rdfs:domain ab:Tool ;
+    rdfs:range ab:Concept .
+
+ab:hasOutput a owl:ObjectProperty ;
+    rdfs:domain ab:Tool ;
+    rdfs:range ab:Concept .
+
+ab:makesClaim a owl:ObjectProperty ;
+    rdfs:domain ab:Tool ;
+    rdfs:range ab:Claim .
+
+ab:supportedBy a owl:ObjectProperty ;
+    rdfs:domain ab:Claim ;
+    rdfs:range ab:Evidence .
+
+ab:providedBy a owl:ObjectProperty ;
+    rdfs:domain ab:Tool ;
+    rdfs:range ab:Provider .
+
+ab:mapsTo a owl:ObjectProperty ;
+    rdfs:domain ab:Mapping ;
+    rdfs:range ab:Concept .
+
+ab:hasFieldMapping a owl:ObjectProperty ;
+    rdfs:domain ab:Tool ;
+    rdfs:range ab:Mapping .
+
+ab:tool a owl:ObjectProperty ;
+    rdfs:domain ab:Mapping ;
+    rdfs:range ab:Tool .
+
+ab:unitOfFamily a owl:ObjectProperty ;
+    rdfs:domain ab:Unit ;
+    rdfs:range ab:UnitFamily .
+
+# ---- data and annotation properties --------------------------------------
+
+ab:hasTrust a owl:DatatypeProperty ;
+    rdfs:domain ab:Tool ;
+    rdfs:range xsd:decimal .
+
+ab:toolId a owl:DatatypeProperty ;
+    rdfs:domain ab:Tool ;
+    rdfs:range xsd:string .
+
+ab:name a owl:DatatypeProperty ;
+    rdfs:range xsd:string .
+
+ab:description a owl:DatatypeProperty ;
+    rdfs:range xsd:string .
+
+ab:source a owl:DatatypeProperty ;
+    rdfs:range xsd:string .
+
+ab:version a owl:DatatypeProperty ;
+    rdfs:range xsd:string .
+
+ab:providerId a owl:DatatypeProperty ;
+    rdfs:domain ab:Provider ;
+    rdfs:range xsd:string .
+
+ab:homepage a owl:DatatypeProperty ;
+    rdfs:range xsd:string .
+
+ab:claimId a owl:DatatypeProperty ;
+    rdfs:domain ab:Claim ;
+    rdfs:range xsd:string .
+
+ab:claimText a owl:DatatypeProperty ;
+    rdfs:domain ab:Claim ;
+    rdfs:range xsd:string .
+
+ab:evidenceId a owl:DatatypeProperty ;
+    rdfs:domain ab:Evidence ;
+    rdfs:range xsd:string .
+
+ab:content a owl:DatatypeProperty ;
+    rdfs:domain ab:Evidence ;
+    rdfs:range xsd:string .
+
+ab:hasDataType a owl:DatatypeProperty ;
+    rdfs:domain ab:Concept ;
+    rdfs:range xsd:string ;
+    rdfs:comment "One of float, integer, string, boolean, date, datetime, object, array." .
+
+ab:unitBearing a owl:DatatypeProperty ;
+    rdfs:domain ab:Concept ;
+    rdfs:range xsd:boolean .
+
+ab:unitFamily a owl:ObjectProperty ;
+    rdfs:domain ab:Concept ;
+    rdfs:range ab:UnitFamily .
+
+ab:defaultUnit a owl:ObjectProperty ;
+    rdfs:domain ab:Concept ;
+    rdfs:range ab:Unit .
+
+ab:unitSymbol a owl:DatatypeProperty ;
+    rdfs:domain ab:Unit ;
+    rdfs:range xsd:string .
+
+ab:familyCode a owl:DatatypeProperty ;
+    rdfs:domain ab:UnitFamily ;
+    rdfs:range xsd:string .
+
+ab:fieldPath a owl:DatatypeProperty ;
+    rdfs:domain ab:Mapping ;
+    rdfs:range xsd:string .
+
+ab:direction a owl:DatatypeProperty ;
+    rdfs:domain ab:Mapping ;
+    rdfs:range xsd:string .
+
+ab:confidence a owl:DatatypeProperty ;
+    rdfs:domain ab:Mapping ;
+    rdfs:range xsd:decimal .
+
+ab:unit a owl:ObjectProperty ;
+    rdfs:domain ab:Mapping ;
+    rdfs:range ab:Unit .
+
+ab:reason a owl:DatatypeProperty ;
+    rdfs:domain ab:Mapping ;
+    rdfs:range xsd:string .
+
+ab:status a owl:DatatypeProperty ;
+    rdfs:domain ab:Mapping ;
+    rdfs:range xsd:string .
+
+ab:attempts a owl:DatatypeProperty ;
+    rdfs:domain ab:Mapping ;
+    rdfs:range xsd:integer .
+
+ab:recordedAt a owl:DatatypeProperty ;
+    rdfs:domain ab:Mapping ;
+    rdfs:range xsd:dateTime .
+
+ab:recordedBy a owl:DatatypeProperty ;
+    rdfs:domain ab:Mapping ;
+    rdfs:range xsd:string .
+
+ab:note a owl:DatatypeProperty ;
+    rdfs:range xsd:string .

@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-bazaar"
+version = "0.1.0"
+description = "Agent Bazaar: ontology- and knowledge-graph-driven multi-agent system (knowledge layer and Mapper)"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.5",
+    "rdflib>=7.0",
+    "pyshacl>=0.25",
+    "numpy>=1.26",
+    "PyYAML>=6.0",
+    "requests>=2.31",
+    "pypdf>=4.0",
+    "python-docx>=1.1",
+]
+
+[project.optional-dependencies]
+embeddings = ["sentence-transformers>=2.5"]
+dev = ["pytest>=8.0", "pytest-cov>=5.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]

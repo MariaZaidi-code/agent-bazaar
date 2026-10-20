@@ -1,0 +1,205 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Weather and Translation API",
+    "version": "1.0.0",
+    "description": "Small sample API used by ingestion tests."
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com"
+    }
+  ],
+  "paths": {
+    "/v1/forecast": {
+      "get": {
+        "summary": "Get a weather forecast",
+        "description": "Returns current conditions and a daily forecast.",
+        "operationId": "getForecast",
+        "parameters": [
+          {
+            "name": "latitude",
+            "in": "query",
+            "required": true,
+            "description": "Latitude in decimal degrees.",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "X-API-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Forecast response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Forecast"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/translate": {
+      "post": {
+        "summary": "Translate text",
+        "description": "Translates text into the requested language.",
+        "operationId": "translateText",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "text",
+                  "target_language"
+                ],
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "description": "Text to translate."
+                  },
+                  "target_language": {
+                    "type": "string"
+                  },
+                  "format": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Translated text.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "translated_text": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/locations/{city}": {
+      "get": {
+        "summary": "Look up a location",
+        "operationId": "getLocation",
+        "parameters": [
+          {
+            "name": "city",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Location details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "country": {
+                      "type": "string"
+                    },
+                    "elevation": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Forecast": {
+        "type": "object",
+        "required": [
+          "temperature_2m"
+        ],
+        "properties": {
+          "temperature_2m": {
+            "type": "number",
+            "description": "Air temperature at two metres."
+          },
+          "humidity": {
+            "type": "integer"
+          },
+          "current": {
+            "type": "object",
+            "properties": {
+              "temperature_2m": {
+                "type": "number"
+              },
+              "wind_speed": {
+                "type": "number"
+              }
+            }
+          },
+          "daily": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string"
+                },
+                "temperature_min": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

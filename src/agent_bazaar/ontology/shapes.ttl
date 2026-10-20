@@ -1,0 +1,206 @@
+@prefix ab: <https://agent-bazaar.local/ontology#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Minimum shape set from the work plan Section 5.1.
+# SPARQL-based checks use explicit SPARQL targets so their cost is proportional
+# to the number of offending nodes, not to every concept in the graph.
+
+ab:ConceptShape a sh:NodeShape ;
+    sh:targetClass ab:Concept ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Every concept has exactly one label." ;
+    ] ;
+    sh:property [
+        sh:path ab:hasDataType ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:in ( "float" "integer" "string" "boolean" "date" "datetime" "object" "array" ) ;
+        sh:message "Every concept declares exactly one data type." ;
+    ] ;
+    sh:property [
+        sh:path rdfs:subClassOf ;
+        sh:minCount 1 ;
+        sh:message "No orphan classes: every domain class has a parent." ;
+    ] ;
+    sh:property [
+        sh:path ab:unitBearing ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:boolean ;
+        sh:message "unitBearing is a single boolean." ;
+    ] ;
+    sh:property [
+        sh:path ab:unitFamily ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A concept declares at most one unit family." ;
+    ] ;
+    sh:property [
+        sh:path skos:altLabel ;
+        sh:datatype xsd:string ;
+        sh:message "Aliases are plain strings." ;
+    ] .
+
+ab:MappingShape a sh:NodeShape ;
+    sh:targetClass ab:Mapping ;
+    sh:property [
+        sh:path ab:fieldPath ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A mapping has exactly one field path." ;
+    ] ;
+    sh:property [
+        sh:path ab:tool ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A mapping belongs to exactly one tool." ;
+    ] ;
+    sh:property [
+        sh:path ab:mapsTo ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:class ab:Concept ;
+        sh:message "Every input and output is linked to exactly one typed concept." ;
+    ] ;
+    sh:property [
+        sh:path ab:direction ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:in ( "input" "output" ) ;
+        sh:message "Direction is input or output." ;
+    ] ;
+    sh:property [
+        sh:path ab:confidence ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:message "Confidence is a decimal between 0 and 1." ;
+    ] ;
+    sh:property [
+        sh:path ab:unit ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A mapping has at most one unit." ;
+    ] ;
+    sh:property [
+        sh:path ab:attempts ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:message "Attempts is a single integer." ;
+    ] .
+
+ab:ToolShape a sh:NodeShape ;
+    sh:targetClass ab:Tool ;
+    sh:property [
+        sh:path ab:name ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A tool has exactly one name." ;
+    ] ;
+    sh:property [
+        sh:path ab:providedBy ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A tool is provided by exactly one provider." ;
+    ] ;
+    sh:property [
+        sh:path ab:hasCapability ;
+        sh:minCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A tool declares at least one capability." ;
+    ] ;
+    sh:property [
+        sh:path ab:hasOutput ;
+        sh:minCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:class ab:Concept ;
+        sh:message "A tool declares at least one typed output concept." ;
+    ] ;
+    sh:property [
+        sh:path ab:hasInput ;
+        sh:nodeKind sh:IRI ;
+        sh:class ab:Concept ;
+        sh:message "Tool inputs point at typed concepts." ;
+    ] ;
+    sh:property [
+        sh:path ab:hasTrust ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:message "Trust is one decimal between 0 and 1." ;
+    ] .
+
+ab:ClaimShape a sh:NodeShape ;
+    sh:targetClass ab:Claim ;
+    sh:property [
+        sh:path ab:claimText ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Every claim has one claim text." ;
+    ] ;
+    sh:property [
+        sh:path ab:source ;
+        sh:minCount 1 ;
+        sh:message "Every claim has a source." ;
+    ] .
+
+ab:EvidenceShape a sh:NodeShape ;
+    sh:targetClass ab:Evidence ;
+    sh:property [
+        sh:path ab:source ;
+        sh:minCount 1 ;
+        sh:message "Every evidence node names its source." ;
+    ] .
+
+ab:ProviderShape a sh:NodeShape ;
+    sh:targetClass ab:Provider ;
+    sh:property [
+        sh:path ab:providerId ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A provider has exactly one provider id." ;
+    ] .
+
+ab:UnitShape a sh:NodeShape ;
+    sh:targetClass ab:Unit ;
+    sh:property [
+        sh:path ab:unitSymbol ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A unit has exactly one symbol." ;
+    ] ;
+    sh:property [
+        sh:path ab:unitOfFamily ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:message "A unit belongs to exactly one family." ;
+    ] .
+
+ab:UnitFamilyShape a sh:NodeShape ;
+    sh:targetClass ab:UnitFamily ;
+    sh:property [
+        sh:path ab:familyCode ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A unit family has exactly one family code." ;
+    ] .

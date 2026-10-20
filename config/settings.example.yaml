@@ -1,0 +1,38 @@
+# Agent Bazaar settings. Copy to config/settings.yaml to override defaults.
+# Secrets are never stored here; LLM keys are read from environment variables.
+
+llm:
+  provider: groq            # groq | gemini | openrouter | offline
+  temperature: 0.0
+  timeout_s: 90
+  max_retries: 3
+  models:
+    groq: "llama-3.3-70b-versatile"
+    gemini: "gemini-2.0-flash"
+    openrouter: "meta-llama/llama-3.3-70b-instruct:free"
+
+embedding:
+  model: "BAAI/bge-small-en-v1.5"   # frozen after Week 3; changing it invalidates drift baselines
+  fallback_dim: 384
+  # use_fallback: auto | never | always
+  use_fallback: auto
+
+mapper:
+  max_repair_attempts: 3
+  top_k_terms: 12
+  top_k_corrections: 8
+  min_confidence: 0.0
+  promotion_requires_rules_pass: true
+
+ingestion:
+  chunk_size_chars: 800
+  chunk_overlap_chars: 120
+
+paths:
+  data_dir: data
+  specs_dir: data/specs
+  cache_dir: data/cache
+  out_dir: data/out
+  memory_dir: data/memory
+  staging_dir: data/staging
+  vectors_dir: data/vectors

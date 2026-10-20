@@ -1,0 +1,10 @@
+pydantic>=2.5
+rdflib>=7.0
+pyshacl>=0.25
+numpy>=1.26
+PyYAML>=6.0
+requests>=2.31
+pypdf>=4.0
+python-docx>=1.1
+sentence-transformers>=2.5
+pytest>=8.0

@@ -1,0 +1,17 @@
+{
+ "source": "mixed",
+ "concepts": 85,
+ "uncovered_fields": 4,
+ "violations_found": 0,
+ "violations_fixed": 0,
+ "repair_rounds": 0,
+ "llm_batches": 1,
+ "failed_batches": 0,
+ "specs": {
+  "specs": 3,
+  "errors": 0,
+  "fields": 59
+ },
+ "ontology_path": "data/out/ontology_llm_demo.ttl",
+ "note": "LLM demo run over 3 seed specs (iptwist, interzoid, nytimes); proposal cached in data/cache/llm; 0 repair rounds"
+}

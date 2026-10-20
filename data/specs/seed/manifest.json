@@ -1,0 +1,108 @@
+[
+ {
+  "key": "citycontext.com",
+  "title": "City Context",
+  "categories": [
+   "open_data"
+  ],
+  "provider": "",
+  "version": "2.0",
+  "url": "https://api.apis.guru/v2/specs/citycontext.com/1.0.0/swagger.json",
+  "file": "citycontext-com.json",
+  "bytes": 10579,
+  "status": "existing"
+ },
+ {
+  "key": "gisgraphy.com",
+  "title": "Gisgraphy webservices",
+  "categories": [
+   "location"
+  ],
+  "provider": "",
+  "version": "2.0",
+  "url": "https://api.apis.guru/v2/specs/gisgraphy.com/4.0.0/swagger.json",
+  "file": "gisgraphy-com.json",
+  "bytes": 66855,
+  "status": "existing"
+ },
+ {
+  "key": "ideal-postcodes.co.uk",
+  "title": "API Reference - Ideal Postcodes",
+  "categories": [
+   "location"
+  ],
+  "provider": "",
+  "version": "3.0.0",
+  "url": "https://api.apis.guru/v2/specs/ideal-postcodes.co.uk/3.7.0/openapi.json",
+  "file": "ideal-postcodes-co-uk.json",
+  "bytes": 282716,
+  "status": "existing"
+ },
+ {
+  "key": "interzoid.com:getzipinfo",
+  "title": "Interzoid Zip Code Detailed Info API",
+  "categories": [
+   "developer_tools"
+  ],
+  "provider": "",
+  "version": "3.0.0",
+  "url": "https://api.apis.guru/v2/specs/interzoid.com/getzipinfo/1.0.0/openapi.json",
+  "file": "interzoid-com-getzipinfo.json",
+  "bytes": 4807,
+  "status": "existing"
+ },
+ {
+  "key": "miataru.com",
+  "title": "Miataru",
+  "categories": [
+   "location"
+  ],
+  "provider": "",
+  "version": "2.0",
+  "url": "https://api.apis.guru/v2/specs/miataru.com/1.0.0/swagger.json",
+  "file": "miataru-com.json",
+  "bytes": 18736,
+  "status": "existing"
+ },
+ {
+  "key": "nytimes.com:geo_api",
+  "title": "Geographic API",
+  "categories": [
+   "media",
+   "open_data"
+  ],
+  "provider": "",
+  "version": "3.0.0",
+  "url": "https://api.apis.guru/v2/specs/nytimes.com/geo_api/1.0.0/openapi.json",
+  "file": "nytimes-com-geo-api.json",
+  "bytes": 8287,
+  "status": "existing"
+ },
+ {
+  "key": "iptwist.com",
+  "title": "ipTwist",
+  "categories": [
+   "developer_tools"
+  ],
+  "provider": "",
+  "version": "3.0.0",
+  "url": "https://api.apis.guru/v2/specs/iptwist.com/1.0.0/openapi.json",
+  "file": "iptwist-com.json",
+  "bytes": 3196,
+  "status": "existing"
+ },
+ {
+  "key": "deutschebahn.com:fahrplan",
+  "title": "Fahrplan-Free",
+  "categories": [
+   "transport",
+   "open_data"
+  ],
+  "provider": "",
+  "version": "2.0",
+  "url": "https://api.apis.guru/v2/specs/deutschebahn.com/fahrplan/v1/swagger.json",
+  "file": "deutschebahn-com-fahrplan.json",
+  "bytes": 11733,
+  "status": "existing"
+ }
+]
