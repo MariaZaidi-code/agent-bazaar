@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agent Bazaar | Client, Provider &amp; Interface</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div>
+        <p class="eyebrow">University of Central Punjab &middot; BS Artificial Intelligence</p>
+        <h1>Agent Bazaar</h1>
+        <p class="subtitle">Find, verify, compose and heal third-party tool chains.</p>
+      </div>
+    </div>
+    <div class="status-stack">
+      <span class="chip chip-mode" id="mode-chip">connecting</span>
+      <span class="chip" id="tool-count">0 tools</span>
+      <span class="chip" id="llm-chip">deterministic</span>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Workspace sections">
+    <button class="tab active" data-tab="workbench">Workbench</button>
+    <button class="tab" data-tab="trace">Agent trace</button>
+    <button class="tab" data-tab="monitoring">Monitoring</button>
+    <button class="tab" data-tab="library">Tool library</button>
+    <button class="tab" data-tab="documents">Documents</button>
+    <span class="tab-spacer"></span>
+    <span class="role-note">Client, Provider &amp; Interface Lead</span>
+  </nav>
+
+  <main>
+    <section class="tab-panel active" id="panel-workbench">
+      <div class="hero panel">
+        <div>
+          <p class="eyebrow">Developer flow</p>
+          <h2>Ask for a validated tool chain</h2>
+          <p class="lede">The Client shortlists with GraphRAG, filters with the ontology, asks the Auditor for claim labels, ranks by trust, checks types and units, then executes through Provider agents.</p>
+        </div>
+        <form id="task-form" class="task-form">
+          <label for="task-input">Task</label>
+          <textarea id="task-input" rows="3" placeholder="What is the temperature in Lahore tomorrow, and what is 200 USD in PKR?" required></textarea>
+          <div class="form-row">
+            <div class="examples" id="examples"></div>
+            <button class="button primary" type="submit" id="run-button">Run chain</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="task-status" class="task-status hidden" aria-live="polite">
+        <span class="spinner"></span>
+        <span>Client is working through the agent loop...</span>
+      </div>
+
+      <article class="panel answer-panel hidden" id="answer-panel">
+        <div class="answer-head">
+          <div>
+            <p class="eyebrow">Answer</p>
+            <h2 id="answer-status">Completed</h2>
+          </div>
+          <div class="meta-chips" id="answer-meta"></div>
+        </div>
+        <p class="answer-text" id="answer-text"></p>
+        <div class="warnings hidden" id="answer-warnings"></div>
+      </article>
+
+      <section class="panel hidden" id="candidates-panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Discovery</p>
+            <h2>Ranked candidates</h2>
+          </div>
+          <p class="section-note">score = relevance &times; trust, after claim and breaker checks</p>
+        </div>
+        <div id="candidate-groups"></div>
+      </section>
+
+      <section class="panel hidden" id="chain-panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Composition and execution</p>
+            <h2>Chain plan</h2>
+          </div>
+          <p class="section-note">links are accepted only when concepts and units fit</p>
+        </div>
+        <div id="chain-steps"></div>
+      </section>
+    </section>
+
+    <section class="tab-panel" id="panel-trace">
+      <div class="panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">NFR4 &middot; explainability</p>
+            <h2>Agent trace viewer</h2>
+          </div>
+          <p class="section-note">Every decision is stored with its inputs, outputs and reason.</p>
+        </div>
+        <div id="trace-empty" class="empty-state">Run a task to populate the trace.</div>
+        <div id="trace-list" class="trace-list"></div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="panel-monitoring">
+      <div class="metrics-grid" id="monitor-summary"></div>
+      <div class="two-column">
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Passive trust registry</p>
+              <h2>Provider trust</h2>
+            </div>
+            <p class="section-note">Beta-style score with full update history</p>
+          </div>
+          <div class="table-wrap">
+            <table id="trust-table">
+              <thead><tr><th>Tool</th><th>Trust</th><th>Calls</th><th>Status</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Client to Provider links</p>
+              <h2>Circuit breakers</h2>
+            </div>
+            <p class="section-note">Closed, open, half-open</p>
+          </div>
+          <div class="table-wrap">
+            <table id="breaker-table">
+              <thead><tr><th>Link</th><th>State</th><th>Failures</th><th>Last reason</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="drift-block">
+            <h3>Drift alerts</h3>
+            <div id="drift-list" class="drift-list"><p class="muted">No drift alerts.</p></div>
+          </div>
+        </section>
+      </div>
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Demonstration controls</p>
+            <h2>Inject adversity</h2>
+          </div>
+          <p class="section-note">Failures and drift are injected only for the demo.</p>
+        </div>
+        <div class="demo-actions">
+          <button class="button" data-demo="fail" data-tool="open-meteo-forecast">Fail next weather call</button>
+          <button class="button" data-demo="drift" data-tool="open-meteo-forecast">Inject weather drift</button>
+          <button class="button" data-demo="trip" data-tool="nominatim-geocode">Trip geocoder breaker</button>
+          <button class="button danger" data-demo="reset">Reset demo state</button>
+        </div>
+        <p class="hint">Run the weather and currency example after injecting a failure to see the substitute and the trust update.</p>
+      </section>
+    </section>
+
+    <section class="tab-panel" id="panel-library">
+      <div class="two-column">
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Knowledge layer adapter</p>
+              <h2>Tool catalogue</h2>
+            </div>
+            <p class="section-note">Local fallback until Maria's RDF graph is connected</p>
+          </div>
+          <div class="table-wrap">
+            <table id="tools-table">
+              <thead><tr><th>Tool</th><th>Capability</th><th>Claim</th><th>Trust</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Mapper adapter</p>
+              <h2>Submit a correction</h2>
+            </div>
+            <p class="section-note">Staged until ontology checks pass</p>
+          </div>
+          <form id="correction-form" class="stack-form">
+            <label>Tool<select id="correction-tool" required></select></label>
+            <div class="form-grid">
+              <label>Field name<input id="correction-field" placeholder="coordinates" required></label>
+              <label>Original concept<input id="correction-original" placeholder="Coordinates" required></label>
+              <label>Corrected concept<input id="correction-concept" placeholder="Coordinates" required></label>
+              <label>Corrected unit<input id="correction-unit" placeholder="degrees"></label>
+            </div>
+            <label>Note<textarea id="correction-note" rows="2" placeholder="Why is this mapping wrong?"></textarea></label>
+            <button class="button primary" type="submit">Stage correction</button>
+          </form>
+          <div id="correction-result" class="result-box hidden"></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="panel-documents">
+      <div class="two-column">
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Document provider</p>
+              <h2>Upload a document</h2>
+            </div>
+            <p class="section-note">TXT, MD, PDF and DOCX, up to 10 MB</p>
+          </div>
+          <form id="upload-form" class="stack-form">
+            <label class="dropzone" for="document-file">
+              <span>Choose a document</span>
+              <input id="document-file" type="file" accept=".txt,.md,.csv,.pdf,.docx" required>
+            </label>
+            <button class="button primary" type="submit">Upload</button>
+          </form>
+          <div id="upload-result" class="result-box hidden"></div>
+        </section>
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Grounded question answering</p>
+              <h2>Ask the document</h2>
+            </div>
+            <p class="section-note">Answers include an extractive citation</p>
+          </div>
+          <form id="document-question-form" class="stack-form">
+            <label>Question<textarea id="document-question" rows="3" placeholder="What is the main goal of the project?" required></textarea></label>
+            <button class="button primary" type="submit">Ask via Client</button>
+          </form>
+          <div class="document-list" id="document-list"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>Agent Bazaar v{{ version }} &middot; Client, Provider and Interface lead implementation</span>
+    <span>Covers FR3, FR5, FR6, FR8, FR9, FR13, FR14 and the Client side of FR7.</span>
+  </footer>
+
+  <div id="toast" class="toast hidden" role="status"></div>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

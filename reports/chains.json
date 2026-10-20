@@ -1,0 +1,388 @@
+{
+  "suite": "chains",
+  "generated_at": "2026-10-20T12:57:43.095119+00:00",
+  "mode": "offline",
+  "tasks": 15,
+  "metrics": {
+    "success_rate": 1.0,
+    "expected_capability_coverage": 1.0,
+    "answer_rate": 1.0,
+    "trace_coverage": 1.0,
+    "completion_event_rate": 1.0,
+    "avg_latency_ms": 96.3753,
+    "avg_steps": 1.6667
+  },
+  "failures": [],
+  "rows": [
+    {
+      "task_id": "c01",
+      "task": "What is the temperature in Lahore tomorrow, and what is 200 USD in PKR?",
+      "status": "completed",
+      "answer_chars": 156,
+      "steps": [
+        {
+          "capability": "GeocodeLocation",
+          "tool_id": "nominatim-geocode",
+          "status": "completed",
+          "latency_ms": 2.87,
+          "substituted_from": null
+        },
+        {
+          "capability": "GetWeatherForecast",
+          "tool_id": "open-meteo-forecast",
+          "status": "completed",
+          "latency_ms": 2.92,
+          "substituted_from": null
+        },
+        {
+          "capability": "ConvertCurrency",
+          "tool_id": "frankfurter-currency",
+          "status": "completed",
+          "latency_ms": 2.97,
+          "substituted_from": null
+        }
+      ],
+      "missing": [],
+      "trace_events": 20,
+      "has_completion_event": true,
+      "duration_ms": 159.4,
+      "mode": "offline"
+    },
+    {
+      "task_id": "c02",
+      "task": "What is the weather in Lahore tomorrow?",
+      "status": "completed",
+      "answer_chars": 86,
+      "steps": [
+        {
+          "capability": "GeocodeLocation",
+          "tool_id": "nominatim-geocode",
+          "status": "completed",
+          "latency_ms": 0.21,
+          "substituted_from": null
+        },
+        {
+          "capability": "GetWeatherForecast",
+          "tool_id": "open-meteo-forecast",
+          "status": "completed",
+          "latency_ms": 0.11,
+          "substituted_from": null
+        }
+      ],
+      "missing": [],
+      "trace_events": 15,
+      "has_completion_event": true,
+      "duration_ms": 99.38,
+      "mode": "offline"
+    },
+    {
+      "task_id": "c03",
+      "task": "Convert 200 USD to PKR.",
+      "status": "completed",
+      "answer_chars": 69,
+      "steps": [
+        {
+          "capability": "ConvertCurrency",
+          "tool_id": "frankfurter-currency",
+          "status": "completed",
+          "latency_ms": 0.1,
+          "substituted_from": null
+        }
+      ],
+      "missing": [],
+      "trace_events": 10,
+      "has_completion_event": true,
+      "duration_ms": 59.6,
+      "mode": "offline"
+    },
+    {
+      "task_id": "c04",
+      "task": "Which public holidays does Pakistan have in 2026?",
+      "status": "completed",
+      "answer_chars": 162,
+      "steps": [
+        {
+          "capability": "GetPublicHolidays",
+          "tool_id": "nager-holidays",
+          "status": "completed",
+          "latency_ms": 2.98,
+          "substituted_from": null
+        }
+      ],
+      "missing": [],
+      "trace_events": 10,
+      "has_completion_event": true,
+      "duration_ms": 61.15,
+      "mode": "offline"
+    },
+    {
+      "task_id": "c05",
+      "task": "What is the population of Japan?",
+      "status": "completed",
+      "answer_chars": 58,
+      "steps": [
+        {
+          "capability": "GetCountryFacts",
+          "tool_id": "restcountries-facts",
+          "status": "completed",
+          "latency_ms": 2.06,
+          "substituted_from": null
+        }
+      ],
+      "missing": [],
+      "trace_events": 10,
+      "has_completion_event": true,
+      "duration_ms": 55.11,
+      "mode": "offline"
+    },
+    {
+      "task_id": "c06",
+      "task": "Find recent research papers on GraphRAG.",
+      "status": "completed",
+      "answer_chars": 246,
+      "steps": [
+        {
+          "capability": "SearchResearchPapers",
+          "tool_id": "arxiv-search",
+          "status": "completed",
+          "latency_ms": 2.96,
+          "substituted_from": null
+        }
+      ],
+      "missing": [],
+      "trace_events": 10,
+      "has_completion_event": true,
+      "duration_ms": 68.33,
+      "mode": "offline"
+    },
+    {
+      "task_id": "c07",
+      "task": "How many students are enrolled in the BS Artificial Intelligence program?",
+      "status": "completed",
+      "answer_chars": 109,
+      "steps": [
+        {
+          "capability": "QueryStructuredData",
+          "tool_id": "university-sql",
+          "status": "completed",
+          "latency_ms": 4.83,
+          "substituted_from": null
+        }
+      ],
+      "missing": [],
+      "trace_events": 10,
+      "has_completion_event": true,
+      "duration_ms": 60.89,
+      "mode": "offline"
+    },
+    {
+      "task_id": "c08",
+      "task": "According to the uploaded document, what is the main goal of the project?",
+      "status": "completed",
+      "answer_chars": 145,
+      "steps": [
+        {
+          "capability": "AnswerFromDocument",
+          "tool_id": "document-qa",
+          "status": "completed",
+          "latency_ms": 3.13,
+          "substituted_from": null
+        }
+      ],
+      "missing": [],
+      "trace_events": 10,
+      "has_completion_event": true,
+      "duration_ms": 64.32,
+      "mode": "offline"
+    },
+    {
+      "task_id": "c09",
+      "task": "Compare the population of Japan and find recent research papers on GraphRAG.",
+      "status": "completed",
+      "answer_chars": 305,
+      "steps": [
+        {
+          "capability": "GetCountryFacts",
+          "tool_id": "restcountries-facts",
+          "status": "completed",
+          "latency_ms": 0.18,
+          "substituted_from": null
+        },
+        {
+          "capability": "SearchResearchPapers",
+          "tool_id": "arxiv-search",
+          "status": "completed",
+          "latency_ms": 0.1,
+          "substituted_from": null
+        }
+      ],
+      "missing": [],
+      "trace_events": 15,
+      "has_completion_event": true,
+      "duration_ms": 104.63,
+      "mode": "offline"
+    },
+    {
+      "task_id": "c10",
+      "task": "List Pakistan public holidays for 2026 and convert 100 USD to PKR.",
+      "status": "completed",
+      "answer_chars": 232,
+      "steps": [
+        {
+          "capability": "ConvertCurrency",
+          "tool_id": "frankfurter-currency",
+          "status": "completed",
+          "latency_ms": 2.97,
+          "substituted_from": null
+        },
+        {
+          "capability": "GetPublicHolidays",
+          "tool_id": "nager-holidays",
+          "status": "completed",
+          "latency_ms": 0.15,
+          "substituted_from": null
+        }
+      ],
+      "missing": [],
+      "trace_events": 15,
+      "has_completion_event": true,
+      "duration_ms": 108.53,
+      "mode": "offline"
+    },
+    {
+      "task_id": "c11",
+      "task": "What is the weather in London tomorrow and what is the population of France?",
+      "status": "completed",
+      "answer_chars": 148,
+      "steps": [
+        {
+          "capability": "GeocodeLocation",
+          "tool_id": "nominatim-geocode",
+          "status": "completed",
+          "latency_ms": 2.84,
+          "substituted_from": null
+        },
+        {
+          "capability": "GetWeatherForecast",
+          "tool_id": "open-meteo-forecast",
+          "status": "completed",
+          "latency_ms": 2.96,
+          "substituted_from": null
+        },
+        {
+          "capability": "GetCountryFacts",
+          "tool_id": "restcountries-facts",
+          "status": "completed",
+          "latency_ms": 2.82,
+          "substituted_from": null
+        }
+      ],
+      "missing": [],
+      "trace_events": 20,
+      "has_completion_event": true,
+      "duration_ms": 168.5,
+      "mode": "offline"
+    },
+    {
+      "task_id": "c12",
+      "task": "How many students are enrolled in the MS Data Science program and find research papers on agents?",
+      "status": "completed",
+      "answer_chars": 356,
+      "steps": [
+        {
+          "capability": "SearchResearchPapers",
+          "tool_id": "arxiv-search",
+          "status": "completed",
+          "latency_ms": 2.83,
+          "substituted_from": null
+        },
+        {
+          "capability": "QueryStructuredData",
+          "tool_id": "university-sql",
+          "status": "completed",
+          "latency_ms": 4.79,
+          "substituted_from": null
+        }
+      ],
+      "missing": [],
+      "trace_events": 15,
+      "has_completion_event": true,
+      "duration_ms": 132.57,
+      "mode": "offline"
+    },
+    {
+      "task_id": "c13",
+      "task": "What is the temperature in Karachi tomorrow, and according to the uploaded document, what is the main goal?",
+      "status": "completed",
+      "answer_chars": 234,
+      "steps": [
+        {
+          "capability": "GeocodeLocation",
+          "tool_id": "nominatim-geocode",
+          "status": "completed",
+          "latency_ms": 3.09,
+          "substituted_from": null
+        },
+        {
+          "capability": "GetWeatherForecast",
+          "tool_id": "open-meteo-forecast",
+          "status": "completed",
+          "latency_ms": 3.09,
+          "substituted_from": null
+        },
+        {
+          "capability": "AnswerFromDocument",
+          "tool_id": "document-qa",
+          "status": "completed",
+          "latency_ms": 3.92,
+          "substituted_from": null
+        }
+      ],
+      "missing": [],
+      "trace_events": 20,
+      "has_completion_event": true,
+      "duration_ms": 165.44,
+      "mode": "offline"
+    },
+    {
+      "task_id": "c14",
+      "task": "Convert 50 EUR to GBP.",
+      "status": "completed",
+      "answer_chars": 67,
+      "steps": [
+        {
+          "capability": "ConvertCurrency",
+          "tool_id": "frankfurter-currency",
+          "status": "completed",
+          "latency_ms": 3.1,
+          "substituted_from": null
+        }
+      ],
+      "missing": [],
+      "trace_events": 10,
+      "has_completion_event": true,
+      "duration_ms": 68.1,
+      "mode": "offline"
+    },
+    {
+      "task_id": "c15",
+      "task": "Convert 1000 JPY to USD.",
+      "status": "completed",
+      "answer_chars": 69,
+      "steps": [
+        {
+          "capability": "ConvertCurrency",
+          "tool_id": "frankfurter-currency",
+          "status": "completed",
+          "latency_ms": 2.95,
+          "substituted_from": null
+        }
+      ],
+      "missing": [],
+      "trace_events": 10,
+      "has_completion_event": true,
+      "duration_ms": 69.68,
+      "mode": "offline"
+    }
+  ]
+}

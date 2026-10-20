@@ -1,0 +1,156 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any
+
+from app.agents.auditor_stub import AuditorStub
+from app.agents.client import ClientAgent
+from app.agents.mapper_stub import MapperStub
+from app.agents.planner import TaskPlanner
+from app.baselines.b1 import B1ToolCalling
+from app.baselines.b2 import B2RagOnly
+from app.config import Settings
+from app.core.cache import Cache
+from app.core.circuit_breaker import CircuitBreakerRegistry
+from app.core.llm import LLMClient
+from app.core.message_bus import MessageBus
+from app.core.tracing import TraceStore
+from app.core.trust_registry import TrustRegistry
+from app.knowledge.graph import ToolKnowledgeGraph
+from app.knowledge.ontology import Ontology
+from app.knowledge.retrieval import GraphRAGRetriever
+from app.providers.registry import ProviderRegistry
+
+
+@dataclass
+class AppServices:
+    settings: Settings
+    cache: Cache
+    traces: TraceStore
+    trust: TrustRegistry
+    breakers: CircuitBreakerRegistry
+    ontology: Ontology
+    graph: ToolKnowledgeGraph
+    retriever: GraphRAGRetriever
+    llm: LLMClient
+    providers: ProviderRegistry
+    auditor: AuditorStub
+    mapper: MapperStub
+    planner: TaskPlanner
+    bus: MessageBus
+    client: ClientAgent
+    b1: B1ToolCalling
+    b2: B2RagOnly
+
+    def export_graph(self) -> bool:
+        trust = {item["provider_id"]: item for item in self.trust.all()}
+        return self.graph.export_turtle(
+            self.settings.runtime_dir / "knowledge_graph.ttl", trust=trust
+        )
+
+    def monitoring(self) -> dict[str, Any]:
+        trust_rows = {item["provider_id"]: item for item in self.trust.all()}
+        providers = []
+        for provider in self.providers.all():
+            trust = trust_rows.get(provider.provider_id, {})
+            providers.append(
+                {
+                    "provider_id": provider.provider_id,
+                    "tool_id": provider.tool_id,
+                    "tool_name": provider.spec.name,
+                    "capability": provider.spec.capability,
+                    "execution": provider.spec.execution,
+                    "trust": trust.get("score", 0.5),
+                    "demoted": trust.get("demoted", False),
+                    "contradictions": trust.get("contradictions", 0),
+                    "calls": trust.get("calls", 0),
+                    "probes": trust.get("probes", 0),
+                    "failure_mode": (
+                        "offline"
+                        if (self.settings.offline_mode or provider.offline_forced)
+                        else "live"
+                    ),
+                    "fail_next": provider.fail_next,
+                }
+            )
+        return {
+            "trust": self.trust.all(),
+            "breakers": self.breakers.snapshot(),
+            "drift_alerts": [item.model_dump(mode="json") for item in self.auditor.alerts()],
+            "providers": providers,
+            "mode": "offline" if self.settings.offline_mode else "live",
+        }
+
+    def reset_demo(self) -> None:
+        self.trust.reset()
+        self.breakers.reset()
+        self.auditor.reset()
+        self.mapper.reset()
+        self.providers.reset_demo()
+        self.cache.clear()
+
+
+def build_services(settings: Settings | None = None) -> AppServices:
+    resolved = settings or Settings()
+    resolved.ensure_dirs()
+    ontology = Ontology.load(resolved.ontology_file)
+    graph = ToolKnowledgeGraph(ontology)
+    cache = Cache(resolved.cache_db, ttl_seconds=resolved.cache_ttl_seconds)
+    traces = TraceStore(resolved.traces_db)
+    trust = TrustRegistry(
+        resolved.trust_db,
+        signal_weights=resolved.trust_signal_weights,
+        demotion_threshold=resolved.trust_demotion_threshold,
+        min_evidence=resolved.trust_min_evidence,
+    )
+    breakers = CircuitBreakerRegistry(
+        failure_threshold=resolved.breaker_failure_threshold,
+        cooldown_seconds=resolved.breaker_cooldown_seconds,
+    )
+    llm = LLMClient(resolved, cache)
+    providers = ProviderRegistry(resolved, cache, graph)
+    retriever = GraphRAGRetriever(
+        graph,
+        top_k=resolved.ranking_top_k,
+        expansion=resolved.graph_expansion,
+    )
+    auditor = AuditorStub(graph, trust)
+    mapper = MapperStub(graph, ontology)
+    planner = TaskPlanner(ontology, llm)
+    bus = MessageBus(traces)
+    client = ClientAgent(
+        resolved,
+        ontology,
+        graph,
+        retriever,
+        trust,
+        breakers,
+        providers,
+        auditor,
+        planner,
+        bus,
+        traces,
+    )
+    b1 = B1ToolCalling(resolved, graph, providers, planner, llm)
+    b2 = B2RagOnly(resolved, graph, providers, planner, llm)
+    services = AppServices(
+        settings=resolved,
+        cache=cache,
+        traces=traces,
+        trust=trust,
+        breakers=breakers,
+        ontology=ontology,
+        graph=graph,
+        retriever=retriever,
+        llm=llm,
+        providers=providers,
+        auditor=auditor,
+        mapper=mapper,
+        planner=planner,
+        bus=bus,
+        client=client,
+        b1=b1,
+        b2=b2,
+    )
+    services.export_graph()
+    return services

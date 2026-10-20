@@ -1,0 +1,513 @@
+{
+  "suite": "ablations",
+  "generated_at": "2026-10-20T12:57:57.551121+00:00",
+  "mode": "offline",
+  "configurations": 7,
+  "selected_chain_tasks": [
+    "c01",
+    "c04",
+    "c05",
+    "c06",
+    "c07",
+    "c08",
+    "c09",
+    "c13"
+  ],
+  "failure_task": "What is the temperature in Lahore tomorrow?",
+  "metrics": {
+    "chain_success_rate": 1.0,
+    "recovery_rate": 0.7143,
+    "substitution_rate": 0.7143,
+    "avg_latency_ms": 98.6905
+  },
+  "rows": [
+    {
+      "configuration": "full",
+      "flags": {},
+      "tasks": 8,
+      "success_rate": 1.0,
+      "recovered_from_failure": true,
+      "substitution_used": true,
+      "failure_status": "completed",
+      "avg_latency_ms": 101.0687,
+      "rows": [
+        {
+          "task_id": "c01",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 168.05,
+          "success": true
+        },
+        {
+          "task_id": "c04",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 68.06,
+          "success": true
+        },
+        {
+          "task_id": "c05",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 68.66,
+          "success": true
+        },
+        {
+          "task_id": "c06",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 71.31,
+          "success": true
+        },
+        {
+          "task_id": "c07",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 73.13,
+          "success": true
+        },
+        {
+          "task_id": "c08",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 69.95,
+          "success": true
+        },
+        {
+          "task_id": "c09",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 117.85,
+          "success": true
+        },
+        {
+          "task_id": "c13",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 171.54,
+          "success": true
+        }
+      ]
+    },
+    {
+      "configuration": "no_ontology",
+      "flags": {
+        "use_ontology": false
+      },
+      "tasks": 8,
+      "success_rate": 1.0,
+      "recovered_from_failure": true,
+      "substitution_used": true,
+      "failure_status": "completed",
+      "avg_latency_ms": 100.6962,
+      "rows": [
+        {
+          "task_id": "c01",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 168.73,
+          "success": true
+        },
+        {
+          "task_id": "c04",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 70.46,
+          "success": true
+        },
+        {
+          "task_id": "c05",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 70.43,
+          "success": true
+        },
+        {
+          "task_id": "c06",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 68.41,
+          "success": true
+        },
+        {
+          "task_id": "c07",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 69.93,
+          "success": true
+        },
+        {
+          "task_id": "c08",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 68.24,
+          "success": true
+        },
+        {
+          "task_id": "c09",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 118.05,
+          "success": true
+        },
+        {
+          "task_id": "c13",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 171.32,
+          "success": true
+        }
+      ]
+    },
+    {
+      "configuration": "no_auditor",
+      "flags": {
+        "use_auditor": false
+      },
+      "tasks": 8,
+      "success_rate": 1.0,
+      "recovered_from_failure": false,
+      "substitution_used": false,
+      "failure_status": "completed",
+      "avg_latency_ms": 100.6488,
+      "rows": [
+        {
+          "task_id": "c01",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 246.81,
+          "success": true
+        },
+        {
+          "task_id": "c04",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 59.1,
+          "success": true
+        },
+        {
+          "task_id": "c05",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 61.46,
+          "success": true
+        },
+        {
+          "task_id": "c06",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 62.94,
+          "success": true
+        },
+        {
+          "task_id": "c07",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 65.0,
+          "success": true
+        },
+        {
+          "task_id": "c08",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 62.15,
+          "success": true
+        },
+        {
+          "task_id": "c09",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 101.04,
+          "success": true
+        },
+        {
+          "task_id": "c13",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 146.69,
+          "success": true
+        }
+      ]
+    },
+    {
+      "configuration": "no_trust",
+      "flags": {
+        "use_trust": false
+      },
+      "tasks": 8,
+      "success_rate": 1.0,
+      "recovered_from_failure": true,
+      "substitution_used": true,
+      "failure_status": "completed",
+      "avg_latency_ms": 97.0312,
+      "rows": [
+        {
+          "task_id": "c01",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 167.77,
+          "success": true
+        },
+        {
+          "task_id": "c04",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 56.01,
+          "success": true
+        },
+        {
+          "task_id": "c05",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 67.29,
+          "success": true
+        },
+        {
+          "task_id": "c06",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 67.19,
+          "success": true
+        },
+        {
+          "task_id": "c07",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 70.2,
+          "success": true
+        },
+        {
+          "task_id": "c08",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 67.27,
+          "success": true
+        },
+        {
+          "task_id": "c09",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 111.77,
+          "success": true
+        },
+        {
+          "task_id": "c13",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 168.75,
+          "success": true
+        }
+      ]
+    },
+    {
+      "configuration": "no_feedback",
+      "flags": {
+        "use_feedback": false
+      },
+      "tasks": 8,
+      "success_rate": 1.0,
+      "recovered_from_failure": true,
+      "substitution_used": true,
+      "failure_status": "completed",
+      "avg_latency_ms": 80.3012,
+      "rows": [
+        {
+          "task_id": "c01",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 136.06,
+          "success": true
+        },
+        {
+          "task_id": "c04",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 55.8,
+          "success": true
+        },
+        {
+          "task_id": "c05",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 54.81,
+          "success": true
+        },
+        {
+          "task_id": "c06",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 56.6,
+          "success": true
+        },
+        {
+          "task_id": "c07",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 60.29,
+          "success": true
+        },
+        {
+          "task_id": "c08",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 57.23,
+          "success": true
+        },
+        {
+          "task_id": "c09",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 85.1,
+          "success": true
+        },
+        {
+          "task_id": "c13",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 136.52,
+          "success": true
+        }
+      ]
+    },
+    {
+      "configuration": "no_substitution",
+      "flags": {
+        "use_substitution": false
+      },
+      "tasks": 8,
+      "success_rate": 1.0,
+      "recovered_from_failure": false,
+      "substitution_used": false,
+      "failure_status": "partial",
+      "avg_latency_ms": 99.38,
+      "rows": [
+        {
+          "task_id": "c01",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 169.62,
+          "success": true
+        },
+        {
+          "task_id": "c04",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 65.99,
+          "success": true
+        },
+        {
+          "task_id": "c05",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 69.1,
+          "success": true
+        },
+        {
+          "task_id": "c06",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 71.37,
+          "success": true
+        },
+        {
+          "task_id": "c07",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 70.67,
+          "success": true
+        },
+        {
+          "task_id": "c08",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 67.17,
+          "success": true
+        },
+        {
+          "task_id": "c09",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 114.46,
+          "success": true
+        },
+        {
+          "task_id": "c13",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 166.66,
+          "success": true
+        }
+      ]
+    },
+    {
+      "configuration": "no_circuit_breaker",
+      "flags": {
+        "use_circuit_breaker": false
+      },
+      "tasks": 8,
+      "success_rate": 1.0,
+      "recovered_from_failure": true,
+      "substitution_used": true,
+      "failure_status": "completed",
+      "avg_latency_ms": 111.7075,
+      "rows": [
+        {
+          "task_id": "c01",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 165.57,
+          "success": true
+        },
+        {
+          "task_id": "c04",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 163.0,
+          "success": true
+        },
+        {
+          "task_id": "c05",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 68.84,
+          "success": true
+        },
+        {
+          "task_id": "c06",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 65.78,
+          "success": true
+        },
+        {
+          "task_id": "c07",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 72.21,
+          "success": true
+        },
+        {
+          "task_id": "c08",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 67.25,
+          "success": true
+        },
+        {
+          "task_id": "c09",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 116.92,
+          "success": true
+        },
+        {
+          "task_id": "c13",
+          "status": "completed",
+          "missing": [],
+          "duration_ms": 174.09,
+          "success": true
+        }
+      ]
+    }
+  ]
+}
