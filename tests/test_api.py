@@ -10,6 +10,17 @@ def test_health_and_interface(api: TestClient) -> None:
     assert health["tools"] >= 10
     assert api.get("/").status_code == 200
     assert "Agent Bazaar" in api.get("/").text
+    pages = {
+        "/dashboard": "Workflow workspace",
+        "/marketplace": "Service marketplace",
+        "/monitor": "Self-healing monitor",
+        "/library": "Interface library",
+    }
+    for path, title in pages.items():
+        response = api.get(path)
+        assert response.status_code == 200
+        assert f"<title>{title} | Agent Bazaar</title>" in response.text
+        assert f'data-page="{path.removeprefix("/")}"' in response.text
     assert api.get("/static/styles.css").status_code == 200
     assert api.get("/static/app.js").status_code == 200
     assert api.get("/favicon.ico").status_code == 204
