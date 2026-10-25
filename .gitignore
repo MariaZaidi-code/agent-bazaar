@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Runtime artifacts
+.cache/
+outputs/*
+!outputs/.gitkeep
+
+# Editors
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Local live-probe experiments
+live_probe_*.json

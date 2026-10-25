@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "name": "Agent Bazaar injected drift evaluation set",
+  "version": "1.0",
+  "notes": [
+    "20 injected changes across rename, remove, type, unit, garbage, outage, flapping and dishonest behaviours.",
+    "Detection is evaluated after a normal baseline probe.",
+    "Garbage 200 cases are expected to be missed by rule checks and caught by embedding drift.",
+    "Flapping uses fail_on_calls [2], so detection is expected on the second post-injection probe."
+  ],
+  "scenarios": [
+    {
+      "id": "drift-01",
+      "tool_id": "open-meteo",
+      "behavior": "rename_field",
+      "options": {
+        "field_path": "current.temperature_2m",
+        "new_name": "temperature"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Mapped temperature field renamed from temperature_2m to temperature."
+    },
+    {
+      "id": "drift-02",
+      "tool_id": "rest-countries",
+      "behavior": "rename_field",
+      "options": {
+        "field_path": "population",
+        "new_name": "pop"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Population field renamed to pop."
+    },
+    {
+      "id": "drift-03",
+      "tool_id": "usgs-earthquake",
+      "behavior": "rename_field",
+      "options": {
+        "field_path": "properties.mag",
+        "new_name": "magnitude"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Nested magnitude field renamed."
+    },
+    {
+      "id": "drift-04",
+      "tool_id": "dog-ceo",
+      "behavior": "rename_field",
+      "options": {
+        "field_path": "message",
+        "new_name": "image_url"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Image URL field renamed."
+    },
+    {
+      "id": "drift-05",
+      "tool_id": "nager-date",
+      "behavior": "remove_field",
+      "options": {
+        "field_path": "date"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Holiday date field removed."
+    },
+    {
+      "id": "drift-06",
+      "tool_id": "open-library",
+      "behavior": "remove_field",
+      "options": {
+        "field_path": "docs"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Search results array removed."
+    },
+    {
+      "id": "drift-07",
+      "tool_id": "open-meteo",
+      "behavior": "remove_field",
+      "options": {
+        "field_path": "current.wind_speed_10m"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Wind speed field removed."
+    },
+    {
+      "id": "drift-08",
+      "tool_id": "arxiv",
+      "behavior": "remove_field",
+      "options": {
+        "field_path": "feed.entry.title"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Entry title removed from the Atom response."
+    },
+    {
+      "id": "drift-09",
+      "tool_id": "cat-fact",
+      "behavior": "type_change",
+      "options": {
+        "field_path": "length",
+        "replacement": "not-a-number"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Fact length changes from number to text."
+    },
+    {
+      "id": "drift-10",
+      "tool_id": "coingecko",
+      "behavior": "type_change",
+      "options": {
+        "field_path": "bitcoin.usd",
+        "replacement": "price unavailable"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Cryptocurrency price changes from number to text."
+    },
+    {
+      "id": "drift-11",
+      "tool_id": "open-meteo",
+      "behavior": "unit_change",
+      "options": {
+        "field_path": "current.temperature_2m",
+        "unit_path": "current_units.temperature_2m",
+        "from_unit": "celsius",
+        "to_unit": "fahrenheit"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Temperature silently switches from Celsius to Fahrenheit."
+    },
+    {
+      "id": "drift-12",
+      "tool_id": "open-meteo",
+      "behavior": "unit_change",
+      "options": {
+        "field_path": "current.wind_speed_10m",
+        "unit_path": "current_units.wind_speed_10m",
+        "from_unit": "km",
+        "to_unit": "m"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Wind speed unit and value change from km/h to m/s-scale metres."
+    },
+    {
+      "id": "drift-13",
+      "tool_id": "open-meteo",
+      "behavior": "garbage_200",
+      "options": {},
+      "expected_detector": "embedding",
+      "expected_round": 1,
+      "description": "HTTP 200 response keeps mapped fields but is filled with unrelated garbage structure."
+    },
+    {
+      "id": "drift-14",
+      "tool_id": "nominatim",
+      "behavior": "garbage_200",
+      "options": {},
+      "expected_detector": "embedding",
+      "expected_round": 1,
+      "description": "Geocoding response polluted with garbage fields."
+    },
+    {
+      "id": "drift-15",
+      "tool_id": "rest-countries",
+      "behavior": "garbage_200",
+      "options": {},
+      "expected_detector": "embedding",
+      "expected_round": 1,
+      "description": "Country response polluted with garbage fields."
+    },
+    {
+      "id": "drift-16",
+      "tool_id": "ipify",
+      "behavior": "outage",
+      "options": {},
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Provider returns HTTP 503 on demand."
+    },
+    {
+      "id": "drift-17",
+      "tool_id": "worldtime",
+      "behavior": "outage",
+      "options": {},
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Time provider goes offline."
+    },
+    {
+      "id": "drift-18",
+      "tool_id": "joke-api",
+      "behavior": "flapping",
+      "options": {
+        "fail_on_calls": [
+          2
+        ]
+      },
+      "expected_detector": "rule",
+      "expected_round": 2,
+      "description": "Provider alternates between success and failure."
+    },
+    {
+      "id": "drift-19",
+      "tool_id": "datamuse",
+      "behavior": "flapping",
+      "options": {
+        "fail_on_calls": [
+          2
+        ]
+      },
+      "expected_detector": "rule",
+      "expected_round": 2,
+      "description": "Word service flaps on its second call after injection."
+    },
+    {
+      "id": "drift-20",
+      "tool_id": "open-meteo",
+      "behavior": "dishonest",
+      "options": {
+        "field_path": "current.temperature_2m",
+        "unit_path": "current_units.temperature_2m",
+        "from_unit": "celsius",
+        "to_unit": "fahrenheit"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Dishonest provider advertises Celsius-quality data but silently serves Fahrenheit values."
+    }
+  ]
+}
