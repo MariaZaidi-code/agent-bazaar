@@ -10,6 +10,7 @@ from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
+from starlette.concurrency import run_in_threadpool
 
 from app import __version__
 from app.config import BASE_DIR, Settings
@@ -154,6 +155,46 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @application.get("/api/monitoring")
     async def monitoring(request: Request) -> dict[str, Any]:
         return services(request).monitoring()
+
+    @application.get("/api/auditor")
+    async def auditor_overview(request: Request) -> dict[str, Any]:
+        return services(request).auditor.overview()
+
+    @application.get("/api/auditor/trust")
+    async def auditor_trust(request: Request) -> dict[str, Any]:
+        return services(request).auditor.trust_payload()
+
+    @application.post("/api/auditor/verify/{tool_id}")
+    async def auditor_verify(
+        tool_id: str,
+        request: Request,
+        live: bool = Query(default=False),
+    ) -> dict[str, Any]:
+        try:
+            return await run_in_threadpool(
+                services(request).auditor.verify_tool,
+                tool_id,
+                force_live=live,
+            )
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @application.post("/api/auditor/monitor/{tool_id}")
+    async def auditor_monitor(
+        tool_id: str,
+        request: Request,
+        live: bool = Query(default=False),
+        establish_baseline: bool = Query(default=False),
+    ) -> dict[str, Any]:
+        try:
+            return await run_in_threadpool(
+                services(request).auditor.monitor_tool,
+                tool_id,
+                force_live=live,
+                establish_baseline=establish_baseline,
+            )
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     @application.get("/api/trust/{provider_id}")
     async def trust_detail(provider_id: str, request: Request) -> dict[str, Any]:

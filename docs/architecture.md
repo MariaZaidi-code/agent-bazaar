@@ -2,7 +2,7 @@
 
 ## System boundary
 
-This repository implements Rameen Babar's scope: the Client agent, the Provider agents, the trust registry, the circuit breaker, the web interface/trace viewer and the integration adapters for the Knowledge Layer and Auditor. It is a complete runnable system with deterministic fallbacks, not a mock UI over empty interfaces.
+This repository implements the merged Agent Bazaar system: the Client and Provider agents, trust registry, circuit breaker, web interface/trace viewer, the knowledge layer and Mapper, and the Auditor and monitoring layer, with explicit adapters between them. It is a complete runnable system with deterministic fallbacks, not a mock UI over empty interfaces.
 
 ```text
 Browser
@@ -19,11 +19,17 @@ FastAPI (app/main.py)
         |     +-- TaskPlanner
         |     +-- GraphRAGRetriever
         |     +-- Ontology
-        |     +-- AuditorStub
+        |     +-- AuditorBridge
         |     +-- TrustRegistry
         |     +-- CircuitBreakerRegistry
         |     +-- ProviderRegistry
         |     +-- TraceStore / MessageBus
+        |
+        +-- Auditor (src/agent_bazaar_auditor)
+        |     +-- claim verification and evidence judging
+        |     +-- safe probes and payload validation
+        |     +-- rule + embedding drift detection
+        |     +-- trust ledger and feed
         |
         +-- SQLite
         |     +-- cache.db
@@ -46,7 +52,7 @@ FastAPI (app/main.py)
 | GraphRAG | TF-IDF retrieval with graph-neighbor expansion | `app/knowledge/retrieval.py` |
 | Providers | Live/fixture execution, schema validation, cache | `app/providers/` |
 | Provider registry | Tool-to-provider lookup, mirrors, failure controls | `app/providers/registry.py` |
-| Auditor adapter | Claim labels, drift alerts, contradiction signals | `app/agents/auditor_stub.py` |
+| Auditor adapter | Claim labels, drift alerts, contradiction signals, Auditor API | `app/agents/auditor_bridge.py` |
 | Mapper adapter | Listing ingestion and ontology-checked corrections | `app/agents/mapper_stub.py` |
 | Trust registry | Beta score, history, replay, demotion | `app/core/trust_registry.py` |
 | Circuit breaker | Per Client-to-Provider link state machine | `app/core/circuit_breaker.py` |
@@ -58,17 +64,17 @@ FastAPI (app/main.py)
 1. **Decompose.** `TaskPlanner.decompose` detects weather, currency, holiday, country, research, SQL and document intents. Weather and SQL/document questions are handled robustly; an optional LLM planner is used only when the deterministic planner finds nothing.
 2. **Retrieve.** For each sub-goal, `GraphRAGRetriever.search` filters the catalogue to the required capability, ranks by TF-IDF cosine similarity, normalizes scores, and expands the top seeds through graph neighbors.
 3. **Filter.** The Client rejects unknown capabilities and candidates that cannot satisfy required input concepts.
-4. **Verify.** The Auditor adapter returns per-claim labels: `Verified`, `Supported`, `Unsupported` or `Contradicted`.
-5. **Rank.** Each candidate receives:
+4. **Verify.** The Auditor returns per-claim labels (`Verified`, `Supported`, `Unsupported` or `Contradicted`). Catalogue tools are checked by the real Auditor; local SQL, document and adversarial providers use the seeded fallback.
+5. **Rank.** The policy partitions candidates by pricing tier (`free`, `freemium`, `paid`, `unknown`), then ranks inside the tier:
 
    ```text
-   score = relevance x trust
-   if contradicted: score *= contradicted_penalty
-   if demoted:     score = 0 and candidate becomes ineligible
-   if breaker open: score = 0 and candidate becomes ineligible
+   base = relevance x trust x quality x rating_factor
+   quality = doc_quality^w1 x mapping_coverage^w2 x chain_fit^w3
+   score = base; if contradicted: score *= contradicted_penalty
+   if demoted or breaker open: score = 0 and candidate becomes ineligible
    ```
 
-   Candidates are sorted by eligibility and score. Claim labels and trust history are shown in the UI.
+   Paid and keyed tools remain visible with a reason but are not executable. Candidates are sorted by tier, eligibility and score. Claim labels and trust history are shown in the UI.
 6. **Compose.** The planner selects one eligible tool per sub-goal. For dependent sub-goals, `app/agents/client.py` builds input bindings from earlier outputs. Each dependency link is checked with `Ontology.check_link`.
 7. **Validate links.** Concept compatibility and unit compatibility are checked before a provider is called. Unit mismatches are rejected; convertible units are flagged, and the synthetic conversion step is applied where the Client supports it.
 8. **Execute.** Steps run in topological order. Provider responses are schema-validated against the tool's output concept fields. Successful outputs feed downstream bindings.
@@ -95,6 +101,25 @@ Signals:
 | `contradiction` | 2.0 | Claim contradicted by evidence |
 
 A provider is demoted when it has at least `trust_min_evidence` weighted evidence and its score is below `trust_demotion_threshold` (default 0.40). Demoted providers receive score zero and are ineligible until their score recovers. `trust_history` records every update, and `replay` recomputes the score from history so the UI can show that persisted state and derived state agree.
+
+## Auditor integration
+
+`AuditorBridge` implements the Client's Auditor contract on top of
+`src/agent_bazaar_auditor`. Six application tools map to Auditor catalogue ids
+(`open-meteo-forecast` -> `open-meteo`, `frankfurter-currency` -> `frankfurter`,
+`nominatim-geocode` -> `nominatim`, `restcountries-facts` -> `rest-countries`,
+`nager-holidays` -> `nager-date`, `arxiv-search` -> `arxiv`). Verification runs
+in a worker thread because the Auditor is synchronous and owns mutable
+baselines; the bridge serialises calls with one lock. The three local-only
+providers keep the seeded fallback from `AuditorStub`.
+
+The interface exposes the Auditor through `GET /api/auditor`,
+`GET /api/auditor/trust`, `POST /api/auditor/verify/{tool}` and
+`POST /api/auditor/monitor/{tool}`. The demo drift route uses the Auditor's
+own mock provider and rename drift detector when the tool is in the catalogue;
+for local-only tools it falls back to the documented injected alert. Drift
+alerts are converted into the application `DriftAlertMessage`, recorded as a
+contradiction in the trust registry, and surfaced by `/api/monitoring`.
 
 ## Circuit breaker
 

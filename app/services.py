@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from app.agents.auditor_stub import AuditorStub
+from app.agents.auditor_bridge import AuditorBridge
 from app.agents.client import ClientAgent
 from app.agents.mapper_stub import MapperStub
 from app.agents.planner import TaskPlanner
@@ -38,7 +38,7 @@ class AppServices:
     retriever: GraphRAGRetriever
     llm: LLMClient
     providers: ProviderRegistry
-    auditor: AuditorStub
+    auditor: AuditorBridge
     mapper: MapperStub | KnowledgeMapper
     planner: TaskPlanner
     bus: MessageBus
@@ -81,7 +81,8 @@ class AppServices:
         return {
             "trust": self.trust.all(),
             "breakers": self.breakers.snapshot(),
-            "drift_alerts": [item.model_dump(mode="json") for item in self.auditor.alerts()],
+            "drift_alerts": self.auditor.snapshot(),
+            "auditor": self.auditor.status(),
             "providers": providers,
             "mode": "offline" if self.settings.offline_mode else "live",
         }
@@ -136,7 +137,13 @@ def build_services(settings: Settings | None = None) -> AppServices:
         top_k=resolved.ranking_top_k,
         expansion=resolved.graph_expansion,
     )
-    auditor = AuditorStub(graph, trust)
+    auditor = AuditorBridge(
+        graph,
+        trust,
+        resolved.auditor_dir,
+        live=resolved.auditor_live,
+        persist=resolved.auditor_persist,
+    )
     planner = TaskPlanner(ontology, llm)
     bus = MessageBus(traces)
     client = ClientAgent(

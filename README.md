@@ -11,16 +11,19 @@ agent retrieves candidate tools with GraphRAG, filters them through a shared ont
 claim labels, ranks by trust, validates type and unit links, executes through Provider agents,
 and substitutes a compatible backup if a provider fails.
 
-This repository holds two merged stacks:
+This repository holds three merged stacks:
 
 - the **knowledge layer** (`src/agent_bazaar`): upper ontology and units, RDF knowledge graph,
   vector index, ingestion utility, Mapper agent and mapping evaluation helpers;
+- the **Auditor and monitoring layer** (`src/agent_bazaar_auditor`): claim extraction, evidence
+  judging, safe probing, rule and embedding drift detection, mock providers, trust updates and
+  its own reproducible evaluation;
 - the **Client, Provider and Interface application** (`app`): FastAPI service, provider agents,
   trust registry, circuit breakers, trace viewer, evaluation suites and the browser interface.
 
-Both stacks run without API keys: the application uses free, keyless public APIs or
-deterministic offline fixtures, and the knowledge layer runs offline against the committed
-seed corpus.
+All three run without API keys: the application uses free, keyless public APIs or
+deterministic offline fixtures, the knowledge layer runs offline against the committed
+seed corpus, and the Auditor runs against frozen fixtures and datasets.
 
 ## Documentation
 
@@ -45,6 +48,15 @@ Client, Provider and Interface:
 - [Mapper/Auditor integration contracts](docs/integration.md)
 - [Requirement-to-code traceability](docs/requirements-traceability.md)
 
+Auditor and monitoring:
+
+- [Auditor overview](docs/auditor/overview.md)
+- [Auditor architecture](docs/auditor/architecture.md)
+- [Auditor protocol and message contracts](docs/auditor/protocol.md)
+- [Auditor evaluation](docs/auditor/evaluation.md)
+- [Auditor demo guide](docs/auditor/demo-guide.md)
+- [Auditor work-plan mapping](docs/auditor/work-plan-mapping.md)
+
 ## Team branches
 
 - `maria` - knowledge layer and Mapper lead (ontology, knowledge graph, vector index, ingestion utility, Mapper agent, mapping evaluation)
@@ -66,6 +78,17 @@ Client, Provider and Interface:
 - **52 automated tests**, Ruff checks and GitHub Actions CI.
 - **43 integration tests** for the bridge between the application and the knowledge layer.
 
+### Auditor and Monitoring
+
+- **Claim verification** over 15 keyless APIs and 47 curated claims, with the fixed four-label decision table and evidence from both documentation and probes.
+- **Safe probing** with fixtures, rate limiting, caching and JSON/XML payload validation.
+- **Drift monitoring** that combines rule checks with schema embeddings and emits field-level `DriftAlert` messages.
+- **Trust updates** through a Beta-style ledger and an optional HTTP registry feed.
+- **Mock providers** for rename, removal, type change, unit change, garbage `200`, outage, flapping and dishonest responses.
+- **Reproducible evaluation** with 60 labelled claims, 20 injected drift scenarios, false-alarm controls and a dishonest-provider trust experiment.
+- **Application integration** through `AuditorBridge`: the six catalogue tools used by the app are verified by the real Auditor, the local SQL/document/mock providers keep the seeded fallback, and `/api/auditor/*` exposes catalog, verify, monitor and trust data.
+- **32 Auditor tests** in addition to the application and knowledge-layer suites.
+
 ### Knowledge layer and Mapper
 
 - **Ontology** with a frozen 12-class upper ontology, a curated domain layer of 60 concepts, unit families with compatibility rules, and SHACL shapes for validation.
@@ -81,8 +104,8 @@ Client, Provider and Interface:
 
 ## Quickstart (PowerShell)
 
-Both stacks install from the same dependency set, so a single virtual environment serves
-both quickstarts.
+All three stacks install from the same dependency set, so a single virtual environment serves
+all three quickstarts.
 
 ### Knowledge layer and Mapper
 
@@ -99,7 +122,8 @@ python -m pytest
 ```
 
 `python -m pytest` runs the whole merged suite: the 128 knowledge-layer tests, the 52
-application tests and the 43 integration tests, 223 in total.
+application tests, the 43 integration tests, the 32 Auditor tests and the Auditor bridge
+tests, 261 in total.
 
 This uses the committed 8-spec seed corpus and the deterministic hashing
 embedder. No API key is needed. To fetch the full corpus and use the embedding
@@ -141,6 +165,28 @@ If PowerShell blocks activation, no activation is needed; use the explicit `.ven
 `scripts/setup.ps1` performs the environment creation, dependency install and test run, and
 `scripts/run.ps1` starts the server.
 
+### Auditor and Monitoring
+
+```powershell
+python -m agent_bazaar_auditor catalog
+python -m agent_bazaar_auditor verify open-meteo
+python -m agent_bazaar_auditor monitor open-meteo --rounds 2
+python -m agent_bazaar_auditor demo
+python -m agent_bazaar_auditor evaluate
+```
+
+The same package is installed as the `agent-bazaar-auditor` command by
+`python -m pip install -e ".[dev]"`. The Auditor defaults to frozen fixtures and writes
+generated probes, baselines and reports under `outputs/` (gitignored). Add `--live` to
+`verify`, `probe` or `monitor` to contact the keyless provider explicitly; the evaluation
+never uses the network.
+
+The application runs the same Auditor in fixture mode by default. Set `AB_AUDITOR_LIVE=true`
+to let `/api/auditor/verify` and `/api/auditor/monitor` probe live when requested, and
+`AB_AUDITOR_PERSIST=false` to disable the Auditor artifact store. See
+[docs/auditor/overview.md](docs/auditor/overview.md) for the complete command and API
+reference.
+
 ### VS Code
 
 1. Open the `agent-bazaar` folder.
@@ -157,6 +203,8 @@ local `.env` file:
 AB_OFFLINE_MODE=true
 AB_RUNTIME_DIR=data/runtime
 AB_LLM_PROVIDER=none
+AB_AUDITOR_LIVE=false
+AB_AUDITOR_PERSIST=true
 ```
 
 `AB_OFFLINE_MODE=true` is recommended for the first run and for evaluation. Live mode contacts only free, keyless public APIs. Set `AB_OFFLINE_MODE=false` to use them. If a live provider fails, the app falls back to an offline fixture and records the failure.
@@ -199,7 +247,7 @@ Developer UI
    |-- TaskPlanner --------------- deterministic or optional LLM decomposition
    |-- GraphRAGRetriever --------- TF-IDF plus ontology-graph expansion
    |-- Ontology ------------------ concepts, capabilities, units, link checks
-   |-- AuditorStub --------------- seeded claim labels, drift alerts
+   |-- AuditorBridge ------------- real Auditor for catalogue tools, seeded fallback
    |-- TrustRegistry ------------- Beta score, history, demotion
    |-- CircuitBreakerRegistry ---- closed / open / half-open
    |-- ProviderRegistry ---------- live providers, mirrors, fixtures
@@ -216,6 +264,15 @@ Knowledge layer (src/agent_bazaar)
    v
   app/integration: shared vocabulary, ontology bridge, graph adapter, mapper adapter,
                    runtime wiring of the knowledge layer
+
+Auditor layer (src/agent_bazaar_auditor)
+   documentation -> claim extraction -> evidence judge
+   keyless API -> safe probe -> payload validation
+   baseline -> rule + embedding drift -> DriftAlert / TrustUpdate
+   |
+   v
+  app/agents/auditor_bridge.py: catalogue verification, drift alerts, trust feed,
+                                fixture fallback for local-only providers
 ```
 
 The execution flow is:
@@ -223,7 +280,8 @@ The execution flow is:
 1. Decompose the task into typed sub-goals.
 2. Retrieve a candidate list for each capability.
 3. Filter candidates through the ontology.
-4. Attach claim labels from the Auditor adapter.
+4. Attach claim labels from the Auditor adapter; catalogue tools are checked by the real
+   Auditor and local-only providers use the seeded fallback.
 5. Rank free-first: the commercial tier is a partition (`free`, `freemium`, `paid`,
    `unknown`), and inside a tier the score is
    `relevance x trust x quality x rating factor`, with claim and breaker penalties.
@@ -265,13 +323,23 @@ src/agent_bazaar/
   evaluation/    mapping metrics, ablations and learning-curve helpers
   llm/           cached chat-completions client
   pipeline.py    listing -> ingestion -> mapping -> validated graph write
+src/agent_bazaar_auditor/
+  claims.py      claim extraction, evidence retrieval and judging
+  probes/        definitions, safe HTTP harness, cache and payload checks
+  drift/         baselines, rule checks, schema embeddings and combined detector
+  mocks/         controllable normal, rename, remove, unit, garbage, outage and flaky providers
+  evaluation/    claim, drift and trust experiments with frozen datasets
+  auditor.py     end-to-end verification and monitoring flow
+  api.py         standalone HTTP API for verify, monitor, probe and trust
+  cli.py         catalog, verify, probe, monitor, demo, evaluate and serve commands
 scripts/         corpus fetch, ontology build, graph seed, demo and evaluation entry points
                  plus setup.ps1, run.ps1 and evaluate.ps1 for the application
-tests/           pytest suite: 128 knowledge-layer, 52 application and 43 integration tests
+tests/           pytest suite: knowledge layer, application, integration, Auditor and bridge tests
 docs/            scope, protocol, ontology, graph, Mapper, onboarding, decisions, evaluation,
                  architecture, message protocol, demo guide, integration, traceability,
-                 API sourcing and free-first reasoning
+                 API sourcing and free-first reasoning, and docs/auditor/ for the Auditor
 reports/         generated JSON evaluation reports
+outputs/         generated Auditor probes, baselines, ledgers and reports (not committed)
 data/
   specs/         generated corpus of 98 specifications; committed 8-spec seed subset, seed manifest,
                  curated live-probe set and README
@@ -300,7 +368,7 @@ current limitations, including the difference between 512 mapping results and
 
 ## Integration between the knowledge layer and the app
 
-`app/integration/` is the integration surface between the two merged stacks, and it is
+`app/integration/` is the integration surface between the merged stacks, and it is
 implemented. The modules are:
 
 | Module | Role |
@@ -436,8 +504,8 @@ yet.
 .\.venv\Scripts\ruff.exe check app tests run.py
 ```
 
-The merged suite holds 223 tests: 128 knowledge-layer tests, 52 application tests and 43
-integration tests. The application tests cover trust updates and replay, breaker
+The merged suite holds 261 tests: 128 knowledge-layer tests, 52 application tests, 43
+integration tests, 32 Auditor tests and 6 Auditor bridge tests. The application tests cover trust updates and replay, breaker
 transitions, ontology links, graph substitutes, all example chains, SQL, document QA,
 injected failure substitution, breaker routing, mapper corrections, baselines, the
 ranking policy and the HTTP API. The knowledge-layer tests cover the ontology generator, the RDF store and
@@ -454,7 +522,11 @@ graph, the knowledge-backed Mapper and the wiring of the backends.
 | `GET /api/tasks/recent` | Recent task summaries |
 | `GET /api/tasks/{id}` | Full task result with trace |
 | `GET /api/tasks/{id}/messages` | Persisted agent messages |
-| `GET /api/monitoring` | Trust, breakers, drift and provider state |
+| `GET /api/monitoring` | Trust, breakers, drift, Auditor status and provider state |
+| `GET /api/auditor` | Auditor catalogue, tool mappings, trust ledger and feed |
+| `GET /api/auditor/trust` | Auditor trust leaderboard and feed summary |
+| `POST /api/auditor/verify/{tool}` | Verify one catalogue tool (add `?live=true` for a live probe) |
+| `POST /api/auditor/monitor/{tool}` | Re-probe one catalogue tool and return drift alerts |
 | `GET /api/trust/{provider_id}` | Trust state, history and replay |
 | `GET /api/tools` | Tool catalogue with trust and validation |
 | `GET /api/ontology` | Concepts, units and capabilities |
@@ -471,10 +543,10 @@ graph, the knowledge-backed Mapper and the wiring of the backends.
 
 ## Integration hand-off
 
-`app/agents/mapper_stub.py` and `app/agents/auditor_stub.py` are explicit adapter boundaries:
+`app/agents/mapper_stub.py` and `app/agents/auditor_bridge.py` are explicit adapter boundaries:
 
 - The Mapper side of this hand-off is implemented in `app/integration/mapper_adapter.py`: `KnowledgeMapper` keeps the Pydantic contracts in `app/schemas.py` and promotes corrections into the RDF knowledge graph. The stub is still reachable through the `local` backend.
-- Replace `AuditorStub.verify`, `inject_drift`, `alerts` and `reset` with the Auditor/Monitoring implementation. The Client already consumes claim labels, confidence signals and drift alerts.
+- The Auditor side is implemented by `AuditorBridge`, which delegates catalogue tools to `src/agent_bazaar_auditor` and keeps seeded labels for local-only providers. The Client consumes the same claim labels, confidence signals and drift alerts as before. `AuditorStub` remains the fallback used by the bridge.
 - The graph is exposed as Turtle at `data/runtime/knowledge_graph.ttl`; the local ontology and graph classes are the fallback for the concepts and the tools the knowledge layer does not model.
 
 See [docs/integration.md](docs/integration.md) for method-level contracts.
@@ -496,7 +568,7 @@ Signed-in GitHub CLI users can instead run `gh repo create agent-bazaar --privat
 
 - Offline fixtures deliberately exercise only the seeded catalogue; they are not a live-API benchmark.
 - GraphRAG has a deterministic TF-IDF fallback when no embedding model or LLM is configured.
-- The Auditor is an adapter stub owned by another team member; its external implementation should be swapped at the documented boundary. The Mapper is served by the knowledge layer in the `auto` and the `rdf` backend.
+- The Auditor is no longer an external placeholder: catalogue tools are checked by `src/agent_bazaar_auditor`, while the SQL, document and adversarial weather providers use the deterministic seeded fallback because the Auditor catalogue does not model them. The Mapper is served by the knowledge layer in the `auto` and the `rdf` backend.
 - Trust and breaker state are process-local plus SQLite persistence for trust/traces; breaker state intentionally resets with a new application process.
 - The optional LLM is never required for tests, evaluation, or the demo.
 - The `app/integration/` bridge is implemented; the `local` backend keeps the original stub behaviour, and the `auto` backend falls back to the stub Mapper when the knowledge-layer artifacts are missing.

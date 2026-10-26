@@ -67,6 +67,9 @@ class Settings(BaseSettings):
     breaker_failure_threshold: int = 2
     breaker_cooldown_seconds: int = 30
 
+    auditor_live: bool = False
+    auditor_persist: bool = True
+
     use_ontology: bool = True
     use_auditor: bool = True
     use_trust: bool = True
@@ -82,6 +85,10 @@ class Settings(BaseSettings):
     @property
     def uploads_dir(self) -> Path:
         return self.runtime_dir / "uploads"
+
+    @property
+    def auditor_dir(self) -> Path:
+        return self.runtime_dir / "auditor"
 
     @property
     def cache_db(self) -> Path:
