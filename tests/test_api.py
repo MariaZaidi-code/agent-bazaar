@@ -14,7 +14,7 @@ def test_health_and_interface(api: TestClient) -> None:
         "/dashboard": "Workflow workspace",
         "/marketplace": "Service marketplace",
         "/monitor": "Self-healing monitor",
-        "/library": "Interface library",
+        "/library": "Trust Center",
     }
     for path, title in pages.items():
         response = api.get(path)

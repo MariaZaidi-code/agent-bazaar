@@ -699,6 +699,67 @@ JavaScript syntax check and the HTTP smoke tests are the current guardrails.
 `app/web/templates/index.html`, `frontend-preview/`,
 `tests/test_api.py::test_health_and_interface`.
 
+## ADR-024: Make the console an evidence-first "quiet instrument"
+
+**Context.** The merged console exposed the free-first catalogue, but several
+backend capabilities were only reachable by calling the API directly: Auditor
+verification and monitoring, the Auditor trust leaderboard, trust history and
+replay, RDF graph statistics, the Mapper staging ledger, evaluation reports,
+persisted task protocol messages and the demo controls. The `/library` route was
+still a design-system showcase rather than a product surface. The interface also
+used optimistic labels: it could show "Verified" or "Healthy" before a request
+had returned, treated a failed request as an empty result, and rendered the
+object-shaped `VerifyResult` protocol payload as `[object Object]`. The legacy
+stylesheet is large and shared, so a full visual rewrite would have been risky.
+
+**Decision.** Keep `styles.css` as the structural baseline and add
+`premium.css` as a second, overriding visual layer loaded after it. Adopt a
+"quiet instrument" direction: graphite and warm-paper neutrals, a cobalt accent,
+hairline borders, system fonts, tabular numerals, one filled primary action per
+view, and no decorative window chrome or offset shadows. Make `/library` the
+product-facing **Trust Center** (the route stays for link compatibility) and
+expose the evidence surfaces there and in the monitor:
+
+- Auditor mappings, probe definitions, claim counts and mode;
+- the trust leaderboard and the current task's typed protocol envelopes;
+- RDF graph statistics, the staging ledger and evaluation reports;
+- a verification console that calls `/api/auditor/verify` or `/api/auditor/monitor`;
+- provider trust state, signal history and ledger replay from `/api/trust/{provider}`;
+- demo failure, drift, breaker and reset controls.
+
+Replace the persistent global search field with a command palette
+(`Ctrl/Cmd+K`, and `/` when the marketplace search is not focused). Make every
+asynchronous surface distinguish loading, empty, error and unavailable states;
+only use a success tone when evidence exists. Label unobserved providers as a
+default prior, evidence-backed sources as such, staged corrections as awaiting
+review rather than rejected, and reset as a two-step action. Summarise
+object-shaped Auditor payloads per candidate instead of string-coercing them.
+Compute the asset version from static file mtimes so a server restart invalidates
+the browser cache.
+
+**Alternatives.** Rewrite the legacy stylesheet (rejected: high regression risk
+and a large diff with no product benefit). Keep `/library` as a component
+showcase (rejected: it has no user-facing job). Keep a global search box on every
+page (rejected: the palette is the single global entry point and `/` remains a
+marketplace shortcut). Render optimistic green/healthy states while loading
+(rejected: it is untruthful and hides outages). Add a frontend framework
+(rejected: the dependency-free layer already works and the remaining work is
+presentation and state discipline).
+
+**Consequences.** The visual layer has two CSS files with a deliberate cascade:
+`premium.css` must stay after `styles.css`, and new components should be styled
+there unless they are structural. The Trust Center is read-only except for
+explicit verify/monitor calls and the demo reset. Endpoint failures render as
+errors instead of empty lists, so a backend outage is visible rather than
+silently looking like a healthy empty system. The `/library` URL remains stable
+for existing links, while the page title is now Trust Center. The browser still
+has no automated DOM test in the repository; the guardrails are `node --check`,
+the HTTP smoke tests and manual Playwright passes.
+
+**Evidence.** `app/web/static/premium.css`, `app/web/static/app.js`,
+`app/web/templates/index.html`, `app/main.py` (`ASSET_VERSION`),
+`docs/architecture.md#interface`.
+
 ## Known limitations and open items
 
 | Item | Impact | Current status / next action |

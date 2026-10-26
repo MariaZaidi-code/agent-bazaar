@@ -57,7 +57,7 @@ FastAPI (app/main.py)
 | Trust registry | Beta score, history, replay, demotion | `app/core/trust_registry.py` |
 | Circuit breaker | Per Client-to-Provider link state machine | `app/core/circuit_breaker.py` |
 | Trace store | Durable events, task results and messages | `app/core/tracing.py` |
-| Interface | Task workbench, trace, monitoring, library, documents | `app/web/` |
+| Interface | Task workbench, trace, Trust Center, monitoring, documents | `app/web/` |
 
 ## Client loop
 
@@ -150,21 +150,35 @@ Mirrors exist for weather, geocoding, currency, holidays, country facts and arXi
 
 ## Interface
 
-The web UI is intentionally dependency-free vanilla JS. It talks only to documented HTTP endpoints. The shell has four page routes: the workflow dashboard, the service marketplace, the self-healing monitor and the interface library. It renders:
+The web UI is intentionally dependency-free vanilla JS. It talks only to documented HTTP endpoints. The shell has four page routes: the workflow dashboard, the service marketplace, the self-healing monitor and the Trust Center at `/library`. A command palette (`Ctrl/Cmd+K`, or `/` when the marketplace search is not focused) jumps between pages, tools and actions. It renders:
 
 - the answer and its evidence warnings, with result cards for terminal chain steps;
 - ranked candidates with relevance, trust, claim badges, breaker state and reasons;
 - chain steps with link checks, bindings, latency, provider source and raw output;
 - the trace timeline with grouped, expandable event data;
 - trust and breaker tables, drift alerts, the Auditor mode and catalogue coverage;
+- the Trust Center: Auditor mappings and probe definitions, the Auditor trust leaderboard, RDF graph statistics, the Mapper staging ledger, evaluation reports, a verification console, and provider trust history with ledger replay;
+- the typed task protocol envelopes persisted for the selected task, including the full JSON payload;
 - marketplace cards and a tool modal with pricing tier, access requirement,
   price, rating, documentation quality, mapping coverage and the reason a tool
   is not executable;
 - corrections, uploads and document questions.
 
+The Trust Center reads `/api/auditor`, `/api/auditor/trust`,
+`/api/knowledge`, `/api/staged`, `/api/evaluations` and
+`/api/trust/{provider_id}`. It writes only through the explicit verification
+actions (`/api/auditor/verify/{tool}`, `/api/auditor/monitor/{tool}`). Every
+asynchronous surface distinguishes loading, empty, error and unavailable
+states; a provider with no calls or probes is labelled as a default prior rather
+than a verified score, and a staged correction is labelled as awaiting review
+rather than rejected. The reset control in the monitor is two-step.
+
 The marketplace supports a "Free first" sort that follows the ranking policy's
 tier order (`free`, `freemium`, `paid`, `unknown`) and then trust. `frontend-preview/`
 is a standalone, mock-data design snapshot; the served interface is `app/web/`.
+`premium.css` is loaded after the legacy `styles.css` and carries the visual
+layer; `styles.css` remains the structural baseline. Asset URLs include a
+version derived from the static file mtimes so a restart picks up changes.
 
 ## Persistence
 

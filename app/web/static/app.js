@@ -1,9 +1,13 @@
 const state = {
   page: window.__PAGE__ || document.body.dataset.page || "dashboard",
   health: null,
+  healthError: null,
   tools: [],
+  toolsLoading: true,
+  toolsError: null,
   ontology: null,
   monitoring: null,
+  monitoringError: null,
   result: null,
   documents: [],
   recent: [],
@@ -11,11 +15,41 @@ const state = {
   monitorDetails: [],
   monitorSelected: null,
   monitorPaused: false,
+  monitorActivityError: null,
+  monitoringFetchedAt: null,
   marketQuery: "",
   marketCapability: "all",
   marketSort: "trust",
+  marketFilters: {
+    free: false,
+    keyless: false,
+    executable: false,
+    verifiable: false,
+    incidents: false,
+  },
   selectedTraceSeq: null,
   lastFocused: null,
+  auditor: null,
+  auditorError: null,
+  auditorTrust: null,
+  auditorTrustError: null,
+  knowledge: null,
+  knowledgeError: null,
+  staged: null,
+  stagedError: null,
+  evaluations: null,
+  evaluationsError: null,
+  protocolTaskId: null,
+  protocolMessages: null,
+  protocolError: null,
+  trustProvider: "",
+  verifyTool: "",
+  paletteIndex: 0,
+  paletteItems: [],
+  paletteRecent: [],
+  paletteOpen: false,
+  resetArmed: false,
+  resetTimer: null,
 };
 
 const SAMPLES = [
@@ -188,12 +222,43 @@ function formatDateTime(value) {
   });
 }
 
+function formatAge(value) {
+  if (!value) return "not observed";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return esc(value);
+  const seconds = Math.max(0, Math.round((Date.now() - date.getTime()) / 1000));
+  if (seconds < 45) return "just now";
+  if (seconds < 3600) return `${Math.round(seconds / 60)}m ago`;
+  if (seconds < 86400) return `${Math.round(seconds / 3600)}h ago`;
+  return `${Math.round(seconds / 86400)}d ago`;
+}
+
+function truncate(value, length = 120) {
+  const text = String(value ?? "");
+  return text.length > length ? `${text.slice(0, length - 1)}…` : text;
+}
+
+function noticeMarkup(kind, title, detail = "") {
+  const iconName = kind === "error" ? "x-circle" : kind === "warning" ? "alert" : "check-circle";
+  return `<div class="notice ${esc(kind)}">${icon(iconName)}<span><strong>${esc(title)}</strong>${detail ? ` ${esc(detail)}` : ""}</span></div>`;
+}
+
+function emptyMarkup(title, detail, iconName = "layers") {
+  return `<div class="empty-state inline">${icon(iconName)}<strong>${esc(title)}</strong><p>${esc(detail)}</p></div>`;
+}
+
+function scoreTrack(score, className = "") {
+  const value = clamp(Number(score) * 100);
+  return `<div class="trust-track ${esc(className)}"><span style="width:${value}%"></span></div>`;
+}
+
 function clamp(value, minimum = 0, maximum = 100) {
   return Math.max(minimum, Math.min(maximum, Number(value) || 0));
 }
 
 function claimClass(label) {
-  const normalized = String(label || "Unsupported").toLowerCase();
+  const normalized = String(label || "Unverified").toLowerCase();
+  if (normalized === "unverified") return "neutral";
   return ["verified", "supported", "contradicted", "unsupported"].includes(normalized)
     ? normalized
     : "neutral";
@@ -203,12 +268,13 @@ function claimIcon(label) {
   const normalized = claimClass(label);
   if (normalized === "contradicted") return "x-circle";
   if (normalized === "unsupported") return "alert";
+  if (normalized === "neutral") return "help";
   return "shield";
 }
 
 function claimBadge(label) {
   const normalized = claimClass(label);
-  return `<span class="badge ${normalized}">${icon(claimIcon(label))}${esc(label || "Unsupported")}</span>`;
+  return `<span class="badge ${normalized}">${icon(claimIcon(label))}${esc(label || "Unverified")}</span>`;
 }
 
 function breakerClass(value) {
@@ -237,7 +303,7 @@ function selectedClaim(result, step) {
 function claimLabelForTool(toolId) {
   const tool = state.tools.find((entry) => entry.id === toolId);
   const labels = (tool?.claims || []).map((claim) => claim.label).filter(Boolean);
-  return ["Contradicted", "Verified", "Supported", "Unsupported"].find((label) => labels.includes(label)) || "Unsupported";
+  return ["Contradicted", "Verified", "Supported", "Unsupported"].find((label) => labels.includes(label)) || "Unverified";
 }
 
 async function api(path, options = {}) {
@@ -278,6 +344,8 @@ function applyTheme(theme) {
   try {
     localStorage.setItem("agent-bazaar-theme", normalized);
   } catch {}
+  const meta = $("#theme-color-meta");
+  if (meta) meta.setAttribute("content", normalized === "light" ? "#f5f3ee" : "#101113");
   $$("[data-set-theme]").forEach((button) => {
     const active = button.dataset.setTheme === normalized;
     button.classList.toggle("active", active);
@@ -298,6 +366,7 @@ function openModal(id) {
   const modal = document.getElementById(id);
   if (!modal) return;
   state.lastFocused = document.activeElement;
+  closePalette();
   $$(".modal.is-open").forEach((entry) => {
     if (entry !== modal) entry.classList.remove("is-open");
   });
@@ -320,14 +389,39 @@ function closeModal(modal) {
 }
 
 function closeAllModals() {
+  const open = $(".modal.is-open");
   $$(".modal.is-open").forEach((modal) => modal.classList.remove("is-open"));
   document.body.style.overflow = "";
+  if (open && state.lastFocused && typeof state.lastFocused.focus === "function") {
+    state.lastFocused.focus();
+  }
+}
+
+function trapModalFocus(event) {
+  if (event.key !== "Tab") return;
+  const modal = $(".modal.is-open");
+  if (!modal) return;
+  const focusable = $$(
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    modal
+  ).filter((element) => element.offsetParent !== null);
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
 }
 
 function loadHealth() {
   return api("/api/health")
     .then((health) => {
       state.health = health;
+      state.healthError = null;
       const date = new Date().toLocaleDateString([], { day: "2-digit", month: "short" });
       const chip = $("#demo-date");
       if (chip) {
@@ -337,20 +431,31 @@ function loadHealth() {
       return health;
     })
     .catch((error) => {
-      toast(`Health check failed: ${error.message}`, "bad");
+      state.healthError = error.message;
+      state.health = null;
+      const chip = $("#demo-date");
+      if (chip) {
+        chip.textContent = "Environment unknown";
+        chip.title = error.message;
+      }
       return null;
     });
 }
 
 function loadToolsData() {
+  state.toolsLoading = true;
   return api("/api/tools")
     .then((data) => {
       state.tools = data.tools || [];
+      state.toolsError = null;
       return state.tools;
     })
     .catch((error) => {
-      toast(`Tool catalogue unavailable: ${error.message}`, "bad");
+      state.toolsError = error.message;
       return state.tools;
+    })
+    .finally(() => {
+      state.toolsLoading = false;
     });
 }
 
@@ -370,12 +475,76 @@ function loadMonitoringData() {
   return api("/api/monitoring")
     .then((data) => {
       state.monitoring = data;
+      state.monitoringError = null;
+      state.monitoringFetchedAt = new Date().toISOString();
+      updateNotificationDot();
       return data;
     })
     .catch((error) => {
-      toast(`Monitoring unavailable: ${error.message}`, "bad");
+      state.monitoringError = error.message;
+      updateNotificationDot();
       return state.monitoring;
     });
+}
+
+function loadAuditorData() {
+  return Promise.allSettled([api("/api/auditor"), api("/api/auditor/trust")]).then(([overview, trust]) => {
+    state.auditor = overview.status === "fulfilled" ? overview.value : null;
+    state.auditorError = overview.status === "rejected" ? overview.reason.message : null;
+    state.auditorTrust = trust.status === "fulfilled" ? trust.value : null;
+    state.auditorTrustError = trust.status === "rejected" ? trust.reason.message : null;
+    return state.auditor;
+  });
+}
+
+function loadKnowledgeData() {
+  return api("/api/knowledge")
+    .then((data) => {
+      state.knowledge = data;
+      state.knowledgeError = null;
+      return data;
+    })
+    .catch((error) => {
+      state.knowledge = null;
+      state.knowledgeError = error.message;
+      return null;
+    });
+}
+
+function loadStagedData() {
+  return api("/api/staged")
+    .then((data) => {
+      state.staged = data;
+      state.stagedError = null;
+      return data;
+    })
+    .catch((error) => {
+      state.staged = null;
+      state.stagedError = error.message;
+      return null;
+    });
+}
+
+function loadEvaluationsData() {
+  return api("/api/evaluations")
+    .then((data) => {
+      state.evaluations = data;
+      state.evaluationsError = null;
+      return data;
+    })
+    .catch((error) => {
+      state.evaluations = null;
+      state.evaluationsError = error.message;
+      return null;
+    });
+}
+
+function updateNotificationDot() {
+  const dot = $("#notification-button .notification-dot");
+  if (!dot) return;
+  const alerts = state.monitoring?.drift_alerts || [];
+  const open = (state.monitoring?.breakers || []).some((breaker) => breaker.state === "open");
+  dot.classList.toggle("hidden", !state.monitoring || (!alerts.length && !open));
 }
 
 function providerForTool(toolId) {
@@ -403,8 +572,34 @@ function setActivePage() {
 }
 
 function bindSidebar() {
-  $("#mobile-menu")?.addEventListener("click", () => document.body.classList.toggle("sidebar-open"));
-  $("#sidebar-scrim")?.addEventListener("click", () => document.body.classList.remove("sidebar-open"));
+  const menu = $("#mobile-menu");
+  const sidebar = $("#sidebar");
+  const mobileQuery = window.matchMedia("(max-width: 980px)");
+  const setOpen = (open) => {
+    const expanded = Boolean(open) && mobileQuery.matches;
+    const activeInside = sidebar?.contains(document.activeElement);
+    document.body.classList.toggle("sidebar-open", expanded);
+    if (menu) {
+      menu.setAttribute("aria-expanded", String(expanded));
+      menu.setAttribute("aria-label", expanded ? "Close navigation" : "Open navigation");
+    }
+    if (sidebar) {
+      if (mobileQuery.matches) {
+        if (!expanded && activeInside) menu?.focus();
+        sidebar.setAttribute("aria-hidden", String(!expanded));
+        if (expanded) sidebar.removeAttribute("inert");
+        else sidebar.setAttribute("inert", "");
+      } else {
+        sidebar.removeAttribute("aria-hidden");
+        sidebar.removeAttribute("inert");
+      }
+    }
+    if (expanded) {
+      window.setTimeout(() => sidebar?.querySelector("a, button")?.focus(), 30);
+    }
+  };
+  menu?.addEventListener("click", () => setOpen(!document.body.classList.contains("sidebar-open")));
+  $("#sidebar-scrim")?.addEventListener("click", () => setOpen(false));
   $("#workspace-switcher")?.addEventListener("click", () => toast("This sandbox uses a single demo workspace."));
   $("#notification-button")?.addEventListener("click", () => {
     if (state.page === "monitor") {
@@ -413,6 +608,15 @@ function bindSidebar() {
       window.location.href = "/monitor";
     }
   });
+  $$("[data-nav]").forEach((item) => item.addEventListener("click", () => setOpen(false)));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && document.body.classList.contains("sidebar-open")) {
+      setOpen(false);
+      menu?.focus();
+    }
+  });
+  mobileQuery.addEventListener("change", () => setOpen(false));
+  setOpen(false);
 }
 
 function bindTheme() {
@@ -451,96 +655,271 @@ function bindModals() {
     }
   });
   document.addEventListener("keydown", (event) => {
+    trapModalFocus(event);
     if (event.key === "Escape") closeAllModals();
   });
 }
 
-function allSearchEntries(query) {
-  const normalized = query.trim().toLowerCase();
-  if (!normalized) return [];
-  const tools = state.tools
-    .filter((tool) =>
-      [
-        tool.name,
-        tool.id,
-        tool.provider_id,
-        tool.capability,
-        tool.description,
-        ...(tool.keywords || []),
-        ...(tool.tags || []),
-        ...(tool.inputs || []).map((input) => input.concept),
-        ...(tool.outputs || []).map((output) => output.concept),
-      ]
-        .join(" ")
-        .toLowerCase()
-        .includes(normalized)
-    )
-    .slice(0, 6)
-    .map((tool) => ({ kind: "tool", id: tool.id, name: tool.name, meta: `${tool.capability} · ${tool.provider_id}` }));
-  const capabilities = Object.entries(state.ontology?.capabilities || {})
-    .filter(([name, capability]) =>
-      `${name} ${capability.description} ${(capability.inputs || []).join(" ")} ${(capability.outputs || []).join(" ")}`
-        .toLowerCase()
-        .includes(normalized)
-    )
-    .slice(0, 3)
-    .map(([name, capability]) => ({
-      kind: "capability",
-      id: name,
-      name,
-      meta: `${(capability.inputs || []).length} inputs · ${(capability.outputs || []).length} outputs`,
-    }));
-  return [...tools, ...capabilities];
+const PALETTE_NAV = [
+  { title: "Workspace", subtitle: "Compose and run tasks", icon: "grid", href: "/dashboard" },
+  { title: "Marketplace", subtitle: "Browse the service catalogue", icon: "box", href: "/marketplace" },
+  { title: "Self-healing monitor", subtitle: "Drift, breakers and recovery", icon: "pulse", href: "/monitor" },
+  { title: "Trust Center", subtitle: "Evidence, history and staging", icon: "shield", href: "/library" },
+];
+
+function paletteAction(title, subtitle, iconName, run) {
+  return { group: "Actions", title, subtitle, icon: iconName, run };
 }
 
-function renderGlobalSearch(query) {
-  const panel = $("#global-search-results");
-  if (!panel) return;
-  const results = allSearchEntries(query);
-  if (!query.trim()) {
-    panel.classList.remove("is-open");
-    panel.innerHTML = "";
+function buildPaletteItems(query) {
+  const normalized = query.trim().toLowerCase();
+  const matches = (...values) => !normalized || values.join(" ").toLowerCase().includes(normalized);
+  const groups = [];
+
+  const navigation = PALETTE_NAV.filter((entry) => matches(entry.title, entry.subtitle)).map((entry) => ({
+    group: "Navigate",
+    title: entry.title,
+    subtitle: entry.subtitle,
+    icon: entry.icon,
+    run: () => {
+      window.location.href = entry.href;
+    },
+  }));
+  if (navigation.length) groups.push(...navigation);
+
+  const actions = [
+    paletteAction("Upload a document", "Ground a run in your own evidence", "upload", () => openModal("documents-modal")),
+    paletteAction("Onboard a tool", "Submit a listing for Mapper review", "plus", () => openModal("onboard-modal")),
+    paletteAction("Execution history", "Reopen a previous run", "history", () => openModal("history-modal")),
+    paletteAction("API & environment", "Endpoints and sandbox settings", "key", () => openModal("api-modal")),
+    paletteAction("Toggle theme", "Switch between graphite and paper", "sun", () => toggleTheme()),
+  ].filter((entry) => matches(entry.title, entry.subtitle));
+  if (actions.length) groups.push(...actions);
+
+  if (state.tools.length) {
+    const toolMatches = state.tools
+      .filter((tool) =>
+        matches(
+          tool.name,
+          tool.id,
+          tool.provider_id,
+          tool.capability,
+          tool.description,
+          ...(tool.keywords || []),
+          ...(tool.tags || []),
+          ...(tool.inputs || []).map((input) => input.concept),
+          ...(tool.outputs || []).map((output) => output.concept)
+        )
+      )
+      .slice(0, 8)
+      .map((tool) => ({
+        group: "Tools",
+        title: tool.name,
+        subtitle: `${tool.capability} · ${tool.provider_id}`,
+        icon: capabilityIcon(tool.capability),
+        run: () => openToolModal(tool.id),
+      }));
+    groups.push(...toolMatches);
+  }
+
+  const conceptNames = (state.ontology?.concepts || []).map((concept) => concept.concept);
+  const capabilities = Object.keys(state.ontology?.capabilities || capabilityCounts()).sort();
+  const concepts = [...new Set(conceptNames)].filter((name) => matches(name)).slice(0, 5);
+  const capabilityMatches = capabilities.filter((name) => matches(name)).slice(0, 4);
+  if (normalized) {
+    groups.push(
+      ...concepts.map((name) => ({
+        group: "Ontology",
+        title: name,
+        subtitle: "Search the marketplace for this concept",
+        icon: "layers",
+        run: () => {
+          window.location.href = `/marketplace?q=${encodeURIComponent(name)}`;
+        },
+      })),
+      ...capabilityMatches.map((name) => ({
+        group: "Capabilities",
+        title: name,
+        subtitle: "Filter the marketplace by capability",
+        icon: "filter",
+        run: () => {
+          window.location.href = `/marketplace?capability=${encodeURIComponent(name)}`;
+        },
+      }))
+    );
+  }
+
+  if (normalized) {
+    const runs = state.recent
+      .filter((task) => matches(task.task, task.task_id, task.status))
+      .slice(0, 5)
+      .map((task) => ({
+        group: "Recent runs",
+        title: task.task,
+        subtitle: `${titleCase(task.status)} · ${formatAge(task.created_at)}`,
+        icon: "history",
+        run: () => {
+          if (state.page === "dashboard") {
+            loadTask(task.task_id);
+            window.history.replaceState(null, "", `/dashboard?task=${encodeURIComponent(task.task_id)}`);
+          } else {
+            window.location.href = `/dashboard?task=${encodeURIComponent(task.task_id)}`;
+          }
+        },
+      }));
+    groups.push(...runs);
+  }
+
+  return groups;
+}
+
+function renderPalette(query = "") {
+  const container = $("#command-results");
+  if (!container) return;
+  const items = buildPaletteItems(query);
+  state.paletteItems = items;
+  state.paletteIndex = Math.min(state.paletteIndex, Math.max(0, items.length - 1));
+  if (!items.length) {
+    container.innerHTML = `<div class="palette-empty">No matches. Try a tool, capability, concept or page name.</div>`;
     return;
   }
-  panel.innerHTML = results.length
-    ? results
+  let index = 0;
+  const sections = new Map();
+  items.forEach((item) => {
+    if (!sections.has(item.group)) sections.set(item.group, []);
+    sections.get(item.group).push({ ...item, index: index++ });
+  });
+  container.innerHTML = [...sections.entries()]
+    .map(
+      ([group, entries]) => `<div class="palette-section">${esc(group)}</div>${entries
         .map(
-          (entry) => `<button class="search-result" type="button" data-search-kind="${entry.kind}" data-search-id="${esc(entry.id)}">
-            ${icon(entry.kind === "capability" ? "layers" : capabilityIcon(state.tools.find((tool) => tool.id === entry.id)?.capability))}
-            <span><strong>${esc(entry.name)}</strong><small>${esc(entry.meta)}</small></span>
+          (entry) => `<button class="palette-item ${entry.index === state.paletteIndex ? "is-selected" : ""}" type="button" role="option" id="palette-item-${entry.index}" aria-selected="${entry.index === state.paletteIndex}" data-palette-index="${entry.index}">
+            <span class="palette-icon">${icon(entry.icon)}</span>
+            <span class="palette-item-copy"><strong>${esc(truncate(entry.title, 90))}</strong><small>${esc(truncate(entry.subtitle, 110))}</small></span>
+            ${entry.hint ? `<kbd>${esc(entry.hint)}</kbd>` : ""}
           </button>`
         )
-        .join("")
-    : `<div class="search-result"><span><strong>No matches</strong><small>Try a capability, tool or ontology concept.</small></span></div>`;
-  panel.classList.add("is-open");
+        .join("")}`
+    )
+    .join("");
+  const input = $("#command-input");
+  if (input) input.setAttribute("aria-activedescendant", `palette-item-${state.paletteIndex}`);
+  selectPaletteItem(state.paletteIndex, false);
 }
 
-function bindGlobalSearch() {
-  const input = $("#global-search");
-  const panel = $("#global-search-results");
-  if (!input || !panel) return;
-  input.addEventListener("input", () => renderGlobalSearch(input.value));
-  input.addEventListener("focus", () => {
-    if (input.value.trim()) renderGlobalSearch(input.value);
+function selectPaletteItem(index, scroll = true) {
+  if (!state.paletteItems.length) return;
+  state.paletteIndex = (index + state.paletteItems.length) % state.paletteItems.length;
+  $$("[data-palette-index]").forEach((button) => {
+    const selected = Number(button.dataset.paletteIndex) === state.paletteIndex;
+    button.classList.toggle("is-selected", selected);
+    button.setAttribute("aria-selected", String(selected));
+    if (selected && scroll) button.scrollIntoView({ block: "nearest" });
   });
-  panel.addEventListener("click", (event) => {
-    const result = event.target.closest("[data-search-kind]");
-    if (!result) return;
-    panel.classList.remove("is-open");
-    const id = result.dataset.searchId;
-    if (result.dataset.searchKind === "tool") {
-      openToolModal(id);
-    } else {
-      window.location.href = `/marketplace?capability=${encodeURIComponent(id)}`;
+  const input = $("#command-input");
+  if (input) input.setAttribute("aria-activedescendant", `palette-item-${state.paletteIndex}`);
+}
+
+function openPalette() {
+  const palette = $("#command-palette");
+  if (!palette || state.paletteOpen) return;
+  state.paletteOpen = true;
+  state.paletteIndex = 0;
+  state.lastFocused = document.activeElement;
+  palette.classList.add("is-open");
+  $$(".modal.is-open").forEach((modal) => modal.classList.remove("is-open"));
+  document.body.style.overflow = "hidden";
+  const input = $("#command-input");
+  if (input) {
+    input.value = "";
+    input.setAttribute("aria-expanded", "true");
+  }
+  renderPalette("");
+  window.setTimeout(() => input?.focus(), 20);
+  if (!state.recent.length) {
+    loadPaletteRecent().then(() => {
+      if (state.paletteOpen) renderPalette($("#command-input")?.value || "");
+    });
+  }
+}
+
+function closePalette() {
+  const palette = $("#command-palette");
+  if (!palette || !state.paletteOpen) return;
+  state.paletteOpen = false;
+  palette.classList.remove("is-open");
+  const input = $("#command-input");
+  if (input) input.setAttribute("aria-expanded", "false");
+  if (!$(".modal.is-open")) document.body.style.overflow = "";
+  if (state.lastFocused && typeof state.lastFocused.focus === "function") state.lastFocused.focus();
+}
+
+function runPaletteItem(index) {
+  const item = state.paletteItems[index];
+  if (!item) return;
+  closePalette();
+  window.setTimeout(() => item.run(), 20);
+}
+
+async function loadPaletteRecent() {
+  try {
+    const data = await api("/api/tasks/recent?limit=6");
+    state.recent = data.tasks || [];
+  } catch {
+    state.recent = state.recent || [];
+  }
+}
+
+function bindPalette() {
+  $("#command-trigger")?.addEventListener("click", openPalette);
+  $("[data-close-palette]")?.addEventListener("click", closePalette);
+  const input = $("#command-input");
+  input?.addEventListener("input", () => {
+    state.paletteIndex = 0;
+    renderPalette(input.value);
+  });
+  input?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      selectPaletteItem(state.paletteIndex + 1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      selectPaletteItem(state.paletteIndex - 1);
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      runPaletteItem(state.paletteIndex);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      closePalette();
     }
   });
-  document.addEventListener("click", (event) => {
-    if (!event.target.closest(".toolbar-search")) panel.classList.remove("is-open");
+  $("#command-results")?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-palette-index]");
+    if (!button) return;
+    runPaletteItem(Number(button.dataset.paletteIndex));
+  });
+  $("#command-results")?.addEventListener("mousemove", (event) => {
+    const button = event.target.closest("[data-palette-index]");
+    if (!button) return;
+    const index = Number(button.dataset.paletteIndex);
+    if (index !== state.paletteIndex) selectPaletteItem(index, false);
   });
   document.addEventListener("keydown", (event) => {
-    if (event.key === "/" && !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) {
+    const active = document.activeElement;
+    const typing = ["INPUT", "TEXTAREA", "SELECT"].includes(active?.tagName) || active?.isContentEditable;
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
       event.preventDefault();
-      input.focus();
+      if (state.paletteOpen) closePalette();
+      else openPalette();
+      return;
+    }
+    if (event.key === "/" && !typing && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      event.preventDefault();
+      if (state.page === "marketplace" && $("#market-search")) {
+        $("#market-search").focus();
+      } else if (!state.paletteOpen) {
+        openPalette();
+      }
     }
   });
 }
@@ -593,7 +972,11 @@ function idleStepper() {
   const content = $("#answer-content");
   if (empty) empty.classList.remove("hidden");
   if (content) content.classList.add("hidden");
-  if ($("#source-count")) $("#source-count").innerHTML = `${icon("shield")}0 verified sources`;
+  const source = $("#source-count");
+  if (source) {
+    source.className = "badge neutral";
+    source.innerHTML = `${icon("shield")}No sources yet`;
+  }
   if ($("#trace-empty")) $("#trace-empty").classList.remove("hidden");
   if ($("#trace-layout")) $("#trace-layout").classList.add("hidden");
 }
@@ -832,7 +1215,12 @@ function renderResult(result) {
   }
   const evidenceCount = steps.filter((step) => ["Verified", "Supported"].includes(String(selectedClaim(result, step)))).length;
   const sourceCount = $("#source-count");
-  if (sourceCount) sourceCount.innerHTML = `${icon("shield")}${evidenceCount} evidence-backed source${evidenceCount === 1 ? "" : "s"}`;
+  if (sourceCount) {
+    sourceCount.className = `badge ${evidenceCount ? "supported" : "neutral"}`;
+    sourceCount.innerHTML = evidenceCount
+      ? `${icon("shield")}${evidenceCount} evidence-backed source${evidenceCount === 1 ? "" : "s"}`
+      : `${icon("alert")}No evidence-backed sources`;
+  }
   const foot = $("#result-foot");
   if (foot) {
     const chips = steps.map(
@@ -955,6 +1343,7 @@ async function runTask(text) {
     });
     renderResult(result);
     window.history.replaceState(null, "", `/dashboard?task=${encodeURIComponent(result.task_id)}`);
+    loadProtocolMessages(result.task_id);
     const message =
       result.status === "completed"
         ? result.answer?.includes("substitute") || (result.plan?.steps || []).some((step) => step.substituted_from)
@@ -980,6 +1369,7 @@ async function loadTask(taskId) {
   try {
     const result = await api(`/api/tasks/${encodeURIComponent(taskId)}`);
     renderResult(result);
+    loadProtocolMessages(result.task_id);
   } catch (error) {
     toast(`Run unavailable: ${error.message}`, "bad");
   }
@@ -1033,7 +1423,43 @@ function exportResult() {
   toast("Trace exported as JSON.", "ok");
 }
 
+function renderWorkspaceStrip() {
+  const container = $("#workspace-strip");
+  if (!container) return;
+  const providers = state.monitoring?.providers || [];
+  const observed = providers.filter((provider) => Number(provider.calls || 0) + Number(provider.probes || 0) > 0);
+  const trust = observed.length
+    ? observed.reduce((total, provider) => total + Number(provider.trust || 0), 0) / observed.length
+    : null;
+  const open = (state.monitoring?.breakers || []).filter((breaker) => breaker.state === "open").length;
+  const mapped = (state.auditor?.mappings || []).length;
+  const toolsMetric = state.toolsLoading
+    ? `<strong class="skeleton" style="width:54px;height:22px">&nbsp;</strong><small>Loading catalogue</small>`
+    : state.toolsError
+      ? `<strong>—</strong><small>Catalogue unavailable</small>`
+      : `<strong>${state.tools.length}</strong><small>${new Set(state.tools.map((tool) => tool.capability)).size} capabilities</small>`;
+  const trustMetric = !state.monitoring
+    ? `<strong>—</strong><small>Monitoring unavailable</small>`
+    : trust === null
+      ? `<strong>—</strong><small>No observations yet</small>`
+      : `<strong>${formatTrust(trust)}</strong><small>${observed.length} observed provider${observed.length === 1 ? "" : "s"}</small>`;
+  const breakerMetric = !state.monitoring
+    ? `<strong>—</strong><small>Monitoring unavailable</small>`
+    : `<strong class="${open ? "alert" : ""}">${open}</strong><small>${(state.monitoring.breakers || []).length} links watched</small>`;
+  const auditorMetric = state.auditorError
+    ? `<strong>—</strong><small>Auditor unavailable</small>`
+    : !state.auditor
+      ? `<strong class="skeleton" style="width:80px;height:22px">&nbsp;</strong><small>Checking coverage</small>`
+      : `<strong>${mapped}</strong><small>${esc(state.auditor.mode)} mode · ${state.auditor.catalog_tools} catalogue tools</small>`;
+  container.innerHTML = `
+    <div class="strip-metric"><span>Marketplace</span>${toolsMetric}</div>
+    <div class="strip-metric"><span>Average trust</span>${trustMetric}</div>
+    <div class="strip-metric"><span>Open circuits</span>${breakerMetric}</div>
+    <div class="strip-metric"><span>Auditor</span>${auditorMetric}</div>`;
+}
+
 function initDashboard() {
+  renderWorkspaceStrip();
   renderSamples();
   bindHistory();
   $("#export-json")?.addEventListener("click", exportResult);
@@ -1077,15 +1503,17 @@ function catalogueStats() {
   const providers = state.monitoring?.providers || [];
   const open = breakers.filter((breaker) => breaker.state === "open").length;
   const half = breakers.filter((breaker) => breaker.state === "half-open").length;
-  const closed = Math.max(0, tools.length - open - half);
-  const trust = providers.length
-    ? providers.reduce((total, provider) => total + Number(provider.trust || 0), 0) / providers.length
-    : 0;
+  const closed = breakers.length ? Math.max(0, breakers.length - open - half) : null;
+  const observed = providers.filter((provider) => Number(provider.calls || 0) + Number(provider.probes || 0) > 0);
+  const trust = observed.length
+    ? observed.reduce((total, provider) => total + Number(provider.trust || 0), 0) / observed.length
+    : null;
+  const monitoringMissing = !state.monitoring;
   return `
-    <div class="catalogue-stat"><strong>${tools.length}</strong><span>Registered<br>services</span></div>
-    <div class="catalogue-stat closed"><strong>${closed}</strong><span>Closed<br>circuits</span></div>
-    <div class="catalogue-stat ${open ? "open" : "closed"}"><strong>${open}</strong><span>Open<br>circuits</span></div>
-    <div class="catalogue-stat"><strong>${formatTrust(trust)}</strong><span>Average live<br>trust</span></div>`;
+    <div class="catalogue-stat"><strong>${state.toolsLoading ? "—" : tools.length}</strong><span>Registered<br>services</span></div>
+    <div class="catalogue-stat closed"><strong>${closed === null ? "—" : closed}</strong><span>Closed<br>circuits</span></div>
+    <div class="catalogue-stat ${open ? "open" : "closed"}"><strong>${monitoringMissing ? "—" : open}</strong><span>Open<br>circuits</span></div>
+    <div class="catalogue-stat"><strong>${trust === null ? "—" : formatTrust(trust)}</strong><span>${monitoringMissing ? "Monitoring unavailable" : observed.length ? `Average of ${observed.length} observed` : "No observations yet"}</span></div>`;
 }
 
 function capabilityCounts() {
@@ -1114,13 +1542,30 @@ function renderCapabilityControls() {
       ),
     ].join("");
   }
+  $$("[data-tool-filter]").forEach((button) => {
+    button.classList.toggle("is-active", Boolean(state.marketFilters[button.dataset.toolFilter]));
+  });
+}
+
+function mappedToolIds() {
+  return new Set((state.auditor?.mappings || []).map((mapping) => mapping.app_tool_id));
 }
 
 function filteredTools() {
   const query = state.marketQuery.trim().toLowerCase();
+  const mapped = mappedToolIds();
+  const breakerByProvider = new Map((state.monitoring?.breakers || []).map((breaker) => [breaker.key.split("->").pop(), breaker.state]));
   return state.tools
     .filter((tool) => {
       if (state.marketCapability !== "all" && tool.capability !== state.marketCapability) return false;
+      if (state.marketFilters.free && String(tool.pricing_tier || "").toLowerCase() !== "free") return false;
+      if (state.marketFilters.keyless && String(tool.access_requirement || "").toLowerCase() !== "keyless") return false;
+      if (state.marketFilters.executable && !tool.is_executable) return false;
+      if (state.marketFilters.verifiable && !mapped.has(tool.id)) return false;
+      if (state.marketFilters.incidents) {
+        const stateValue = breakerByProvider.get(tool.provider_id) || tool.breaker || "closed";
+        if (!["open", "half-open"].includes(breakerClass(stateValue))) return false;
+      }
       if (!query) return true;
       return [
         tool.name,
@@ -1155,14 +1600,17 @@ function toolCard(tool) {
   const provider = providerForTool(tool.id);
   const claim = claimLabelForTool(tool.id);
   const breaker = breakerClass(tool.breaker || "closed");
-  const trust = Number(tool.trust || 0);
+  const trust = Number(tool.trust ?? 0.5);
   const calls = Number(provider?.calls || 0);
   const probes = Number(provider?.probes || 0);
   const contradictions = Number(provider?.contradictions || 0);
+  const observed = calls + probes > 0;
   const reason = executionReason(tool);
   const quality = Number(tool.doc_quality || 0);
   const coverage = Number(tool.mapping_coverage || 0);
+  const mapping = auditorMapping(tool.id);
   const schema = `${(tool.inputs || []).map((input) => input.concept).join(" + ") || "No inputs"} → ${(tool.outputs || []).map((output) => output.concept).join(" + ") || "No outputs"}`;
+  const priceLabel = tool.price ? `$${formatNumber(tool.price, 2)}` : titleCase(tool.pricing_tier || "unknown");
   return `<article class="window-card tool-card ${esc(breaker)}" data-tool-id="${esc(tool.id)}" tabindex="0" role="button" aria-label="Inspect ${esc(tool.name)}">
     <div class="mini-window-bar"><span>service / ${esc(tool.provider_id)}</span><span><i></i><i></i><i></i></span></div>
     <div class="window-body">
@@ -1172,7 +1620,7 @@ function toolCard(tool) {
         ${icon("arrow-up-right")}
       </div>
       <p class="tool-description">${esc(tool.description)}</p>
-      <div class="tool-claim-row">${claimBadge(claim)}<span class="tool-probe">${probes} probes · ${calls} calls</span></div>
+      <div class="tool-claim-row">${claimBadge(claim)}${mapping ? `<span class="badge neutral" title="Auditor catalogue mapping: ${esc(mapping.catalog_tool_id)}">${icon("shield")}Auditor mapped</span>` : ""}<span class="tool-probe">${probes} probe${probes === 1 ? "" : "s"} · ${calls} call${calls === 1 ? "" : "s"}</span></div>
       <div class="tool-offering-row">
         ${tierBadge(tool.pricing_tier)}
         ${accessBadge(tool.access_requirement)}
@@ -1183,9 +1631,9 @@ function toolCard(tool) {
         <span class="mono">docs ${quality.toFixed(2)} · coverage ${coverage.toFixed(2)}</span>
       </div>
       <div>
-        <div class="trust-label-row"><span>Live trust score</span><strong>${formatTrust(trust)}</strong></div>
+        <div class="trust-label-row"><span>${observed ? "Live trust score" : "Default prior"}</span><strong>${formatTrust(trust)}</strong></div>
         <div class="trust-track ${breaker === "half-open" ? "half" : breaker}"><span style="width:${clamp(trust * 100)}%"></span></div>
-        <div class="trust-counts">${calls} calls · ${contradictions} contradiction${contradictions === 1 ? "" : "s"} · ${tool.price ? `$${formatNumber(tool.price, 2)}` : "free sandbox"}</div>
+        <div class="trust-counts">${observed ? `${calls} call${calls === 1 ? "" : "s"} · ${contradictions} contradiction${contradictions === 1 ? "" : "s"}` : "No calls or probes yet"} · ${esc(priceLabel)}</div>
       </div>
       <div class="breaker-line"><span>Circuit breaker</span>${breakerMarkup(breaker)}</div>
       <div class="tool-code">${esc(schema)}</div>
@@ -1193,36 +1641,92 @@ function toolCard(tool) {
   </article>`;
 }
 
+function setMarketNotice(kind, title, detail = "", retry = false) {
+  const container = $("#market-notice");
+  if (!container) return;
+  if (!kind) {
+    container.classList.add("hidden");
+    container.innerHTML = "";
+    return;
+  }
+  container.classList.remove("hidden");
+  container.innerHTML = `<div class="notice ${esc(kind)}">${icon(kind === "error" ? "x-circle" : "alert")}<span><strong>${esc(title)}</strong>${detail ? ` ${esc(detail)}` : ""}${retry ? ` <button class="text-button" type="button" id="market-retry">Retry</button>` : ""}</span></div>`;
+  $("#market-retry")?.addEventListener("click", async () => {
+    setMarketNotice(null);
+    $("#tools-loading")?.classList.remove("hidden");
+    await loadToolsData();
+    renderMarketplace();
+  });
+}
+
+function updateMarketQueryUrl() {
+  const params = new URLSearchParams();
+  if (state.marketCapability !== "all") params.set("capability", state.marketCapability);
+  if (state.marketQuery.trim()) params.set("q", state.marketQuery.trim());
+  const next = params.toString() ? `/marketplace?${params}` : "/marketplace";
+  window.history.replaceState(null, "", next);
+}
+
 function renderMarketplace() {
   const stats = $("#catalogue-stats");
   if (stats) stats.innerHTML = catalogueStats();
   renderCapabilityControls();
   const grid = $("#tools-grid");
+  const empty = $("#tools-empty");
+  const loading = $("#tools-loading");
   const tools = filteredTools();
-  if (grid) grid.innerHTML = tools.map(toolCard).join("");
-  $("#tools-empty")?.classList.toggle("hidden", tools.length > 0);
+  if (loading) loading.classList.toggle("hidden", !state.toolsLoading);
+  if (state.toolsError) {
+    setMarketNotice("error", "Catalogue unavailable.", state.toolsError, true);
+    if (grid) grid.innerHTML = "";
+    empty?.classList.add("hidden");
+  } else {
+    setMarketNotice(null);
+    if (grid) grid.innerHTML = state.toolsLoading ? "" : tools.map(toolCard).join("");
+    empty?.classList.toggle("hidden", state.toolsLoading || tools.length > 0);
+    if (empty) {
+      const emptyTitle = $("strong", empty);
+      const emptyCopy = $("p", empty);
+      if (emptyTitle) emptyTitle.textContent = state.tools.length ? "No tools match" : "Catalogue is empty";
+      if (emptyCopy) {
+        emptyCopy.textContent = state.tools.length
+          ? "Change the search or filter to inspect the rest of the catalogue."
+          : "No tools are registered in this sandbox yet.";
+      }
+    }
+  }
   const footerCount = $("#market-footer-count");
   if (footerCount) footerCount.textContent = `${tools.length} of ${state.tools.length}`;
   const sync = $("#market-sync-time");
-  if (sync) sync.textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  if (sync) sync.textContent = state.toolsError ? "unavailable" : new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 function initMarketplace() {
   const params = new URLSearchParams(window.location.search);
-  state.marketCapability = params.get("capability") || "all";
+  const capability = params.get("capability");
+  state.marketCapability = capability || "all";
+  state.marketQuery = params.get("q") || "";
   const search = $("#market-search");
   if (search) {
     search.value = state.marketQuery;
     search.addEventListener("input", () => {
       state.marketQuery = search.value;
+      updateMarketQueryUrl();
       renderMarketplace();
     });
     search.addEventListener("keydown", (event) => {
       if (event.key === "Enter") event.preventDefault();
+      if (event.key === "Escape") {
+        search.value = "";
+        state.marketQuery = "";
+        updateMarketQueryUrl();
+        renderMarketplace();
+      }
     });
   }
   $("#capability-filter")?.addEventListener("change", (event) => {
     state.marketCapability = event.target.value;
+    updateMarketQueryUrl();
     renderMarketplace();
   });
   $("#sort-filter")?.addEventListener("change", (event) => {
@@ -1233,6 +1737,19 @@ function initMarketplace() {
     const chip = event.target.closest("[data-capability]");
     if (!chip) return;
     state.marketCapability = chip.dataset.capability;
+    updateMarketQueryUrl();
+    renderMarketplace();
+  });
+  $("#market-advanced")?.addEventListener("click", (event) => {
+    const chip = event.target.closest("[data-tool-filter]");
+    if (!chip) return;
+    state.marketFilters[chip.dataset.toolFilter] = !state.marketFilters[chip.dataset.toolFilter];
+    renderMarketplace();
+  });
+  $("#clear-tool-filters")?.addEventListener("click", () => {
+    Object.keys(state.marketFilters).forEach((key) => {
+      state.marketFilters[key] = false;
+    });
     renderMarketplace();
   });
   $("#tools-grid")?.addEventListener("click", (event) => {
@@ -1259,6 +1776,91 @@ function schemaLines(items, emptyLabel) {
     .join("");
 }
 
+function ontologyConceptOptions(selected, fallback = []) {
+  const names = (state.ontology?.concepts || []).map((concept) => concept.concept);
+  const pool = [...new Set([...names, ...fallback].filter(Boolean))].sort();
+  return pool
+    .map((name) => `<option value="${esc(name)}"${name === selected ? " selected" : ""}>${esc(name)}</option>`)
+    .join("");
+}
+
+function auditorMapping(toolId) {
+  return (state.auditor?.mappings || []).find((mapping) => mapping.app_tool_id === toolId) || null;
+}
+
+function auditorResultMarkup(payload, mode = "verify") {
+  if (!payload) return "";
+  const assessments = payload.assessments || [];
+  const labels = assessments.length
+    ? assessments
+    : (payload.app_labels || []).map((entry) => ({ claim: { text: entry.claim }, label: entry.label, rationale: entry.evidence }));
+  const counts = labels.reduce((result, entry) => {
+    const label = String(entry.label || "Unsupported");
+    result[label] = (result[label] || 0) + 1;
+    return result;
+  }, {});
+  const overall =
+    payload.app_overall ||
+    ["Contradicted", "Unsupported", "Supported", "Verified"].find((label) => counts[label]) ||
+    "Unverified";
+  const coverage = payload.coverage || {};
+  const source = payload.probe_source || "none";
+  const alerts = payload.drift_alerts?.length || payload.alerts?.length || 0;
+  const status = payload.probe_valid === false ? "Probe payload invalid" : payload.probe_status_code ? `HTTP ${payload.probe_status_code}` : "No probe status";
+  const rows = labels
+    .slice(0, 5)
+    .map(
+      (entry) => `<div class="assessment">
+        ${icon(claimIcon(entry.label))}
+        <div><strong>${esc(truncate(entry.claim?.text || entry.claim || "Claim", 110))}</strong><small>${esc(entry.label || "Unverified")} · ${esc(truncate(entry.rationale || entry.evidence || "No rationale returned.", 180))}</small></div>
+      </div>`
+    )
+    .join("");
+  return `<div class="auditor-summary">
+      <div class="auditor-summary-top">
+        ${claimBadge(overall)}
+        <span class="badge neutral">${esc(mode === "monitor" ? "Monitor pass" : "Verification")}</span>
+        <span class="badge neutral">${esc(source)} probe</span>
+        ${alerts ? `<span class="badge contradicted">${icon("alert")}${alerts} drift</span>` : ""}
+      </div>
+      <p class="small muted">${esc(status)} · ${esc(formatNumber(payload.duration_ms || 0, 1))} ms · ${esc(formatNumber(coverage.coverage_percent || 0, 0))}% claim coverage · ${esc(formatNumber(coverage.probeable_coverage_percent || 0, 0))}% probeable coverage</p>
+      ${rows || `<p class="small muted">No claim assessments were returned.</p>`}
+      ${payload.notes?.length ? `<details><summary>${payload.notes.length} Auditor note${payload.notes.length === 1 ? "" : "s"}</summary><pre>${esc(payload.notes.join("\n"))}</pre></details>` : ""}
+    </div>`;
+}
+
+async function runToolAuditor(toolId, mode) {
+  const output = $("#tool-auditor-result");
+  if (!output) return;
+  const live = Boolean($("#tool-force-live")?.checked);
+  const buttons = $$("[data-auditor-action]");
+  buttons.forEach((button) => {
+    button.disabled = true;
+  });
+  output.classList.remove("hidden", "bad", "pending");
+  output.classList.add("pending");
+  output.innerHTML = `<span class="loading-line">${icon("loader")}Running ${mode} for <code>${esc(toolId)}</code>…</span>`;
+  try {
+    const path = mode === "monitor" ? `/api/auditor/monitor/${encodeURIComponent(toolId)}` : `/api/auditor/verify/${encodeURIComponent(toolId)}`;
+    const payload = await api(`${path}?live=${live ? "true" : "false"}`, { method: "POST" });
+    output.classList.remove("pending");
+    output.innerHTML = auditorResultMarkup(payload, mode);
+    toast(`${mode === "monitor" ? "Monitor pass" : "Verification"} complete for ${toolId}.`, "ok");
+    await Promise.allSettled([loadAuditorData(), loadMonitoringData()]);
+    if ($("#trust-metrics")) renderTrustCenterData();
+    if ($("#monitor-metrics")) renderMonitor();
+  } catch (error) {
+    output.classList.remove("pending");
+    output.classList.add("bad");
+    output.textContent = error.message;
+    toast(`Auditor ${mode} failed: ${error.message}`, "bad");
+  } finally {
+    buttons.forEach((button) => {
+      button.disabled = false;
+    });
+  }
+}
+
 function openToolModal(toolId) {
   const tool = toolById(toolId);
   if (!tool) {
@@ -1266,18 +1868,22 @@ function openToolModal(toolId) {
     return;
   }
   const provider = providerForTool(tool.id);
-  const firstInput = tool.inputs?.[0];
   const claim = claimLabelForTool(tool.id);
   const breaker = breakerClass(tool.breaker || "closed");
   const reason = executionReason(tool);
-  const objectives = Object.keys(state.ontology?.capabilities || {}).sort();
+  const mapping = auditorMapping(tool.id);
+  const fields = [
+    ...(tool.inputs || []).map((entry) => ({ ...entry, direction: "input" })),
+    ...(tool.outputs || []).map((entry) => ({ ...entry, direction: "output" })),
+  ];
+  const conceptFallback = fields.map((entry) => entry.concept).filter(Boolean);
   const route = $("#tool-modal-route");
   if (route) route.textContent = `service / ${tool.id}`;
   const body = $("#tool-modal-body");
   if (!body) return;
   body.innerHTML = `<div class="tool-modal-top">
       <span class="tool-icon">${icon(capabilityIcon(tool.capability))}</span>
-      <div><h2>${esc(tool.name)}</h2><p>${esc(tool.provider_id)} · ${esc(tool.capability)} · ${esc(tool.execution)}</p></div>
+      <div><h2 id="tool-modal-title">${esc(tool.name)}</h2><p>${esc(tool.provider_id)} · ${esc(tool.capability)} · ${esc(tool.execution)}</p></div>
     </div>
     <div class="detail-grid">
       <div class="detail-block"><span>Live trust</span><strong>${formatTrust(tool.trust)}</strong><small>${provider?.calls || 0} calls · ${provider?.probes || 0} probes · ${provider?.contradictions || 0} contradictions</small></div>
@@ -1296,26 +1902,58 @@ function openToolModal(toolId) {
     </div>
     <div class="schema-block"><h3>Inputs</h3>${schemaLines(tool.inputs, "No inputs")}</div>
     <div class="schema-block"><h3>Outputs</h3>${schemaLines(tool.outputs, "No outputs")}</div>
-    <details class="correction-details">
-      <summary>Suggest an ontology correction</summary>
-      <form class="correction-form" id="tool-correction-form" data-tool-id="${esc(tool.id)}" data-original="${esc(firstInput?.concept || "")}">
-        <div class="form-grid">
-          <label>Field name<input id="correction-field" required value="${esc(firstInput?.name || "")}" placeholder="forecast"></label>
-          <label>Corrected concept<select id="correction-concept" required>${objectives
-            .map((concept) => `<option value="${esc(concept)}"${concept === firstInput?.concept ? " selected" : ""}>${esc(concept)}</option>`)
-            .join("")}</select></label>
-          <label>Unit<input id="correction-unit" value="${esc(firstInput?.unit || "")}" placeholder="C"></label>
-          <label>Note<input id="correction-note" placeholder="Why should the mapping change?"></label>
-        </div>
-        <button class="btn secondary small" type="submit">Stage correction</button>
-        <div class="inline-result hidden" id="tool-correction-result"></div>
-      </form>
-    </details>
+    <div class="auditor-block">
+      <div class="auditor-block-head"><strong>${icon("shield")}Auditor verification</strong>${mapping ? `<span class="badge neutral">Mapped</span>` : `<span class="badge neutral">Not mapped</span>`}</div>
+      ${
+        mapping
+          ? `<p class="small muted" style="margin:0">Catalogue target <code>${esc(mapping.catalog_tool_id)}</code>. Verification always establishes a fresh baseline; fixture probes are labelled as fixtures.</p>
+            <div class="auditor-block-actions">
+              <button class="btn small secondary" type="button" data-auditor-action="verify" data-auditor-tool="${esc(tool.id)}">${icon("shield")}Verify now</button>
+              <button class="btn small secondary" type="button" data-auditor-action="monitor" data-auditor-tool="${esc(tool.id)}">${icon("pulse")}Monitor only</button>
+              <label class="auditor-live-option"><input id="tool-force-live" type="checkbox"> Force live network</label>
+            </div>
+            <div class="inline-result hidden" id="tool-auditor-result" role="status" aria-live="polite"></div>`
+          : `<p class="small muted" style="margin:0">The Auditor has no catalogue mapping for this tool, so it cannot produce claim-level evidence here. <a class="text-link" href="/library">Open the Trust Center</a> to inspect mapped tools.</p>`
+      }
+    </div>
+    ${
+      fields.length
+        ? `<details class="correction-details">
+            <summary>Suggest an ontology correction</summary>
+            <form class="correction-form" id="tool-correction-form" data-tool-id="${esc(tool.id)}">
+              <div class="form-grid">
+                <label>Field<select id="correction-field">${fields
+                  .map(
+                    (entry, index) => `<option value="${esc(entry.name || entry.concept)}" data-concept="${esc(entry.concept || "")}" data-unit="${esc(entry.unit || "")}"${index === 0 ? " selected" : ""}>${esc(entry.direction)} · ${esc(entry.name || entry.concept)} (${esc(entry.concept || "untyped")})</option>`
+                  )
+                  .join("")}</select></label>
+                <label>Corrected ontology concept<select id="correction-concept" required>${ontologyConceptOptions(fields[0]?.concept, conceptFallback)}</select></label>
+                <label>Unit<input id="correction-unit" value="${esc(fields[0]?.unit || "")}" placeholder="C"></label>
+                <label>Note<input id="correction-note" placeholder="Why should the mapping change?"></label>
+              </div>
+              <button class="btn secondary small" type="submit">Submit correction</button>
+              <div class="inline-result hidden" id="tool-correction-result"></div>
+            </form>
+          </details>`
+        : `<p class="small muted" style="margin-top:12px">This tool has no typed fields to correct.</p>`
+    }
     <div class="tool-modal-footer">
       ${tool.docs_url ? `<a class="text-link" href="${esc(tool.docs_url)}" target="_blank" rel="noreferrer">Provider docs ${icon("arrow-up-right")}</a>` : `<span class="muted small">No provider documentation URL</span>`}
       <button class="btn primary" type="button" data-use-tool="${esc(tool.id)}">${icon("play")}Use in a task</button>
     </div>`;
   $("#tool-correction-form")?.addEventListener("submit", submitToolCorrection);
+  $("#correction-field")?.addEventListener("change", (event) => {
+    const option = event.target.selectedOptions[0];
+    const unit = $("#correction-unit");
+    if (unit) unit.value = option?.dataset.unit || "";
+    const concept = $("#correction-concept");
+    if (concept && option?.dataset.concept && [...concept.options].some((entry) => entry.value === option.dataset.concept)) {
+      concept.value = option.dataset.concept;
+    }
+  });
+  $$("[data-auditor-action]").forEach((button) => {
+    button.addEventListener("click", () => runToolAuditor(button.dataset.auditorTool, button.dataset.auditorAction));
+  });
   body.querySelector("[data-use-tool]")?.addEventListener("click", () => {
     const task = TASK_DRAFTS[tool.capability] || `Use ${tool.name} to answer a question.`;
     try {
@@ -1334,30 +1972,56 @@ async function submitToolCorrection(event) {
   const form = event.currentTarget;
   const output = $("#tool-correction-result");
   if (!output) return;
+  const submit = form.querySelector('button[type="submit"]');
+  const fieldOption = $("#correction-field")?.selectedOptions[0];
   const payload = {
     tool_id: form.dataset.toolId,
     field_name: $("#correction-field")?.value.trim() || "",
-    original_concept: form.dataset.original || "",
+    original_concept: fieldOption?.dataset.concept || "",
     corrected_concept: $("#correction-concept")?.value || "",
     corrected_unit: $("#correction-unit")?.value.trim() || null,
     note: $("#correction-note")?.value.trim() || "",
   };
+  if (!payload.original_concept) {
+    output.classList.remove("hidden");
+    output.classList.add("bad");
+    output.textContent = "The selected field has no original concept to correct.";
+    return;
+  }
+  if (submit) submit.disabled = true;
+  output.classList.add("hidden");
   try {
     const result = await api("/api/corrections", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    output.classList.remove("hidden", "bad");
-    output.classList.toggle("bad", !result.accepted);
-    output.textContent = result.accepted
-      ? `Staged ${result.correction_id}. ${result.message}`
-      : `Rejected: ${(result.violations || []).join("; ")}`;
-    toast(result.accepted ? "Correction staged for the Mapper." : "Correction rejected.", result.accepted ? "ok" : "bad");
+    const staged = Boolean(result.staged);
+    const accepted = Boolean(result.accepted);
+    const violations = result.violations || [];
+    output.classList.remove("hidden", "bad", "pending");
+    if (accepted) {
+      output.classList.add("pending");
+      output.innerHTML = `${icon("check-circle")} <strong>Accepted.</strong> ${esc(result.message || "The correction was promoted into the graph.")} <span class="mono">${esc(result.correction_id)}</span>`;
+      toast("Correction accepted and promoted into the graph.", "ok");
+    } else if (staged) {
+      output.classList.add("pending");
+      output.innerHTML = `${icon("clock")} <strong>Staged for review.</strong> ${esc(result.message || violations.join("; ") || "The Mapper will review this correction before promotion.")} <span class="mono">${esc(result.correction_id)}</span>`;
+      toast("Correction staged for Mapper review.", "ok");
+    } else {
+      output.classList.add("bad");
+      output.innerHTML = `${icon("x-circle")} <strong>Rejected.</strong> ${esc(violations.join("; ") || result.message || "The correction did not pass validation.")}`;
+      toast("Correction rejected.", "bad");
+    }
+    await loadStagedData();
+    if ($("#staging-ledger")) renderStagedLedger();
+    if (state.auditor) await loadAuditorData();
   } catch (error) {
-    output.classList.remove("hidden");
+    output.classList.remove("hidden", "pending");
     output.classList.add("bad");
     output.textContent = error.message;
+  } finally {
+    if (submit) submit.disabled = false;
   }
 }
 
@@ -1493,24 +2157,38 @@ async function submitListing(event) {
     });
     const accepted = Boolean(result.accepted);
     const staged = Boolean(result.staged);
+    const promoted = accepted && !staged;
+    const violations = result.violations || [];
     setQueueRow(
       "shacl",
       accepted ? "done" : "failed",
-      (result.violations || []).length ? result.violations.join("; ") : "Mapped shape accepted",
+      violations.length ? violations.join("; ") : promoted ? "Mapped shape accepted and promoted" : "Mapped shape accepted and staged",
       accepted ? "Passed" : "Rejected"
     );
     if (queueStatus) {
-      queueStatus.className = `badge ${accepted ? "verified" : "contradicted"}`;
-      queueStatus.innerHTML = `${icon(accepted ? "check" : "x")}${accepted ? (staged ? "Staged" : "Accepted") : "Rejected"}`;
+      queueStatus.className = `badge ${accepted ? (promoted ? "verified" : "warning") : "contradicted"}`;
+      queueStatus.innerHTML = `${icon(accepted ? (promoted ? "check" : "clock") : "x")}${accepted ? (promoted ? "Promoted" : "Staged") : "Rejected"}`;
     }
     if (resultBox) {
-      resultBox.classList.remove("hidden");
-      resultBox.classList.toggle("bad", !accepted);
+      resultBox.classList.remove("hidden", "bad", "pending");
+      if (!accepted) resultBox.classList.add("bad");
+      else if (staged) resultBox.classList.add("pending");
       resultBox.textContent = accepted
-        ? `Listing ${staged ? "staged" : "accepted"} as ${result.tool_id}. The Mapper will review the typed mapping before publication.`
-        : `Rejected: ${(result.violations || ["The mapped shape did not pass validation."]).join("; ")}`;
+        ? promoted
+          ? `Listing promoted into the knowledge graph as ${result.tool_id}. It is eligible for retrieval immediately.`
+          : `Listing accepted and staged as ${result.tool_id}. The Mapper will review the typed mapping before promotion.`
+        : `Rejected: ${(violations.length ? violations : ["The mapped shape did not pass validation."]).join("; ")}`;
     }
-    toast(accepted ? "Listing staged for mapper review." : "Listing rejected by validation.", accepted ? "ok" : "bad");
+    toast(
+      accepted ? (promoted ? "Listing promoted into the knowledge graph." : "Listing staged for Mapper review.") : "Listing rejected by validation.",
+      accepted ? "ok" : "bad"
+    );
+    if (accepted) {
+      await loadToolsData();
+      await loadOntologyData();
+      renderMarketplace();
+      await loadStagedData();
+    }
   } catch (error) {
     setQueueRow("shacl", "failed", error.message, "Failed");
     if (queueStatus) {
@@ -1676,31 +2354,6 @@ function monitorEvents() {
         });
       });
   });
-  if (!events.length) {
-    const providerCount = monitoring.providers?.length || state.tools.length;
-    events.push({
-      key: "standby-schema",
-      kind: "standby",
-      time: null,
-      severity: "info",
-      title: "Schema monitors armed",
-      description: `All ${providerCount} provider links are inside their mapped output contracts.`,
-      tags: ["Auditor", "0 alerts"],
-      toolId: null,
-      data: {},
-    });
-    events.push({
-      key: "standby-breaker",
-      kind: "standby",
-      time: null,
-      severity: "low",
-      title: "Circuit breakers closed",
-      description: "No provider has crossed the failure threshold in this sandbox session.",
-      tags: ["Client", "Protected"],
-      toolId: null,
-      data: {},
-    });
-  }
   const severityRank = { critical: 4, high: 3, medium: 2, low: 1, info: 0 };
   return events.sort((left, right) => {
     const timeDelta = new Date(right.time || 0) - new Date(left.time || 0);
@@ -1709,6 +2362,7 @@ function monitorEvents() {
 }
 
 async function loadMonitorActivity() {
+  state.monitorActivityError = null;
   try {
     const recent = await api("/api/tasks/recent?limit=8");
     state.recent = recent.tasks || [];
@@ -1720,26 +2374,54 @@ async function loadMonitorActivity() {
     state.monitorDetails = details.filter(Boolean);
   } catch (error) {
     state.monitorDetails = [];
+    state.monitorActivityError = error.message;
   }
   state.monitorActivity = monitorEvents();
 }
 
+function monitorNotice() {
+  const container = $("#monitor-notice");
+  if (!container) return;
+  const detail = state.monitoringError || state.monitorActivityError;
+  if (!detail) {
+    container.classList.add("hidden");
+    container.innerHTML = "";
+    return;
+  }
+  container.classList.remove("hidden");
+  const stale = state.monitoring ? ` Showing the last snapshot from ${formatTime(state.monitoringFetchedAt)}.` : "";
+  container.innerHTML = `<div class="notice error">${icon("x-circle")}<span><strong>${state.monitoringError ? "Monitoring API unavailable." : "Execution history unavailable."}</strong> ${esc(detail)}${esc(stale)} <button class="text-button" type="button" id="monitor-retry">Retry</button></span></div>`;
+  $("#monitor-retry")?.addEventListener("click", async () => {
+    await Promise.allSettled([loadMonitoringData(), loadMonitorActivity()]);
+    renderMonitor();
+  });
+}
+
 function renderMonitorMetrics() {
-  const monitoring = state.monitoring || {};
+  const container = $("#monitor-metrics");
+  if (!container) return;
+  if (!state.monitoring) {
+    container.innerHTML = `
+      <div class="metric-card">${icon("box")}<strong>—</strong><label>Registered providers</label><small>Monitoring unavailable</small></div>
+      <div class="metric-card">${icon("shield")}<strong>—</strong><label>Open circuits</label><small>Monitoring unavailable</small></div>
+      <div class="metric-card">${icon("alert")}<strong>—</strong><label>Drift alerts</label><small>Monitoring unavailable</small></div>
+      <div class="metric-card">${icon("pulse")}<strong>—</strong><label>Average live trust</label><small>No observations loaded</small></div>`;
+    return;
+  }
+  const monitoring = state.monitoring;
   const providers = monitoring.providers || [];
   const breakers = monitoring.breakers || [];
   const alerts = monitoring.drift_alerts || [];
   const open = breakers.filter((breaker) => breaker.state === "open").length;
-  const trust = providers.length
-    ? providers.reduce((total, provider) => total + Number(provider.trust || 0), 0) / providers.length
-    : 0;
-  const container = $("#monitor-metrics");
-  if (!container) return;
+  const observed = providers.filter((provider) => Number(provider.calls || 0) + Number(provider.probes || 0) > 0);
+  const trust = observed.length
+    ? observed.reduce((total, provider) => total + Number(provider.trust || 0), 0) / observed.length
+    : null;
   container.innerHTML = `
-    <div class="metric-card">${icon("box")}<strong>${providers.length}</strong><label>Registered providers</label><small>${new Set(state.tools.map((tool) => tool.capability)).size} capabilities · sandbox</small></div>
-    <div class="metric-card">${icon("shield")}<strong class="${open ? "alert" : "good"}">${open}</strong><label>Open circuits</label><small>${breakers.length} links monitored</small></div>
-    <div class="metric-card">${icon("alert")}<strong class="${alerts.length ? "alert" : "good"}">${alerts.length}</strong><label>Drift alerts</label><small>Auditor ${esc(monitoring.auditor?.mode || "fixture")} · ${Number(monitoring.auditor?.mapped_tools || 0)}/${Number(monitoring.auditor?.catalog_tools || 0)} mapped</small></div>
-    <div class="metric-card">${icon("pulse")}<strong class="good">${formatTrust(trust)}</strong><label>Average live trust</label><small>Beta posterior mean</small></div>`;
+    <div class="metric-card">${icon("box")}<strong>${providers.length}</strong><label>Registered providers</label><small>${new Set(state.tools.map((tool) => tool.capability)).size} capabilities · ${esc(monitoring.mode || "sandbox")}</small></div>
+    <div class="metric-card">${icon("shield")}<strong class="${open ? "alert" : ""}">${open}</strong><label>Open circuits</label><small>${breakers.length} links monitored</small></div>
+    <div class="metric-card">${icon("alert")}<strong class="${alerts.length ? "alert" : ""}">${alerts.length}</strong><label>Drift alerts</label><small>Auditor ${esc(monitoring.auditor?.mode || "unknown")} · ${Number(monitoring.auditor?.mapped_tools || 0)}/${Number(monitoring.auditor?.catalog_tools || 0)} mapped</small></div>
+    <div class="metric-card">${icon("pulse")}<strong>${trust === null ? "—" : formatTrust(trust)}</strong><label>Average live trust</label><small>${observed.length ? `${observed.length} observed provider${observed.length === 1 ? "" : "s"} · posterior mean` : "No calls or probes recorded"}</small></div>`;
 }
 
 function selectedMonitorEvent() {
@@ -1749,20 +2431,29 @@ function selectedMonitorEvent() {
 function renderMonitorFeed() {
   const feed = $("#alert-feed");
   if (!feed) return;
+  const count = $("#feed-count");
+  if (!state.monitorActivity.length) {
+    feed.innerHTML = `<div class="empty-state inline" style="margin:14px">${icon("pulse")}<strong>No incidents recorded</strong><p>${esc(
+      state.monitorActivityError
+        ? "Execution history could not be loaded."
+        : "No drift alerts, breaker transitions or failed calls have been recorded in this session."
+    )}</p></div>`;
+    if (count) count.textContent = state.monitorActivityError ? "unavailable" : "0 events";
+    return;
+  }
   feed.innerHTML = state.monitorActivity
     .map(
-      (event) => `<article class="feed-item ${event.key === state.monitorSelected ? "active" : ""}" data-monitor-event="${esc(event.key)}">
+      (event) => `<button class="feed-item ${event.key === state.monitorSelected ? "active" : ""}" type="button" data-monitor-event="${esc(event.key)}">
         <div class="feed-item-top">
           <span class="severity ${esc(event.severity)}">${icon(event.kind === "drift" ? "alert" : event.kind === "failure" ? "alert" : event.kind === "substitution" ? "refresh" : "pulse")}${esc(event.severity)}</span>
-          <time>${event.time ? formatTime(event.time) : "now"}</time>
+          <time>${event.time ? formatTime(event.time) : "no timestamp"}</time>
         </div>
         <strong>${esc(event.title)}</strong>
         <p>${esc(event.description)}</p>
         <div class="feed-tags">${event.tags.map((tag) => `<span class="badge neutral">${esc(tag)}</span>`).join("")}</div>
-      </article>`
+      </button>`
     )
     .join("");
-  const count = $("#feed-count");
   if (count) count.textContent = `${state.monitorActivity.length} event${state.monitorActivity.length === 1 ? "" : "s"}`;
 }
 
@@ -1774,14 +2465,16 @@ function mappingForEvent(event) {
   const expected = output
     ? `${concept}<${unit}>\n${(output.fields || []).slice(0, 4).map((field) => `  ${field}: typed`).join("\n") || "  schema: mapped"}`
     : "Typed provider contract\n  schema: mapped";
-  if (!event || event.kind === "standby") {
-    return `<div class="detail-card-head"><h3>Mapping diff</h3><span class="badge verified">${icon("check")}No drift</span></div>
+  if (!event) {
+    return `<div class="detail-card-head"><h3>Mapping diff</h3><span class="badge neutral">No incident</span></div>
       <div class="mapping-body">
-        <div class="mapping-grid">
-          <div class="mapping-panel"><span>Expected mapping</span><pre>${esc(expected)}</pre></div>
-          <div class="mapping-panel positive"><span>Last validation</span><pre>${esc("schema_valid: true\nreason: all required fields matched\naction: accept")}</pre></div>
-        </div>
-        <div class="mapping-foot">${icon("shield")}SHACL and unit checks passed for the current catalogue snapshot.</div>
+        ${emptyMarkup("No mapping diff to show", "Select an incident, or trigger drift from the control room to compare the expected and observed envelopes.", "map")}
+      </div>`;
+  }
+  if (event.kind === "standby") {
+    return `<div class="detail-card-head"><h3>Mapping diff</h3><span class="badge neutral">No incident</span></div>
+      <div class="mapping-body">
+        ${emptyMarkup("No mapping diff to show", "No drift validation is attached to this entry.", "map")}
       </div>`;
   }
   if (event.kind === "substitution") {
@@ -1822,7 +2515,11 @@ function renderMonitorIncident() {
   const container = $("#incident-card");
   if (!container) return;
   if (!event || event.kind === "standby") {
-    container.innerHTML = `<div class="incident-empty"><span class="answer-icon">${icon("shield")}</span><div><h2>No active incidents</h2><p>Provider contracts are matching the current sandbox snapshot.</p></div><span class="badge verified">${icon("check")}Healthy</span></div>`;
+    container.innerHTML = `<div class="incident-empty"><span class="answer-icon">${icon("shield")}</span><div><h2>No incidents recorded</h2><p>${esc(
+      state.monitoringError
+        ? "Monitoring data is unavailable, so no health conclusion can be drawn."
+        : "No drift alerts or breaker transitions are present in this session."
+    )}</p></div><span class="badge neutral">${esc(state.monitoringError ? "Unknown" : "Clear")}</span></div>`;
     return;
   }
   const title =
@@ -1865,10 +2562,10 @@ function renderMonitorSubstitutions() {
         .map((event) => {
           const tag = event.kind === "drift" ? "Open" : event.kind === "failure" ? "Fail" : event.kind === "breaker" ? "Open" : "Swap";
           const tagClass = event.kind === "substitution" ? "swap" : "open";
-          return `<div class="substitution-row"><time>${event.time ? formatTime(event.time) : "now"}</time><span class="log-tag ${tagClass}">${tag}</span><span>${esc(event.title)}</span></div>`;
+          return `<div class="substitution-row"><time>${event.time ? formatTime(event.time) : "—"}</time><span class="log-tag ${tagClass}">${tag}</span><span>${esc(event.title)}</span></div>`;
         })
         .join("")
-    : `<div class="substitution-row"><time>now</time><span class="log-tag match">Match</span><span>No failures or substitutions in this session.</span></div>`;
+    : `<div class="substitution-row"><time>—</time><span class="log-tag match">Clear</span><span>No failures or substitutions recorded in this session.</span></div>`;
   const substitution = swaps.find((event) => event.kind === "substitution");
   const reason = substitution
     ? `<div class="swap-reason">${icon("check-circle")}<span>Type-compatible substitute accepted. The original provider remains isolated until validation recovers.</span></div>`
@@ -1876,18 +2573,91 @@ function renderMonitorSubstitutions() {
   container.innerHTML = `<div class="detail-card-head"><h3>Recovery & substitution log</h3><span class="badge neutral">${swaps.length} event${swaps.length === 1 ? "" : "s"}</span></div><div class="substitution-body">${rows}${reason}</div>`;
 }
 
+function renderMonitorTrust() {
+  const container = $("#monitor-trust-body");
+  if (!container) return;
+  const providers = [...(state.monitoring?.providers || [])].sort((left, right) => {
+    const observed = Number(right.calls || 0) + Number(right.probes || 0) - Number(left.calls || 0) - Number(left.probes || 0);
+    return observed || left.tool_name.localeCompare(right.tool_name);
+  });
+  if (!providers.length) {
+    container.className = "panel-body";
+    container.innerHTML = emptyMarkup("No provider evidence", state.monitoringError || "No providers are registered in this sandbox.");
+    return;
+  }
+  container.className = "monitor-trust";
+  container.innerHTML = providers
+    .slice(0, 8)
+    .map((provider) => {
+      const observations = Number(provider.calls || 0) + Number(provider.probes || 0);
+      const score = Number(provider.trust || 0.5);
+      return `<div class="monitor-trust-row">
+        <span class="monitor-trust-name"><strong>${esc(provider.tool_name)}</strong><small>${esc(provider.provider_id)} · ${observations ? `${observations} observation${observations === 1 ? "" : "s"}` : "prior only"}</small></span>
+        ${scoreTrack(score, provider.demoted ? "open" : observations ? "closed" : "")}
+        <span>${observations ? formatTrust(score) : "—"}</span>
+      </div>`;
+    })
+    .join("");
+}
+
+function populateMonitorControls() {
+  const select = $("#control-tool");
+  if (!select) return;
+  const providers = state.monitoring?.providers || [];
+  const previous = select.value;
+  select.innerHTML = providers.length
+    ? providers
+        .map(
+          (provider) => `<option value="${esc(provider.tool_id)}">${esc(provider.tool_name)} · ${esc(provider.provider_id)}</option>`
+        )
+        .join("")
+    : `<option value="">No providers available</option>`;
+  if (previous && providers.some((provider) => provider.tool_id === previous)) select.value = previous;
+  updateControlHint();
+}
+
+function updateControlHint() {
+  const toolId = $("#control-tool")?.value;
+  const mapping = auditorMapping(toolId);
+  const hint = $("#control-hint");
+  const probe = $("#control-monitor");
+  if (probe) probe.disabled = !mapping;
+  if (hint) {
+    hint.textContent = !toolId
+      ? "No provider is available for incident controls."
+      : mapping
+        ? `Auditor mapping: ${mapping.catalog_tool_id}. Probe establishes a baseline if none exists.`
+        : "This provider has no Auditor catalogue mapping; verification is unavailable.";
+  }
+}
+
+function setControlResult(kind, html) {
+  const box = $("#control-result");
+  if (!box) return;
+  box.classList.remove("hidden", "bad", "pending");
+  if (kind) box.classList.add(kind);
+  box.innerHTML = html;
+}
+
 function renderMonitor() {
+  monitorNotice();
   renderMonitorMetrics();
   renderMonitorFeed();
   renderMonitorIncident();
   renderMonitorMapping();
   renderMonitorSubstitutions();
+  renderMonitorTrust();
+  populateMonitorControls();
   const notifications = $("#notification-button .notification-dot");
   const alerts = state.monitoring?.drift_alerts || [];
   const open = (state.monitoring?.breakers || []).some((breaker) => breaker.state === "open");
-  notifications?.classList.toggle("hidden", !alerts.length && !open);
+  notifications?.classList.toggle("hidden", !state.monitoring || (!alerts.length && !open));
   const snapshot = $("#monitor-snapshot-time");
-  if (snapshot) snapshot.textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  if (snapshot) {
+    snapshot.textContent = state.monitoring
+      ? `${state.monitoringError ? "stale · " : ""}${formatTime(state.monitoringFetchedAt)}`
+      : "unavailable";
+  }
 }
 
 function toggleMonitorPause() {
@@ -1921,20 +2691,116 @@ function bindMonitor() {
     state.monitorSelected = item.dataset.monitorEvent;
     renderMonitor();
   });
-  $("#reset-demo")?.addEventListener("click", async () => {
-    const button = $("#reset-demo");
-    if (button) button.disabled = true;
+  $("#control-tool")?.addEventListener("change", updateControlHint);
+  $("#control-fail")?.addEventListener("click", async () => {
+    const toolId = $("#control-tool")?.value;
+    const times = Math.max(1, Math.min(20, Number($("#control-times")?.value || 1)));
+    if (!toolId) {
+      setControlResult("bad", "Choose a provider first.");
+      return;
+    }
     try {
-      await api("/api/demo/reset", { method: "POST" });
-      await Promise.allSettled([loadToolsData(), loadMonitoringData()]);
-      await loadMonitorActivity();
+      await api(`/api/demo/fail-next/${encodeURIComponent(toolId)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ times }),
+      });
+      setControlResult("pending", `${icon("clock")}Next ${times} call${times === 1 ? "" : "s"} to <code>${esc(toolId)}</code> will fail. Run a task to exercise recovery.`);
+      toast(`Scheduled ${times} failure${times === 1 ? "" : "s"} for ${toolId}.`, "ok");
+      await loadMonitoringData();
+      renderMonitor();
+    } catch (error) {
+      setControlResult("bad", esc(error.message));
+      toast(`Could not schedule failure: ${error.message}`, "bad");
+    }
+  });
+  $("#control-trip")?.addEventListener("click", async () => {
+    const toolId = $("#control-tool")?.value;
+    if (!toolId) {
+      setControlResult("bad", "Choose a provider first.");
+      return;
+    }
+    try {
+      await api(`/api/demo/trip/${encodeURIComponent(toolId)}`, { method: "POST" });
+      setControlResult("bad", `${icon("alert")}Breaker opened for <code>${esc(toolId)}</code>. The next composed call will isolate this link.`);
+      toast(`Breaker opened for ${toolId}.`, "bad");
+      await Promise.allSettled([loadMonitoringData(), loadMonitorActivity()]);
       state.monitorSelected = state.monitorActivity[0]?.key || null;
       renderMonitor();
-      toast("Demo state reset: trust, breakers, drift, staging and failures cleared.", "ok");
     } catch (error) {
+      setControlResult("bad", esc(error.message));
+      toast(`Could not trip breaker: ${error.message}`, "bad");
+    }
+  });
+  $("#control-monitor")?.addEventListener("click", async () => {
+    const toolId = $("#control-tool")?.value;
+    if (!toolId) {
+      setControlResult("bad", "Choose a provider first.");
+      return;
+    }
+    if (!auditorMapping(toolId)) {
+      setControlResult("bad", "The Auditor has no catalogue mapping for this provider.");
+      return;
+    }
+    setControlResult("pending", `<span class="loading-line">${icon("loader")}Probing ${esc(toolId)} with the Auditor…</span>`);
+    try {
+      const payload = await api(`/api/auditor/monitor/${encodeURIComponent(toolId)}?live=false`, { method: "POST" });
+      setControlResult("", auditorResultMarkup(payload, "monitor"));
+      toast("Auditor monitor pass complete.", "ok");
+      await Promise.allSettled([loadMonitoringData(), loadAuditorData()]);
+      state.monitorActivity = monitorEvents();
+      renderMonitor();
+    } catch (error) {
+      setControlResult("bad", esc(error.message));
+      toast(`Auditor monitor failed: ${error.message}`, "bad");
+    }
+  });
+  const resetButton = $("#reset-demo");
+  resetButton?.addEventListener("click", async () => {
+    if (!state.resetArmed) {
+      state.resetArmed = true;
+      resetButton.classList.add("danger");
+      resetButton.innerHTML = `${icon("alert")}<span>Confirm reset (4s)</span>`;
+      window.clearTimeout(state.resetTimer);
+      state.resetTimer = window.setTimeout(() => {
+        state.resetArmed = false;
+        resetButton.classList.remove("danger");
+        resetButton.innerHTML = `${icon("refresh")}<span>Reset demo</span>`;
+      }, 4000);
+      return;
+    }
+    window.clearTimeout(state.resetTimer);
+    state.resetArmed = false;
+    resetButton.classList.remove("danger");
+    resetButton.innerHTML = `${icon("refresh")}<span>Reset demo</span>`;
+    resetButton.disabled = true;
+    try {
+      await api("/api/demo/reset", { method: "POST" });
+      state.monitorDetails = [];
+      state.monitorSelected = null;
+      state.trustProvider = "";
+      await Promise.allSettled([
+        loadToolsData(),
+        loadMonitoringData(),
+        loadMonitorActivity(),
+        loadAuditorData(),
+        loadKnowledgeData(),
+        loadStagedData(),
+        loadEvaluationsData(),
+      ]);
+      state.monitorActivity = monitorEvents();
+      state.monitorSelected = state.monitorActivity[0]?.key || null;
+      renderMonitor();
+      renderTrustCenterData();
+      renderWorkspaceStrip();
+      setControlResult("", `${icon("check-circle")}Demo state reset. Trust, breakers, Auditor baselines, staging and overrides were cleared; task traces and documents were kept.`);
+      toast("Demo state reset. Task traces and documents were kept.", "ok");
+    } catch (error) {
+      setControlResult("bad", esc(error.message));
       toast(`Could not reset the demo: ${error.message}`, "bad");
     } finally {
-      if (button) button.disabled = false;
+      resetButton.disabled = false;
+      resetButton.innerHTML = `${icon("refresh")}<span>Reset demo</span>`;
     }
   });
   $("#simulate-failure")?.addEventListener("click", async () => {
@@ -1997,14 +2863,791 @@ function initMonitor() {
   window.setInterval(refreshMonitor, 5000);
 }
 
-function renderLibrary() {
-  const template = $("#library-template");
-  if (!template) return;
-  $$(".library-frame").forEach((frame) => {
-    const clone = template.content.cloneNode(true);
-    const label = clone.querySelector("[data-library-label]");
-    if (label) label.textContent = frame.dataset.libraryTheme || "theme";
-    frame.replaceChildren(clone);
+/* --------------------------------------------------------------------------
+   Trust Center
+   -------------------------------------------------------------------------- */
+
+function trustRecordCounts() {
+  return {
+    corrections: state.staged?.corrections?.length || 0,
+    listings: state.staged?.listings?.length || 0,
+    total: (state.staged?.corrections?.length || 0) + (state.staged?.listings?.length || 0),
+  };
+}
+
+function trustMetricMarkup(label, value, detail) {
+  return `<div class="trust-metric"><span>${esc(label)}</span><strong>${value}</strong><small>${detail}</small></div>`;
+}
+
+function renderTrustMetrics() {
+  const container = $("#trust-metrics");
+  if (!container) return;
+  const auditor = state.auditor;
+  const mappings = auditor?.mappings?.length || 0;
+  const catalog = auditor?.catalog_tools || 0;
+  const probes = auditor?.probe_definitions || 0;
+  const claims = (auditor?.tools || []).reduce((total, tool) => total + (tool.claims?.length || 0), 0);
+  const leaderboard = state.auditorTrust?.leaderboard || [];
+  const observations = leaderboard.reduce((total, row) => total + Number(row.observations || 0), 0);
+  const graph = state.knowledge?.graph;
+  const counts = trustRecordCounts();
+
+  const auditorValue = state.auditorError
+    ? "—"
+    : auditor
+      ? `${mappings}/${catalog}`
+      : `<span class="skeleton" style="width:48px;height:22px">&nbsp;</span>`;
+  const auditorDetail = state.auditorError
+    ? "Auditor unavailable"
+    : auditor
+      ? `${esc(auditor.mode)} mode · ${mappings} mapped`
+      : "Checking Auditor";
+
+  const probesValue = state.auditorError
+    ? "—"
+    : auditor
+      ? String(probes)
+      : `<span class="skeleton" style="width:36px;height:22px">&nbsp;</span>`;
+  const probesDetail = state.auditorError
+    ? "No probe definitions"
+    : auditor
+      ? `${claims} provider claims declared`
+      : "Checking probe definitions";
+
+  const trustValue = state.auditorTrustError
+    ? "—"
+    : state.auditorTrust
+      ? String(observations)
+      : `<span class="skeleton" style="width:40px;height:22px">&nbsp;</span>`;
+  const trustDetail = state.auditorTrustError
+    ? "Trust feed unavailable"
+    : state.auditorTrust
+      ? observations
+        ? `${leaderboard.length} tool${leaderboard.length === 1 ? "" : "s"} with evidence`
+        : "No probe observations yet"
+      : "Checking trust feed";
+
+  const graphValue = state.knowledgeError
+    ? "—"
+    : graph
+      ? formatNumber(graph.mappings, 0)
+      : `<span class="skeleton" style="width:48px;height:22px">&nbsp;</span>`;
+  const graphDetail = state.knowledgeError
+    ? "Knowledge layer unavailable"
+    : graph
+      ? `${formatNumber(graph.tools, 0)} tools · ${formatNumber(graph.concepts, 0)} concepts`
+      : "Checking knowledge layer";
+
+  const stagedValue = state.stagedError
+    ? "—"
+    : state.staged
+      ? String(counts.total)
+      : `<span class="skeleton" style="width:32px;height:22px">&nbsp;</span>`;
+  const stagedDetail = state.stagedError
+    ? "Staging ledger unavailable"
+    : state.staged
+      ? counts.total
+        ? `${counts.corrections} correction${counts.corrections === 1 ? "" : "s"} · ${counts.listings} listing${counts.listings === 1 ? "" : "s"}`
+        : "No records awaiting review"
+      : "Checking Mapper queue";
+
+  container.innerHTML = [
+    trustMetricMarkup("Mapped tools", auditorValue, auditorDetail),
+    trustMetricMarkup("Auditor probes", probesValue, probesDetail),
+    trustMetricMarkup("Trust observations", trustValue, trustDetail),
+    trustMetricMarkup("Graph mappings", graphValue, graphDetail),
+    trustMetricMarkup("Staged records", stagedValue, stagedDetail),
+  ].join("");
+
+  const mode = $("#trust-mode");
+  if (mode) {
+    if (state.auditorError) {
+      mode.className = "badge contradicted";
+      mode.innerHTML = `${icon("alert")}Auditor unavailable`;
+    } else if (!state.auditor) {
+      mode.className = "badge neutral";
+      mode.textContent = "Checking Auditor…";
+    } else {
+      mode.className = "badge neutral";
+      mode.innerHTML = `${icon("shield")}${esc(titleCase(state.auditor.mode))} probes · ${state.auditor.catalog_tools} catalogue tools`;
+    }
+  }
+  const footer = $("#trust-footer-count");
+  if (footer) footer.textContent = state.auditor ? String(mappings) : "—";
+}
+
+function renderAuditorOverview() {
+  const container = $("#auditor-overview");
+  const badge = $("#auditor-coverage-badge");
+  if (!container) return;
+  if (state.auditorError) {
+    container.innerHTML = noticeMarkup("error", "Auditor overview unavailable.", state.auditorError);
+    if (badge) {
+      badge.className = "badge contradicted";
+      badge.textContent = "offline";
+    }
+    return;
+  }
+  if (!state.auditor) {
+    container.innerHTML = `<div class="loading-line">${icon("loader")}Loading Auditor overview…</div>`;
+    if (badge) badge.textContent = "…";
+    return;
+  }
+  const auditor = state.auditor;
+  const mappings = auditor.mappings || [];
+  const claims = (auditor.tools || []).reduce((total, tool) => total + (tool.claims?.length || 0), 0);
+  const probeable = (auditor.tools || []).filter((tool) => tool.probeable).length;
+  if (badge) {
+    badge.className = "badge supported";
+    badge.innerHTML = `${icon("check-circle")}${mappings.length}/${auditor.catalog_tools} mapped`;
+  }
+  container.innerHTML = `
+    <div class="auditor-overview-stat">
+      <div><span>Mode</span><strong>${esc(titleCase(auditor.mode))}</strong></div>
+      <div><span>Catalogue</span><strong>${auditor.catalog_tools}</strong></div>
+      <div><span>Probes</span><strong>${auditor.probe_definitions}</strong></div>
+      <div><span>Claims</span><strong>${claims}</strong></div>
+    </div>
+    <div class="mapping-list">
+      ${mappings
+        .map(
+          (mapping) => `<button class="mapping-list-row" type="button" data-open-tool="${esc(mapping.app_tool_id)}">
+            <strong>${esc(mapping.app_tool_id)}</strong>
+            <small>→ ${esc(mapping.catalog_tool_id)}</small>
+            <span class="badge neutral">${esc(mapping.provider_id || "unmapped")}</span>
+          </button>`
+        )
+        .join("")}
+    </div>
+    <div class="kg-foot">
+      <span>${probeable} probeable catalogue tool${probeable === 1 ? "" : "s"} · ${claims} declared claim${claims === 1 ? "" : "s"}</span>
+      <a class="text-link" href="/dashboard">Run a verified task ${icon("arrow-up-right")}</a>
+    </div>`;
+}
+
+function renderTrustLeaderboard() {
+  const container = $("#trust-leaderboard");
+  const badge = $("#leaderboard-count");
+  if (!container) return;
+  if (state.auditorTrustError) {
+    container.className = "panel-body";
+    container.innerHTML = noticeMarkup("error", "Trust feed unavailable.", state.auditorTrustError);
+    if (badge) {
+      badge.className = "badge contradicted";
+      badge.textContent = "offline";
+    }
+    return;
+  }
+  if (!state.auditorTrust) {
+    container.className = "panel-body flush";
+    container.innerHTML = `<div class="loading-line" style="padding:0 18px">${icon("loader")}Loading trust observations…</div>`;
+    if (badge) badge.textContent = "…";
+    return;
+  }
+  const rows = [...(state.auditorTrust.leaderboard || [])].sort(
+    (left, right) => Number(right.observations || 0) - Number(left.observations || 0) || Number(right.score || 0) - Number(left.score || 0)
+  );
+  const feed = state.auditorTrust.feed || {};
+  const totalObservations = rows.reduce((total, row) => total + Number(row.observations || 0), 0);
+  if (badge) {
+    badge.className = "badge neutral";
+    badge.textContent = `${rows.length} tool${rows.length === 1 ? "" : "s"}`;
+  }
+  if (!rows.length) {
+    container.className = "panel-body";
+    container.innerHTML = emptyMarkup(
+      "No probe observations",
+      "Run a verification or monitor pass to populate the Auditor trust ledger. Registry evidence and probe evidence are kept separate."
+    );
+    return;
+  }
+  container.className = "panel-body flush";
+  container.innerHTML = `<table class="data-table">
+      <thead><tr><th>Tool</th><th>Evidence</th><th class="num">Score</th></tr></thead>
+      <tbody>
+        ${rows
+          .map((row) => {
+            const mapping = (state.auditor?.mappings || []).find((entry) => entry.catalog_tool_id === row.tool_id);
+            const tool = mapping ? toolById(mapping.app_tool_id) : null;
+            const label = tool?.name || mapping?.app_tool_id || row.tool_id;
+            return `<tr>
+              <td><strong>${esc(label)}</strong><br><small class="mono">${esc(row.tool_id)}${mapping ? ` · ${esc(mapping.app_tool_id)}` : ""}</small></td>
+              <td>${row.observations || 0} observation${row.observations === 1 ? "" : "s"}<br><small>${esc(row.successes || 0)} success weight · ${esc(row.failures || 0)} failure weight</small></td>
+              <td class="num"><div class="score-cell">${scoreTrack(Number(row.score || 0), Number(row.failures || 0) ? "open" : "closed")}<span>${formatTrust(row.score)}</span></div></td>
+            </tr>`;
+          })
+          .join("")}
+      </tbody>
+    </table>
+    <div class="kg-foot">
+      <span>${totalObservations} evidence observation${totalObservations === 1 ? "" : "s"} · ${feed.delivery_failures || 0} delivery failure${feed.delivery_failures === 1 ? "" : "s"}</span>
+      <span>${rows.filter((row) => row.last_outcome === "probe_pass").length} tool${rows.filter((row) => row.last_outcome === "probe_pass").length === 1 ? "" : "s"} last passed</span>
+    </div>`;
+}
+
+function renderKnowledge() {
+  const container = $("#knowledge-body");
+  const badge = $("#knowledge-backend");
+  if (!container) return;
+  if (state.knowledgeError) {
+    container.className = "panel-body";
+    container.innerHTML = noticeMarkup("error", "Knowledge layer unavailable.", state.knowledgeError);
+    if (badge) {
+      badge.className = "badge contradicted";
+      badge.textContent = "offline";
+    }
+    return;
+  }
+  if (!state.knowledge) {
+    container.className = "panel-body flush";
+    container.innerHTML = `<div class="loading-line" style="padding:0 18px">${icon("loader")}Loading graph statistics…</div>`;
+    if (badge) badge.textContent = "…";
+    return;
+  }
+  const knowledge = state.knowledge;
+  if (!knowledge.available) {
+    container.className = "panel-body";
+    container.innerHTML = emptyMarkup(
+      "Knowledge artifacts unavailable",
+      knowledge.reason || "The configured knowledge backend did not expose a graph in this environment.",
+      "database"
+    );
+    if (badge) {
+      badge.className = "badge neutral";
+      badge.textContent = knowledge.backend || "unavailable";
+    }
+    return;
+  }
+  const graph = knowledge.graph || {};
+  if (badge) {
+    badge.className = "badge supported";
+    badge.textContent = knowledge.backend || "graph";
+  }
+  container.className = "panel-body flush";
+  container.innerHTML = `<div class="kg-stats">
+      ${[
+        ["Tools", graph.tools],
+        ["Concepts", graph.concepts],
+        ["Mappings", graph.mappings],
+        ["Claims", graph.claims],
+        ["Published", knowledge.tools?.length || 0],
+        ["Ontology", knowledge.concepts || 0],
+      ]
+        .map(
+          ([label, value]) => `<div class="kg-stat"><span>${esc(label)}</span><strong>${formatNumber(value || 0, 0)}</strong></div>`
+        )
+        .join("")}
+    </div>
+    <div class="kg-foot">
+      <span title="${esc(knowledge.graph_file || "")}">${icon("database")} ${esc(truncate(knowledge.graph_file || "graph store", 46))}</span>
+      <span title="${esc(knowledge.ontology_file || "")}">${esc(truncate(knowledge.ontology_file || "ontology", 36))}</span>
+    </div>`;
+}
+
+function renderStagedLedger() {
+  const container = $("#staging-ledger");
+  const badge = $("#staging-count");
+  if (!container) return;
+  if (state.stagedError) {
+    container.className = "panel-body";
+    container.innerHTML = noticeMarkup("error", "Staging ledger unavailable.", state.stagedError);
+    if (badge) {
+      badge.className = "badge contradicted";
+      badge.textContent = "offline";
+    }
+    return;
+  }
+  if (!state.staged) {
+    container.className = "panel-body flush";
+    container.innerHTML = `<div class="loading-line" style="padding:0 18px">${icon("loader")}Loading staging records…</div>`;
+    if (badge) badge.textContent = "…";
+    return;
+  }
+  const counts = trustRecordCounts();
+  if (badge) {
+    badge.className = "badge neutral";
+    badge.textContent = `${counts.total} record${counts.total === 1 ? "" : "s"}`;
+  }
+  if (!counts.total) {
+    container.className = "panel-body";
+    container.innerHTML = emptyMarkup(
+      "Staging ledger is clear",
+      "Corrections and listings submitted from the UI appear here with their review status. A staged record is awaiting Mapper review, not rejected."
+    );
+    return;
+  }
+  const corrections = state.staged.corrections || [];
+  const listings = state.staged.listings || [];
+  container.className = "panel-body flush";
+  container.innerHTML = `<div class="staging-list">
+      ${corrections
+        .map((record) => {
+          const status = String(record.status || "pending_review");
+          const statusClass = status === "promoted" ? "supported" : status === "rejected" ? "contradicted" : "warning";
+          return `<div class="staging-item">
+            <div class="staging-item-top">
+              <strong>Correction · ${esc(record.tool_id)}</strong>
+              <span class="badge ${statusClass}">${esc(status.replace(/_/g, " "))}</span>
+            </div>
+            <p>${esc(record.field_name || "field")} · ${esc(record.original_concept || "?")} → ${esc(record.corrected_concept || "?")}${record.corrected_unit ? ` (${esc(record.corrected_unit)})` : ""}</p>
+            <p class="mono">${esc(record.correction_id || "")}${record.field_path ? ` · ${esc(record.field_path)}` : ""} · ${formatAge(record.submitted_at)}</p>
+          </div>`;
+        })
+        .join("")}
+      ${listings
+        .map((record) => {
+          const status = String(record.status || "staged");
+          const statusClass = status === "promoted" ? "supported" : status === "rejected" ? "contradicted" : "warning";
+          return `<div class="staging-item">
+            <div class="staging-item-top">
+              <strong>Listing · ${esc(record.name || record.tool_id)}</strong>
+              <span class="badge ${statusClass}">${esc(status)}</span>
+            </div>
+            <p>${esc(record.capability || "unmapped capability")} · ${record.promoted ? "promoted into the graph" : "awaiting Mapper promotion"}${(record.violations || []).length ? ` · ${esc((record.violations || []).join("; "))}` : ""}</p>
+            <p class="mono">${esc(record.tool_id || "")} · ${formatAge(record.submitted_at)}</p>
+          </div>`;
+        })
+        .join("")}
+    </div>`;
+}
+
+function metricDisplay(key, value) {
+  if (typeof value !== "number" || Number.isNaN(value)) return String(value);
+  if (key.endsWith("_ms")) return `${formatNumber(value, 1)} ms`;
+  if (/(rate|accuracy|coverage|mrr|ndcg|recovery|delta|precision|recall)/.test(key)) return `${formatNumber(value * 100, 1)}%`;
+  return formatNumber(value, 3).replace(/\.?0+$/, "");
+}
+
+function renderEvaluations() {
+  const container = $("#evaluations-body");
+  const badge = $("#evaluation-count");
+  if (!container) return;
+  if (state.evaluationsError) {
+    container.innerHTML = noticeMarkup("error", "Evaluation reports unavailable.", state.evaluationsError);
+    if (badge) {
+      badge.className = "badge contradicted";
+      badge.textContent = "offline";
+    }
+    return;
+  }
+  if (!state.evaluations) {
+    container.innerHTML = `<div class="loading-line">${icon("loader")}Loading evaluation reports…</div>`;
+    if (badge) badge.textContent = "…";
+    return;
+  }
+  const reports = state.evaluations.reports || [];
+  if (badge) {
+    badge.className = "badge neutral";
+    badge.textContent = `${reports.length} suite${reports.length === 1 ? "" : "s"}`;
+  }
+  if (!reports.length) {
+    container.innerHTML = emptyMarkup(
+      "No evaluation reports",
+      "Run the offline evaluation suites to publish chain, matching and trust reports here.",
+      "flask"
+    );
+    return;
+  }
+  container.innerHTML = `<div class="eval-list">
+      ${reports
+        .map((report) => {
+          const summary = report.summary || {};
+          const metrics = summary.metrics || {};
+          const entries = Object.entries(metrics);
+          const primary = entries[0];
+          const detail = entries
+            .slice(0, 4)
+            .map(([key, value]) => `${esc(key.replace(/_/g, " "))} ${metricDisplay(key, value)}`)
+            .join(" · ");
+          return `<div class="eval-row">
+            <span><strong>${esc(report.name || summary.suite || "suite")}</strong><small>${esc(modeLabel(summary.mode))} · ${formatAge(summary.generated_at)} · ${entries.length} metric${entries.length === 1 ? "" : "s"}</small><small>${detail}</small></span>
+            <span class="eval-value">${primary ? esc(metricDisplay(primary[0], primary[1])) : "—"}</span>
+          </div>`;
+        })
+        .join("")}
+    </div>
+    <div class="kg-foot"><span>Offline reports from <code>reports/evaluations</code></span><span>${esc(state.evaluations.mode || "offline")}</span></div>`;
+}
+
+function modeLabel(mode) {
+  const normalized = String(mode || "offline");
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+}
+
+function populateTrustSelectors() {
+  const providerSelect = $("#trust-provider");
+  if (providerSelect) {
+    const providers = [...(state.monitoring?.providers || [])].sort((left, right) => left.tool_name.localeCompare(right.tool_name));
+    const previous = state.trustProvider || providerSelect.value;
+    providerSelect.innerHTML = `<option value="">Select a provider</option>${providers
+      .map(
+        (provider) => `<option value="${esc(provider.provider_id)}">${esc(provider.tool_name)} · ${esc(provider.provider_id)}</option>`
+      )
+      .join("")}`;
+    if (previous && providers.some((provider) => provider.provider_id === previous)) {
+      providerSelect.value = previous;
+    } else {
+      providerSelect.value = "";
+      state.trustProvider = "";
+    }
+  }
+  const verifySelect = $("#verify-tool");
+  if (verifySelect) {
+    const mappings = state.auditor?.mappings || [];
+    const previous = state.verifyTool || verifySelect.value;
+    verifySelect.innerHTML = `<option value="">Select a mapped tool</option>${mappings
+      .map((mapping) => {
+        const tool = toolById(mapping.app_tool_id);
+        return `<option value="${esc(mapping.app_tool_id)}">${esc(tool?.name || mapping.app_tool_id)} · ${esc(mapping.catalog_tool_id)}</option>`;
+      })
+      .join("")}`;
+    if (previous && mappings.some((mapping) => mapping.app_tool_id === previous)) {
+      verifySelect.value = previous;
+    } else {
+      verifySelect.value = "";
+      state.verifyTool = "";
+    }
+  }
+  const run = $("#verify-run");
+  const monitor = $("#verify-monitor");
+  const hasMapping = Boolean(state.verifyTool);
+  if (run) run.disabled = !hasMapping;
+  if (monitor) monitor.disabled = !hasMapping;
+}
+
+function renderTrustDetail(payload) {
+  const container = $("#trust-detail");
+  const badge = $("#trust-replay-badge");
+  if (!container) return;
+  if (!payload) {
+    container.innerHTML = `<div class="empty-state inline"><strong>No provider selected</strong><p>Choose a provider to inspect its signals and replay consistency.</p></div>`;
+    if (badge) {
+      badge.className = "badge neutral";
+      badge.textContent = "—";
+    }
+    return;
+  }
+  const stateRow = payload.state || {};
+  const history = payload.history || [];
+  const replay = payload.replay || {};
+  if (badge) {
+    badge.className = `badge ${replay.matches ? "supported" : "contradicted"}`;
+    badge.innerHTML = `${icon(replay.matches ? "check" : "alert")}${replay.matches ? "Replay matches" : "Replay differs"}`;
+  }
+  container.innerHTML = `
+    <div class="trust-detail-grid">
+      <div><span>Current score</span><strong>${formatTrust(stateRow.score)}</strong></div>
+      <div><span>Observed calls</span><strong>${Number(stateRow.calls || 0)}</strong></div>
+      <div><span>Probes</span><strong>${Number(stateRow.probes || 0)}</strong></div>
+      <div><span>Contradictions</span><strong>${Number(stateRow.contradictions || 0)}</strong></div>
+    </div>
+    <div class="replay-line ${replay.matches ? "" : "bad"}">
+      ${icon(replay.matches ? "check-circle" : "alert")}
+      <span>Replayed ${formatTrust(replay.replayed_score)} from ${replay.updates || 0} update${replay.updates === 1 ? "" : "s"} (${formatNumber(replay.replayed_successes || 0, 2)} success / ${formatNumber(replay.replayed_failures || 0, 2)} failure weight). ${replay.matches ? "Ledger and live state agree." : "Ledger replay does not match the live score."}</span>
+    </div>
+    ${
+      history.length
+        ? `<div class="trust-history">${history
+            .slice(0, 12)
+            .map(
+              (row) => `<div class="trust-history-row">
+                <time>${formatDateTime(row.created_at)}</time>
+                <span><strong>${esc(row.signal || "signal")}</strong> · ${row.success ? "success" : "failure"} · weight ${formatNumber(row.weight || 0, 2)} · ${esc(row.source || "")}</span>
+                <strong>${formatTrust(row.score)}</strong>
+              </div>`
+            )
+            .join("")}</div>`
+        : emptyMarkup("No trust signals yet", "This provider has no recorded execution or probe evidence. Its score is the default prior, not an observation.", "clock")
+    }`;
+}
+
+async function loadTrustDetail(providerId) {
+  const container = $("#trust-detail");
+  const badge = $("#trust-replay-badge");
+  if (!providerId) {
+    state.trustProvider = "";
+    renderTrustDetail(null);
+    return;
+  }
+  state.trustProvider = providerId;
+  if (container) container.innerHTML = `<div class="loading-line">${icon("loader")}Loading trust history for ${esc(providerId)}…</div>`;
+  if (badge) {
+    badge.className = "badge neutral";
+    badge.textContent = "…";
+  }
+  try {
+    const payload = await api(`/api/trust/${encodeURIComponent(providerId)}`);
+    renderTrustDetail(payload);
+  } catch (error) {
+    if (container) container.innerHTML = noticeMarkup("error", "Trust history unavailable.", error.message);
+    if (badge) {
+      badge.className = "badge contradicted";
+      badge.textContent = "offline";
+    }
+  }
+}
+
+async function runTrustVerification(mode) {
+  const toolId = state.verifyTool;
+  const output = $("#verify-output");
+  if (!output) return;
+  if (!toolId) {
+    output.className = "auditor-output";
+    output.textContent = "Select a mapped tool first.";
+    return;
+  }
+  const buttons = [$("#verify-run"), $("#verify-monitor")];
+  buttons.forEach((button) => {
+    if (button) button.disabled = true;
+  });
+  output.className = "auditor-output";
+  output.innerHTML = `<span class="loading-line">${icon("loader")}Running ${mode === "monitor" ? "monitor pass" : "verification"} for <code>${esc(toolId)}</code>…</span>`;
+  try {
+    const path = mode === "monitor" ? `/api/auditor/monitor/${encodeURIComponent(toolId)}` : `/api/auditor/verify/${encodeURIComponent(toolId)}`;
+    const payload = await api(`${path}?live=false`, { method: "POST" });
+    output.innerHTML = auditorResultMarkup(payload, mode);
+    toast(`${mode === "monitor" ? "Monitor pass" : "Verification"} complete for ${toolId}.`, "ok");
+    await Promise.allSettled([loadAuditorData(), loadMonitoringData()]);
+    renderTrustCenterData();
+    const provider = (state.monitoring?.providers || []).find((entry) => entry.tool_id === toolId);
+    if (state.trustProvider) await loadTrustDetail(state.trustProvider);
+    else if (provider) await loadTrustDetail(provider.provider_id);
+    if ($("#monitor-metrics")) {
+      state.monitorActivity = monitorEvents();
+      renderMonitor();
+    }
+  } catch (error) {
+    output.innerHTML = noticeMarkup("error", "Auditor request failed.", error.message);
+    toast(`Auditor request failed: ${error.message}`, "bad");
+  } finally {
+    buttons.forEach((button) => {
+      if (button) button.disabled = !state.verifyTool;
+    });
+  }
+}
+
+function renderTrustCenterData() {
+  renderTrustMetrics();
+  renderAuditorOverview();
+  renderTrustLeaderboard();
+  renderKnowledge();
+  renderStagedLedger();
+  renderEvaluations();
+  populateTrustSelectors();
+}
+
+async function selectInitialTrustProvider() {
+  if (state.trustProvider) return;
+  const providers = [...(state.monitoring?.providers || [])].sort((left, right) => {
+    const leftObserved = Number(left.calls || 0) + Number(left.probes || 0);
+    const rightObserved = Number(right.calls || 0) + Number(right.probes || 0);
+    return rightObserved - leftObserved || left.tool_name.localeCompare(right.tool_name);
+  });
+  const candidate = providers[0];
+  if (!candidate) return;
+  const select = $("#trust-provider");
+  if (select) select.value = candidate.provider_id;
+  await loadTrustDetail(candidate.provider_id);
+}
+
+async function refreshTrustCenter() {
+  const button = $("#trust-refresh");
+  if (button) button.disabled = true;
+  try {
+    await Promise.allSettled([
+      loadAuditorData(),
+      loadMonitoringData(),
+      loadKnowledgeData(),
+      loadStagedData(),
+      loadEvaluationsData(),
+    ]);
+    renderTrustCenterData();
+    if (state.trustProvider) await loadTrustDetail(state.trustProvider);
+    else await selectInitialTrustProvider();
+    renderWorkspaceStrip();
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+function initTrustCenter() {
+  $("#trust-refresh")?.addEventListener("click", refreshTrustCenter);
+  $("#verify-tool")?.addEventListener("change", (event) => {
+    state.verifyTool = event.target.value;
+    populateTrustSelectors();
+    const output = $("#verify-output");
+    if (output && !state.verifyTool) {
+      output.className = "auditor-output";
+      output.textContent = "Select a mapped tool to verify its provider claims against live or fixture probes. Verification always establishes a fresh baseline.";
+    }
+  });
+  $("#verify-run")?.addEventListener("click", () => runTrustVerification("verify"));
+  $("#verify-monitor")?.addEventListener("click", () => runTrustVerification("monitor"));
+  $("#trust-provider")?.addEventListener("change", (event) => {
+    loadTrustDetail(event.target.value);
+  });
+  $("#auditor-overview")?.addEventListener("click", (event) => {
+    const link = event.target.closest("[data-open-tool]");
+    if (link) openToolModal(link.dataset.openTool);
+  });
+  renderTrustCenterData();
+  populateTrustSelectors();
+  selectInitialTrustProvider();
+}
+
+/* --------------------------------------------------------------------------
+   Task protocol
+   -------------------------------------------------------------------------- */
+
+const PROTOCOL_KINDS = {
+  TaskRequest: { icon: "play", tone: "neutral", label: "Task" },
+  PlanMessage: { icon: "layers", tone: "neutral", label: "Plan" },
+  CandidateList: { icon: "filter", tone: "neutral", label: "Candidates" },
+  VerifyRequest: { icon: "shield", tone: "warning", label: "Verify" },
+  VerifyResult: { icon: "shield", tone: "supported", label: "Verdict" },
+  ServiceCall: { icon: "arrow-up-right", tone: "neutral", label: "Call" },
+  ServiceResult: { icon: "check", tone: "supported", label: "Result" },
+  Feedback: { icon: "history", tone: "neutral", label: "Feedback" },
+  TrustUpdate: { icon: "activity", tone: "neutral", label: "Trust" },
+  MapResult: { icon: "map", tone: "neutral", label: "Map" },
+  DriftAlert: { icon: "alert", tone: "contradicted", label: "Drift" },
+};
+
+function verificationStatuses(message) {
+  const overall = message.overall;
+  if (overall && typeof overall === "object" && !Array.isArray(overall)) {
+    return Object.values(overall).map((value) => String(value || "Unverified"));
+  }
+  if (Array.isArray(overall)) return overall.map((value) => String(value || "Unverified"));
+  return overall ? [String(overall)] : [];
+}
+
+function verificationLabelCount(message) {
+  const labels = message.labels;
+  if (Array.isArray(labels)) return labels.length;
+  if (labels && typeof labels === "object") {
+    return Object.values(labels).reduce(
+      (total, records) => total + (Array.isArray(records) ? records.length : 0),
+      0
+    );
+  }
+  return 0;
+}
+
+function protocolSummary(message) {
+  const kind = String(message.kind || "Message");
+  if (kind === "TaskRequest") return truncate(message.task || "Task submitted", 160);
+  if (kind === "PlanMessage") {
+    const steps = message.plan?.steps || message.steps || [];
+    return `${steps.length} step${steps.length === 1 ? "" : "s"} planned`;
+  }
+  if (kind === "CandidateList") return `${(message.candidates || []).length} candidates · ${message.capability || "capability"}`;
+  if (kind === "VerifyRequest") return `${(message.candidates || []).length} candidates for ${message.subgoal_id || "subgoal"}`;
+  if (kind === "VerifyResult") {
+    const statuses = verificationStatuses(message);
+    const tallies = statuses.reduce((counts, status) => {
+      const key = status.toLowerCase();
+      counts[key] = (counts[key] || 0) + 1;
+      return counts;
+    }, {});
+    const outcome = Object.entries(tallies)
+      .map(([status, count]) => `${count} ${status}`)
+      .join(" · ");
+    const labelCount = verificationLabelCount(message);
+    const drift = (message.drift_alerts || []).length;
+    return `${statuses.length} candidate${statuses.length === 1 ? "" : "s"}${outcome ? ` · ${outcome}` : ""} · ${labelCount} claim label${labelCount === 1 ? "" : "s"} · ${drift} drift alert${drift === 1 ? "" : "s"}`;
+  }
+  if (kind === "ServiceCall") {
+    const params = Object.keys(message.params || {});
+    return `${message.tool_id || "tool"} · ${params.length} parameter${params.length === 1 ? "" : "s"} bound`;
+  }
+  if (kind === "ServiceResult") {
+    return `${message.tool_id || "tool"} · ${message.status || "unknown"} · ${formatNumber(message.latency_ms || 0, 1)} ms${message.cached ? " · cache hit" : ""}${message.error ? ` · ${message.error}` : ""}`;
+  }
+  if (kind === "TrustUpdate") {
+    return `${message.provider_id || "provider"} · ${message.signal || "signal"} · ${message.success ? "success" : "failure"} · weight ${formatNumber(message.weight || 0, 2)}`;
+  }
+  if (kind === "Feedback") {
+    return `${message.tool_id || "tool"} · ${message.outcome || "unknown"} · schema ${message.schema_valid ? "valid" : "invalid"}`;
+  }
+  if (kind === "MapResult") {
+    return `${message.tool_id || "tool"} · ${(message.violations || []).length} violation${(message.violations || []).length === 1 ? "" : "s"}`;
+  }
+  if (kind === "DriftAlert") return `${message.tool_id || "tool"} · ${message.severity || "high"} · ${(message.reasons || []).join("; ") || "drift detected"}`;
+  return `${message.sender || "sender"} → ${message.recipient || "recipient"}`;
+}
+
+function protocolTone(message) {
+  if (message.kind === "ServiceResult") return message.status === "success" ? "supported" : "contradicted";
+  if (message.kind === "VerifyResult") {
+    const statuses = verificationStatuses(message).map((status) => status.toLowerCase());
+    if (!statuses.length) return "neutral";
+    const passed = statuses.every((status) => status === "verified" || status === "supported");
+    const failed = statuses.every((status) => status === "unsupported" || status === "contradicted");
+    return passed ? "supported" : failed ? "contradicted" : "warning";
+  }
+  if (message.kind === "Feedback") return message.outcome === "success" ? "supported" : "contradicted";
+  if (message.kind === "TrustUpdate") return message.success ? "supported" : "contradicted";
+  if (message.kind === "DriftAlert") return "contradicted";
+  return PROTOCOL_KINDS[message.kind]?.tone || "neutral";
+}
+
+function renderProtocolMessages(messages) {
+  const body = $("#protocol-body");
+  const count = $("#protocol-count");
+  if (!body) return;
+  if (!messages || !messages.length) {
+    if (count) count.textContent = "No messages";
+    body.className = "empty-state inline";
+    body.innerHTML = `${icon("layers")}<strong>No protocol messages</strong><p>Run a task to inspect every request and response envelope.</p>`;
+    return;
+  }
+  if (count) count.textContent = `${messages.length} message${messages.length === 1 ? "" : "s"}`;
+  body.className = "";
+  body.innerHTML = `<div class="protocol-list">${messages
+    .map((message) => {
+      const meta = PROTOCOL_KINDS[message.kind] || { icon: "layers", label: message.kind };
+      return `<div class="protocol-message">
+        <time>${formatTime(message.timestamp)}</time>
+        <span class="message-flow">${esc(message.sender || "?")}<svg><use href="#i-arrow-up-right"></use></svg>${esc(message.recipient || "?")}</span>
+        <div class="message-summary"><span class="mono">${esc(meta.label)}</span> ${esc(protocolSummary(message))}
+          <details><summary>Envelope</summary><pre>${esc(JSON.stringify(message, null, 2))}</pre></details>
+        </div>
+        <span class="badge ${protocolTone(message)}">${esc(message.kind || "Message")}</span>
+      </div>`;
+    })
+    .join("")}</div>`;
+}
+
+async function loadProtocolMessages(taskId) {
+  const body = $("#protocol-body");
+  const count = $("#protocol-count");
+  if (!body || !taskId) return;
+  state.protocolTaskId = taskId;
+  body.className = "";
+  body.innerHTML = `<div class="loading-line">${icon("loader")}Loading task protocol…</div>`;
+  if (count) count.textContent = "Loading…";
+  try {
+    const data = await api(`/api/tasks/${encodeURIComponent(taskId)}/messages`);
+    state.protocolMessages = data.messages || [];
+    state.protocolError = null;
+    renderProtocolMessages(state.protocolMessages);
+  } catch (error) {
+    state.protocolMessages = null;
+    state.protocolError = error.message;
+    if (count) count.textContent = "Unavailable";
+    body.className = "";
+    body.innerHTML = noticeMarkup("error", "Task protocol unavailable.", error.message);
+  }
+}
+
+function bindProtocol() {
+  $("#protocol-refresh")?.addEventListener("click", () => {
+    if (!state.protocolTaskId) {
+      toast("Run a task to inspect its protocol messages.", "bad");
+      return;
+    }
+    loadProtocolMessages(state.protocolTaskId);
   });
 }
 
@@ -2014,18 +3657,28 @@ async function bootstrap() {
   bindSidebar();
   bindWindowControls();
   bindModals();
-  bindGlobalSearch();
+  bindPalette();
   bindTrace();
   bindDocuments();
   bindOnboarding();
-  await Promise.allSettled([loadHealth(), loadToolsData(), loadOntologyData(), loadMonitoringData()]);
+  bindProtocol();
+  await Promise.allSettled([
+    loadHealth(),
+    loadToolsData(),
+    loadOntologyData(),
+    loadMonitoringData(),
+    loadAuditorData(),
+  ]);
   if (state.page === "dashboard") initDashboard();
   if (state.page === "marketplace") initMarketplace();
   if (state.page === "monitor") {
     await loadMonitorActivity();
     initMonitor();
   }
-  if (state.page === "library") renderLibrary();
+  if (state.page === "library") {
+    await Promise.allSettled([loadKnowledgeData(), loadStagedData(), loadEvaluationsData()]);
+    initTrustCenter();
+  }
   if (state.page !== "dashboard") bindHistory();
 }
 

@@ -73,10 +73,9 @@ Auditor and monitoring:
 - **Resilience** with backup mirrors for six live providers, an adversarial Fahrenheit weather mock, trust-weighted ranking, a three-state circuit breaker and circuit-breaker substitution.
 - **Trust registry** with Beta-style scoring, signal history, contradiction penalties, demotion and replay verification.
 - **Trace viewer** persisting every decision, provider call, verification result and recovery event in SQLite.
-- **Responsive web interface** for running chains, inspecting candidates, viewing traces, monitoring trust and breakers, staging corrections, uploading documents and injecting demo failures.
+- **Responsive web interface** for running chains, inspecting candidates, viewing traces, monitoring trust and breakers, exploring the Trust Center's Auditor evidence and trust replay, using a keyboard command palette, staging corrections, uploading documents and injecting demo failures.
 - **Evaluation suite** with 50 matching tasks, 15 chain tasks, B1/B2 baseline comparison, 7 substitution cases, 6 trust scenarios, a seven-configuration ablation and a 48-task free-first ranking suite.
-- **52 automated tests**, Ruff checks and GitHub Actions CI.
-- **43 integration tests** for the bridge between the application and the knowledge layer.
+- **261 automated tests** across the merged application, knowledge-layer, Auditor and bridge suites, including 43 integration tests for the application/knowledge-layer bridge, plus Ruff checks and GitHub Actions CI.
 
 ### Auditor and Monitoring
 
@@ -230,12 +229,14 @@ AB_REQUIRE_KNOWN_LICENCE=false
 
 1. Run the first example: **Weather + currency**.
 2. Inspect the ranked candidates, claim badges, selected tools and the weather/currency chain.
-3. Open **Agent trace** and expand an event to see its stored inputs and outputs.
-4. Open **Self-healing monitor**, click **Fail next weather call**, then run the weather example again.
-5. The primary weather provider fails, the breaker records the failure, the backup mirror executes, and the trace shows `substitution_succeeded`.
-6. Click **Simulate drift**, then run the task again. The backup is selected up front because the primary link is open.
-7. Open the document icon in the top bar, upload a TXT/MD/CSV/PDF/DOCX file, and ask a grounded question through the Client.
-8. Open **Service marketplace**, open the adversarial mock, and stage an ontology correction from its tool modal.
+3. Open **Agent trace** and expand an event to see its stored inputs and outputs. The **Task protocol** card below it shows the same run as typed envelopes.
+4. Press **Ctrl/Cmd+K** and search for a page or tool. Open **Trust Center** from the palette.
+5. In the Trust Center, select a mapped tool under **Verification console**, click **Verify now**, then inspect the **Trust history** replay below. The staging ledger and evaluation reports are on the same page.
+6. Open **Self-healing monitor**, click **Fail next weather call**, then run the weather example again.
+7. The primary weather provider fails, the breaker records the failure, the backup mirror executes, and the trace shows `substitution_succeeded`.
+8. Click **Simulate drift**, then run the task again. The backup is selected up front because the primary link is open.
+9. Open the document icon in the top bar, upload a TXT/MD/CSV/PDF/DOCX file, and ask a grounded question through the Client.
+10. Open **Service marketplace**, open the adversarial mock, and stage an ontology correction from its tool modal.
 
 ## Architecture
 
@@ -529,6 +530,7 @@ graph, the knowledge-backed Mapper and the wiring of the backends.
 | `GET /api/knowledge` | The loaded RDF knowledge layer: graph counts, concepts, tools and artifact paths |
 | `POST /api/documents` | Upload a document |
 | `POST /api/corrections` | Stage an ontology-checked correction |
+| `GET /api/staged` | Corrections and listings currently in the Mapper staging ledger |
 | `POST /api/listings` | Ingest a new service listing |
 | `POST /api/baselines/{b1,b2}` | Run a baseline |
 | `POST /api/demo/fail-next/{tool}` | Schedule a provider failure |

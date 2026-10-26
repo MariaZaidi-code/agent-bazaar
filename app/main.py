@@ -24,6 +24,10 @@ from app.schemas import (
 from app.services import AppServices, build_services
 
 WEB_DIR = Path(__file__).resolve().parent / "web"
+STATIC_DIR = WEB_DIR / "static"
+ASSET_VERSION = str(
+    int(max((STATIC_DIR / name).stat().st_mtime for name in ("styles.css", "premium.css", "app.js")))
+)
 templates = Jinja2Templates(directory=str(WEB_DIR / "templates"))
 
 
@@ -58,6 +62,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             name="index.html",
             context={
                 "version": __version__,
+                "asset_version": ASSET_VERSION,
                 "page": page,
                 "page_title": title,
             },
@@ -81,7 +86,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @application.get("/library", response_class=HTMLResponse)
     async def library(request: Request) -> HTMLResponse:
-        return render_page(request, "library", "Interface library")
+        return render_page(request, "library", "Trust Center")
 
     @application.get("/favicon.ico")
     async def favicon() -> Response:
