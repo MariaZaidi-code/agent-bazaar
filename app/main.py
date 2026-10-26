@@ -57,7 +57,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return request.app.state.services
 
     def render_page(request: Request, page: str, title: str) -> HTMLResponse:
-        return templates.TemplateResponse(
+        response = templates.TemplateResponse(
             request=request,
             name="index.html",
             context={
@@ -67,6 +67,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "page_title": title,
             },
         )
+        response.headers["Cache-Control"] = "no-store, max-age=0"
+        return response
 
     @application.get("/", response_class=HTMLResponse)
     async def index(request: Request) -> HTMLResponse:
