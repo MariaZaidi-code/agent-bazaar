@@ -1,0 +1,69 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Auditor: Demo",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "agent_bazaar_auditor",
+      "args": [
+        "demo"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Auditor: Evaluate",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "agent_bazaar_auditor",
+      "args": [
+        "evaluate"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Auditor: Serve API with mocks",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "agent_bazaar_auditor",
+      "args": [
+        "serve",
+        "--mock"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Auditor: Verify Open-Meteo offline",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "agent_bazaar_auditor",
+      "args": [
+        "verify",
+        "open-meteo",
+        "--no-persist"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Pytest: Current file",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": [
+        "${file}",
+        "-q"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": false
+    }
+  ]
+}

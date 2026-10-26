@@ -1,3 +1,4 @@
+# Python
 __pycache__/
 *.py[cod]
 *.egg-info/
@@ -12,6 +13,7 @@ venv/
 config/settings.yaml
 .pytest_cache/
 .coverage
+coverage.xml
 htmlcov/
 .mypy_cache/
 .ruff_cache/
@@ -38,8 +40,16 @@ reports/*
 !reports/.gitkeep
 !reports/*.json
 
+# Auditor runtime artifacts: keep the checked-in datasets, ignore generated
+# probes, baselines, ledgers and reports.
+.cache/
+outputs/*
+!outputs/.gitkeep
+live_probe_*.json
+
 *.log
 .DS_Store
 Thumbs.db
+*.swp
 .vscode/
 .idea/

@@ -4,10 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-bazaar"
-version = "0.1.0"
+version = "0.2.0"
 description = "Agent Bazaar: ontology- and knowledge-graph-driven multi-agent system"
-requires-python = ">=3.10"
 readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
 dependencies = [
     "pydantic>=2.5",
     "rdflib>=7.0",
@@ -27,7 +28,15 @@ dependencies = [
 
 [project.optional-dependencies]
 embeddings = ["sentence-transformers>=2.5"]
-dev = ["pytest>=8.0", "pytest-cov>=5.0", "pytest-asyncio>=0.24,<1.0", "ruff>=0.7,<1.0"]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pytest-asyncio>=0.24,<1.0",
+    "ruff>=0.7,<1.0",
+]
+
+[project.scripts]
+agent-bazaar-auditor = "agent_bazaar_auditor.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -41,8 +50,20 @@ filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.ruff]
 line-length = 120
-target-version = "py310"
+target-version = "py311"
+extend-exclude = [".venv", ".cache", "outputs", "data"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 ignore = ["B008"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/agent_bazaar_auditor/**/*.py" = ["E501"]
+"tests/test_auditor_api.py" = ["E501"]
+"tests/test_auditor_evaluation.py" = ["E501"]
+"tests/test_claims.py" = ["E501"]
+"tests/test_cli.py" = ["E501"]
+"tests/test_decision.py" = ["E501"]
+"tests/test_drift.py" = ["E501"]
+"tests/test_probes.py" = ["E501"]
+"tests/test_trust_scheduler.py" = ["E501"]
