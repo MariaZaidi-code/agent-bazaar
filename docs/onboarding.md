@@ -7,7 +7,7 @@ It assumes Windows PowerShell; commands are equivalent on other shells.
 ## 1. Prerequisites
 
 - Git.
-- Python 3.10 or newer (3.11 is the development target).
+- Python 3.11 or newer (3.11 and 3.12 are the development targets).
 - No API key is needed for the offline path.
 - An API key is needed only for LLM ontology generation or LLM mapping. The
   example configuration uses Groq; if your local configuration selects Gemini,
@@ -175,20 +175,15 @@ small review run overwrites `data/out/logs/ontology_build.json` and
 python -m pytest
 ```
 
-Expected: 223 tests collected - 128 knowledge-layer, 52 application and 43
-integration. The suite covers messages, ingestion, ontology generation, units,
-validation, graph store and queries, the quality profiles and offerings,
-vectors, Mapper rules/repair/staging, the corpus sources and the extraction
-rules, the ranking policy and the ranking evaluation, evaluation metrics, and
+Expected: 261 tests collected - 130 knowledge-layer, 50 application, 43
+integration, 32 Auditor and 6 Auditor bridge tests. The suite covers messages,
+ingestion, ontology generation, units, validation, graph store and queries, the
+quality profiles and offerings, vectors, Mapper rules/repair/staging, the corpus
+sources and the extraction rules, the ranking policy and the ranking evaluation,
+evaluation metrics, claim verification, probes, drift detection and trust, and
 the end-to-end seed path.
 
-On the current checkout one test fails:
-`tests/test_kg_quality.py::test_executable_tools_lists_only_free_keyless_tools`.
-The test expects the `executable_tools()` query to exclude a free keyless tool
-whose licence is unknown, while the query only requires free and keyless. The
-disagreement is recorded in
-[decisions.md](decisions.md#known-limitations-and-open-items); it is not a
-regression of the onboarding path.
+The whole suite passes on the current checkout.
 
 Check the artifacts directly:
 

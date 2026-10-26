@@ -198,7 +198,7 @@ Point at four lines:
 3. IPify stays `Supported` during an outage.
 4. Nominatim is caught by the embedding detector, not the rule detector.
 
-Then show the headline evaluation table in `docs/EVALUATION.md`.
+Then show the headline evaluation table in [the Auditor evaluation](evaluation.md).
 
 ## Troubleshooting
 

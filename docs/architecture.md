@@ -150,14 +150,21 @@ Mirrors exist for weather, geocoding, currency, holidays, country facts and arXi
 
 ## Interface
 
-The web UI is intentionally dependency-free vanilla JS. It talks only to documented HTTP endpoints. It renders:
+The web UI is intentionally dependency-free vanilla JS. It talks only to documented HTTP endpoints. The shell has four page routes: the workflow dashboard, the service marketplace, the self-healing monitor and the interface library. It renders:
 
-- the answer and its evidence warnings;
+- the answer and its evidence warnings, with result cards for terminal chain steps;
 - ranked candidates with relevance, trust, claim badges, breaker state and reasons;
 - chain steps with link checks, bindings, latency, provider source and raw output;
-- the trace timeline with expandable event data;
-- trust and breaker tables plus drift alerts;
-- tool catalogue, corrections, uploads and document questions.
+- the trace timeline with grouped, expandable event data;
+- trust and breaker tables, drift alerts, the Auditor mode and catalogue coverage;
+- marketplace cards and a tool modal with pricing tier, access requirement,
+  price, rating, documentation quality, mapping coverage and the reason a tool
+  is not executable;
+- corrections, uploads and document questions.
+
+The marketplace supports a "Free first" sort that follows the ranking policy's
+tier order (`free`, `freemium`, `paid`, `unknown`) and then trust. `frontend-preview/`
+is a standalone, mock-data design snapshot; the served interface is `app/web/`.
 
 ## Persistence
 

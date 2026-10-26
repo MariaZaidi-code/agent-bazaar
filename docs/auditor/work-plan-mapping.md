@@ -95,11 +95,11 @@ Status: **implemented standalone**. The long-running daemon is not part of the C
 - Trust experiment with 5 honest and 5 bad providers.
 - Claim latency and token-use reporting; offline token use is zero.
 
-Status: **implemented**. See `docs/EVALUATION.md` and `outputs/reports/`.
+Status: **implemented**. See [the Auditor evaluation](evaluation.md) and `outputs/reports/`.
 
 ### 8. Documentation
 
-Message schemas, probe definitions, mock control, CLI, API, architecture, evaluation, and setup are documented. The mock control interface is documented in `docs/PROTOCOL.md` and `mocks/registry.py`.
+Message schemas, probe definitions, mock control, CLI, API, architecture, evaluation, and setup are documented. The mock control interface is documented in [the protocol](protocol.md) and `mocks/registry.py`.
 
 Status: **implemented**.
 
@@ -107,7 +107,7 @@ Status: **implemented**.
 
 | Week | Planned output | Repository evidence |
 | ---: | --- | --- |
-| 1 | Message drafts, API shortlist | `messages.py`, `tools.py`, `docs/PROTOCOL.md` |
+| 1 | Message drafts, API shortlist | `messages.py`, `tools.py`, [the protocol](protocol.md) |
 | 2 | Probe-eligible list, false-claim design started | 15 definitions, `data/seeded_claims.json` |
 | 3 | First probe definitions, baseline collection started | Full probe definitions; baseline store; synthetic known-good variations |
 | 4 | Extraction prompt v1, full probe list | `LLMClaimExtractor` prompt, 15 definitions |
@@ -143,7 +143,7 @@ This table shows where each planned output now lives. It does not imply that the
 
 | Output | Status |
 | --- | --- |
-| DriftAlert and Claim/Evidence schemas | `messages.py`, `docs/PROTOCOL.md` |
+| DriftAlert and Claim/Evidence schemas | `messages.py`, [the protocol](protocol.md) |
 | Mock provider framework | `mocks/` |
 | Working VerifyRequest/VerifyResult | `auditor.py`, API, CLI |
 | Ground-truth logs for injected changes | Evaluation JSON and scenario dataset |

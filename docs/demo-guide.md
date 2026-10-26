@@ -52,7 +52,7 @@ Talking points:
 
 ## 3. Injected failure and substitution
 
-Open **Monitoring**. Click **Fail next weather call**. The UI schedules one failure and runs the weather/currency demo.
+Open **Self-healing monitor**. Click **Fail next weather call**. The UI schedules one failure for the next weather call; run the weather/currency example again.
 
 Expected behavior:
 
@@ -70,7 +70,7 @@ Talking points:
 
 ## 4. Drift and an open circuit
 
-Click **Inject weather drift**. The Auditor records a high-severity `DriftAlert` and the Client-to-Open-Meteo link is tripped.
+Click **Simulate drift**. The Auditor records a high-severity `DriftAlert` and the Client-to-Open-Meteo link is tripped.
 
 Run the weather task again.
 
@@ -87,14 +87,9 @@ Talking points:
 
 ## 5. Trust registry
 
-Still in **Monitoring**, inspect:
-
-- provider trust scores and call counts;
-- breaker states;
-- drift alerts;
-- the trust detail endpoint.
-
-Optionally open:
+Still in **Self-healing monitor**, inspect the metric cards, the drift feed and
+the recovery log. Trust scores are also shown on the marketplace cards and in
+each tool modal. Optionally open:
 
 ```text
 http://127.0.0.1:8000/api/trust/open-meteo
@@ -108,7 +103,7 @@ Talking points:
 
 ## 6. Document provider
 
-Open **Documents**.
+Open the document icon in the top bar.
 
 Upload a small `.txt` file such as:
 
@@ -138,11 +133,13 @@ Expected answer in the seeded database: students = 8.
 
 The SQL provider is read-only, accepts only safe query templates, and returns a table plus the executed SQL. This is the provider that intentionally has no substitute, so an injected failure produces a clear failure rather than a fake recovery.
 
-## 8. Tool library and correction staging
+## 8. Service marketplace and correction staging
 
-Open **Tool library**.
+Open **Service marketplace**.
 
-- The catalogue shows capability, validation state, claim label and trust.
+- The cards show capability, validation state, claim label, trust, pricing tier
+  and access requirement; the tool modal adds rating, documentation quality,
+  mapping coverage and the executability reason.
 - Select the adversarial Fahrenheit mock.
 - Submit a correction that normalizes `Temperature` from `F` to `C`.
 - The correction passes ontology checks and is staged.
@@ -165,7 +162,7 @@ Show `reports/summary.json` and `reports/matching.json`. Mention that the report
 
 ## 10. Reset
 
-Click **Reset demo state** in Monitoring. This clears trust, breakers, drift alerts, mapper staging, provider failure overrides and cache.
+Click **Reset demo** in the monitor header. This clears trust, breakers, drift alerts, mapper staging, provider failure overrides and cache.
 
 ## Troubleshooting
 
@@ -176,5 +173,5 @@ Click **Reset demo state** in Monitoring. This clears trust, breakers, drift ale
 | Port 8000 busy | Run uvicorn on another port |
 | Blank UI styling | Check `/static/styles.css` returns 200 |
 | Live mode slow or offline | Set `AB_OFFLINE_MODE=true` |
-| Old state after experiments | Click **Reset demo state** or delete `data/runtime/` |
+| Old state after experiments | Click **Reset demo** in the monitor header or delete `data/runtime/` |
 | LLM planner not used | Expected; deterministic planning is the default |

@@ -159,10 +159,6 @@ function ratingLabel(tool) {
   return `<span class="mono">rating ${Number(value).toFixed(2)}</span> <span class="muted">(${count} review(s))</span>`;
 }
 
-function scoreBadge(value) {
-  return `<span class="mono">${Number(value || 0).toFixed(2)}</span>`;
-}
-
 function formatNumber(value, digits = 2) {
   const number = Number(value);
   if (!Number.isFinite(number)) return esc(value ?? "-");
@@ -1924,6 +1920,41 @@ function bindMonitor() {
     if (!item) return;
     state.monitorSelected = item.dataset.monitorEvent;
     renderMonitor();
+  });
+  $("#reset-demo")?.addEventListener("click", async () => {
+    const button = $("#reset-demo");
+    if (button) button.disabled = true;
+    try {
+      await api("/api/demo/reset", { method: "POST" });
+      await Promise.allSettled([loadToolsData(), loadMonitoringData()]);
+      await loadMonitorActivity();
+      state.monitorSelected = state.monitorActivity[0]?.key || null;
+      renderMonitor();
+      toast("Demo state reset: trust, breakers, drift, staging and failures cleared.", "ok");
+    } catch (error) {
+      toast(`Could not reset the demo: ${error.message}`, "bad");
+    } finally {
+      if (button) button.disabled = false;
+    }
+  });
+  $("#simulate-failure")?.addEventListener("click", async () => {
+    const button = $("#simulate-failure");
+    if (button) button.disabled = true;
+    try {
+      await api("/api/demo/fail-next/open-meteo-forecast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ times: 1 }),
+      });
+      toast("The next weather call will fail; run the weather example.", "bad");
+      await loadMonitoringData();
+      state.monitorActivity = monitorEvents();
+      renderMonitor();
+    } catch (error) {
+      toast(`Could not schedule the failure: ${error.message}`, "bad");
+    } finally {
+      if (button) button.disabled = false;
+    }
   });
   $("#simulate-drift")?.addEventListener("click", async () => {
     const button = $("#simulate-drift");

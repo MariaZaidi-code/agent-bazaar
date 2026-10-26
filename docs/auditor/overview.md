@@ -2,7 +2,7 @@
 
 Trust and drift auditor for third-party agent tools. It checks tool documentation against live or fixture responses, assigns one of four evidence labels, watches response schemas over time, and publishes trust updates that a client or registry can consume.
 
-This repository is the standalone implementation of the **Auditor and Monitoring Lead** workstream for Agent Bazaar. It is intentionally runnable with the Python standard library only: the default demo and evaluation need no API keys, no paid services, and no network access.
+This package is the standalone implementation of the **Auditor and Monitoring Lead** workstream for Agent Bazaar, merged into the application repository under `src/agent_bazaar_auditor`. It is intentionally runnable with the Python standard library only: the default demo and evaluation need no API keys, no paid services, and no network access.
 
 ## Why this exists
 
@@ -100,7 +100,7 @@ agent-bazaar-auditor evaluate
 | Drift false alarms | 0/30 known-good variations in both modes |
 | Trust experiment | 5/5 bad providers demoted; 0/5 honest providers demoted |
 
-These are controlled results on a curated set. They show that the decision procedure and detectors match the frozen ground truth; they do **not** estimate how often real providers lie in the wild. See [docs/EVALUATION.md](docs/EVALUATION.md) for the full snapshot, confusion matrix, scenario list, and limitations.
+These are controlled results on a curated set. They show that the decision procedure and detectors match the frozen ground truth; they do **not** estimate how often real providers lie in the wild. See [the Auditor evaluation](evaluation.md) for the full snapshot, confusion matrix, scenario list, and limitations.
 
 The claim set is `data/seeded_claims.json`:
 
@@ -130,26 +130,27 @@ The Auditor is deliberately split into contracts rather than one large script. T
 ## Project layout
 
 ```text
-agent-bazaar-auditor/
-├── src/agent_bazaar_auditor/
-│   ├── claims.py            claim extraction, evidence retrieval, judging
-│   ├── probes/              definitions, HTTP harness, cache, checks
-│   ├── drift/               baseline, rules, embeddings, combined detector
-│   ├── mocks/               controllable mock providers and registry
-│   ├── evaluation/          claim, drift, trust, metrics, run-all
-│   ├── auditor.py           end-to-end verification flow
-│   ├── api.py               standard-library HTTP API
-│   ├── trust.py             TrustUpdate feed and Beta-style ledger
-│   ├── scheduler.py         adaptive re-probe scheduling
-│   ├── store.py             JSON/JSONL artifact store
-│   └── cli.py               command-line interface
-├── data/                    frozen claim and drift datasets
-├── docs/                    architecture, protocol, evaluation, setup docs
-├── scripts/                 dataset generation and helper scripts
-├── tests/                   32 pytest tests
-├── .github/workflows/ci.yml GitHub Actions CI
-├── .vscode/                 editor tasks and launch configurations
-└── pyproject.toml           packaging and tool configuration
+src/agent_bazaar_auditor/
+├── claims.py            claim extraction, evidence retrieval, judging
+├── probes/              definitions, HTTP harness, cache, checks
+├── drift/               baseline, rules, embeddings, combined detector
+├── mocks/               controllable mock providers and registry
+├── evaluation/          claim, drift, trust, metrics, run-all
+├── auditor.py           end-to-end verification flow
+├── api.py               standard-library HTTP API
+├── trust.py             TrustUpdate feed and Beta-style ledger
+├── scheduler.py         adaptive re-probe scheduling
+├── store.py             JSON/JSONL artifact store
+└── cli.py               command-line interface
+
+data/                    frozen claim and drift datasets
+docs/auditor/            overview, architecture, protocol, evaluation and setup docs
+scripts/                 dataset generation and helper scripts
+tests/                   Auditor and application pytest suites
+.github/workflows/ci.yml GitHub Actions CI
+.vscode/                 editor tasks and launch configurations
+pyproject.toml           packaging and tool configuration
+```
 ```
 
 ## HTTP API
@@ -224,12 +225,12 @@ These are the hand-off points to the Mapper, Client, and trust registry. Re-mapp
 
 ## Documentation
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [Evaluation](docs/EVALUATION.md)
-- [Protocol and message contracts](docs/PROTOCOL.md)
-- [Work-plan mapping](docs/WORK_PLAN_MAPPING.md)
-- [Demo guide](docs/DEMO_GUIDE.md)
-- [GitHub and VS Code setup](docs/GITHUB_SETUP.md)
+- [Architecture](architecture.md)
+- [Evaluation](evaluation.md)
+- [Protocol and message contracts](protocol.md)
+- [Work-plan mapping](work-plan-mapping.md)
+- [Demo guide](demo-guide.md)
+- [GitHub and VS Code setup](github-setup.md)
 
 ## Limitations
 
@@ -246,4 +247,4 @@ Qaim Hussnain, BS Artificial Intelligence, University of Central Punjab. Auditor
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](../../LICENSE).

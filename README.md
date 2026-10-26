@@ -100,7 +100,7 @@ Auditor and monitoring:
 - **Mapper agent** with retrieval, LLM mapping, SHACL repair, bounded staging of corrections and drift detection.
 - **Pipeline** that takes a service listing through ingestion, mapping and a validated graph write.
 - **Mapping evaluation** helpers for metrics, ablations and learning curves.
-- **128 unit and end-to-end tests**.
+- **130 unit and end-to-end tests**.
 
 ## Quickstart (PowerShell)
 
@@ -121,8 +121,8 @@ python scripts/demo_mapper.py
 python -m pytest
 ```
 
-`python -m pytest` runs the whole merged suite: the 128 knowledge-layer tests, the 52
-application tests, the 43 integration tests, the 32 Auditor tests and the Auditor bridge
+`python -m pytest` runs the whole merged suite: the 130 knowledge-layer tests, the 50
+application tests, the 43 integration tests, the 32 Auditor tests and the 6 Auditor bridge
 tests, 261 in total.
 
 This uses the committed 8-spec seed corpus and the deterministic hashing
@@ -231,11 +231,11 @@ AB_REQUIRE_KNOWN_LICENCE=false
 1. Run the first example: **Weather + currency**.
 2. Inspect the ranked candidates, claim badges, selected tools and the weather/currency chain.
 3. Open **Agent trace** and expand an event to see its stored inputs and outputs.
-4. Open **Monitoring**, click **Fail next weather call**, then run the weather example again.
+4. Open **Self-healing monitor**, click **Fail next weather call**, then run the weather example again.
 5. The primary weather provider fails, the breaker records the failure, the backup mirror executes, and the trace shows `substitution_succeeded`.
-6. Click **Inject weather drift**, then run the task again. The backup is selected up front because the primary link is open.
-7. Open **Documents**, upload a TXT/MD/CSV/PDF/DOCX file, and ask a grounded question through the Client.
-8. Open **Tool library**, submit a correction for the adversarial mock and inspect the staged result.
+6. Click **Simulate drift**, then run the task again. The backup is selected up front because the primary link is open.
+7. Open the document icon in the top bar, upload a TXT/MD/CSV/PDF/DOCX file, and ask a grounded question through the Client.
+8. Open **Service marketplace**, open the adversarial mock, and stage an ontology correction from its tool modal.
 
 ## Architecture
 
@@ -396,13 +396,9 @@ whole application from the knowledge layer, and `local` never loads it.
 `GET /api/knowledge` reports the RDF layer that is loaded: the graph counts, the number
 of concepts, the tools and the paths of the graph and ontology artifacts.
 
-The merged suite holds 223 tests: 128 knowledge-layer tests, 52 application tests and 43
-integration tests. One test fails on the current checkout,
-`tests/test_kg_quality.py::test_executable_tools_lists_only_free_keyless_tools`, because the
-`executable_tools()` query and its own docstring disagree about whether a known licence is
-required; see [the decisions document](docs/decisions.md#known-limitations-and-open-items).
-
-The app-side adapter boundaries and the method-level contracts are documented in
+`python -m pytest` runs 261 tests across the knowledge layer, application, integration,
+Auditor and bridge suites. All 261 pass on the current checkout. The app-side adapter
+boundaries and the method-level contracts are documented in
 [docs/integration.md](docs/integration.md).
 
 ## Uploaded documents
@@ -484,7 +480,7 @@ python scripts\run_eval.py --template
 | Corpus documents with an unknown pricing tier | 89 | `data/specs/manifest.json` |
 | Corpus documents that need a key | 87 | `data/specs/manifest.json` |
 | Keyless corpus documents (the live probe set) | 11 | `data/specs/probe_set.json` |
-| Knowledge-layer tests | 128 | `tests/` |
+| Knowledge-layer tests | 130 | `tests/` |
 
 The graph is built from the 8 seed specs, not all 98 corpus specs. The 916-row
 mapping evaluation template also covers the 8 seed tools and has no gold labels
@@ -501,10 +497,10 @@ yet.
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest
-.\.venv\Scripts\ruff.exe check app tests run.py
+.\.venv\Scripts\ruff.exe check app src tests run.py
 ```
 
-The merged suite holds 261 tests: 128 knowledge-layer tests, 52 application tests, 43
+The merged suite holds 261 tests: 130 knowledge-layer tests, 50 application tests, 43
 integration tests, 32 Auditor tests and 6 Auditor bridge tests. The application tests cover trust updates and replay, breaker
 transitions, ontology links, graph substitutes, all example chains, SQL, document QA,
 injected failure substitution, breaker routing, mapper corrections, baselines, the

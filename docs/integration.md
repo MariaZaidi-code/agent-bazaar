@@ -4,10 +4,12 @@ This document defines the boundaries between the Client/Provider/Interface imple
 
 The runnable adapters are:
 
-- `app/agents/mapper_stub.py`
-- `app/agents/auditor_stub.py`
-- `app/knowledge/ontology.py`
-- `app/knowledge/graph.py`
+- `app/integration/mapper_adapter.py` for the knowledge-backed Mapper, with
+  `app/agents/mapper_stub.py` as the local fallback;
+- `app/agents/auditor_bridge.py` for the real Auditor package, with
+  `app/agents/auditor_stub.py` as the local fallback;
+- `app/knowledge/ontology.py` and `app/knowledge/graph.py` for the local
+  ontology and catalogue.
 
 They are wired in `app/services.py`. Replacing them should not require changes to the Client loop or the browser code if the contracts below are preserved.
 
@@ -19,8 +21,8 @@ They are wired in `app/services.py`. Replacing them should not require changes t
 Ontology
 ToolKnowledgeGraph
 GraphRAGRetriever
-AuditorStub
-MapperStub
+AuditorBridge (or the seeded AuditorStub fallback inside it)
+KnowledgeMapper (or MapperStub for the local backend)
 TaskPlanner
 ClientAgent
 ProviderRegistry
@@ -80,7 +82,25 @@ Clear staged corrections and listings. Called by the demo reset endpoint. It mus
 
 ## Auditor contract
 
-Current class: `AuditorStub`
+Current class: `AuditorBridge` in `app/agents/auditor_bridge.py`. It delegates
+catalogue tools to `src/agent_bazaar_auditor` and keeps `AuditorStub` as the
+deterministic fallback for tools the Auditor catalogue does not model.
+
+The application tool id -> Auditor catalogue id mapping is:
+
+| Application tool | Auditor catalogue tool |
+| --- | --- |
+| `open-meteo-forecast` | `open-meteo` |
+| `frankfurter-currency` | `frankfurter` |
+| `nominatim-geocode` | `nominatim` |
+| `restcountries-facts` | `rest-countries` |
+| `nager-holidays` | `nager-date` |
+| `arxiv-search` | `arxiv` |
+
+The remaining local providers (`university-sql`, `document-qa` and the
+adversarial weather mock) use the seeded labels and injected drift from
+`AuditorStub`. The Auditor is synchronous and owns mutable probe baselines, so
+`AuditorBridge` runs it in a worker thread and serialises calls with one lock.
 
 ### `async verify(task_id, subgoal_id, candidates, correlation_id) -> VerifyResultMessage`
 
@@ -107,7 +127,11 @@ The Client uses `overall` to penalize contradicted candidates and optionally exc
 
 ### `inject_drift(tool_id, reason) -> DriftAlertMessage | None`
 
-Demo-only injection. A real Auditor can keep this method or replace it with a test hook. It must:
+Demo-only injection. For a catalogue tool the bridge establishes a healthy
+baseline, applies the Auditor mock provider's `rename_field` behaviour, runs
+`monitor_tool` and returns the first real drift alert. If the fixture cannot
+drift, or the tool is local-only, the seeded `AuditorStub` hook is used. It
+must:
 
 - create a high-severity drift alert;
 - record a contradiction in the trust registry;
@@ -115,15 +139,34 @@ Demo-only injection. A real Auditor can keep this method or replace it with a te
 
 ### `alerts() -> list[DriftAlertMessage]`
 
-Return active drift alerts for the monitoring endpoint.
+Return active drift alerts for the monitoring endpoint. The bridge merges the
+Auditor's converted alerts with the seeded fallback alerts.
 
 ### `clear_drift(tool_id) -> bool` and `reset() -> None`
 
-Support demo cleanup. `reset()` must not delete persisted trust history unless explicitly intended.
+Support demo cleanup. `reset()` clears the bridge's alerts, the Auditor mock
+registry, baselines and its trust ledger; the demo reset route intends this.
+It must not delete the application's persisted trust history unless explicitly
+intended.
 
 ### `snapshot() -> list[dict]`
 
-Return serializable alert dictionaries. The current monitoring route uses `alerts()` plus Pydantic serialization.
+Return serializable alert dictionaries. The monitoring route uses this method.
+
+### Application-facing helpers
+
+`AuditorBridge` also exposes the catalogue directly to the interface:
+
+- `overview()` - catalogue tools, probe coverage, app mappings, trust ledger and feed;
+- `verify_tool(tool_id, force_live=False)` - verify one catalogue tool and return both Auditor and app-shaped labels;
+- `monitor_tool(tool_id, force_live=False, establish_baseline=False)` - re-probe one tool and return drift alerts;
+- `trust_payload()` - leaderboard and feed summary;
+- `status()` - mode, catalogue size, mapped tools and alert count.
+
+These back `GET /api/auditor`, `GET /api/auditor/trust`,
+`POST /api/auditor/verify/{tool_id}` and
+`POST /api/auditor/monitor/{tool_id}`. Add `?live=true` to a verify or monitor
+request to force a live probe for that call.
 
 ## Knowledge graph contract
 

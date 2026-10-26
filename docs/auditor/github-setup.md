@@ -168,7 +168,7 @@ python -m pytest -q
 python -m agent_bazaar_auditor evaluate
 ```
 
-The evaluation does not use the network. It writes reports under `outputs/reports/`, which remains gitignored. Commit documentation updates to `docs/EVALUATION.md` when the numbers change intentionally.
+The evaluation does not use the network. It writes reports under `outputs/reports/`, which remains gitignored. Commit documentation updates to [the Auditor evaluation](evaluation.md) when the numbers change intentionally.
 
 ## Publish checklist
 

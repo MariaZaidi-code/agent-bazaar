@@ -637,13 +637,12 @@ see the threats to validity in
 - **The knowledge-layer executability check does not require a licence by
   default.** `kg.quality.is_executable()` and the `executable_tools()` query
   treat a free keyless tool as executable even when its licence is unknown,
-  because `require_known_licence` defaults to `False`; the Client policy has
-  the same default, but the query's own docstring says "free, keyless and with
-  a known licence". The two readings differ, and
+  because `require_known_licence` defaults to `False`. The Client policy uses
+  the same default. The query's docstring and
   `tests/test_kg_quality.py::test_executable_tools_lists_only_free_keyless_tools`
-  fails on the current checkout because it expects the stricter reading.
-  Aligning the query with its docstring, or the docstring with the code, is
-  an open decision; the documentation here states the code's behaviour.
+  now both describe that behaviour: a free, keyless tool with an unknown
+  licence is executable, while a paid or keyed tool is not. Callers that need
+  the stricter reading pass `require_known_licence=True`.
 - **The pricing tier is a partition, so a wrongly classified tool is badly
   placed.** A free tool classified as `unknown` sits behind every classified
   tool; a paid tool misread as free would be executed. The curated override

@@ -624,6 +624,81 @@ tools from the live probe set.
 `data/specs/probe_set.json`, `src/agent_bazaar/ingestion/listing_metadata.py`,
 `tests/test_corpus_sources.py`.
 
+## ADR-022: Adopt the standalone Auditor behind one bridge
+
+**Context.** The Auditor branch was built from the initial commit as a
+standalone package with its own `pyproject.toml`, README, docs and tests. It
+shares almost no files with the Client/Provider/Interface stack, and several of
+its paths collide on a case-insensitive Windows checkout with the existing
+`docs/architecture.md`, `docs/evaluation.md` and `tests/test_api.py`. The
+Client was written against `AuditorStub`, whose contract returns seeded claim
+labels and application-shaped drift messages.
+
+**Decision.** Keep the Auditor as a first-class package under
+`src/agent_bazaar_auditor`, install it from the one root `pyproject.toml`, and
+move its long-form documents to `docs/auditor/` with unique test module names.
+Adapt it through `AuditorBridge` instead of rewriting it into the app. The
+bridge maps the six application catalogue tools to Auditor catalogue ids, runs
+the synchronous Auditor in a worker thread behind one lock, converts
+`ClaimAssessment` and `DriftAlert` objects into the existing `ClaimVerification`
+and `DriftAlertMessage` contracts, and records drift as a trust contradiction.
+The local SQL, document and adversarial weather providers keep the seeded
+`AuditorStub` because the Auditor catalogue does not model them. The
+application defaults to fixture mode and optional persistence.
+
+**Alternatives.** Reimplement the Auditor inside `app` (rejected: duplicates a
+verified implementation and loses its evaluation). Replace the application
+catalogue with the Auditor's 15 tools (rejected: the local SQL, document and
+adversarial providers are part of the application's demonstration and
+substitution tests). Run the synchronous Auditor directly in the event loop
+(rejected: it performs file I/O and owns mutable baselines). Keep the Auditor
+as a separate repository (rejected: the brief asks for one integrated
+deliverable and one test command).
+
+**Consequences.** The merged suite has one Python requirement (`>=3.11`), one
+dependency set and one CLI entry point (`agent-bazaar-auditor`). Six of the
+fifteen catalogue tools are verified by the real Auditor; the three local-only
+providers retain deterministic labels, which is visible in the UI and the
+bridge tests. The Auditor's own trust ledger and the application trust
+registry remain separate but linked by contradiction updates. `demo/reset`
+clears both so repeated demonstrations are reproducible.
+
+**Evidence.** `app/agents/auditor_bridge.py`, `app/services.py`,
+`app/main.py` (`/api/auditor/*`), `tests/test_auditor_bridge.py`,
+`docs/auditor/overview.md`, `docs/architecture.md`.
+
+## ADR-023: Use the redesigned console as the host for the free-first data
+
+**Context.** The Maria branch added pricing tier, access requirement, rating,
+documentation quality and executability to the tool payload, and rendered them
+in the original table-based console. The Rameen branch replaced that console
+with a Figma-matched shell and a different rendering model (marketplace cards,
+tool modal and monitor timeline). Merging the JavaScript produced one large
+conflict because both branches had rewritten the same result and tool renderers.
+
+**Decision.** Take the redesigned shell as the base and port the free-first
+decisions into it rather than keeping two interfaces. Marketplace cards and the
+tool modal show tier, access, rating, documentation quality, mapping coverage
+and the reason a tool is not executable. The catalogue gains a "Free first"
+tier sort, and the monitor metrics show the Auditor mode and the number of
+mapped catalogue tools. The old table renderers are removed because the new
+shell does not contain their DOM.
+
+**Alternatives.** Keep the old console (rejected: discards the redesign the
+team agreed to ship). Merge both consoles behind a toggle (rejected: two
+front ends to test and document). Render the free-first data only in the API
+(rejected: the interface must explain why a candidate cannot execute).
+
+**Consequences.** There is one browser interface, and every tool view explains
+pricing, access and executability. `frontend-preview/` remains a design-only
+snapshot with mock data; it is not served by FastAPI and must be updated by
+hand if the console changes. The browser layer has no automated DOM test, so a
+JavaScript syntax check and the HTTP smoke tests are the current guardrails.
+
+**Evidence.** `app/web/static/app.js`, `app/web/static/styles.css`,
+`app/web/templates/index.html`, `frontend-preview/`,
+`tests/test_api.py::test_health_and_interface`.
+
 ## Known limitations and open items
 
 | Item | Impact | Current status / next action |
@@ -652,8 +727,10 @@ tools from the live probe set.
 | Only 11 corpus documents are keyless | The live probe set is one tool short of the 12 to 15 the proposal asks for | Add keyless documents to the corpus; no extraction rule can close the gap |
 | No rating exists for any corpus tool | The rating factor is neutral for every corpus tool; the application's catalogue does carry curated ratings | Feed the trust registry's aggregate into `ab:ratingValue` and `ab:ratingCount` |
 | Every `data/overrides/pricing.yaml` entry has an empty `reviewer` | The licence facts are recorded but not approved; `licence_reviewed_at` is empty throughout the manifest | Name a reviewer per entry and re-check the provider's terms |
-| `kg.quality.is_executable()` does not require a known licence by default | The `executable_tools()` query and its docstring disagree, and `tests/test_kg_quality.py::test_executable_tools_lists_only_free_keyless_tools` fails on the current checkout | Decide whether the knowledge layer requires a licence or not, then align the code, the docstring and the test |
-| `docs/architecture.md` still describes the score as `relevance x trust` | The document predates the free-first policy | Update the ranking section to the tier partition and the quality factors |
+| Only six of the Auditor's 15 catalogue tools are mapped to application providers | The local SQL, document and adversarial weather providers still use seeded labels rather than live Auditor evidence | Add catalogue definitions for them or document the fallback in every evidence view |
+| The Auditor runs in fixture mode by default | No live provider is contacted unless `AB_AUDITOR_LIVE=true` or `?live=true` is passed | Enable live probes for a verification run when a keyless provider is reachable |
+| `frontend-preview/` is a design-only copy | The standalone preview can drift from `app/web` | Regenerate or remove it when the console changes |
+| The browser console has no automated DOM test | A runtime JavaScript error would only be caught by the HTTP smoke test or manually | Add a headless browser test for the four page routes |
 
 ## References
 
