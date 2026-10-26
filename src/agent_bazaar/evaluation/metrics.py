@@ -52,14 +52,14 @@ def compute_accuracy(predicted: list[str], gold: list[str]) -> AccuracyReport:
             micro_f1=0.0,
             labels=[],
         )
-    correct = sum(1 for p, g in zip(normalized_predicted, normalized_gold) if p == g)
+    correct = sum(1 for p, g in zip(normalized_predicted, normalized_gold, strict=True) if p == g)
     labels = sorted(set(normalized_predicted) | set(normalized_gold))
     precisions: list[float] = []
     recalls: list[float] = []
     f1_scores: list[float] = []
     for label in labels:
         true_positives = sum(
-            1 for p, g in zip(normalized_predicted, normalized_gold) if p == label and g == label
+            1 for p, g in zip(normalized_predicted, normalized_gold, strict=True) if p == label and g == label
         )
         predicted_count = sum(1 for p in normalized_predicted if p == label)
         gold_count = sum(1 for g in normalized_gold if g == label)
@@ -88,7 +88,7 @@ def confusion_pairs(predicted: list[str], gold: list[str]) -> list[tuple[str, st
     if len(predicted) != len(gold):
         raise ValueError("predicted and gold must have equal length")
     counts: Counter[tuple[str, str]] = Counter()
-    for prediction, target in zip(predicted, gold):
+    for prediction, target in zip(predicted, gold, strict=True):
         normalized_prediction = normalize_label(prediction)
         normalized_gold = normalize_label(target)
         if normalized_prediction != normalized_gold:
@@ -131,7 +131,7 @@ def surface_accuracy_by_group(
     if not (len(predicted) == len(gold) == len(groups)):
         raise ValueError("predicted, gold and groups must have equal length")
     grouped: dict[str, list[tuple[str, str]]] = {}
-    for prediction, target, group in zip(predicted, gold, groups):
+    for prediction, target, group in zip(predicted, gold, groups, strict=True):
         grouped.setdefault(group, []).append((prediction, target))
     return {
         group: compute_accuracy([pair[0] for pair in pairs], [pair[1] for pair in pairs])

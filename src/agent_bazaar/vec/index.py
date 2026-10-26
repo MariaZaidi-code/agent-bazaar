@@ -5,9 +5,10 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 import numpy as np
 
@@ -100,7 +101,7 @@ class VectorIndex:
         denominators = norms * float(np.linalg.norm(query))
         scores = np.zeros(len(ids), dtype=np.float32)
         np.divide(matrix @ query, denominators, out=scores, where=denominators > 0)
-        ranked = sorted(zip(ids, scores), key=lambda pair: (-float(pair[1]), pair[0]))
+        ranked = sorted(zip(ids, scores, strict=True), key=lambda pair: (-float(pair[1]), pair[0]))
         return [
             SearchHit(
                 id=item_id,

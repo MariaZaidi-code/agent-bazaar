@@ -7,14 +7,14 @@ trace viewer can follow a task end to end (Proposal v1.3 Sections 5.2 and 5.5).
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
-from enum import Enum
+from datetime import UTC, datetime
+from enum import StrEnum
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class AgentRole(str, Enum):
+class AgentRole(StrEnum):
     MAPPER = "mapper"
     AUDITOR = "auditor"
     CLIENT = "client"
@@ -23,7 +23,7 @@ class AgentRole(str, Enum):
     SYSTEM = "system"
 
 
-class FieldMappingStatus(str, Enum):
+class FieldMappingStatus(StrEnum):
     MAPPED = "mapped"
     REPAIRED = "repaired"
     DRIFT_REMAPPED = "drift_remapped"
@@ -35,7 +35,7 @@ class MessageBase(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     id: str = Field(default_factory=lambda: uuid.uuid4().hex)
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     sender: AgentRole = AgentRole.SYSTEM
     correlation_id: str = Field(default_factory=lambda: uuid.uuid4().hex)
 
@@ -48,7 +48,7 @@ def new_message(model: type[MessageBase], **kwargs: Any) -> Any:
     if "id" not in kwargs:
         kwargs["id"] = uuid.uuid4().hex
     if "timestamp" not in kwargs:
-        kwargs["timestamp"] = datetime.now(timezone.utc)
+        kwargs["timestamp"] = datetime.now(UTC)
     return model(**kwargs)
 
 
@@ -142,7 +142,15 @@ class Feedback(MessageBase):
 
 class TrustUpdate(MessageBase):
     tool_id: str
-    outcome: Literal["probe_pass", "probe_fail", "call_success", "call_failure", "schema_valid", "schema_invalid", "rating"]
+    outcome: Literal[
+        "probe_pass",
+        "probe_fail",
+        "call_success",
+        "call_failure",
+        "schema_valid",
+        "schema_invalid",
+        "rating",
+    ]
     weight: float = 1.0
     details: dict[str, Any] = Field(default_factory=dict)
 

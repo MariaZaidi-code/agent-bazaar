@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import re
 from collections import Counter
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
 
@@ -78,7 +79,7 @@ def cohen_kappa(labels_a: list[str], labels_b: list[str]) -> float:
     n = len(labels_a)
     if n == 0:
         return 0.0
-    observed = sum(1 for a, b in zip(labels_a, labels_b) if a == b) / n
+    observed = sum(1 for a, b in zip(labels_a, labels_b, strict=True) if a == b) / n
     expected = _expected_agreement(labels_a, labels_b)
     if expected >= 1.0:
         return 1.0 if observed >= 1.0 else 0.0

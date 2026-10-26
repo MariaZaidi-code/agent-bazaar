@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal, cast
 
@@ -117,7 +117,7 @@ class IngestionUtility:
             metadata["listing"] = extract_listing_metadata(document, spec.tool_id).model_dump()
         spec.metadata = metadata
         if getattr(spec, "retrieved_at", None) is None:
-            spec.retrieved_at = datetime.now(timezone.utc)
+            spec.retrieved_at = datetime.now(UTC)
         return spec
 
     def try_ingest(

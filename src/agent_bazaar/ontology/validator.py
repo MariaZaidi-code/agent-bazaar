@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from pyshacl import validate
@@ -25,7 +25,10 @@ HAVING (COUNT(?concept) > 1)
 
 DUPLICATE_ALIAS_QUERY = """
 SELECT ?value (COUNT(?concept) AS ?count)
-WHERE { ?concept a <https://agent-bazaar.local/ontology#Concept> ; <http://www.w3.org/2004/02/skos/core#altLabel> ?value }
+WHERE {
+  ?concept a <https://agent-bazaar.local/ontology#Concept> ;
+           <http://www.w3.org/2004/02/skos/core#altLabel> ?value
+}
 GROUP BY ?value
 HAVING (COUNT(?concept) > 1)
 """
@@ -33,7 +36,9 @@ HAVING (COUNT(?concept) > 1)
 DUPLICATE_LABEL_MESSAGE = "No duplicate concepts: the same label appears on two concepts."
 DUPLICATE_ALIAS_MESSAGE = "No duplicate concepts: the same alias appears on two concepts."
 UNIT_FAMILY_MESSAGE = "A unit-bearing concept declares exactly one unit family."
-MAPPING_UNIT_MESSAGE = "A unit-bearing concept requires a unit, and the unit must belong to the concept's unit family."
+MAPPING_UNIT_MESSAGE = (
+    "A unit-bearing concept requires a unit, and the unit must belong to the concept's unit family."
+)
 
 
 def load_shapes(path: str | Path | None = None) -> Graph:
@@ -183,6 +188,6 @@ def check_data_node(data_graph: Graph, node, shapes_graph: Graph | None = None) 
 def log_violations(log_path: str | Path, record: dict) -> None:
     path = Path(log_path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    record = {"time": datetime.now(timezone.utc).isoformat(), **record}
+    record = {"time": datetime.now(UTC).isoformat(), **record}
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any, Literal
 from uuid import uuid4
 
@@ -16,20 +16,20 @@ def new_id(prefix: str) -> str:
     return f"{prefix}_{uuid4().hex[:12]}"
 
 
-class ClaimLabel(str, Enum):
+class ClaimLabel(StrEnum):
     verified = "Verified"
     supported = "Supported"
     contradicted = "Contradicted"
     unsupported = "Unsupported"
 
 
-class TaskStatus(str, Enum):
+class TaskStatus(StrEnum):
     completed = "completed"
     partial = "partial"
     failed = "failed"
 
 
-class StepStatus(str, Enum):
+class StepStatus(StrEnum):
     pending = "pending"
     completed = "completed"
     failed = "failed"
@@ -37,7 +37,7 @@ class StepStatus(str, Enum):
     skipped = "skipped"
 
 
-class BreakerStatus(str, Enum):
+class BreakerStatus(StrEnum):
     closed = "closed"
     open = "open"
     half_open = "half-open"

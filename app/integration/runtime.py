@@ -11,8 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from agent_bazaar.config import PathSettings, ensure_directories
-from agent_bazaar.config import Settings as KnowledgeSettings
+from agent_bazaar.config import PathSettings, Settings as KnowledgeSettings, ensure_directories
 from agent_bazaar.ingestion.utility import IngestionUtility
 from agent_bazaar.kg import KgStore
 from agent_bazaar.mapper.agent import MapperAgent

@@ -8,8 +8,8 @@ from functools import lru_cache
 from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import OWL, RDF, RDFS, XSD
 
-from agent_bazaar.models import ConceptInfo
 from agent_bazaar.messages.schema import CorrectionSubmit, FieldMapping, FieldSpec
+from agent_bazaar.models import ConceptInfo
 from agent_bazaar.ontology.ns import AB, TOOL, unit_iri
 from agent_bazaar.ontology.units import family_of
 from agent_bazaar.ontology.validator import ValidationResult, load_shapes, validate_graph
@@ -141,7 +141,7 @@ def validate_mapping_shacl(
     if concept.unit_family:
         graph.add((concept_node, AB.unitFamily, AB[concept.unit_family]))
 
-    digest = hashlib.sha1(f"{mapping.field_path}|{concept.iri}".encode("utf-8")).hexdigest()[:12]
+    digest = hashlib.sha1(f"{mapping.field_path}|{concept.iri}".encode()).hexdigest()[:12]
     mapping_node = AB[f"mapping-{digest}"]
     tool_node = TOOL[f"mapper-{digest}"]
     graph.add((mapping_node, RDF.type, AB.Mapping))

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -22,12 +22,12 @@ class CorrectionEntry(BaseModel):
     corrected_unit: str | None = None
     note: str = ""
     submitted_by: str = ""
-    submitted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    submitted_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     status: str = "promoted"
 
 
 def _correction_item(entry: CorrectionEntry) -> IndexItem:
-    digest = hashlib.sha1(f"{entry.tool_id}|{entry.field_path}".encode("utf-8")).hexdigest()[:12]
+    digest = hashlib.sha1(f"{entry.tool_id}|{entry.field_path}".encode()).hexdigest()[:12]
     return IndexItem(
         id=f"corr-{digest}",
         text=(

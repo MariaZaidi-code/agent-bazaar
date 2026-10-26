@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections.abc import Iterable
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -97,7 +97,7 @@ class KgStore:
         load_existing: bool = True,
         ontology_path: str | Path | None = None,
         graph_path: str | Path | None = None,
-    ) -> "KgStore":
+    ) -> KgStore:
         settings = get_settings()
         graph = upper_with_units()
         ontology_graph = Graph()
@@ -140,7 +140,7 @@ class KgStore:
 
     @staticmethod
     def _mapping_iri(tool_id: str, field_path: str, direction: str) -> URIRef:
-        digest = hashlib.sha1(f"{tool_id}|{field_path}|{direction}".encode("utf-8")).hexdigest()[:12]
+        digest = hashlib.sha1(f"{tool_id}|{field_path}|{direction}".encode()).hexdigest()[:12]
         return AB[f"mapping-{digest}"]
 
     @staticmethod
@@ -184,7 +184,7 @@ class KgStore:
         graph.add((mapping, AB.reason, Literal(field.reason)))
         graph.add((mapping, AB.status, Literal(field.status)))
         graph.add((mapping, AB.attempts, Literal(int(getattr(field, "attempts", 0) or 0), datatype=XSD.integer)))
-        graph.add((mapping, AB.recordedAt, Literal(datetime.now(timezone.utc))))
+        graph.add((mapping, AB.recordedAt, Literal(datetime.now(UTC))))
         graph.add((mapping, AB.recordedBy, Literal(recorded_by)))
         graph.add((mapping, AB.tool, tool))
         graph.add((tool, AB.hasFieldMapping, mapping))
@@ -332,7 +332,7 @@ class KgStore:
         reason = str(details.get("why", ""))
         status = str(details.get("status", "updated"))
         recorded_by = str(details.get("who", "system"))
-        now = Literal(datetime.now(timezone.utc))
+        now = Literal(datetime.now(UTC))
         if mapping is None:
             mapping_direction = direction or "output"
             mapping = self._mapping_iri(tool_id, field_path, mapping_direction)

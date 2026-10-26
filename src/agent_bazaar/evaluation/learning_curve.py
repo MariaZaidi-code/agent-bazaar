@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -108,7 +109,7 @@ def run_learning_curve(
 def curve_to_markdown(result: LearningCurveResult) -> str:
     rows = [
         [count, f"{accuracy:.3f}", f"{f1:.3f}"]
-        for count, accuracy, f1 in zip(result.counts, result.accuracy, result.f1)
+        for count, accuracy, f1 in zip(result.counts, result.accuracy, result.f1, strict=True)
     ]
     return format_markdown_table(["Corrections", "Accuracy", "Macro F1"], rows)
 

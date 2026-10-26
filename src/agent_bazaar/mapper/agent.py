@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from agent_bazaar.config import Settings, get_settings
 from agent_bazaar.ingestion.models import NormalizedSpec, flatten_fields
@@ -286,7 +287,7 @@ class MapperAgent:
                     mapping,
                     problems,
                     self._repair_proposer(request.tool_id),
-                    lambda candidate: self._mapping_problems(
+                    lambda candidate, field=field: self._mapping_problems(
                         candidate,
                         field,
                         resolve_concept(candidate.concept, concepts_by_iri, concept_iris),

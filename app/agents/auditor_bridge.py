@@ -25,7 +25,6 @@ from agent_bazaar_auditor.config import Settings as AuditorSettings
 from agent_bazaar_auditor.enums import Severity as AuditorSeverity
 from agent_bazaar_auditor.mocks.registry import MockRegistry
 from agent_bazaar_auditor.utils import stable_id
-
 from app.agents.auditor_stub import AuditorStub
 from app.core.trust_registry import TrustRegistry
 from app.knowledge.graph import ToolKnowledgeGraph

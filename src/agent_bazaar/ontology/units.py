@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from rdflib import Graph, Literal
 from rdflib.namespace import RDF, RDFS
 
-from agent_bazaar.ontology.ns import AB, UNIT, unit_iri
+from agent_bazaar.ontology.ns import AB, unit_iri
 
 
 @dataclass(frozen=True)
