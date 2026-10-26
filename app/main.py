@@ -52,13 +52,36 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def services(request: Request) -> AppServices:
         return request.app.state.services
 
-    @application.get("/", response_class=HTMLResponse)
-    async def index(request: Request) -> HTMLResponse:
+    def render_page(request: Request, page: str, title: str) -> HTMLResponse:
         return templates.TemplateResponse(
             request=request,
             name="index.html",
-            context={"version": __version__},
+            context={
+                "version": __version__,
+                "page": page,
+                "page_title": title,
+            },
         )
+
+    @application.get("/", response_class=HTMLResponse)
+    async def index(request: Request) -> HTMLResponse:
+        return render_page(request, "dashboard", "Workflow workspace")
+
+    @application.get("/dashboard", response_class=HTMLResponse)
+    async def dashboard(request: Request) -> HTMLResponse:
+        return render_page(request, "dashboard", "Workflow workspace")
+
+    @application.get("/marketplace", response_class=HTMLResponse)
+    async def marketplace(request: Request) -> HTMLResponse:
+        return render_page(request, "marketplace", "Service marketplace")
+
+    @application.get("/monitor", response_class=HTMLResponse)
+    async def monitor(request: Request) -> HTMLResponse:
+        return render_page(request, "monitor", "Self-healing monitor")
+
+    @application.get("/library", response_class=HTMLResponse)
+    async def library(request: Request) -> HTMLResponse:
+        return render_page(request, "library", "Interface library")
 
     @application.get("/favicon.ico")
     async def favicon() -> Response:
@@ -125,6 +148,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 state.breakers.link_key("client", tool.provider_id)
             ).value
             data["validation"] = state.providers.validation.get(tool.id, [])
+            data["auditor_tool_id"] = state.auditor.catalog_tool_id(tool.id) or ""
             payload.append(data)
         return {"tools": payload, "count": len(payload)}
 

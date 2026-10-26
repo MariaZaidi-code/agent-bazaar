@@ -1,252 +1,654 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Agent Bazaar | Client, Provider &amp; Interface</title>
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#090b0e">
+  <title>{{ page_title }} | Agent Bazaar</title>
+  <script>
+    try {
+      const saved = localStorage.getItem("agent-bazaar-theme");
+      if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
+    } catch (error) {}
+  </script>
   <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body>
-  <header class="topbar">
-    <div class="brand">
-      <div class="brand-mark" aria-hidden="true">
-        <span></span><span></span><span></span><span></span>
-      </div>
-      <div>
-        <p class="eyebrow">University of Central Punjab &middot; BS Artificial Intelligence</p>
-        <h1>Agent Bazaar</h1>
-        <p class="subtitle">Find, verify, compose and heal third-party tool chains.</p>
-      </div>
-    </div>
-    <div class="status-stack">
-      <span class="chip chip-mode" id="mode-chip">connecting</span>
-      <span class="chip" id="tool-count">0 tools</span>
-      <span class="chip" id="llm-chip">deterministic</span>
-    </div>
-  </header>
+<body data-page="{{ page }}">
+  <svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.8v12.4c0 .8.9 1.3 1.6.9l9.5-6.2a1 1 0 0 0 0-1.7L9.6 4.9A1 1 0 0 0 8 5.8Z"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4.5 7.8 7.5 4.3 7.5-4.3M12 12.1V21"/></symbol>
+    <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l2.2-6 4.1 12 2.2-6H21"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3.5h8l4 4V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z"/><path d="M14 3.5V8h4M8.5 12h7M8.5 16h5"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 8-8M16 7l2 2M14 9l2 2"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m4.5 12.5 7.5 4.2 7.5-4.2M4.5 16.8 12 21l7.5-4.2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 15.1A8.5 8.5 0 0 1 8.9 4 8.5 8.5 0 1 0 20 15.1Z"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 9a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.5 2.5 0 1 1 4.4 1.6c-.9.8-2 1.3-2 2.9M12 17.2h.01"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M4 5v5h5"/><path d="M5.3 9.2A8 8 0 1 1 4 14"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-square" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.2 4.2L19 7"/></symbol>
+    <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m8 12 2.7 2.7L16.3 9"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 4.3 2.7 18a2 2 0 0 0 1.8 3h15a2 2 0 0 0 1.8-3L13.7 4.3a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+    <symbol id="i-x-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m9 9 6 6M15 9l-6 6"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.7 3 8 7 10 4-2 7-5.3 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><path d="m5 7 4 4-4 4M12 17h7"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 9a7 7 0 0 1 11.5-1.4L20 12M4 12l2.4 4.4A7 7 0 0 0 17.9 15"/></symbol>
+    <symbol id="i-activity" viewBox="0 0 24 24"><path d="M3 12h4l2-5 4 10 2-5h6"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="8" ry="3.2"/><path d="M4 5.5v6c0 1.8 3.6 3.2 8 3.2s8-1.4 8-3.2v-6M4 11.5v6c0 1.8 3.6 3.2 8 3.2s8-1.4 8-3.2v-6"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4-1.4A4.5 4.5 0 0 0 7 18Z"/></symbol>
+    <symbol id="i-coins" viewBox="0 0 24 24"><ellipse cx="9" cy="7" rx="5.5" ry="2.5"/><path d="M3.5 7v4c0 1.4 2.5 2.5 5.5 2.5 1 0 2-.1 2.8-.4M14.5 10.5c0-1-1.3-1.8-3-2M20.5 14.5c0 1.4-2.5 2.5-5.5 2.5S9.5 15.9 9.5 14.5 12 12 15 12s5.5 1.1 5.5 2.5Z"/><path d="M9.5 14.5v4c0 1.4 2.5 2.5 5.5 2.5s5.5-1.1 5.5-2.5v-4"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><path d="m3.5 6 5-2.5 7 2.5 5-2.5v14l-5 2.5-7-2.5-5 2.5V6Z"/><path d="M8.5 3.5v14M15.5 6v14"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20"/></symbol>
+    <symbol id="i-file-text" viewBox="0 0 24 24"><path d="M6 3.5h8l4 4V20H6V3.5Z"/><path d="M14 3.5V8h4M9 12h6M9 15.5h6"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5.2 8.7A2 2 0 0 0 6.5 21h11a2 2 0 0 0 1.7-3.3L14 9V3"/><path d="M7.5 16h9"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+    <symbol id="i-sort" viewBox="0 0 24 24"><path d="M8 5v14M5 8l3-3 3 3M16 19V5M13 16l3 3 3-3"/></symbol>
+    <symbol id="i-loader" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></symbol>
+  </svg>
 
-  <nav class="tabs" aria-label="Workspace sections">
-    <button class="tab active" data-tab="workbench">Workbench</button>
-    <button class="tab" data-tab="trace">Agent trace</button>
-    <button class="tab" data-tab="monitoring">Monitoring</button>
-    <button class="tab" data-tab="library">Tool library</button>
-    <button class="tab" data-tab="documents">Documents</button>
-    <span class="tab-spacer"></span>
-    <span class="role-note">Client, Provider &amp; Interface Lead</span>
-  </nav>
+  <div class="app-shell">
+    <div class="sidebar-scrim" id="sidebar-scrim"></div>
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="/dashboard" aria-label="Agent Bazaar dashboard">
+        <span class="brand-mark"><svg><use href="#i-play"></use></svg></span>
+        <span class="brand-name">Agent Bazaar</span>
+      </a>
 
-  <main>
-    <section class="tab-panel active" id="panel-workbench">
-      <div class="hero panel">
-        <div>
-          <p class="eyebrow">Developer flow</p>
-          <h2>Ask for a validated tool chain</h2>
-          <p class="lede">The Client shortlists with GraphRAG, filters with the ontology, asks the Auditor for claim labels, ranks by trust, checks types and units, then executes through Provider agents.</p>
-        </div>
-        <form id="task-form" class="task-form">
-          <label for="task-input">Task</label>
-          <textarea id="task-input" rows="3" placeholder="What is the temperature in Lahore tomorrow, and what is 200 USD in PKR?" required></textarea>
-          <div class="form-row">
-            <div class="examples" id="examples"></div>
-            <button class="button primary" type="submit" id="run-button">Run chain</button>
+      <button class="workspace-switcher" type="button" id="workspace-switcher">
+        <span class="workspace-avatar">AB</span>
+        <span class="workspace-copy"><strong>Acme Engineering</strong><small>Developer workspace</small></span>
+        <svg><use href="#i-chevron-down"></use></svg>
+      </button>
+
+      <nav class="sidebar-nav" aria-label="Workspace">
+        <p class="nav-label">Workspace</p>
+        <a class="nav-item" data-nav="dashboard" href="/dashboard">
+          <svg><use href="#i-grid"></use></svg><span>Workflow workspace</span>
+        </a>
+        <a class="nav-item" data-nav="marketplace" href="/marketplace">
+          <svg><use href="#i-box"></use></svg><span>Service marketplace</span>
+        </a>
+        <a class="nav-item" data-nav="monitor" href="/monitor">
+          <svg><use href="#i-pulse"></use></svg><span>Self-healing monitor</span>
+        </a>
+
+        <p class="nav-label">Resources</p>
+        <a class="nav-item" href="/docs" target="_blank" rel="noreferrer">
+          <svg><use href="#i-file"></use></svg><span>Documentation</span>
+        </a>
+        <button class="nav-item" type="button" data-open-modal="api-modal">
+          <svg><use href="#i-key"></use></svg><span>API keys</span>
+        </button>
+        <a class="nav-item" data-nav="library" href="/library">
+          <svg><use href="#i-layers"></use></svg><span>Interface library</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+      <section class="environment-card" aria-label="Sandbox environment">
+        <div class="environment-head"><svg><use href="#i-flask"></use></svg><strong>Sandbox environment</strong></div>
+        <p>Simulated tools. Real validation. No production traffic.</p>
+        <a href="/monitor">View environment <svg><use href="#i-arrow-up-right"></use></svg></a>
+      </section>
+
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-set-theme="light"><svg><use href="#i-sun"></use></svg>Light</button>
+        <button type="button" data-set-theme="dark"><svg><use href="#i-moon"></use></svg>Dark</button>
+      </div>
+
+      <div class="sidebar-user">
+        <span class="user-avatar">RB</span>
+        <span><strong>Rameen Babar</strong><small>Client lead</small></span>
+        <span class="user-plan">Pro</span>
+      </div>
+    </aside>
+
+    <div class="main-shell">
+      <header class="console-toolbar">
+        <div class="toolbar-left">
+          <button class="icon-button mobile-menu" type="button" id="mobile-menu" aria-label="Open navigation"><svg><use href="#i-menu"></use></svg></button>
+          <div class="breadcrumb" aria-label="Breadcrumb">
+            <span>Workspace</span><span class="breadcrumb-slash">/</span><strong>{{ page_title }}</strong>
           </div>
+          <span class="sandbox-chip">Sandbox</span>
+        </div>
+        <div class="toolbar-right">
+          <div class="toolbar-search">
+            <svg><use href="#i-search"></use></svg>
+            <input id="global-search" type="search" placeholder="Search tools, capabilities or ontology types..." autocomplete="off" aria-label="Search tools">
+            <kbd>/</kbd>
+            <div class="global-search-results" id="global-search-results"></div>
+          </div>
+          <span class="demo-date" id="demo-date">Demo data</span>
+          <button class="icon-button" type="button" id="toolbar-theme" aria-label="Toggle theme"><svg><use href="#i-sun"></use></svg></button>
+          <button class="icon-button" type="button" data-open-modal="documents-modal" aria-label="Open documents"><svg><use href="#i-file"></use></svg></button>
+          <button class="icon-button notification-button" type="button" id="notification-button" aria-label="Open monitor notifications"><svg><use href="#i-bell"></use></svg><span class="notification-dot hidden"></span></button>
+          <span class="user-avatar toolbar-avatar">RB</span>
+        </div>
+      </header>
+
+      <main class="console-content" id="console-content">
+        <section class="page-view" data-view="dashboard">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Build / Orchestrate / Verify</p>
+              <h1>Developer workspace</h1>
+              <p class="page-subtitle">One request. Verified tools. Type-safe execution.</p>
+            </div>
+            <button class="btn primary" type="button" id="open-history"><svg><use href="#i-play"></use></svg>Execution history</button>
+          </div>
+
+          <article class="window-card" id="composer-card">
+            <header class="window-bar">
+              <span class="window-route">task / composer</span>
+              <span class="window-controls">
+                <button type="button" data-window-action="minimize" aria-label="Minimize"><svg><use href="#i-minus"></use></svg></button>
+                <button type="button" data-window-action="maximize" aria-label="Maximize"><svg><use href="#i-square"></use></svg></button>
+                <button type="button" data-window-action="close" aria-label="Close"><svg><use href="#i-x"></use></svg></button>
+              </span>
+            </header>
+            <div class="window-body composer-body">
+              <form id="task-form">
+                <div class="prompt-line">
+                  <svg class="prompt-glyph"><use href="#i-terminal"></use></svg>
+                  <textarea id="task-input" rows="1" placeholder="What would you like to execute?" aria-label="Task request" required></textarea>
+                  <span class="prompt-shortcut">⌘ + Enter to run</span>
+                </div>
+                <div class="composer-footer">
+                  <div class="sample-block">
+                    <span class="sample-label">Try a sample</span>
+                    <div class="sample-chips" id="sample-chips"></div>
+                    <span class="simulated-note">All results below are simulated.</span>
+                  </div>
+                  <button class="btn primary run-button" type="submit" id="run-button"><svg><use href="#i-play"></use></svg>Run task</button>
+                </div>
+              </form>
+            </div>
+          </article>
+
+          <article class="window-card execution-card" id="execution-card">
+            <header class="window-bar">
+              <span class="window-route">execution / visualizer</span>
+              <span class="window-controls">
+                <button type="button" data-window-action="minimize" aria-label="Minimize"><svg><use href="#i-minus"></use></svg></button>
+                <button type="button" data-window-action="maximize" aria-label="Maximize"><svg><use href="#i-square"></use></svg></button>
+                <button type="button" data-window-action="close" aria-label="Close"><svg><use href="#i-x"></use></svg></button>
+              </span>
+            </header>
+            <div class="window-body">
+              <div class="inline-head">
+                <h2>Execution visualizer</h2>
+                <div class="run-meta" id="run-meta"><span class="muted">No run yet</span></div>
+              </div>
+              <div class="stepper" id="execution-stepper"></div>
+            </div>
+          </article>
+
+          <article class="window-card results-card" id="results-card">
+            <header class="window-bar">
+              <span class="window-route">results / answer</span>
+              <span class="window-controls">
+                <button type="button" data-window-action="minimize" aria-label="Minimize"><svg><use href="#i-minus"></use></svg></button>
+                <button type="button" data-window-action="maximize" aria-label="Maximize"><svg><use href="#i-square"></use></svg></button>
+                <button type="button" data-window-action="close" aria-label="Close"><svg><use href="#i-x"></use></svg></button>
+              </span>
+            </header>
+            <div class="window-body">
+              <div class="inline-head">
+                <h2>Results &amp; answer</h2>
+                <span class="badge verified" id="source-count"><svg><use href="#i-shield"></use></svg>0 verified sources</span>
+              </div>
+              <div id="answer-empty" class="empty-panel">
+                <svg><use href="#i-terminal"></use></svg>
+                <strong>Ready for a request</strong>
+                <p>Run a sample or ask your own question. The verified answer and typed evidence will appear here.</p>
+              </div>
+              <div id="answer-content" class="answer-content hidden">
+                <div class="answer-callout">
+                  <span class="answer-icon"><svg><use href="#i-check-circle"></use></svg></span>
+                  <div><span class="answer-label">Verified response</span><p id="answer-text"></p></div>
+                </div>
+                <div class="result-grid" id="result-cards"></div>
+                <div class="result-foot" id="result-foot"></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="window-card trace-card" id="trace-card">
+            <header class="window-bar">
+              <span class="window-route">trace / agent-decision</span>
+              <span class="window-controls">
+                <button type="button" data-window-action="minimize" aria-label="Minimize"><svg><use href="#i-minus"></use></svg></button>
+                <button type="button" data-window-action="maximize" aria-label="Maximize"><svg><use href="#i-square"></use></svg></button>
+                <button type="button" data-window-action="close" aria-label="Close"><svg><use href="#i-x"></use></svg></button>
+              </span>
+            </header>
+            <div class="window-body">
+              <div class="inline-head">
+                <h2>Agent decision trace</h2>
+                <div class="inline-actions">
+                  <span class="muted small">Decision summaries only</span>
+                  <button class="text-button" type="button" id="export-json"><svg><use href="#i-download"></use></svg>Export JSON</button>
+                </div>
+              </div>
+              <div id="trace-empty" class="empty-panel compact">
+                <svg><use href="#i-activity"></use></svg>
+                <strong>No decision trace yet</strong>
+                <p>Every retrieval, verification, composition and recovery decision is recorded here.</p>
+              </div>
+              <div class="trace-layout hidden" id="trace-layout">
+                <div class="trace-groups" id="trace-groups"></div>
+                <div class="trace-detail" id="trace-detail"></div>
+              </div>
+            </div>
+          </article>
+
+          <footer class="page-footer">
+            <span>Sandbox execution<span id="footer-task-id"></span></span>
+            <span>Agent Bazaar v{{ version }} · Client, Provider &amp; Interface Lead</span>
+          </footer>
+        </section>
+
+        <section class="page-view" data-view="marketplace">
+          <article class="window-card marketplace-hero">
+            <header class="window-bar">
+              <span class="window-route">registry / marketplace</span>
+              <span class="window-controls">
+                <button type="button" data-window-action="minimize" aria-label="Minimize"><svg><use href="#i-minus"></use></svg></button>
+                <button type="button" data-window-action="maximize" aria-label="Maximize"><svg><use href="#i-square"></use></svg></button>
+                <button type="button" data-window-action="close" aria-label="Close"><svg><use href="#i-x"></use></svg></button>
+              </span>
+            </header>
+            <div class="window-body marketplace-heading">
+              <div>
+                <p class="eyebrow">Discover / Evaluate / Connect</p>
+                <h1>Service marketplace</h1>
+                <p class="page-subtitle">Browse capabilities, inspect evidence and compose tools you can trust.</p>
+              </div>
+              <button class="btn primary" type="button" id="onboard-button"><svg><use href="#i-play"></use></svg>Onboard New Tool</button>
+            </div>
+          </article>
+
+          <article class="window-card catalogue-card">
+            <header class="window-bar">
+              <span class="window-route">health / catalogue</span>
+              <span class="window-controls">
+                <button type="button" data-window-action="minimize" aria-label="Minimize"><svg><use href="#i-minus"></use></svg></button>
+                <button type="button" data-window-action="maximize" aria-label="Maximize"><svg><use href="#i-square"></use></svg></button>
+                <button type="button" data-window-action="close" aria-label="Close"><svg><use href="#i-x"></use></svg></button>
+              </span>
+            </header>
+            <div class="window-body catalogue-stats" id="catalogue-stats"></div>
+          </article>
+
+          <div class="market-controls">
+            <label class="search-field">
+              <svg><use href="#i-search"></use></svg>
+              <input id="market-search" type="search" placeholder="Search tools, capabilities or ontology types..." autocomplete="off">
+              <kbd>/</kbd>
+            </label>
+            <label class="select-button"><svg><use href="#i-filter"></use></svg><select id="capability-filter" aria-label="Capability filter"></select></label>
+            <label class="select-button"><svg><use href="#i-sort"></use></svg><select id="sort-filter" aria-label="Sort tools">
+              <option value="trust">Trust score</option>
+              <option value="tier">Free first</option>
+              <option value="name">Name</option>
+              <option value="capability">Capability</option>
+            </select></label>
+          </div>
+          <div class="market-filter-row">
+            <div class="filter-chips" id="market-filters"></div>
+            <span class="market-sync">Catalogue synced <span id="market-sync-time">now</span> · Demo data</span>
+          </div>
+          <div class="tools-grid" id="tools-grid"></div>
+          <div class="empty-panel hidden" id="tools-empty">
+            <svg><use href="#i-search"></use></svg>
+            <strong>No tools match</strong>
+            <p>Change the search or filter to inspect the rest of the catalogue.</p>
+          </div>
+
+          <article class="window-card scoring-card">
+            <header class="window-bar">
+              <span class="window-route">scoring / beta-distribution</span>
+              <span class="window-controls">
+                <button type="button" data-window-action="minimize" aria-label="Minimize"><svg><use href="#i-minus"></use></svg></button>
+                <button type="button" data-window-action="maximize" aria-label="Maximize"><svg><use href="#i-square"></use></svg></button>
+                <button type="button" data-window-action="close" aria-label="Close"><svg><use href="#i-x"></use></svg></button>
+              </span>
+            </header>
+            <div class="window-body scoring-body">
+              <span class="scoring-icon"><svg><use href="#i-activity"></use></svg></span>
+              <div>
+                <h3>Trust is earned, not declared. <span class="mono">(s+1)/(s+f+2)</span></h3>
+                <p>Beta distribution posterior mean · s = successful probes · f = failed probes · Prior Beta(1,1). Auditor claims and circuit breakers are evaluated separately.</p>
+              </div>
+              <a class="text-link" href="/docs" target="_blank" rel="noreferrer">Scoring docs <svg><use href="#i-arrow-up-right"></use></svg></a>
+            </div>
+          </article>
+
+          <footer class="page-footer">
+            <span>All providers are sandbox examples. Scores use the probe counts displayed above.</span>
+            <span>registry v{{ version }} · <span id="market-footer-count">0</span> loaded</span>
+          </footer>
+        </section>
+
+        <section class="page-view" data-view="monitor">
+          <div class="page-heading monitor-heading">
+            <div>
+              <p class="eyebrow">Observe / Repair / Recover</p>
+              <h1>Self-healing monitor</h1>
+              <p class="page-subtitle">Detect silent failures. Isolate drift. Keep execution moving.</p>
+            </div>
+            <div class="heading-actions">
+              <button class="btn secondary" type="button" id="pause-feed"><svg><use href="#i-pause"></use></svg><span>Pause feed</span></button>
+              <button class="btn primary" type="button" id="simulate-drift"><svg><use href="#i-play"></use></svg>Simulate drift</button>
+            </div>
+          </div>
+
+          <div class="metric-grid" id="monitor-metrics"></div>
+
+          <div class="monitor-layout">
+            <article class="window-card feed-card">
+              <header class="window-bar">
+                <span class="window-route">drift / alert-feed</span>
+                <span class="window-controls">
+                  <button type="button" data-window-action="minimize" aria-label="Minimize"><svg><use href="#i-minus"></use></svg></button>
+                  <button type="button" data-window-action="maximize" aria-label="Maximize"><svg><use href="#i-square"></use></svg></button>
+                  <button type="button" data-window-action="close" aria-label="Close"><svg><use href="#i-x"></use></svg></button>
+                </span>
+              </header>
+              <div class="feed-head">
+                <h2>Drift alert feed</h2>
+                <span class="live-chip" id="live-chip"><span></span>Live simulation</span>
+              </div>
+              <div class="feed-scroll" id="alert-feed"></div>
+              <div class="feed-footer">
+                <span id="feed-count">0 events</span>
+                <button class="text-button" type="button" id="view-all-logs">View all logs <svg><use href="#i-arrow-up-right"></use></svg></button>
+              </div>
+            </article>
+
+            <div class="monitor-detail-column">
+              <article class="window-card incident-card" id="incident-card"></article>
+              <article class="window-card mapping-card" id="mapping-card"></article>
+              <article class="window-card substitution-card" id="substitution-card"></article>
+            </div>
+          </div>
+
+          <footer class="page-footer">
+            <span>Simulated incident · recovered via substitution; quarantined tools remain isolated pending live validation.</span>
+            <span>snapshot <span id="monitor-snapshot-time">now</span></span>
+          </footer>
+        </section>
+
+        <section class="page-view library-page" data-view="library">
+          <div class="library-hero">
+            <span class="library-brand"><span class="brand-mark"><svg><use href="#i-play"></use></svg></span>Agent Bazaar</span>
+            <span class="library-kicker">UI kit / 01.0</span>
+            <h1>Small parts. Verified tools.</h1>
+            <p>A retro console toolkit for type-safe execution. Cute by design. Strict by default.</p>
+            <div class="library-meta-row">
+              <span>11 component families</span><span>8 px rhythm</span><span>Inter + JetBrains Mono</span>
+            </div>
+          </div>
+          <div class="library-grid">
+            <section class="library-frame" data-theme="light" data-library-theme="light"></section>
+            <section class="library-frame" data-theme="dark" data-library-theme="dark"></section>
+          </div>
+          <footer class="page-footer">
+            <span>One request. Verified tools. Type-safe execution.</span>
+            <span class="mono">#f8fafc / #090b0e</span>
+          </footer>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <template id="library-template">
+    <div class="library-board">
+      <header class="library-board-head">
+        <span class="library-brand"><span class="brand-mark"><svg><use href="#i-play"></use></svg></span>Agent Bazaar</span>
+        <span class="library-kicker">UI kit / 01.0 / <span data-library-label>light</span></span>
+      </header>
+      <h2>Small parts. Verified tools.</h2>
+      <p class="library-board-sub">A retro console toolkit for type-safe execution. Cute by design. Strict by default.</p>
+      <div class="library-meta-row">
+        <span>11 component families</span><span>8 px rhythm</span><span>Inter + JetBrains Mono</span>
+      </div>
+
+      <div class="library-components">
+        <section class="library-component">
+          <div class="component-caption"><span>Button</span><span>Primary / Default</span></div>
+          <div class="component-demo"><button class="btn primary" type="button"><svg><use href="#i-play"></use></svg>Run task</button></div>
+        </section>
+        <section class="library-component">
+          <div class="component-caption"><span>Input</span><span>Search / Idle</span></div>
+          <div class="component-demo"><label class="search-field library-search"><svg><use href="#i-search"></use></svg><input type="text" placeholder="Search tools, capabilities or ontology types..." readonly><kbd>/</kbd></label></div>
+        </section>
+        <section class="library-component">
+          <div class="component-caption"><span>Chip</span><span>Filter / Selected</span></div>
+          <div class="component-demo"><button class="chip active" type="button">All tools · 6 <svg><use href="#i-check"></use></svg></button></div>
+        </section>
+        <section class="library-component">
+          <div class="component-caption"><span>Theme toggle</span><span>Active</span></div>
+          <div class="component-demo"><div class="theme-switch static"><button type="button"><svg><use href="#i-sun"></use></svg>Light</button><button type="button"><svg><use href="#i-moon"></use></svg>Dark</button></div></div>
+        </section>
+        <section class="library-component span-2">
+          <div class="component-caption"><span>Badge</span><span>Evidence / Four states</span></div>
+          <div class="component-demo badge-demo">
+            <span class="badge verified"><svg><use href="#i-shield"></use></svg>Verified</span>
+            <span class="badge supported"><svg><use href="#i-shield"></use></svg>Supported</span>
+            <span class="badge contradicted"><svg><use href="#i-x-circle"></use></svg>Contradicted</span>
+            <span class="badge unsupported"><svg><use href="#i-alert"></use></svg>Unsupported</span>
+          </div>
+        </section>
+        <section class="library-component">
+          <div class="component-caption"><span>Window card</span><span>Service / Scrollable</span></div>
+          <div class="mini-service-card">
+            <div class="mini-window-bar"><span>service / open-meteo</span><span><i></i><i></i><i></i></span></div>
+            <div class="mini-service-body">
+              <div class="mini-service-title"><span class="tool-icon"><svg><use href="#i-cloud"></use></svg></span><span><strong>Open-Meteo</strong><small>API</small></span></div>
+              <p>Daily forecasts with typed temperatures and location-aware date resolution.</p>
+              <div class="mini-service-meta"><span class="badge verified"><svg><use href="#i-shield"></use></svg>Verified</span><span class="mono">142 ms</span></div>
+              <div class="mini-service-code">weather: Forecast → Temperature</div>
+            </div>
+          </div>
+        </section>
+        <section class="library-component">
+          <div class="component-caption"><span>Accordion</span><span>Decision trace / Expanded</span></div>
+          <div class="mini-trace">
+            <div class="mini-trace-head"><svg><use href="#i-chevron-down"></use></svg><span>Agent decision trace</span><svg><use href="#i-chevron-down"></use></svg></div>
+            <div class="mini-trace-body">
+              <strong>Type-safe composition accepted</strong>
+              <pre>{ "event": "types.matched",
+  "weather": "Temperature&lt;decimal&gt;",
+  "fx": "Money&lt;PKR&gt;" }</pre>
+              <span><svg><use href="#i-check"></use></svg>2 / 2 signatures matched · 0 mismatches</span>
+            </div>
+          </div>
+        </section>
+        <section class="library-component span-2">
+          <div class="component-caption"><span>Stepper</span><span>Workflow / In progress</span></div>
+          <div class="mini-stepper">
+            <span class="mini-step done"><i><svg><use href="#i-check"></use></svg></i><strong>GraphRAG Shortlisting</strong><small>12 candidates → 4 tools</small></span>
+            <span class="mini-step done"><i><svg><use href="#i-check"></use></svg></i><strong>Ontology Filtering</strong><small>2 compatible capabilities</small></span>
+            <span class="mini-step done"><i><svg><use href="#i-check"></use></svg></i><strong>Claim Verification</strong><small>2 claims verified live</small></span>
+            <span class="mini-step running"><i><svg><use href="#i-loader"></use></svg></i><strong>Type-Checked Composition</strong><small>Checking signatures</small></span>
+            <span class="mini-step queued"><i><svg><use href="#i-terminal"></use></svg></i><strong>Execution</strong><small>Parallel calls queued</small></span>
+          </div>
+        </section>
+        <section class="library-component span-2">
+          <div class="component-caption"><span>Progress bar</span><span>Live trust score / Determinate</span></div>
+          <div class="trust-meter-label"><span>Live Trust Score</span><strong>98.5%</strong></div>
+          <div class="trust-track large"><span style="width:98.5%"></span></div>
+          <div class="trust-foot">196 successes / 2 failures</div>
+        </section>
+        <section class="library-component span-2">
+          <div class="component-caption"><span>Log row</span><span>Recovery / Success</span></div>
+          <div class="log-row"><span class="mono">10:41:03.084</span><span class="log-tag swap">Swap</span><span>Client → Open-Meteo · verified · breaker Closed</span><svg><use href="#i-check"></use></svg></div>
+        </section>
+        <section class="library-component span-2">
+          <div class="component-caption"><span>Circuit breaker</span><span>Three states</span></div>
+          <div class="breaker-dots">
+            <span><i class="dot closed"></i><strong>Closed</strong><small>healthy</small></span>
+            <span><i class="dot open"></i><strong>Open</strong><small>isolated</small></span>
+            <span><i class="dot half"></i><strong>Half-open</strong><small>probing</small></span>
+          </div>
+        </section>
+        <section class="library-component span-2">
+          <div class="component-caption"><span>Modal</span><span>Onboarding / Upload + queue</span></div>
+          <div class="mini-modal">
+            <div class="mini-window-bar"><span>registry / onboard-tool</span><span><i></i><i></i><i></i></span></div>
+            <div class="mini-modal-body">
+              <h3>Onboard New Tool</h3>
+              <p>Upload a specification. Map capabilities. Validate before registration.</p>
+              <div class="mini-modal-grid">
+                <div class="mini-dropzone"><svg><use href="#i-upload"></use></svg><strong>Drop a spec or PDF here</strong><span>or browse files</span><small>OpenAPI · JSON · YAML · PDF / 20 MB</small></div>
+                <div class="mini-queue">
+                  <div class="mini-queue-row done"><span><svg><use href="#i-check"></use></svg></span><div><strong>Parser</strong><small>Spec extracted · 12 endpoints</small></div><em>Complete</em></div>
+                  <div class="mini-queue-row running"><span><svg><use href="#i-loader"></use></svg></span><div><strong>Mapper</strong><small>Resolving ontology types...</small></div><em>Running</em></div>
+                  <div class="mini-queue-row"><span><svg><use href="#i-terminal"></use></svg></span><div><strong>SHACL</strong><small>Waiting for mapped shapes</small></div><em>Queued</em></div>
+                </div>
+              </div>
+            </div>
+            <div class="mini-modal-foot"><span><svg><use href="#i-flask"></use></svg>Sandbox · no production traffic</span><span><button class="btn secondary small" type="button">Cancel</button><button class="btn primary small" type="button">Validate tool</button></span></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </template>
+
+  <div class="modal" id="history-modal" role="dialog" aria-modal="true" aria-labelledby="history-title">
+    <div class="modal-backdrop" data-close-modal></div>
+    <section class="modal-panel">
+      <header class="window-bar"><span class="window-route">execution / history</span><button class="window-close" type="button" data-close-modal aria-label="Close"><svg><use href="#i-x"></use></svg></button></header>
+      <div class="modal-body">
+        <h2 id="history-title">Execution history</h2>
+        <p class="modal-subtitle">Select a previous run to inspect its trace and evidence.</p>
+        <div class="history-list" id="history-list"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal" id="onboard-modal" role="dialog" aria-modal="true" aria-labelledby="onboard-title">
+    <div class="modal-backdrop" data-close-modal></div>
+    <section class="modal-panel wide">
+      <header class="window-bar"><span class="window-route">registry / onboard-new-tool</span><button class="window-close" type="button" data-close-modal aria-label="Close"><svg><use href="#i-x"></use></svg></button></header>
+      <div class="modal-body">
+        <h2 id="onboard-title">Onboard New Tool</h2>
+        <p class="modal-subtitle">Upload a specification. Map capabilities. Validate before registration.</p>
+        <form id="onboard-form">
+          <div class="form-grid two">
+            <label>Tool name <span class="required">*</span><input id="onboard-name" required placeholder="DocuForge"></label>
+            <label>Category <span class="required">*</span><select id="onboard-category" required></select></label>
+          </div>
+          <label>Base URL <span class="required">*</span><div class="input-with-suffix"><svg><use href="#i-external"></use></svg><input id="onboard-url" type="url" required placeholder="https://sandbox.example/v2"><span>Sandbox</span></div></label>
+          <label>API specification or PDF <span class="required">*</span>
+            <span class="dropzone" id="onboard-dropzone">
+              <input id="onboard-file" type="file" accept=".json,.yaml,.yml,.pdf">
+              <svg><use href="#i-upload"></use></svg>
+              <strong>Drop a specification here or browse files</strong>
+              <span>OpenAPI · JSON · YAML · PDF / 20 MB</span>
+            </span>
+          </label>
+          <div class="uploaded-file hidden" id="onboard-file-row"><svg><use href="#i-file"></use></svg><div><strong id="onboard-file-name"></strong><small>Ready to parse · local preview</small></div><span class="badge verified"><svg><use href="#i-check"></use></svg>Attached</span></div>
+          <label>Target ontology<span class="label-side">Suggested from capability</span><span class="ontology-field" id="onboard-ontology"><svg><use href="#i-layers"></use></svg><span>Select a category</span><svg><use href="#i-chevron-down"></use></svg></span></label>
+          <div class="validation-queue" id="onboard-queue">
+            <div class="queue-head"><strong>Validation queue</strong><span class="badge neutral" id="onboard-queue-status">Ready</span></div>
+            <div class="queue-row" data-stage="parser"><span class="queue-icon"><svg><use href="#i-terminal"></use></svg></span><div><strong>Parser</strong><small>Waiting for specification</small></div><em>Queued</em></div>
+            <div class="queue-row" data-stage="mapper"><span class="queue-icon"><svg><use href="#i-layers"></use></svg></span><div><strong>Mapper</strong><small>Waiting for ontology types</small></div><em>Queued</em></div>
+            <div class="queue-row" data-stage="shacl"><span class="queue-icon"><svg><use href="#i-shield"></use></svg></span><div><strong>SHACL validation</strong><small>Checks required fields, types and shape constraints</small></div><em>Queued</em></div>
+          </div>
+          <div class="inline-result hidden" id="onboard-result"></div>
+          <p class="form-note"><svg><use href="#i-help"></use></svg>Registration stays locked until SHACL passes. Listings are staged for the Mapper; an upload does not confer Verified status.</p>
+          <div class="modal-actions"><span class="modal-sandbox"><svg><use href="#i-flask"></use></svg>Sandbox preview · no production requests</span><span><button class="btn secondary" type="button" data-close-modal>Cancel</button><button class="btn primary" type="submit" id="onboard-submit"><svg><use href="#i-shield"></use></svg>Register tool</button></span></div>
         </form>
       </div>
-
-      <div id="task-status" class="task-status hidden" aria-live="polite">
-        <span class="spinner"></span>
-        <span>Client is working through the agent loop...</span>
-      </div>
-
-      <article class="panel answer-panel hidden" id="answer-panel">
-        <div class="answer-head">
-          <div>
-            <p class="eyebrow">Answer</p>
-            <h2 id="answer-status">Completed</h2>
-          </div>
-          <div class="meta-chips" id="answer-meta"></div>
-        </div>
-        <p class="answer-text" id="answer-text"></p>
-        <div class="warnings hidden" id="answer-warnings"></div>
-      </article>
-
-      <section class="panel hidden" id="candidates-panel">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">Discovery</p>
-            <h2>Ranked candidates</h2>
-          </div>
-          <p class="section-note">score = relevance &times; trust, after claim and breaker checks</p>
-        </div>
-        <div id="candidate-groups"></div>
-      </section>
-
-      <section class="panel hidden" id="chain-panel">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">Composition and execution</p>
-            <h2>Chain plan</h2>
-          </div>
-          <p class="section-note">links are accepted only when concepts and units fit</p>
-        </div>
-        <div id="chain-steps"></div>
-      </section>
     </section>
+  </div>
 
-    <section class="tab-panel" id="panel-trace">
-      <div class="panel">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">NFR4 &middot; explainability</p>
-            <h2>Agent trace viewer</h2>
-          </div>
-          <p class="section-note">Every decision is stored with its inputs, outputs and reason.</p>
-        </div>
-        <div id="trace-empty" class="empty-state">Run a task to populate the trace.</div>
-        <div id="trace-list" class="trace-list"></div>
+  <div class="modal" id="tool-modal" role="dialog" aria-modal="true" aria-labelledby="tool-modal-title">
+    <div class="modal-backdrop" data-close-modal></div>
+    <section class="modal-panel wide">
+      <header class="window-bar"><span class="window-route" id="tool-modal-route">service / detail</span><button class="window-close" type="button" data-close-modal aria-label="Close"><svg><use href="#i-x"></use></svg></button></header>
+      <div class="modal-body" id="tool-modal-body"></div>
+    </section>
+  </div>
+
+  <div class="modal" id="documents-modal" role="dialog" aria-modal="true" aria-labelledby="documents-title">
+    <div class="modal-backdrop" data-close-modal></div>
+    <section class="modal-panel">
+      <header class="window-bar"><span class="window-route">context / documents</span><button class="window-close" type="button" data-close-modal aria-label="Close"><svg><use href="#i-x"></use></svg></button></header>
+      <div class="modal-body">
+        <h2 id="documents-title">Grounded documents</h2>
+        <p class="modal-subtitle">Upload text, Markdown, CSV, PDF or DOCX. The Client will cite the relevant passage.</p>
+        <form id="upload-form" class="upload-form">
+          <label class="dropzone small" for="document-file"><input id="document-file" type="file" accept=".txt,.md,.csv,.pdf,.docx" required><svg><use href="#i-upload"></use></svg><strong>Choose a document</strong><span>Maximum 10 MB</span></label>
+          <button class="btn primary" type="submit">Upload</button>
+        </form>
+        <div id="upload-result" class="inline-result hidden"></div>
+        <div class="document-list" id="document-list"></div>
+        <form id="document-question-form" class="document-question">
+          <label>Ask this evidence set<textarea id="document-question" rows="2" placeholder="According to the uploaded document, what is the main goal?" required></textarea></label>
+          <button class="btn primary" type="submit"><svg><use href="#i-play"></use></svg>Ask via Client</button>
+        </form>
       </div>
     </section>
+  </div>
 
-    <section class="tab-panel" id="panel-monitoring">
-      <div class="metrics-grid" id="monitor-summary"></div>
-      <div class="two-column">
-        <section class="panel">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">Passive trust registry</p>
-              <h2>Provider trust</h2>
-            </div>
-            <p class="section-note">Beta-style score with full update history</p>
-          </div>
-          <div class="table-wrap">
-            <table id="trust-table">
-              <thead><tr><th>Tool</th><th>Trust</th><th>Calls</th><th>Status</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </section>
-        <section class="panel">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">Client to Provider links</p>
-              <h2>Circuit breakers</h2>
-            </div>
-            <p class="section-note">Closed, open, half-open</p>
-          </div>
-          <div class="table-wrap">
-            <table id="breaker-table">
-              <thead><tr><th>Link</th><th>State</th><th>Failures</th><th>Last reason</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-          <div class="drift-block">
-            <h3>Drift alerts</h3>
-            <div id="drift-list" class="drift-list"><p class="muted">No drift alerts.</p></div>
-          </div>
-        </section>
-      </div>
-      <section class="panel">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">Demonstration controls</p>
-            <h2>Inject adversity</h2>
-          </div>
-          <p class="section-note">Failures and drift are injected only for the demo.</p>
-        </div>
-        <div class="demo-actions">
-          <button class="button" data-demo="fail" data-tool="open-meteo-forecast">Fail next weather call</button>
-          <button class="button" data-demo="drift" data-tool="open-meteo-forecast">Inject weather drift</button>
-          <button class="button" data-demo="trip" data-tool="nominatim-geocode">Trip geocoder breaker</button>
-          <button class="button danger" data-demo="reset">Reset demo state</button>
-        </div>
-        <p class="hint">Run the weather and currency example after injecting a failure to see the substitute and the trust update.</p>
-      </section>
-    </section>
+  <div class="modal" id="api-modal" role="dialog" aria-modal="true" aria-labelledby="api-title">
+    <div class="modal-backdrop" data-close-modal></div>
+    <section class="modal-panel">
+      <header class="window-bar"><span class="window-route">settings / api-keys</span><button class="window-close" type="button" data-close-modal aria-label="Close"><svg><use href="#i-x"></use></svg></button></header>
+      <div class="modal-body">
+        <h2 id="api-title">API keys</h2>
+        <p class="modal-subtitle">No provider key is required for this sandbox. Optional free-tier LLM credentials live in your local environment.</p>
+        <div class="api-note"><svg><use href="#i-shield"></use></svg><div><strong>Keys stay server-side</strong><p>Agent Bazaar never sends credentials to the browser and works fully in deterministic offline mode.</p></div></div>
+        <pre class="code-block">AB_OFFLINE_MODE=true
+AB_LLM_PROVIDER=none
+AB_LLM_API_KEY=
 
-    <section class="tab-panel" id="panel-library">
-      <div class="two-column">
-        <section class="panel">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">Knowledge layer adapter</p>
-              <h2>Tool catalogue</h2>
-            </div>
-            <p class="section-note">Local fallback until Maria's RDF graph is connected</p>
-          </div>
-          <div class="table-wrap">
-            <table id="tools-table">
-              <thead><tr><th>Tool</th><th>Capability</th><th>Claim</th><th>Trust</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </section>
-        <section class="panel">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">Mapper adapter</p>
-              <h2>Submit a correction</h2>
-            </div>
-            <p class="section-note">Staged until ontology checks pass</p>
-          </div>
-          <form id="correction-form" class="stack-form">
-            <label>Tool<select id="correction-tool" required></select></label>
-            <div class="form-grid">
-              <label>Field name<input id="correction-field" placeholder="coordinates" required></label>
-              <label>Original concept<input id="correction-original" placeholder="Coordinates" required></label>
-              <label>Corrected concept<input id="correction-concept" placeholder="Coordinates" required></label>
-              <label>Corrected unit<input id="correction-unit" placeholder="degrees"></label>
-            </div>
-            <label>Note<textarea id="correction-note" rows="2" placeholder="Why is this mapping wrong?"></textarea></label>
-            <button class="button primary" type="submit">Stage correction</button>
-          </form>
-          <div id="correction-result" class="result-box hidden"></div>
-        </section>
+# Optional OpenAI-compatible provider
+AB_LLM_PROVIDER=openrouter
+AB_LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free</pre>
+        <div class="modal-actions"><span class="modal-sandbox"><svg><use href="#i-flask"></use></svg>Local `.env` configuration</span><a class="btn secondary" href="/docs" target="_blank" rel="noreferrer">Open API docs <svg><use href="#i-arrow-up-right"></use></svg></a></div>
       </div>
     </section>
+  </div>
 
-    <section class="tab-panel" id="panel-documents">
-      <div class="two-column">
-        <section class="panel">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">Document provider</p>
-              <h2>Upload a document</h2>
-            </div>
-            <p class="section-note">TXT, MD, PDF and DOCX, up to 10 MB</p>
-          </div>
-          <form id="upload-form" class="stack-form">
-            <label class="dropzone" for="document-file">
-              <span>Choose a document</span>
-              <input id="document-file" type="file" accept=".txt,.md,.csv,.pdf,.docx" required>
-            </label>
-            <button class="button primary" type="submit">Upload</button>
-          </form>
-          <div id="upload-result" class="result-box hidden"></div>
-        </section>
-        <section class="panel">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">Grounded question answering</p>
-              <h2>Ask the document</h2>
-            </div>
-            <p class="section-note">Answers include an extractive citation</p>
-          </div>
-          <form id="document-question-form" class="stack-form">
-            <label>Question<textarea id="document-question" rows="3" placeholder="What is the main goal of the project?" required></textarea></label>
-            <button class="button primary" type="submit">Ask via Client</button>
-          </form>
-          <div class="document-list" id="document-list"></div>
-        </section>
+  <div class="modal" id="logs-modal" role="dialog" aria-modal="true" aria-labelledby="logs-title">
+    <div class="modal-backdrop" data-close-modal></div>
+    <section class="modal-panel wide">
+      <header class="window-bar"><span class="window-route">monitor / event-log</span><button class="window-close" type="button" data-close-modal aria-label="Close"><svg><use href="#i-x"></use></svg></button></header>
+      <div class="modal-body">
+        <h2 id="logs-title">All monitor events</h2>
+        <p class="modal-subtitle">Drift, breaker and recovery events collected from the current sandbox.</p>
+        <div class="log-table" id="logs-modal-body"></div>
       </div>
     </section>
-  </main>
+  </div>
 
-  <footer>
-    <span>Agent Bazaar v{{ version }} &middot; Client, Provider and Interface lead implementation</span>
-    <span>Covers FR3, FR5, FR6, FR8, FR9, FR13, FR14 and the Client side of FR7.</span>
-  </footer>
+  <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
 
-  <div id="toast" class="toast hidden" role="status"></div>
+  <script>
+    window.__PAGE__ = "{{ page }}";
+    window.__VERSION__ = "{{ version }}";
+  </script>
   <script src="/static/app.js" defer></script>
 </body>
 </html>
