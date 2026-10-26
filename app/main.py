@@ -33,6 +33,7 @@ templates = Jinja2Templates(directory=str(WEB_DIR / "templates"))
 
 class TaskInput(BaseModel):
     task: str = Field(min_length=3, max_length=1500)
+    document_id: str | None = Field(default=None, min_length=1, max_length=80)
 
 
 class FailNextInput(BaseModel):
@@ -49,6 +50,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         title="Agent Bazaar",
         version=__version__,
         description="Ontology- and knowledge-graph-driven agent marketplace.",
+        docs_url="/api/docs",
+        redoc_url="/api/redoc",
+        openapi_url="/api/openapi.json",
         lifespan=lifespan,
     )
     application.mount("/static", StaticFiles(directory=str(WEB_DIR / "static")), name="static")
@@ -89,6 +93,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @application.get("/library", response_class=HTMLResponse)
     async def library(request: Request) -> HTMLResponse:
         return render_page(request, "library", "Trust Center")
+
+    @application.get("/documents", response_class=HTMLResponse)
+    async def documents(request: Request) -> HTMLResponse:
+        return render_page(request, "documents", "Documents")
+
+    @application.get("/docs", response_class=HTMLResponse)
+    async def documentation(request: Request) -> HTMLResponse:
+        return render_page(request, "docs", "Documentation")
 
     @application.get("/favicon.ico")
     async def favicon() -> Response:
@@ -162,7 +174,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @application.post("/api/tasks", response_model=TaskResult)
     async def run_task(payload: TaskInput, request: Request) -> TaskResult:
         state = services(request)
-        return await state.client.run(payload.task)
+        if payload.document_id and state.providers.document_store.get(payload.document_id) is None:
+            raise HTTPException(status_code=404, detail="Document not found")
+        return await state.client.run(payload.task, document_id=payload.document_id)
 
     @application.get("/api/tasks/recent")
     async def recent_tasks(request: Request, limit: int = Query(default=15, ge=1, le=100)):
@@ -306,6 +320,29 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @application.get("/api/documents")
     async def list_documents(request: Request) -> dict[str, Any]:
         return {"documents": services(request).providers.document_store.list()}
+
+    @application.get("/api/documents/{document_id}")
+    async def get_document(document_id: str, request: Request) -> dict[str, Any]:
+        document = services(request).providers.document_store.get(document_id)
+        if document is None:
+            raise HTTPException(status_code=404, detail="Document not found")
+        return {
+            "document": {
+                "document_id": document["document_id"],
+                "name": document["name"],
+                "size_bytes": document["size_bytes"],
+                "text_chars": len(document["text"]),
+                "created_at": document["created_at"],
+                "text": document["text"],
+            }
+        }
+
+    @application.delete("/api/documents/{document_id}")
+    async def delete_document(document_id: str, request: Request) -> dict[str, Any]:
+        deleted = services(request).providers.document_store.delete(document_id)
+        if not deleted:
+            raise HTTPException(status_code=404, detail="Document not found")
+        return {"deleted": True, "document_id": document_id}
 
     @application.post("/api/corrections")
     async def submit_correction(payload: CorrectionRequest, request: Request) -> dict[str, Any]:

@@ -760,6 +760,73 @@ the HTTP smoke tests and manual Playwright passes.
 `app/web/templates/index.html`, `app/main.py` (`ASSET_VERSION`),
 `docs/architecture.md#interface`.
 
+## ADR-025: A dedicated documents workspace, explicit document binding and an in-app guide
+
+**Context.** ADR-024 made the console evidence-first, but document question answering still
+lived in a modal opened from the top bar. The modal was cramped, listed documents without a
+preview or an explicit selection, and the question flow redirected to `/dashboard`. The
+answer arrived in the task workspace without the document context, so the user had to find
+the document again. Uploaded files could not be deleted from the interface. `/docs` was the
+FastAPI Swagger UI, so the URL a user would open for a product guide served the API console
+instead, and there was no in-app explanation of the pipeline, documents, trust, shortcuts or
+demo limits. The monitor also scattered demo actions, and the verification console required
+a manual tool choice before a probe could run.
+
+**Decision.** Split the document workflow from the task workspace and separate the product
+guide from the API reference:
+
+- Add `/documents` as a first-class workspace with a document library, upload (TXT, MD, CSV,
+  PDF and DOCX up to 10 MB), explicit selection, extracted-text preview, deletion and an
+  inline question form. The answer renders on the same page with up to two cited passages
+  and an optional link to the full trace; the page never redirects to `/dashboard`.
+- Add `GET /api/documents/{document_id}` for metadata and extracted text and
+  `DELETE /api/documents/{document_id}` for removal. `POST /api/tasks` accepts an optional
+  `document_id` (1 to 80 characters), returns 404 when the id is unknown, and the Client
+  threads the id into `AnswerFromDocument` subgoals.
+- Keep `/docs` for the in-app Documentation guide (quickstart, pipeline, documents, trust,
+  API, shortcuts, troubleshooting and demo limits). Move Swagger UI to `/api/docs`, with
+  ReDoc at `/api/redoc` and the OpenAPI document at `/api/openapi.json`.
+- Keep `/library` as the Trust Center, add Documents and Documentation to the sidebar and
+  command palette, preselect the first mapped tool in the verification console, and group
+  demo resets under **Demo utilities**.
+- Enforce the 10 MB limit in the API before extraction, keep extraction and retrieval local
+  with no external send, and contain deletion: resolve the stored path and unlink it only
+  when it is inside the configured uploads directory.
+- Describe ratings as ratings in the interface; they remain trust-registry values, not
+  marketplace reviews.
+
+**Alternatives.** Keep the modal and the redirect (rejected: the modal hides the extracted
+text, the redirect loses the selected document, and the user has to relocate the answer).
+Put the workspace on `/dashboard` (rejected: that page already carries the task, candidate,
+chain and trace surfaces, and a document question is a separate workflow). Keep Swagger at
+`/docs` and move the guide to another path (rejected: `/docs` is the conventional guide URL
+for users, while API consumers can use `/api/docs`). Send documents to an external extraction
+or LLM service (rejected: the sandbox promises local handling and the project must work
+offline without keys). Bind the newest document automatically when no id is supplied
+(rejected: the newest file is not necessarily the intended source; explicit ids make a
+request reproducible and an unknown id fails loudly). Delete the file before the database row
+or trust the stored path (rejected: a failure would leave a visible record with no content,
+and a tampered path could reach outside the uploads directory).
+
+**Consequences.** Document questions now have a stable home, a visible selected document and
+an answer that keeps its citations and trace link together. The interface has six page routes
+and a new guide to keep in sync with the UI. The document API adds two routes, and clients
+of `POST /api/tasks` must handle the new optional field and its 404 response. Deletion is
+permanent, and because the row is removed before the file unlink and file removal errors are
+ignored, an orphaned source file can remain; the containment check still prevents deletion
+outside the uploads directory. Documents persist across restarts and are kept by the demo
+reset, there is no per-user isolation, and the 10 MB cap is the only size guard. Bookmarks to
+the old Swagger URL must move from `/docs` to `/api/docs`. The browser layer still has no
+automated DOM test, and the new document detail and delete routes are not yet covered by
+route-level API tests.
+
+**Evidence.** `app/main.py` (`/documents`, `/docs`, `/api/docs`, `TaskInput.document_id`,
+document routes), `app/agents/client.py` (`document_id` threading),
+`app/providers/document_provider.py` (`DocumentStore.delete`),
+`app/web/templates/index.html` (Documents and Documentation pages),
+`app/web/static/app.js` (document workspace and inline answer),
+`docs/architecture.md#interface`, `tests/test_api.py::test_document_upload_and_question`.
+
 ## Known limitations and open items
 
 | Item | Impact | Current status / next action |
@@ -791,7 +858,8 @@ the HTTP smoke tests and manual Playwright passes.
 | Only six of the Auditor's 15 catalogue tools are mapped to application providers | The local SQL, document and adversarial weather providers still use seeded labels rather than live Auditor evidence | Add catalogue definitions for them or document the fallback in every evidence view |
 | The Auditor runs in fixture mode by default | No live provider is contacted unless `AB_AUDITOR_LIVE=true` or `?live=true` is passed | Enable live probes for a verification run when a keyless provider is reachable |
 | `frontend-preview/` is a design-only copy | The standalone preview can drift from `app/web` | Regenerate or remove it when the console changes |
-| The browser console has no automated DOM test | A runtime JavaScript error would only be caught by the HTTP smoke test or manually | Add a headless browser test for the four page routes |
+| The browser console has no automated DOM test | A runtime JavaScript error would only be caught by the HTTP smoke test or manually | Add a headless browser test for the six page routes |
+| New document detail and delete routes lack route-level tests | `GET` and `DELETE /api/documents/{id}`, the unknown-id 404 path and file removal are only checked manually | Add API tests for detail, deletion, 404 and path containment |
 
 ## References
 

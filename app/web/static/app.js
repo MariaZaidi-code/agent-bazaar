@@ -10,6 +10,9 @@ const state = {
   monitoringError: null,
   result: null,
   documents: [],
+  selectedDocument: "",
+  documentDetail: null,
+  documentAnswer: null,
   recent: [],
   monitorActivity: [],
   monitorDetails: [],
@@ -190,7 +193,7 @@ function ratingLabel(tool) {
     return '<span class="muted">no ratings</span>';
   }
   const count = Number(tool.rating_count || 0);
-  return `<span class="mono">rating ${Number(value).toFixed(2)}</span> <span class="muted">(${count} review(s))</span>`;
+  return `<span class="mono">rating ${Number(value).toFixed(2)}</span> <span class="muted">(${count} rating${count === 1 ? "" : "s"})</span>`;
 }
 
 function formatNumber(value, digits = 2) {
@@ -373,7 +376,6 @@ function openModal(id) {
   modal.classList.add("is-open");
   document.body.style.overflow = "hidden";
   if (id === "history-modal") loadHistory();
-  if (id === "documents-modal") loadDocuments();
   if (id === "onboard-modal") resetOnboardState();
   const focusTarget = modal.querySelector("input, textarea, select, button");
   if (focusTarget) window.setTimeout(() => focusTarget.focus(), 40);
@@ -627,19 +629,6 @@ function bindTheme() {
   applyTheme(currentTheme());
 }
 
-function bindWindowControls() {
-  document.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-window-action]");
-    if (!button) return;
-    const card = button.closest(".window-card");
-    if (!card) return;
-    const action = button.dataset.windowAction;
-    if (action === "minimize") card.classList.toggle("is-collapsed");
-    if (action === "maximize") card.classList.toggle("is-maximized");
-    if (action === "close") card.classList.add("is-closed");
-  });
-}
-
 function bindModals() {
   document.addEventListener("click", (event) => {
     const opener = event.target.closest("[data-open-modal]");
@@ -661,10 +650,12 @@ function bindModals() {
 }
 
 const PALETTE_NAV = [
-  { title: "Workspace", subtitle: "Compose and run tasks", icon: "grid", href: "/dashboard" },
+  { title: "Workspace", subtitle: "Ask a question and inspect the answer", icon: "grid", href: "/dashboard" },
   { title: "Marketplace", subtitle: "Browse the service catalogue", icon: "box", href: "/marketplace" },
-  { title: "Self-healing monitor", subtitle: "Drift, breakers and recovery", icon: "pulse", href: "/monitor" },
+  { title: "Monitor", subtitle: "Failures, breakers and recovery", icon: "pulse", href: "/monitor" },
+  { title: "Documents", subtitle: "Upload, preview and ask a document", icon: "file", href: "/documents" },
   { title: "Trust Center", subtitle: "Evidence, history and staging", icon: "shield", href: "/library" },
+  { title: "Documentation", subtitle: "Guides, API reference and shortcuts", icon: "book", href: "/docs" },
 ];
 
 function paletteAction(title, subtitle, iconName, run) {
@@ -688,7 +679,12 @@ function buildPaletteItems(query) {
   if (navigation.length) groups.push(...navigation);
 
   const actions = [
-    paletteAction("Upload a document", "Ground a run in your own evidence", "upload", () => openModal("documents-modal")),
+    paletteAction("Upload a document", "Open the Documents workspace", "upload", () => {
+      window.location.href = "/documents";
+    }),
+    paletteAction("API reference", "Open the interactive endpoint reference", "terminal", () => {
+      window.open("/api/docs", "_blank", "noopener");
+    }),
     paletteAction("Onboard a tool", "Submit a listing for Mapper review", "plus", () => openModal("onboard-modal")),
     paletteAction("Execution history", "Reopen a previous run", "history", () => openModal("history-modal")),
     paletteAction("API & environment", "Endpoints and sandbox settings", "key", () => openModal("api-modal")),
@@ -1890,7 +1886,7 @@ function openToolModal(toolId) {
       <div class="detail-block"><span>Circuit breaker</span><strong>${titleCase(breaker)}</strong><small>${provider?.failure_mode ? `failure mode: ${esc(provider.failure_mode)}` : "link-level isolation"}</small></div>
       <div class="detail-block"><span>Evidence label</span><strong>${claim}</strong><small>${tool.claims?.length || 0} provider claim${tool.claims?.length === 1 ? "" : "s"} on record</small></div>
       <div class="detail-block"><span>Pricing &amp; access</span><strong>${esc(titleCase(tool.pricing_tier || "unknown"))} · ${esc(titleCase(tool.access_requirement || "unknown"))}</strong><small>${tool.price ? `$${formatNumber(tool.price, 2)}` : "No listed price"} · ${esc((tool.tags || []).join(" · ") || "No tags")}</small></div>
-      <div class="detail-block"><span>Quality</span><strong>${tool.rating_value === null || tool.rating_value === undefined ? "No ratings" : `${Number(tool.rating_value).toFixed(2)} / 5`}</strong><small>${Number(tool.rating_count || 0)} review(s) · docs ${Number(tool.doc_quality || 0).toFixed(2)} · mapping ${Number(tool.mapping_coverage || 0).toFixed(2)}</small></div>
+      <div class="detail-block"><span>Quality</span><strong>${tool.rating_value === null || tool.rating_value === undefined ? "No ratings" : `${Number(tool.rating_value).toFixed(2)} / 5`}</strong><small>${Number(tool.rating_count || 0)} rating${Number(tool.rating_count || 0) === 1 ? "" : "s"} · docs ${Number(tool.doc_quality || 0).toFixed(2)} · mapping ${Number(tool.mapping_coverage || 0).toFixed(2)}</small></div>
       <div class="detail-block"><span>Execution</span><strong>${tool.is_executable ? "Executable" : "Not executable"}</strong><small>${esc(reason || "Free and keyless: the Client may call this tool.")}</small></div>
     </div>
     <div class="claim-list">
@@ -2209,26 +2205,153 @@ async function submitListing(event) {
   }
 }
 
-function loadDocuments() {
-  return api("/api/documents")
-    .then((data) => {
-      state.documents = data.documents || [];
-      const list = $("#document-list");
-      if (list) {
-        list.innerHTML = state.documents.length
-          ? state.documents
-              .map(
-                (document) => `<div class="document-item"><span>${esc(document.name)}</span><small>${formatNumber(document.text_chars, 0)} chars · ${esc(document.document_id)}</small></div>`
-              )
-              .join("")
-          : `<div class="document-item"><span class="muted">No uploaded documents. A seeded project brief is used by default.</span></div>`;
-      }
-      return state.documents;
-    })
-    .catch((error) => {
-      toast(`Documents unavailable: ${error.message}`, "bad");
-      return state.documents;
-    });
+function formatFileSize(bytes) {
+  const value = Number(bytes || 0);
+  if (value < 1024) return `${value} B`;
+  if (value < 1024 * 1024) return `${(value / 1024).toFixed(value < 10240 ? 1 : 0)} KB`;
+  return `${(value / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function renderDocumentList() {
+  const list = $("#document-list");
+  const count = $("#documents-count");
+  if (count) {
+    count.textContent = state.documents.length
+      ? `${state.documents.length} file${state.documents.length === 1 ? "" : "s"} in this sandbox`
+      : "No files uploaded yet";
+  }
+  if (!list) return;
+  if (!state.documents.length) {
+    list.innerHTML = emptyMarkup(
+      "No documents yet",
+      "Upload a text, Markdown, CSV, PDF or DOCX file to start a grounded question.",
+      "file-text"
+    );
+    return;
+  }
+  list.innerHTML = state.documents
+    .map(
+      (item) => `<button class="document-row ${item.document_id === state.selectedDocument ? "is-selected" : ""}" type="button" data-document-id="${esc(item.document_id)}" aria-pressed="${item.document_id === state.selectedDocument}">
+        <span class="document-row-icon">${icon("file-text")}</span>
+        <span class="document-row-copy"><strong>${esc(item.name)}</strong><small>${formatFileSize(item.size_bytes)} · ${formatNumber(item.text_chars, 0)} characters</small></span>
+        ${icon("chevron-right")}
+      </button>`
+    )
+    .join("");
+}
+
+function clearDocumentDetail(message, detail = "") {
+  const empty = $("#document-empty");
+  const panel = $("#document-detail");
+  const answer = $("#document-answer");
+  if (panel) panel.classList.add("hidden");
+  if (answer) {
+    answer.classList.add("hidden");
+    answer.innerHTML = "";
+  }
+  if (empty) {
+    empty.classList.remove("hidden");
+    empty.innerHTML = `<svg><use href="#i-file-text"></use></svg><strong>${esc(message)}</strong><p>${esc(detail)}</p>`;
+  }
+  const ask = $("#document-ask");
+  if (ask) ask.disabled = true;
+  const status = $("#document-ask-status");
+  if (status) {
+    status.className = "badge neutral";
+    status.textContent = "No document";
+  }
+  state.documentDetail = null;
+}
+
+async function selectDocument(documentId) {
+  if (!documentId) {
+    state.selectedDocument = "";
+    renderDocumentList();
+    clearDocumentDetail("No document selected", "Choose a document from the library to preview it.");
+    return;
+  }
+  state.selectedDocument = documentId;
+  renderDocumentList();
+  const empty = $("#document-empty");
+  const panel = $("#document-detail");
+  if (empty) {
+    empty.classList.remove("hidden");
+    empty.innerHTML = `<div class="loading-line">${icon("loader")}Loading document…</div>`;
+  }
+  if (panel) panel.classList.add("hidden");
+  const ask = $("#document-ask");
+  if (ask) ask.disabled = true;
+  const status = $("#document-ask-status");
+  if (status) {
+    status.className = "badge neutral";
+    status.textContent = "Loading";
+  }
+  try {
+    const payload = await api(`/api/documents/${encodeURIComponent(documentId)}`);
+    if (state.selectedDocument !== documentId) return;
+    const document = payload.document;
+    state.documentDetail = document;
+    if (empty) empty.classList.add("hidden");
+    if (panel) panel.classList.remove("hidden");
+    const name = $("#document-detail-name");
+    if (name) name.textContent = document.name;
+    const meta = $("#document-detail-meta");
+    if (meta) {
+      meta.textContent = `${formatFileSize(document.size_bytes)} · ${formatNumber(document.text_chars, 0)} characters · Added ${formatDateTime(document.created_at)} · ${document.document_id}`;
+    }
+    const preview = $("#document-preview");
+    if (preview) preview.textContent = document.text || "No text could be extracted.";
+    if (ask) ask.disabled = false;
+    if (status) {
+      status.className = "badge neutral";
+      status.textContent = "Ready";
+    }
+    const answer = $("#document-answer");
+    if (answer) {
+      answer.classList.add("hidden");
+      answer.innerHTML = "";
+    }
+  } catch (error) {
+    if (state.selectedDocument !== documentId) return;
+    clearDocumentDetail("Document unavailable", error.message);
+    const status = $("#document-ask-status");
+    if (status) {
+      status.className = "badge contradicted";
+      status.textContent = "Unavailable";
+    }
+  }
+}
+
+async function loadDocuments(preferredId = "") {
+  const list = $("#document-list");
+  const count = $("#documents-count");
+  if (list) list.innerHTML = `<div class="loading-line">${icon("loader")}Loading documents…</div>`;
+  if (count) count.textContent = "Checking library…";
+  try {
+    const data = await api("/api/documents");
+    state.documents = data.documents || [];
+    const target = preferredId || state.selectedDocument || state.documents[0]?.document_id || "";
+    const exists = state.documents.some((item) => item.document_id === target);
+    renderDocumentList();
+    if (target && exists) await selectDocument(target);
+    else if (state.documents.length) await selectDocument(state.documents[0].document_id);
+    else {
+      state.selectedDocument = "";
+      renderDocumentList();
+      clearDocumentDetail(
+        "Upload your first document",
+        "Add a file on the left to preview its extracted text and ask a grounded question."
+      );
+    }
+    return state.documents;
+  } catch (error) {
+    state.documents = [];
+    state.selectedDocument = "";
+    if (count) count.textContent = "Library unavailable";
+    if (list) list.innerHTML = noticeMarkup("error", "Documents unavailable.", error.message);
+    clearDocumentDetail("Document library unavailable", error.message);
+    return state.documents;
+  }
 }
 
 async function uploadDocument(event) {
@@ -2236,52 +2359,172 @@ async function uploadDocument(event) {
   const input = $("#document-file");
   const file = input?.files?.[0];
   const output = $("#upload-result");
+  const submit = event.currentTarget.querySelector('button[type="submit"]');
   if (!file || !output) return;
+  if (file.size > 10 * 1024 * 1024) {
+    output.classList.remove("hidden", "good");
+    output.classList.add("bad");
+    output.textContent = "This file is larger than the 10 MB limit.";
+    return;
+  }
   const form = new FormData();
   form.append("file", file);
+  output.classList.add("hidden");
+  if (submit) {
+    submit.disabled = true;
+    submit.innerHTML = `${icon("loader")}Uploading`;
+  }
   try {
     const result = await api("/api/documents", { method: "POST", body: form });
     output.classList.remove("hidden", "bad");
-    output.textContent = `Uploaded ${result.document.name} (${result.document.document_id}) with ${formatNumber(result.document.text_chars, 0)} characters.`;
-    toast("Document uploaded.", "ok");
+    output.classList.add("good");
+    output.textContent = `Uploaded ${result.document.name} · ${formatNumber(result.document.text_chars, 0)} characters extracted.`;
     if (input) input.value = "";
-    await loadDocuments();
+    await loadDocuments(result.document.document_id);
+    toast("Document uploaded and selected.", "ok");
   } catch (error) {
-    output.classList.remove("hidden");
+    output.classList.remove("hidden", "good");
     output.classList.add("bad");
     output.textContent = error.message;
+    toast(`Upload failed: ${error.message}`, "bad");
+  } finally {
+    if (submit) {
+      submit.disabled = false;
+      submit.innerHTML = `${icon("upload")}Upload document`;
+    }
   }
 }
 
-function askDocument(event) {
+async function deleteDocument() {
+  const documentId = state.selectedDocument;
+  const documentName = state.documentDetail?.name || "this document";
+  if (!documentId) return;
+  if (!window.confirm(`Remove “${documentName}”? The uploaded file and its extracted text will be deleted.`)) {
+    return;
+  }
+  const button = $("#document-delete");
+  if (button) button.disabled = true;
+  try {
+    await api(`/api/documents/${encodeURIComponent(documentId)}`, { method: "DELETE" });
+    state.selectedDocument = "";
+    state.documentDetail = null;
+    await loadDocuments();
+    toast("Document removed.", "ok");
+  } catch (error) {
+    toast(`Could not remove the document: ${error.message}`, "bad");
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+function renderDocumentAnswer(result) {
+  const container = $("#document-answer");
+  if (!container) return;
+  const steps = result.plan?.steps || [];
+  const step = steps.find((entry) => entry.capability === "AnswerFromDocument");
+  const raw = step?.output?.answer;
+  const payload = raw && typeof raw === "object" ? raw : {};
+  const answer = payload.answer || result.answer || "No answer returned.";
+  const citations = Array.isArray(payload.citations) ? payload.citations : [];
+  const status = String(result.status || "completed");
+  const statusClass =
+    status === "completed" ? "supported" : status === "partial" ? "warning" : "contradicted";
+  const statusIcon =
+    status === "completed" ? "check-circle" : status === "partial" ? "alert" : "x-circle";
+  const citationMarkup = citations.length
+    ? `<div class="document-citations">
+        <p class="document-citations-label">Cited passages</p>
+        ${citations
+          .map(
+            (citation) => `<blockquote>
+              <p>${esc(citation.quote || "No quote returned.")}</p>
+              <footer>${icon("file-text")}<span>${esc(citation.name || citation.document_id)}</span>${citation.score === undefined ? "" : `<small>relevance ${Number(citation.score).toFixed(2)}</small>`}</footer>
+            </blockquote>`
+          )
+          .join("")}
+      </div>`
+    : `<p class="small muted">This answer had no cited passage. Try rephrasing with terms from the document.</p>`;
+  container.classList.remove("hidden");
+  container.innerHTML = `<div class="document-answer-head">
+      <div>
+        <span class="badge ${statusClass}">${icon(statusIcon)}${esc(titleCase(status))}</span>
+        <span class="small muted">${formatNumber(result.duration_ms || 0, 0)} ms · ${esc(payload.document_id || state.selectedDocument)}</span>
+      </div>
+      <a class="text-link" href="/dashboard?task=${encodeURIComponent(result.task_id)}">Open full trace ${icon("arrow-up-right")}</a>
+    </div>
+    <p class="document-answer-text">${esc(answer)}</p>
+    ${citationMarkup}`;
+}
+
+async function askDocument(event) {
   event.preventDefault();
   const question = $("#document-question")?.value.trim() || "";
+  const documentId = state.selectedDocument;
+  const button = $("#document-ask");
+  const status = $("#document-ask-status");
+  if (!documentId) {
+    toast("Select a document before asking a question.", "bad");
+    return;
+  }
   if (!question) return;
   const task = question.toLowerCase().startsWith("according")
     ? question
     : `According to the uploaded document, ${question}`;
-  closeAllModals();
-  if (state.page === "dashboard") {
-    const input = $("#task-input");
-    if (input) {
-      input.value = task;
-      resizeTaskInput();
+  if (button) {
+    button.disabled = true;
+    button.innerHTML = `${icon("loader")}Asking`;
+  }
+  if (status) {
+    status.className = "badge neutral";
+    status.textContent = "Running";
+  }
+  try {
+    const result = await api("/api/tasks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ task, document_id: documentId }),
+    });
+    renderDocumentAnswer(result);
+    if (status) {
+      const complete = result.status === "completed";
+      status.className = `badge ${complete ? "supported" : "contradicted"}`;
+      status.textContent = complete ? "Answered" : titleCase(result.status);
     }
-    runTask(task);
-  } else {
-    try {
-      localStorage.setItem("agent-bazaar-task", task);
-    } catch (error) {
-      toast("Could not stage the document question.", "bad");
-      return;
+    toast(
+      result.status === "completed" ? "Document answer ready." : "Document question needs attention.",
+      result.status === "completed" ? "ok" : "bad"
+    );
+  } catch (error) {
+    const container = $("#document-answer");
+    if (container) {
+      container.classList.remove("hidden");
+      container.innerHTML = noticeMarkup("error", "Document question failed.", error.message);
     }
-    window.location.href = "/dashboard";
+    if (status) {
+      status.className = "badge contradicted";
+      status.textContent = "Failed";
+    }
+    toast(`Document question failed: ${error.message}`, "bad");
+  } finally {
+    if (button) {
+      button.disabled = !state.selectedDocument;
+      button.innerHTML = `${icon("play")}Ask document`;
+    }
   }
 }
 
 function bindDocuments() {
   $("#upload-form")?.addEventListener("submit", uploadDocument);
   $("#document-question-form")?.addEventListener("submit", askDocument);
+  $("#document-list")?.addEventListener("click", (event) => {
+    const row = event.target.closest("[data-document-id]");
+    if (row) selectDocument(row.dataset.documentId);
+  });
+  $("#document-delete")?.addEventListener("click", deleteDocument);
+}
+
+function initDocumentsPage() {
+  return loadDocuments();
 }
 
 function monitorEvents() {
@@ -2760,19 +3003,19 @@ function bindMonitor() {
     if (!state.resetArmed) {
       state.resetArmed = true;
       resetButton.classList.add("danger");
-      resetButton.innerHTML = `${icon("alert")}<span>Confirm reset (4s)</span>`;
+      resetButton.innerHTML = `${icon("alert")}<span>Click again to confirm</span>`;
       window.clearTimeout(state.resetTimer);
       state.resetTimer = window.setTimeout(() => {
         state.resetArmed = false;
         resetButton.classList.remove("danger");
-        resetButton.innerHTML = `${icon("refresh")}<span>Reset demo</span>`;
+        resetButton.innerHTML = `${icon("refresh")}<span>Reset demo data…</span>`;
       }, 4000);
       return;
     }
     window.clearTimeout(state.resetTimer);
     state.resetArmed = false;
     resetButton.classList.remove("danger");
-    resetButton.innerHTML = `${icon("refresh")}<span>Reset demo</span>`;
+    resetButton.innerHTML = `${icon("refresh")}<span>Reset demo data…</span>`;
     resetButton.disabled = true;
     try {
       await api("/api/demo/reset", { method: "POST" });
@@ -2800,36 +3043,22 @@ function bindMonitor() {
       toast(`Could not reset the demo: ${error.message}`, "bad");
     } finally {
       resetButton.disabled = false;
-      resetButton.innerHTML = `${icon("refresh")}<span>Reset demo</span>`;
-    }
-  });
-  $("#simulate-failure")?.addEventListener("click", async () => {
-    const button = $("#simulate-failure");
-    if (button) button.disabled = true;
-    try {
-      await api("/api/demo/fail-next/open-meteo-forecast", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ times: 1 }),
-      });
-      toast("The next weather call will fail; run the weather example.", "bad");
-      await loadMonitoringData();
-      state.monitorActivity = monitorEvents();
-      renderMonitor();
-    } catch (error) {
-      toast(`Could not schedule the failure: ${error.message}`, "bad");
-    } finally {
-      if (button) button.disabled = false;
+      resetButton.innerHTML = `${icon("refresh")}<span>Reset demo data…</span>`;
     }
   });
   $("#simulate-drift")?.addEventListener("click", async () => {
     const button = $("#simulate-drift");
+    const toolId = $("#control-tool")?.value;
+    if (!toolId) {
+      setControlResult("bad", "Choose a provider first.");
+      return;
+    }
     if (button) button.disabled = true;
     try {
-      await api("/api/demo/drift/open-meteo-forecast", { method: "POST" });
-      toast("Schema drift injected on open-meteo-forecast.", "bad");
-      await loadMonitoringData();
-      await loadMonitorActivity();
+      await api(`/api/demo/drift/${encodeURIComponent(toolId)}`, { method: "POST" });
+      setControlResult("bad", `${icon("alert")}Simulated schema drift for <code>${esc(toolId)}</code>. Inspect the feed and mapping diff.`);
+      toast(`Simulated drift on ${toolId}.`, "bad");
+      await Promise.allSettled([loadMonitoringData(), loadMonitorActivity()]);
       state.monitorSelected = state.monitorActivity.find((event) => event.kind === "drift")?.key || state.monitorSelected;
       renderMonitor();
     } catch (error) {
@@ -3303,9 +3532,11 @@ function populateTrustSelectors() {
       .join("")}`;
     if (previous && mappings.some((mapping) => mapping.app_tool_id === previous)) {
       verifySelect.value = previous;
+      state.verifyTool = previous;
     } else {
-      verifySelect.value = "";
-      state.verifyTool = "";
+      const fallback = mappings[0]?.app_tool_id || "";
+      verifySelect.value = fallback;
+      state.verifyTool = fallback;
     }
   }
   const run = $("#verify-run");
@@ -3651,11 +3882,18 @@ function bindProtocol() {
   });
 }
 
+function scrollToPageHash() {
+  const id = window.location.hash.replace(/^#/, "");
+  if (!id) return;
+  const target = document.getElementById(id);
+  if (!target) return;
+  window.requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
+}
+
 async function bootstrap() {
   setActivePage();
   bindTheme();
   bindSidebar();
-  bindWindowControls();
   bindModals();
   bindPalette();
   bindTrace();
@@ -3679,6 +3917,8 @@ async function bootstrap() {
     await Promise.allSettled([loadKnowledgeData(), loadStagedData(), loadEvaluationsData()]);
     initTrustCenter();
   }
+  if (state.page === "documents") await initDocumentsPage();
+  if (state.page === "docs") scrollToPageHash();
   if (state.page !== "dashboard") bindHistory();
 }
 

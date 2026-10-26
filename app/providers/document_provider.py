@@ -141,6 +141,26 @@ class DocumentStore:
             ).fetchone()
         return dict(row) if row else None
 
+    def delete(self, document_id: str) -> bool:
+        with self._lock:
+            row = self._connection.execute(
+                "SELECT path FROM documents WHERE document_id = ?", (document_id,)
+            ).fetchone()
+            if row is None:
+                return False
+            self._connection.execute(
+                "DELETE FROM documents WHERE document_id = ?", (document_id,)
+            )
+            self._connection.commit()
+        path = Path(row["path"])
+        try:
+            resolved = path.resolve()
+            if resolved.is_file() and self.settings.uploads_dir.resolve() in resolved.parents:
+                resolved.unlink()
+        except OSError:
+            pass
+        return True
+
 
 class DocumentQAProvider(BaseProvider):
     def __init__(self, *args: Any, document_store: DocumentStore, **kwargs: Any) -> None:

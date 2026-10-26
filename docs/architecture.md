@@ -7,8 +7,10 @@ This repository implements the merged Agent Bazaar system: the Client and Provid
 ```text
 Browser
   |
-  +-- GET  /                      Jinja2 shell
+  +-- GET  /                      Jinja2 dashboard
+  +-- GET  /documents, /docs      Jinja2 workspace and guide
   +-- GET  /static/*              CSS and vanilla JS
+  +-- GET  /api/docs, /api/redoc  API reference
   +-- POST /api/tasks             JSON task request
   |
 FastAPI (app/main.py)
@@ -57,7 +59,7 @@ FastAPI (app/main.py)
 | Trust registry | Beta score, history, replay, demotion | `app/core/trust_registry.py` |
 | Circuit breaker | Per Client-to-Provider link state machine | `app/core/circuit_breaker.py` |
 | Trace store | Durable events, task results and messages | `app/core/tracing.py` |
-| Interface | Task workbench, trace, Trust Center, monitoring, documents | `app/web/` |
+| Interface | Task workbench, trace, Trust Center, monitoring, documents, in-app guide | `app/web/` |
 
 ## Client loop
 
@@ -150,7 +152,18 @@ Mirrors exist for weather, geocoding, currency, holidays, country facts and arXi
 
 ## Interface
 
-The web UI is intentionally dependency-free vanilla JS. It talks only to documented HTTP endpoints. The shell has four page routes: the workflow dashboard, the service marketplace, the self-healing monitor and the Trust Center at `/library`. A command palette (`Ctrl/Cmd+K`, or `/` when the marketplace search is not focused) jumps between pages, tools and actions. It renders:
+The web UI is intentionally dependency-free vanilla JS. It talks only to documented HTTP endpoints. The shell has six page routes (`/` serves the dashboard):
+
+| Route | Page |
+|---|---|
+| `/dashboard` | Workflow workspace: task composer, ranked candidates, chain steps and trace |
+| `/marketplace` | Service marketplace: catalogue cards and tool detail modal |
+| `/monitor` | Self-healing monitor: incident feed, provider controls and demo utilities |
+| `/documents` | Documents workspace: upload, selection, preview, deletion and inline Q&A |
+| `/library` | Trust Center: Auditor evidence, staging, evaluations, verification and trust replay |
+| `/docs` | In-app Documentation guide |
+
+A command palette (`Ctrl/Cmd+K`, or `/` when the marketplace search is not focused) jumps between pages, tools and actions. It renders:
 
 - the answer and its evidence warnings, with result cards for terminal chain steps;
 - ranked candidates with relevance, trust, claim badges, breaker state and reasons;
@@ -162,16 +175,37 @@ The web UI is intentionally dependency-free vanilla JS. It talks only to documen
 - marketplace cards and a tool modal with pricing tier, access requirement,
   price, rating, documentation quality, mapping coverage and the reason a tool
   is not executable;
-- corrections, uploads and document questions.
+- the documents workspace: library, extracted-text preview, upload and delete actions,
+  inline questions, cited passages and an optional full-trace link;
+- the Documentation guide: quickstart, pipeline, documents, trust, API, shortcuts,
+  troubleshooting and demo limits;
+- corrections and demo controls.
+
+The Documents workspace at `/documents` is a first-class page, not a modal. Choosing a
+document loads `GET /api/documents/{document_id}` into the preview. A question submits to
+`POST /api/tasks` with the selected `document_id` and renders the answer, up to two cited
+passages and an optional `/dashboard?task={task_id}` link in place; the page never redirects
+to the dashboard. Uploads accept TXT, MD, CSV, PDF and DOCX up to 10 MB, and extraction and
+retrieval stay local (no external send). `DELETE /api/documents/{document_id}` removes the
+record and unlinks the stored source file only when the resolved path is inside the configured
+uploads directory.
+
+The Documentation page at `/docs` is application documentation (quickstart, task pipeline,
+documents, trust and verification, API, keyboard shortcuts, troubleshooting, demo limits).
+It is not Swagger. FastAPI serves Swagger UI at `/api/docs`, ReDoc at `/api/redoc` and the
+OpenAPI schema at `/api/openapi.json`.
 
 The Trust Center reads `/api/auditor`, `/api/auditor/trust`,
 `/api/knowledge`, `/api/staged`, `/api/evaluations` and
 `/api/trust/{provider_id}`. It writes only through the explicit verification
-actions (`/api/auditor/verify/{tool}`, `/api/auditor/monitor/{tool}`). Every
-asynchronous surface distinguishes loading, empty, error and unavailable
-states; a provider with no calls or probes is labelled as a default prior rather
-than a verified score, and a staged correction is labelled as awaiting review
-rather than rejected. The reset control in the monitor is two-step.
+actions (`/api/auditor/verify/{tool}`, `/api/auditor/monitor/{tool}`). The
+verification console preselects the first mapped tool and disables both actions
+when no mapping exists. The monitor groups the demo reset under
+**Demo utilities**. Every asynchronous surface distinguishes loading, empty,
+error and unavailable states; a provider with no calls or probes is labelled as
+a default prior rather than a verified score, and a staged correction is labelled
+as awaiting review rather than rejected. The reset control in the monitor is
+two-step.
 
 The marketplace supports a "Free first" sort that follows the ranking policy's
 tier order (`free`, `freemium`, `paid`, `unknown`) and then trust. `frontend-preview/`
@@ -187,7 +221,7 @@ version derived from the static file mtimes so a restart picks up changes.
 | `cache.db` | Provider response cache keyed by provider and normalized params |
 | `traces.db` | Trace events, task results and agent messages |
 | `trust.db` | Current trust state and append-only trust history |
-| `documents.db` | Uploaded document metadata and extracted passages |
+| `documents.db` | Uploaded document metadata, extracted text and stored source paths |
 | `sample_university.db` | Seeded read-only demo database |
 | `knowledge_graph.ttl` | RDF export of the local tool/ontology graph |
 
@@ -202,4 +236,5 @@ version derived from the static file mtimes so a restart picks up changes.
 - An open breaker removes the primary candidate from selection.
 - A failed primary call can recover through a compatible substitute.
 - Every decision and provider outcome is traceable by task ID.
+- Document uploads are capped at 10 MB, extraction and retrieval stay local, and deletion never unlinks a path outside the uploads directory.
 - External APIs are free and keyless; no secret is required to run the project.

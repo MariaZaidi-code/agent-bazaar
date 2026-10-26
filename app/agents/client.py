@@ -113,7 +113,7 @@ class ClientAgent:
             require_known_licence=self.settings.require_known_licence,
         )
 
-    async def run(self, task: str) -> TaskResult:
+    async def run(self, task: str, document_id: str | None = None) -> TaskResult:
         task_id = new_id("task")
         started = time.perf_counter()
         self._trace(
@@ -121,10 +121,10 @@ class ClientAgent:
             "task_started",
             "client",
             "Task received by the Client agent.",
-            {"task": task, "mode": self._mode()},
+            {"task": task, "mode": self._mode(), "document_id": document_id},
         )
         try:
-            result = await self._run(task_id, task, started)
+            result = await self._run(task_id, task, started, document_id=document_id)
         except Exception as exc:
             self._trace(
                 task_id,
@@ -147,7 +147,13 @@ class ClientAgent:
         self.traces.save_result(result)
         return result
 
-    async def _run(self, task_id: str, task: str, started: float) -> TaskResult:
+    async def _run(
+        self,
+        task_id: str,
+        task: str,
+        started: float,
+        document_id: str | None = None,
+    ) -> TaskResult:
         metrics = TaskMetrics()
         await self._publish(
             TaskRequestMessage(
@@ -175,6 +181,10 @@ class ClientAgent:
 
         plan_started = time.perf_counter()
         subgoals, warnings = await self.planner.decompose(task, correlation_id=task_id)
+        if document_id:
+            for subgoal in subgoals:
+                if subgoal.capability == "AnswerFromDocument":
+                    subgoal.slots["document_id"] = document_id
         metrics.tokens = 0
         subgoal_map = {subgoal.id: subgoal for subgoal in subgoals}
         self._trace(

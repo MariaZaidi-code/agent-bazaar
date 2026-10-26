@@ -15,12 +15,25 @@ def test_health_and_interface(api: TestClient) -> None:
         "/marketplace": "Service marketplace",
         "/monitor": "Self-healing monitor",
         "/library": "Trust Center",
+        "/documents": "Documents",
+        "/docs": "Documentation",
     }
     for path, title in pages.items():
         response = api.get(path)
         assert response.status_code == 200
         assert f"<title>{title} | Agent Bazaar</title>" in response.text
         assert f'data-page="{path.removeprefix("/")}"' in response.text
+    swagger = api.get("/api/docs")
+    assert swagger.status_code == 200
+    assert "swagger-ui" in swagger.text
+    assert "SwaggerUIBundle" in swagger.text
+    openapi_spec = api.get("/api/openapi.json")
+    assert openapi_spec.status_code == 200
+    spec = openapi_spec.json()
+    assert "/api/documents/{document_id}" in spec["paths"]
+    task_request = spec["paths"]["/api/tasks"]["post"]["requestBody"]["content"]["application/json"]["schema"]
+    task_schema = spec["components"]["schemas"][task_request["$ref"].rsplit("/", 1)[-1]]
+    assert "document_id" in task_schema["properties"]
     assert api.get("/static/styles.css").status_code == 200
     assert api.get("/static/app.js").status_code == 200
     assert api.get("/favicon.ico").status_code == 204
@@ -80,20 +93,66 @@ def test_demo_failure_drift_and_reset(api: TestClient) -> None:
 
 
 def test_document_upload_and_question(api: TestClient) -> None:
+    facts = b"The demo capital is Lahore. The demo has forty two tools."
     upload = api.post(
         "/api/documents",
-        files={"file": ("facts.txt", b"The demo capital is Lahore. The demo has forty two tools.", "text/plain")},
+        files={"file": ("facts.txt", facts, "text/plain")},
     )
     assert upload.status_code == 200
-    assert upload.json()["document"]["name"] == "facts.txt"
+    document = upload.json()["document"]
+    document_id = document["document_id"]
+    assert document["name"] == "facts.txt"
     assert api.get("/api/documents").json()["documents"]
 
-    result = api.post(
+    detail = api.get(f"/api/documents/{document_id}")
+    assert detail.status_code == 200
+    assert detail.json()["document"]["name"] == "facts.txt"
+    assert detail.json()["document"]["text"] == facts.decode()
+    assert api.get("/api/documents/doc_missing").status_code == 404
+
+    implicit = api.post(
         "/api/tasks",
         json={"task": "According to the uploaded document, what is the demo capital?"},
     ).json()
+    assert implicit["status"] == "completed"
+    assert "Lahore" in implicit["answer"]
+
+    second = api.post(
+        "/api/documents",
+        files={"file": ("other.txt", b"The demo capital is Karachi. The demo has seven tools.", "text/plain")},
+    )
+    assert second.status_code == 200
+    second_id = second.json()["document"]["document_id"]
+
+    result = api.post(
+        "/api/tasks",
+        json={
+            "task": "According to the uploaded document, what is the demo capital?",
+            "document_id": document_id,
+        },
+    ).json()
     assert result["status"] == "completed"
     assert "Lahore" in result["answer"]
+    assert "Karachi" not in result["answer"]
+
+    unknown = api.post(
+        "/api/tasks",
+        json={
+            "task": "According to the uploaded document, what is the demo capital?",
+            "document_id": "doc_missing",
+        },
+    )
+    assert unknown.status_code == 404
+
+    deleted = api.delete(f"/api/documents/{document_id}")
+    assert deleted.status_code == 200
+    assert deleted.json()["deleted"] is True
+    assert deleted.json()["document_id"] == document_id
+    remaining = api.get("/api/documents").json()["documents"]
+    assert all(item["document_id"] != document_id for item in remaining)
+    assert any(item["document_id"] == second_id for item in remaining)
+    assert api.get(f"/api/documents/{document_id}").status_code == 404
+    assert api.delete(f"/api/documents/{document_id}").status_code == 404
 
 
 def test_corrections_listings_and_baselines(api: TestClient) -> None:
