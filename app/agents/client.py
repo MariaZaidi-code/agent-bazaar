@@ -55,6 +55,17 @@ SLOT_CONCEPTS = {
     "date": "DateTimeISO",
     "query": "ResearchTopic",
     "document_id": "DocumentReference",
+    "news_query": "NewsTopic",
+    "show_query": "ShowQuery",
+    "book_query": "BookQuery",
+    "recipe_query": "RecipeQuery",
+    "asset": "CryptoAsset",
+    "currency": "CurrencyCode",
+    "text": "Text",
+    "source_language": "LanguageCode",
+    "target_language": "LanguageCode",
+    "timezone": "TimezoneName",
+    "league": "SportsLeague",
 }
 
 CAPABILITY_LABELS = {
@@ -66,6 +77,15 @@ CAPABILITY_LABELS = {
     "SearchResearchPapers": "research",
     "QueryStructuredData": "database",
     "AnswerFromDocument": "document",
+    "SearchNews": "news",
+    "GetCryptoPrice": "crypto",
+    "SearchTVShows": "television",
+    "SearchBooks": "books",
+    "TranslateText": "translation",
+    "GetCurrentTime": "time",
+    "GetSunTimes": "sun",
+    "SearchRecipes": "recipes",
+    "GetSportsScores": "sports",
 }
 
 
@@ -1506,6 +1526,76 @@ class ClientAgent:
                 citations = payload.get("citations") or []
                 citation = citations[0].get("name") if citations else "the uploaded document"
                 parts.append(f"{payload.get('answer')} (Source: {citation}.)")
+            elif capability == "SearchNews" and "articles" in output:
+                articles = output["articles"]
+                preview = "; ".join(
+                    f"{item.get('title')} ({item.get('source')})" for item in articles[:3]
+                )
+                parts.append(f"Latest news: {preview}.")
+            elif capability == "GetCryptoPrice" and "price" in output:
+                price = output["price"]
+                parts.append(
+                    f"1 {price.get('asset')} is currently {float(price.get('price') or 0):,.2f} "
+                    f"{price.get('currency')} with a market cap of "
+                    f"{float(price.get('market_cap') or 0):,.0f} {price.get('currency')} "
+                    f"(updated {price.get('last_updated')})."
+                )
+            elif capability == "SearchTVShows" and "shows" in output:
+                shows = output["shows"]
+                preview = "; ".join(
+                    f"{item.get('name')} ({item.get('premiered') or 'n/a'}, "
+                    f"rating {item.get('rating') or 'n/a'})"
+                    for item in shows[:3]
+                )
+                parts.append(f"TV shows found: {preview}.")
+            elif capability == "SearchBooks" and "books" in output:
+                books = output["books"]
+                preview = "; ".join(
+                    f"{item.get('title')} by {item.get('author') or 'unknown author'} "
+                    f"({item.get('first_publish_year') or 'n/a'})"
+                    for item in books[:3]
+                )
+                parts.append(f"Books found: {preview}.")
+            elif capability == "TranslateText" and "translation" in output:
+                translation = output["translation"]
+                parts.append(
+                    f"Translation ({translation.get('source_language')} to "
+                    f"{translation.get('target_language')}): {translation.get('text')}."
+                )
+            elif capability == "GetCurrentTime" and "time" in output:
+                current = output["time"]
+                parts.append(
+                    f"Current time in {current.get('timezone')}: {current.get('datetime')} "
+                    f"(UTC offset {current.get('utc_offset')})."
+                )
+            elif capability == "GetSunTimes" and "sun" in output:
+                sun = output["sun"]
+                seconds = int(sun.get("day_length") or 0)
+                day_length = f"{seconds // 3600}h {(seconds % 3600) // 60}m"
+                parts.append(
+                    f"Sunrise {sun.get('sunrise')}, sunset {sun.get('sunset')}, "
+                    f"solar noon {sun.get('solar_noon')}, day length {day_length}."
+                )
+            elif capability == "SearchRecipes" and "meals" in output:
+                meals = output["meals"]
+                preview = "; ".join(
+                    f"{item.get('name')} ({item.get('category')}, {item.get('area')})"
+                    for item in meals[:3]
+                )
+                ingredients = (meals[0].get("ingredients") or []) if meals else []
+                parts.append(
+                    f"Recipes found: {preview}. Main recipe ingredients: "
+                    f"{', '.join(str(item) for item in ingredients[:6])}."
+                )
+            elif capability == "GetSportsScores" and "scores" in output:
+                scores = output["scores"]
+                preview = "; ".join(
+                    f"{item.get('away_team')} {item.get('away_score')} - "
+                    f"{item.get('home_score')} {item.get('home_team')} "
+                    f"({item.get('status')})"
+                    for item in scores[:3]
+                )
+                parts.append(f"Latest scores: {preview}.")
         if substituted:
             parts.append(
                 "A provider failed during execution, so the Client recovered the chain "

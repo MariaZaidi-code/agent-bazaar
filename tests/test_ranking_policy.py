@@ -36,6 +36,16 @@ EXPECTED_PROFILES = {
     "university-sql": ("free", "keyless", "sample data"),
     "document-qa": ("free", "keyless", "user documents"),
     "mock-weather-fahrenheit": ("free", "keyless", "mock"),
+    "hackernews-search": ("free", "keyless", "MIT"),
+    "coingecko-price": ("free", "keyless", "CoinGecko API terms"),
+    "tvmaze-search": ("free", "keyless", "CC-BY-SA-4.0"),
+    "open-library-search": ("free", "keyless", "CC0-1.0"),
+    "google-books-search": ("free", "keyless", "Google Books API terms"),
+    "mymemory-translate": ("free", "keyless", "MyMemory terms"),
+    "worldtime-current": ("free", "keyless", "BSD-3-Clause"),
+    "sunrise-sunset-times": ("free", "keyless", "CC0-1.0"),
+    "themealdb-recipes": ("free", "keyless", "TheMealDB terms"),
+    "espn-scores": ("free", "keyless", "ESPN terms"),
 }
 
 SUBGOAL = SubGoal(

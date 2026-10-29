@@ -90,6 +90,115 @@ SQL_WORDS = re.compile(
     r"\b(students?|enrol(?:l)?(?:ed|ment)?|courses?|gpa|university|database|sql|faculty|programs?)\b",
     re.I,
 )
+NEWS_WORDS = re.compile(r"\b(news|headlines?|current events)\b", re.I)
+CRYPTO_WORDS = re.compile(
+    r"\b(crypto(?:currency)?|bitcoin|btc|ethereum|eth|solana|sol|dogecoin|doge|"
+    r"cardano|ripple|xrp|polkadot|litecoin|ltc|bnb|binancecoin)\b",
+    re.I,
+)
+TV_WORDS = re.compile(r"\b(tv|television)\b|\b(tv|television)\s+(show|shows|series)\b", re.I)
+BOOK_WORDS = re.compile(r"\b(books?|novels?)\b", re.I)
+TRANSLATE_WORDS = re.compile(r"\b(translate|translation|translated)\b", re.I)
+TIME_WORDS = re.compile(
+    r"\b(what time|current time|local time|time is it|time in|timezone|clock)\b", re.I
+)
+SUN_WORDS = re.compile(
+    r"\b(sunrise|sunset|solar noon|day length|daylight|golden hour)\b", re.I
+)
+RECIPE_WORDS = re.compile(r"\b(recipes?|cook|cooking|bake|baking|dish)\b", re.I)
+SPORTS_WORDS = re.compile(
+    r"\b(nba|nfl|mlb|nhl|epl|ipl|psl|premier league|cricket|scores?|scoreboard|"
+    r"match result|game result|who won)\b",
+    re.I,
+)
+
+CRYPTO_ASSETS = {
+    "bitcoin": "bitcoin",
+    "btc": "bitcoin",
+    "ethereum": "ethereum",
+    "eth": "ethereum",
+    "solana": "solana",
+    "sol": "solana",
+    "dogecoin": "dogecoin",
+    "doge": "dogecoin",
+    "cardano": "cardano",
+    "ripple": "ripple",
+    "xrp": "ripple",
+    "polkadot": "polkadot",
+    "litecoin": "litecoin",
+    "ltc": "litecoin",
+    "bnb": "binancecoin",
+    "binancecoin": "binancecoin",
+}
+
+TIMEZONES = {
+    "utc": "Etc/UTC",
+    "gmt": "Etc/UTC",
+    "karachi": "Asia/Karachi",
+    "lahore": "Asia/Karachi",
+    "islamabad": "Asia/Karachi",
+    "pakistan": "Asia/Karachi",
+    "tokyo": "Asia/Tokyo",
+    "japan": "Asia/Tokyo",
+    "london": "Europe/London",
+    "uk": "Europe/London",
+    "paris": "Europe/Paris",
+    "berlin": "Europe/Berlin",
+    "new york": "America/New_York",
+    "nyc": "America/New_York",
+    "los angeles": "America/Los_Angeles",
+    "sydney": "Australia/Sydney",
+    "dubai": "Asia/Dubai",
+    "uae": "Asia/Dubai",
+    "delhi": "Asia/Kolkata",
+    "mumbai": "Asia/Kolkata",
+    "kolkata": "Asia/Kolkata",
+    "india": "Asia/Kolkata",
+    "beijing": "Asia/Shanghai",
+    "shanghai": "Asia/Shanghai",
+    "singapore": "Asia/Singapore",
+    "toronto": "America/Toronto",
+    "chicago": "America/Chicago",
+}
+
+LANGUAGES = {
+    "english": "en",
+    "en": "en",
+    "urdu": "ur",
+    "ur": "ur",
+    "french": "fr",
+    "fr": "fr",
+    "spanish": "es",
+    "es": "es",
+    "german": "de",
+    "de": "de",
+    "arabic": "ar",
+    "ar": "ar",
+    "hindi": "hi",
+    "hi": "hi",
+    "chinese": "zh",
+    "zh": "zh",
+    "portuguese": "pt",
+    "pt": "pt",
+    "italian": "it",
+    "it": "it",
+    "turkish": "tr",
+    "tr": "tr",
+}
+
+SPORTS_LEAGUES = {
+    "nba": "NBA",
+    "nfl": "NFL",
+    "mlb": "MLB",
+    "nhl": "NHL",
+    "epl": "EPL",
+    "premier league": "EPL",
+    "soccer": "EPL",
+    "football": "EPL",
+    "ipl": "IPL",
+    "psl": "PSL",
+    "cricket": "Cricket",
+}
 
 
 class TaskPlanner:
@@ -115,8 +224,9 @@ class TaskPlanner:
             warnings.append("LLM planner returned no valid plan; deterministic planner found none.")
         raise ValueError(
             "I could not decompose this task. Try asking about weather, currency, "
-            "country facts, public holidays, research papers, the sample university "
-            "database, or an uploaded document."
+            "country facts, public holidays, research papers, news, crypto prices, "
+            "TV shows, books, translation, current time, sunrise or sunset, recipes, "
+            "sports scores, the sample university database, or an uploaded document."
         )
 
     def _deterministic(self, task: str) -> list[SubGoal]:
@@ -149,6 +259,141 @@ class TaskPlanner:
                     branch="weather",
                 )
             )
+        if NEWS_WORDS.search(task):
+            topic = self._news_query(task)
+            if topic:
+                subgoals.append(
+                    SubGoal(
+                        id=f"g{len(subgoals) + 1}",
+                        capability="SearchNews",
+                        description=f"Recent news stories about {topic}.",
+                        intent="news search",
+                        slots={"news_query": topic},
+                        branch="news",
+                    )
+                )
+        if CRYPTO_WORDS.search(task):
+            asset = self._crypto_asset(task)
+            if asset:
+                currency = self._requested_currency(task)
+                subgoals.append(
+                    SubGoal(
+                        id=f"g{len(subgoals) + 1}",
+                        capability="GetCryptoPrice",
+                        description=f"Current price of {asset} in {currency}.",
+                        intent="crypto price",
+                        slots={"asset": asset, "currency": currency},
+                        branch="crypto",
+                    )
+                )
+        if TV_WORDS.search(task):
+            show_query = self._show_query(task)
+            if show_query:
+                subgoals.append(
+                    SubGoal(
+                        id=f"g{len(subgoals) + 1}",
+                        capability="SearchTVShows",
+                        description=f"Television shows matching {show_query}.",
+                        intent="television search",
+                        slots={"show_query": show_query},
+                        branch="tv",
+                    )
+                )
+        if BOOK_WORDS.search(task):
+            book_query = self._book_query(task)
+            if book_query:
+                subgoals.append(
+                    SubGoal(
+                        id=f"g{len(subgoals) + 1}",
+                        capability="SearchBooks",
+                        description=f"Books matching {book_query}.",
+                        intent="book search",
+                        slots={"book_query": book_query},
+                        branch="books",
+                    )
+                )
+        if TRANSLATE_WORDS.search(task):
+            translation = self._translation(task)
+            if translation:
+                text, source, target = translation
+                subgoals.append(
+                    SubGoal(
+                        id=f"g{len(subgoals) + 1}",
+                        capability="TranslateText",
+                        description=f"Translate {text} from {source} to {target}.",
+                        intent="translation",
+                        slots={
+                            "text": text,
+                            "source_language": source,
+                            "target_language": target,
+                        },
+                        branch="translation",
+                    )
+                )
+        if TIME_WORDS.search(task):
+            timezone = self._timezone(task)
+            if timezone:
+                subgoals.append(
+                    SubGoal(
+                        id=f"g{len(subgoals) + 1}",
+                        capability="GetCurrentTime",
+                        description=f"Current local time in {timezone}.",
+                        intent="current time",
+                        slots={"timezone": timezone},
+                        branch="time",
+                    )
+                )
+        if SUN_WORDS.search(task):
+            sun_location = self._sun_location(task)
+            if sun_location:
+                geocode_id = f"g{len(subgoals) + 1}"
+                subgoals.append(
+                    SubGoal(
+                        id=geocode_id,
+                        capability="GeocodeLocation",
+                        description=f"Geocode {sun_location} for solar times.",
+                        intent="location lookup",
+                        slots={"location": sun_location},
+                        branch="sun",
+                    )
+                )
+                subgoals.append(
+                    SubGoal(
+                        id=f"g{len(subgoals) + 1}",
+                        capability="GetSunTimes",
+                        description=f"Sunrise and sunset times for {sun_location}.",
+                        intent="solar times",
+                        slots={"date": self._sun_date(lowered)},
+                        depends_on=[geocode_id],
+                        branch="sun",
+                    )
+                )
+        if RECIPE_WORDS.search(task):
+            recipe_query = self._recipe_query(task)
+            if recipe_query:
+                subgoals.append(
+                    SubGoal(
+                        id=f"g{len(subgoals) + 1}",
+                        capability="SearchRecipes",
+                        description=f"Recipes for {recipe_query}.",
+                        intent="recipe search",
+                        slots={"recipe_query": recipe_query},
+                        branch="recipes",
+                    )
+                )
+        if SPORTS_WORDS.search(task):
+            league = self._sports_league(task)
+            if league:
+                subgoals.append(
+                    SubGoal(
+                        id=f"g{len(subgoals) + 1}",
+                        capability="GetSportsScores",
+                        description=f"Latest {league} scores.",
+                        intent="sports scores",
+                        slots={"league": league},
+                        branch="sports",
+                    )
+                )
         currency = self._currency(task)
         if currency:
             amount, source, target = currency
@@ -269,6 +514,166 @@ class TaskPlanner:
         source = CURRENCY_WORDS.get(match.group(2).lower(), match.group(2).upper())
         target = CURRENCY_WORDS.get(match.group(3).lower(), match.group(3).upper())
         return amount, source, target
+
+    @staticmethod
+    def _subject(value: str) -> str:
+        return value.strip(" \t\r\n.,;:!?\"'()[]")
+
+    def _news_query(self, task: str) -> str | None:
+        patterns = (
+            r"(?:news|headlines?)\s+(?:about|on|regarding|for)\s+(.+)",
+            r"(?:current events)\s+(?:in|about|on)\s+(.+)",
+            r"(?:latest|recent|today'?s?|breaking)\s+(.+?)\s+(?:news|headlines?)\b",
+            r"(?:search|find|get|show me)\s+(?:the\s+)?(?:latest\s+)?(?:news|headlines?)\s*"
+            r"(?:about|on|regarding|for)?\s*(.*)",
+        )
+        for pattern in patterns:
+            match = re.search(pattern, task, re.I)
+            if match:
+                query = self._subject(match.group(1))
+                if query:
+                    return query
+        return None
+
+    @staticmethod
+    def _crypto_asset(task: str) -> str | None:
+        found: list[tuple[int, str]] = []
+        for name, asset in CRYPTO_ASSETS.items():
+            match = re.search(rf"\b{re.escape(name)}\b", task, re.I)
+            if match:
+                found.append((match.start(), asset))
+        return min(found)[1] if found else None
+
+    @staticmethod
+    def _requested_currency(task: str) -> str:
+        found: list[tuple[int, str]] = []
+        for word, code in CURRENCY_WORDS.items():
+            match = re.search(rf"\b{re.escape(word)}\b", task, re.I)
+            if match:
+                found.append((match.start(), code))
+        if found:
+            return min(found)[1]
+        match = re.search(r"\b([A-Z]{3})\b", task)
+        if match and match.group(1) in CURRENCY_CODES:
+            return match.group(1)
+        return "USD"
+
+    def _show_query(self, task: str) -> str | None:
+        patterns = (
+            r"(?:tv|television)\s+(?:show|shows|series|programs?)\s+"
+            r"(?:about|like|called|named|on|for)?\s*(.+)",
+            r"(?:show|shows|series)\s+(?:about|like|called|named)\s+(.+)",
+            r"(?:search|find|recommend)\s+(?:for\s+)?(?:a\s+)?(?:tv\s+)?"
+            r"(?:show|shows|series)\s+(?:like|about|called|named)?\s*(.+)",
+        )
+        for pattern in patterns:
+            match = re.search(pattern, task, re.I)
+            if match:
+                query = self._subject(match.group(1))
+                if query:
+                    return query
+        return None
+
+    def _book_query(self, task: str) -> str | None:
+        if re.search(
+            r"\bbook\s+(?:a|an|the)\s+(?:flight|hotel|table|ticket|room|taxi|ride)\b",
+            task,
+            re.I,
+        ):
+            return None
+        patterns = (
+            r"(?:books?|novels?)\s+(?:about|on|by|called|named|from)\s+(.+)",
+            r"(?:search|find|recommend|read|looking for)\s+(?:for\s+)?(?:a\s+)?(?:new\s+)?"
+            r"(?:book|books|novel|novels)\s+(?:about|on|by|called|named)?\s*(.+)",
+            r"(.+?)\s+(?:books?|novels?)\b",
+        )
+        for pattern in patterns:
+            match = re.search(pattern, task, re.I)
+            if match:
+                query = self._subject(match.group(1))
+                if query:
+                    return query
+        return None
+
+    def _translation(self, task: str) -> tuple[str, str, str] | None:
+        pattern = re.compile(
+            r"translate\s+(?:the\s+)?(?:phrase|word|text|sentence)?\s*[\"']?(.+?)[\"']?\s+"
+            r"(?:from\s+([A-Za-z]+)\s+)?(?:to|into)\s+([A-Za-z]+)\s*[.!?]*$",
+            re.I,
+        )
+        match = pattern.search(task)
+        if not match:
+            return None
+        text = self._subject(match.group(1))
+        source = (match.group(2) or "English").lower()
+        target = match.group(3).lower()
+        if not text or target not in LANGUAGES:
+            return None
+        if match.group(2) and source not in LANGUAGES:
+            return None
+        return text, LANGUAGES.get(source, "en"), LANGUAGES[target]
+
+    @staticmethod
+    def _timezone(task: str) -> str | None:
+        explicit = re.search(r"\b([A-Za-z]+/[A-Za-z_]+)\b", task)
+        if explicit:
+            return explicit.group(1)
+        lowered = task.lower()
+        for name in sorted(TIMEZONES, key=len, reverse=True):
+            if re.search(rf"\b{re.escape(name)}\b", lowered):
+                return TIMEZONES[name]
+        return None
+
+    def _sun_location(self, task: str) -> str | None:
+        pattern = re.compile(
+            r"(?:sunrise|sunset|solar noon|day length|daylight|golden hour)"
+            r"[^.!?]{0,60}?\b(?:in|for|at)\s+([A-Za-z][A-Za-z .'\-]{1,45})",
+            re.I,
+        )
+        match = pattern.search(task)
+        if not match:
+            return None
+        location = re.split(
+            r"\b(?:tomorrow|today|tonight|next week|this week|on\s+\w+|and|please)\b",
+            match.group(1),
+            maxsplit=1,
+            flags=re.I,
+        )[0]
+        location = self._subject(location)
+        return location or None
+
+    @staticmethod
+    def _sun_date(lowered_task: str) -> str:
+        if "tomorrow" in lowered_task:
+            target = date.today() + timedelta(days=1)
+        elif "next week" in lowered_task:
+            target = date.today() + timedelta(days=7)
+        else:
+            target = date.today()
+        return target.isoformat()
+
+    def _recipe_query(self, task: str) -> str | None:
+        patterns = (
+            r"(?:recipes?)\s+(?:for|of|about)?\s*(.+)",
+            r"how\s+(?:do|to)\s+(?:i\s+)?(?:cook|make|bake)\s+(.+)",
+            r"(?:search|find)\s+(?:for\s+)?(?:a\s+)?recipes?\s+(?:for|of)?\s*(.+)",
+            r"(?:cook|cooking|bake|baking)\s+(.+)",
+            r"(.+?)\s+recipes?\b",
+        )
+        for pattern in patterns:
+            match = re.search(pattern, task, re.I)
+            if match:
+                query = self._subject(match.group(1))
+                if query:
+                    return query
+        return None
+
+    @staticmethod
+    def _sports_league(task: str) -> str | None:
+        for name in sorted(SPORTS_LEAGUES, key=len, reverse=True):
+            if re.search(rf"\b{re.escape(name)}\b", task, re.I):
+                return SPORTS_LEAGUES[name]
+        return "EPL" if re.search(r"\bsports scores?\b", task, re.I) else None
 
     def _country(self, task: str, default: str) -> str:
         lowered = task.lower()

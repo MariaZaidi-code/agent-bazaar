@@ -69,7 +69,7 @@ Auditor and monitoring:
 
 - **Client agent** with decomposition, GraphRAG retrieval, ontology filtering, claim-aware ranking, dependency-aware composition, type/unit link checks, execution, recovery and answer synthesis.
 - **Free-first ranking** with a deterministic tier partition (free, freemium, paid, unknown), weighted quality factors, a shrunk rating factor and an executability gate: paid and keyed tools are ranked and shown with a reason but never called.
-- **Provider layer** for Open-Meteo, Frankfurter, OpenStreetMap Nominatim, REST Countries, Nager.Date, arXiv, a read-only university SQLite database and uploaded-document question answering.
+- **Provider layer** with 25 registered providers (19 primary and six mirrors) across 17 capabilities: Open-Meteo, Frankfurter, OpenStreetMap Nominatim, REST Countries, Nager.Date, arXiv, Hacker News, CoinGecko, TVMaze, Open Library, Google Books, MyMemory, WorldTimeAPI, Sunrise-Sunset, TheMealDB, ESPN, a read-only university SQLite database, uploaded-document question answering and the adversarial weather mock.
 - **Resilience** with backup mirrors for six live providers, an adversarial Fahrenheit weather mock, trust-weighted ranking, a three-state circuit breaker and circuit-breaker substitution.
 - **Trust registry** with Beta-style scoring, signal history, contradiction penalties, demotion and replay verification.
 - **Trace viewer** persisting every decision, provider call, verification result and recovery event in SQLite.
@@ -81,7 +81,7 @@ Auditor and monitoring:
   Trust Center's Auditor evidence and trust replay, using a keyboard command palette, staging
   corrections and injecting demo failures.
 - **Evaluation suite** with 50 matching tasks, 15 chain tasks, B1/B2 baseline comparison, 7 substitution cases, 6 trust scenarios, a seven-configuration ablation and a 48-task free-first ranking suite.
-- **261 automated tests** across the merged application, knowledge-layer, Auditor and bridge suites, including 43 integration tests for the application/knowledge-layer bridge, plus Ruff checks and GitHub Actions CI.
+- **284 automated tests** across the merged application, knowledge-layer, Auditor and bridge suites, including 23 Sprint 1 provider, planner and client tests and 43 integration tests for the application/knowledge-layer bridge, plus Ruff checks and GitHub Actions CI.
 
 ### Auditor and Monitoring
 
@@ -96,7 +96,7 @@ Auditor and monitoring:
 
 ### Knowledge layer and Mapper
 
-- **Ontology** with a frozen 12-class upper ontology, a curated domain layer of 60 concepts, unit families with compatibility rules, and SHACL shapes for validation.
+- **Ontology** with a frozen 12-class upper ontology, a curated domain layer of 77 concepts, unit families with compatibility rules, and SHACL shapes for validation.
 - **RDF knowledge graph** store with loaders and query helpers for tools, concepts, units, capabilities and mappings.
 - **API sourcing** with a pluggable source protocol, the APIs.guru directory and a local upload source, a manifest v2 that carries the commercial and access facts of every document, a refresh diff, and a curated override file that wins over the extraction rules.
 - **Quality profiles** with one `ab:Offering` node per tool: pricing tier, access requirement, price, rate limit, probe budget, licence, terms URL, documentation quality, mapping coverage, rating and the evidence behind each fact.
@@ -126,9 +126,9 @@ python scripts/demo_mapper.py
 python -m pytest
 ```
 
-`python -m pytest` runs the whole merged suite: the 130 knowledge-layer tests, the 50
+`python -m pytest` runs the whole merged suite: the 130 knowledge-layer tests, the 73
 application tests, the 43 integration tests, the 32 Auditor tests and the 6 Auditor bridge
-tests, 261 in total.
+tests, 284 in total.
 
 This uses the committed 8-spec seed corpus and the deterministic hashing
 embedder. No API key is needed. To fetch the full corpus and use the embedding
@@ -244,6 +244,21 @@ AB_REQUIRE_KNOWN_LICENCE=false
 9. Open **Documents** in the sidebar or the file icon in the top bar. Upload a TXT/MD/CSV/PDF/DOCX file up to 10 MB, select it to preview the extracted text, and ask a question inline. The answer stays on the page with its cited passages, and **Open full trace** jumps to the run in the dashboard.
 10. Open **Service marketplace**, open the adversarial mock, and stage an ontology correction from its tool modal.
 
+### Sprint 1 provider examples
+
+Each new provider has a deterministic offline fixture and a runnable task:
+
+- **Hacker News:** `Latest news about artificial intelligence`
+- **CoinGecko:** `What is the price of bitcoin in USD?`
+- **TVMaze:** `Find TV shows like Breaking Bad`
+- **Open Library:** `Recommend books about machine learning`
+- **Google Books:** `Find books about distributed systems`
+- **MyMemory:** `Translate good morning from English to Urdu`
+- **WorldTimeAPI:** `What time is it in Tokyo?`
+- **Sunrise-Sunset:** `Sunrise in Lahore tomorrow`
+- **TheMealDB:** `Recipe for chicken biryani`
+- **ESPN:** `NBA scores`
+
 ## Architecture
 
 ```text
@@ -264,7 +279,7 @@ Developer UI
 
 Knowledge layer (src/agent_bazaar)
    listing -> ingestion -> Mapper -> validated RDF graph write
-   ontology (upper classes, 60 domain concepts, units, SHACL shapes)
+   ontology (upper classes, 77 domain concepts, units, SHACL shapes)
    graph (tools, concepts, units, capabilities, mappings)
    vector index (ontology terms, tool descriptions, corrections)
    |
@@ -363,10 +378,13 @@ config/          settings.example.yaml; settings.yaml is gitignored
 run.py           development entry point
 ```
 
-Committed artifacts: `data/out/ontology.ttl` (upper ontology, units and 60 concepts),
-`data/out/graph.ttl` (8 tools, 467 mapping nodes), `data/out/ontology_llm_demo.ttl` and the
-other demo/domain TTLs, `data/out/logs/` build summaries, `data/eval/mapping_gold.jsonl`, the
-8-spec seed corpus, `reports/*.json` and the documents under `docs/`.
+Committed artifacts: `data/out/ontology.ttl` (upper ontology, units and the 60 concepts
+from the previous seed build), `data/out/graph.ttl` (8 tools, 467 mapping nodes),
+`data/out/ontology_llm_demo.ttl` and the other demo/domain TTLs, `data/out/logs/` build
+summaries, `data/eval/mapping_gold.jsonl`, the 8-spec seed corpus, `reports/*.json` and the
+documents under `docs/`. The Sprint 1 source seed adds 17 concepts; rebuild the published
+artifacts with `scripts/build_ontology.py --offline` and `scripts/seed_graph.py --offline`
+before republishing them. Until then the ten new tools are served from the local catalogue.
 
 The Mapper writes validated mappings and uses a bounded repair loop; corrections
 are staged before promotion. See the Mapper protocol and decisions documents for
@@ -403,8 +421,8 @@ whole application from the knowledge layer, and `local` never loads it.
 `GET /api/knowledge` reports the RDF layer that is loaded: the graph counts, the number
 of concepts, the tools and the paths of the graph and ontology artifacts.
 
-`python -m pytest` runs 261 tests across the knowledge layer, application, integration,
-Auditor and bridge suites. All 261 pass on the current checkout. The app-side adapter
+`python -m pytest` runs 284 tests across the knowledge layer, application, integration,
+Auditor and bridge suites. All 284 pass on the current checkout. The app-side adapter
 boundaries and the method-level contracts are documented in
 [docs/integration.md](docs/integration.md).
 
@@ -517,7 +535,7 @@ yet.
 .\.venv\Scripts\ruff.exe check app src tests run.py
 ```
 
-The merged suite holds 261 tests: 130 knowledge-layer tests, 50 application tests, 43
+The merged suite holds 284 tests: 130 knowledge-layer tests, 73 application tests, 43
 integration tests, 32 Auditor tests and 6 Auditor bridge tests. The application tests cover trust updates and replay, breaker
 transitions, ontology links, graph substitutes, all example chains, SQL, document QA,
 injected failure substitution, breaker routing, mapper corrections, baselines, the

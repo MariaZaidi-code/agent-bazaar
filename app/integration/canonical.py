@@ -11,10 +11,10 @@ Rules:
 
 * Concept and unit names are matched case-insensitively, with or without the
   ``ab:`` prefix or a full IRI.
-* Concepts that exist only in the local fallback ontology (document QA and
-  research-paper concepts) are listed in :data:`EXTERNAL_CONCEPTS`; the
-  knowledge layer does not know them yet and validation treats them as
-  external rather than invalid.
+* Concepts that are missing from the published RDF artifacts (document QA,
+  research-paper and Sprint 1 provider concepts) are listed in
+  :data:`EXTERNAL_CONCEPTS`; validation treats them as external rather than
+  invalid, and a rebuild removes the fallback.
 """
 
 from __future__ import annotations
@@ -61,6 +61,23 @@ EXTERNAL_CONCEPTS: frozenset[str] = frozenset(
         "Claim",
         "Evidence",
         "Provider",
+        "NewsTopic",
+        "NewsArticle",
+        "CryptoAsset",
+        "CryptoPrice",
+        "ShowQuery",
+        "TVShow",
+        "BookQuery",
+        "Book",
+        "LanguageCode",
+        "Translation",
+        "TimezoneName",
+        "CurrentTime",
+        "SunTimes",
+        "RecipeQuery",
+        "Recipe",
+        "SportsLeague",
+        "SportsScore",
     }
 )
 
@@ -74,6 +91,15 @@ CURATED_CAPABILITIES: tuple[str, ...] = (
     "SearchResearchPapers",
     "QueryStructuredData",
     "AnswerFromDocument",
+    "SearchNews",
+    "GetCryptoPrice",
+    "SearchTVShows",
+    "SearchBooks",
+    "TranslateText",
+    "GetCurrentTime",
+    "GetSunTimes",
+    "SearchRecipes",
+    "GetSportsScores",
 )
 
 # Derived capability slug -> curated capability.
@@ -110,6 +136,44 @@ CAPABILITY_ALIASES: dict[str, str] = {
     "answer-from-document": "AnswerFromDocument",
     "document": "AnswerFromDocument",
     "document-qa": "AnswerFromDocument",
+    "search-news": "SearchNews",
+    "news": "SearchNews",
+    "headlines": "SearchNews",
+    "hacker-news": "SearchNews",
+    "hackernews": "SearchNews",
+    "get-crypto-price": "GetCryptoPrice",
+    "crypto": "GetCryptoPrice",
+    "cryptocurrency": "GetCryptoPrice",
+    "coin-price": "GetCryptoPrice",
+    "bitcoin": "GetCryptoPrice",
+    "search-tv-shows": "SearchTVShows",
+    "tv": "SearchTVShows",
+    "television": "SearchTVShows",
+    "shows": "SearchTVShows",
+    "search-books": "SearchBooks",
+    "books": "SearchBooks",
+    "book-search": "SearchBooks",
+    "library": "SearchBooks",
+    "translate-text": "TranslateText",
+    "translate": "TranslateText",
+    "translation": "TranslateText",
+    "language": "TranslateText",
+    "get-current-time": "GetCurrentTime",
+    "time": "GetCurrentTime",
+    "clock": "GetCurrentTime",
+    "timezone": "GetCurrentTime",
+    "get-sun-times": "GetSunTimes",
+    "sunrise": "GetSunTimes",
+    "sunset": "GetSunTimes",
+    "solar-times": "GetSunTimes",
+    "search-recipes": "SearchRecipes",
+    "recipes": "SearchRecipes",
+    "recipe": "SearchRecipes",
+    "cooking": "SearchRecipes",
+    "get-sports-scores": "GetSportsScores",
+    "sports": "GetSportsScores",
+    "scores": "GetSportsScores",
+    "scoreboard": "GetSportsScores",
 }
 
 # Canonical concept -> curated capability used when a tool has no capability.
@@ -145,6 +209,23 @@ CONCEPT_CAPABILITY: dict[str, str] = {
     "TabularAnswer": "QueryStructuredData",
     "AnswerFromDocument": "AnswerFromDocument",
     "DocumentReference": "AnswerFromDocument",
+    "NewsArticle": "SearchNews",
+    "NewsTopic": "SearchNews",
+    "CryptoPrice": "GetCryptoPrice",
+    "CryptoAsset": "GetCryptoPrice",
+    "TVShow": "SearchTVShows",
+    "ShowQuery": "SearchTVShows",
+    "Book": "SearchBooks",
+    "BookQuery": "SearchBooks",
+    "Translation": "TranslateText",
+    "LanguageCode": "TranslateText",
+    "CurrentTime": "GetCurrentTime",
+    "TimezoneName": "GetCurrentTime",
+    "SunTimes": "GetSunTimes",
+    "Recipe": "SearchRecipes",
+    "RecipeQuery": "SearchRecipes",
+    "SportsScore": "GetSportsScores",
+    "SportsLeague": "GetSportsScores",
 }
 
 

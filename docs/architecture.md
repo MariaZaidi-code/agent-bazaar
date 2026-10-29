@@ -63,10 +63,10 @@ FastAPI (app/main.py)
 
 ## Client loop
 
-1. **Decompose.** `TaskPlanner.decompose` detects weather, currency, holiday, country, research, SQL and document intents. Weather and SQL/document questions are handled robustly; an optional LLM planner is used only when the deterministic planner finds nothing.
+1. **Decompose.** `TaskPlanner.decompose` detects weather, currency, holiday, country, research, news, crypto, TV, books, translation, current time, sunrise/sunset, recipes, sports, SQL and document intents. Weather, SQL/document and the Sprint 1 provider questions are handled robustly; an optional LLM planner is used only when the deterministic planner finds nothing.
 2. **Retrieve.** For each sub-goal, `GraphRAGRetriever.search` filters the catalogue to the required capability, ranks by TF-IDF cosine similarity, normalizes scores, and expands the top seeds through graph neighbors.
 3. **Filter.** The Client rejects unknown capabilities and candidates that cannot satisfy required input concepts.
-4. **Verify.** The Auditor returns per-claim labels (`Verified`, `Supported`, `Unsupported` or `Contradicted`). Catalogue tools are checked by the real Auditor; local SQL, document and adversarial providers use the seeded fallback.
+4. **Verify.** The Auditor returns per-claim labels (`Verified`, `Supported`, `Unsupported` or `Contradicted`). The six Auditor-catalogue tools are checked by the real Auditor; local SQL, document, adversarial and Sprint 1 providers use the seeded fallback.
 5. **Rank.** The policy partitions candidates by pricing tier (`free`, `freemium`, `paid`, `unknown`), then ranks inside the tier:
 
    ```text
@@ -112,8 +112,8 @@ A provider is demoted when it has at least `trust_min_evidence` weighted evidenc
 `nominatim-geocode` -> `nominatim`, `restcountries-facts` -> `rest-countries`,
 `nager-holidays` -> `nager-date`, `arxiv-search` -> `arxiv`). Verification runs
 in a worker thread because the Auditor is synchronous and owns mutable
-baselines; the bridge serialises calls with one lock. The three local-only
-providers keep the seeded fallback from `AuditorStub`.
+baselines; the bridge serialises calls with one lock. The local-only providers,
+including the ten Sprint 1 tools, keep the seeded fallback from `AuditorStub`.
 
 The interface exposes the Auditor through `GET /api/auditor`,
 `GET /api/auditor/trust`, `POST /api/auditor/verify/{tool}` and
@@ -148,7 +148,7 @@ Breakers are process-local by design. Trust, traces and messages are persisted i
 
 Providers never silently return malformed data: schema errors are attached to the response and the Client records them.
 
-Mirrors exist for weather, geocoding, currency, holidays, country facts and arXiv. The adversarial mock weather provider reports Fahrenheit output and is used to show why unit-aware composition matters.
+Mirrors exist for weather, geocoding, currency, holidays, country facts and arXiv. The ten Sprint 1 providers are primary-only and each has a deterministic offline fixture. The adversarial mock weather provider reports Fahrenheit output and is used to show why unit-aware composition matters.
 
 ## Interface
 

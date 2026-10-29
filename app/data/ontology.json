@@ -69,7 +69,60 @@
     },
     "DateTimeISO": {"parents": ["Entity"], "description": "An ISO 8601 date or timestamp."},
     "Number": {"parents": ["Entity"], "description": "A numeric literal."},
-    "Text": {"parents": ["Entity"], "description": "Plain text."}
+    "Text": {"parents": ["Entity"], "description": "Plain text."},
+    "NewsTopic": {"parents": ["Entity"], "description": "A topic, company or keyword used to search news."},
+    "NewsArticle": {
+      "parents": ["Entity"],
+      "description": "A news story with a source link.",
+      "fields": ["title", "url", "author", "published_at", "points", "source"]
+    },
+    "CryptoAsset": {"parents": ["Entity"], "description": "A cryptocurrency name or ticker."},
+    "CryptoPrice": {
+      "parents": ["Entity"],
+      "description": "A cryptocurrency price in a fiat currency.",
+      "fields": ["asset", "currency", "price", "market_cap", "last_updated"]
+    },
+    "ShowQuery": {"parents": ["Entity"], "description": "A television show title or topic."},
+    "TVShow": {
+      "parents": ["Entity"],
+      "description": "A television show record.",
+      "fields": ["name", "genres", "premiered", "rating", "url", "summary"]
+    },
+    "BookQuery": {"parents": ["Entity"], "description": "A book title, author or subject."},
+    "Book": {
+      "parents": ["Entity"],
+      "description": "A book catalogue record.",
+      "fields": ["title", "author", "first_publish_year", "url", "key"]
+    },
+    "LanguageCode": {"parents": ["Entity"], "description": "A language name or ISO 639 code."},
+    "Translation": {
+      "parents": ["Entity"],
+      "description": "Translated text with its language pair.",
+      "fields": ["text", "source_language", "target_language", "match"]
+    },
+    "TimezoneName": {"parents": ["Entity"], "description": "An IANA timezone identifier."},
+    "CurrentTime": {
+      "parents": ["Entity"],
+      "description": "The current time in a timezone.",
+      "fields": ["datetime", "timezone", "utc_offset", "day_of_week"]
+    },
+    "SunTimes": {
+      "parents": ["Entity"],
+      "description": "Sunrise, sunset and day length for a place and date.",
+      "fields": ["sunrise", "sunset", "solar_noon", "day_length"]
+    },
+    "RecipeQuery": {"parents": ["Entity"], "description": "A dish or ingredient used to search recipes."},
+    "Recipe": {
+      "parents": ["Entity"],
+      "description": "A recipe with ingredients and instructions.",
+      "fields": ["name", "category", "area", "instructions", "ingredients", "image", "source"]
+    },
+    "SportsLeague": {"parents": ["Entity"], "description": "A sports league or competition name."},
+    "SportsScore": {
+      "parents": ["Entity"],
+      "description": "A game result with teams and scores.",
+      "fields": ["league", "home_team", "away_team", "home_score", "away_score", "status", "date"]
+    }
   },
   "units": {
     "C": {"dimension": "temperature", "convertible": ["F", "K"]},
@@ -126,6 +179,51 @@
       "description": "Answer a question from an uploaded document.",
       "inputs": ["DocumentQuestion", "DocumentReference"],
       "outputs": ["AnswerFromDocument"]
+    },
+    "SearchNews": {
+      "description": "Search recent news stories by topic.",
+      "inputs": ["NewsTopic"],
+      "outputs": ["NewsArticle"]
+    },
+    "GetCryptoPrice": {
+      "description": "Return a cryptocurrency price in a fiat currency.",
+      "inputs": ["CryptoAsset", "CurrencyCode"],
+      "outputs": ["CryptoPrice"]
+    },
+    "SearchTVShows": {
+      "description": "Search television shows by title or topic.",
+      "inputs": ["ShowQuery"],
+      "outputs": ["TVShow"]
+    },
+    "SearchBooks": {
+      "description": "Search a book catalogue by title, author or subject.",
+      "inputs": ["BookQuery"],
+      "outputs": ["Book"]
+    },
+    "TranslateText": {
+      "description": "Translate text between two languages.",
+      "inputs": ["Text", "LanguageCode", "LanguageCode"],
+      "outputs": ["Translation"]
+    },
+    "GetCurrentTime": {
+      "description": "Return the current time in an IANA timezone.",
+      "inputs": ["TimezoneName"],
+      "outputs": ["CurrentTime"]
+    },
+    "GetSunTimes": {
+      "description": "Return sunrise and sunset times for coordinates and a date.",
+      "inputs": ["Coordinates", "DateTimeISO"],
+      "outputs": ["SunTimes"]
+    },
+    "SearchRecipes": {
+      "description": "Search recipes by dish or ingredient.",
+      "inputs": ["RecipeQuery"],
+      "outputs": ["Recipe"]
+    },
+    "GetSportsScores": {
+      "description": "Return the latest scores for a sports league.",
+      "inputs": ["SportsLeague"],
+      "outputs": ["SportsScore"]
     }
   }
 }

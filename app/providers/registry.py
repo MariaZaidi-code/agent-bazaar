@@ -8,13 +8,21 @@ from app.core.cache import Cache
 from app.knowledge.graph import ToolKnowledgeGraph
 from app.providers.arxiv_provider import ArxivProvider
 from app.providers.base import BaseProvider
+from app.providers.books import GoogleBooksProvider, OpenLibraryProvider
 from app.providers.countries import CountriesProvider
+from app.providers.crypto import CoinGeckoProvider
 from app.providers.currency import CurrencyProvider
 from app.providers.document_provider import DocumentQAProvider, DocumentStore
 from app.providers.geocoding import GeocodingProvider
 from app.providers.holidays import HolidaysProvider
 from app.providers.mirror import MirrorProvider, make_mirror_spec
+from app.providers.news import HackerNewsProvider
+from app.providers.recipes import TheMealDBProvider
+from app.providers.sports import EspnScoresProvider
 from app.providers.sql_provider import UniversitySQLProvider
+from app.providers.time import SunriseSunsetProvider, WorldTimeProvider
+from app.providers.translation import MyMemoryProvider
+from app.providers.tv import TVMazeProvider
 from app.providers.weather import MockWeatherFahrenheitProvider, WeatherProvider
 from app.schemas import ToolSpec
 
@@ -56,6 +64,16 @@ class ProviderRegistry:
             "arxiv": ArxivProvider,
             "university-db": UniversitySQLProvider,
             "mock-weather-fahrenheit": MockWeatherFahrenheitProvider,
+            "hackernews": HackerNewsProvider,
+            "coingecko": CoinGeckoProvider,
+            "tvmaze": TVMazeProvider,
+            "open-library": OpenLibraryProvider,
+            "google-books": GoogleBooksProvider,
+            "mymemory": MyMemoryProvider,
+            "worldtimeapi": WorldTimeProvider,
+            "sunrise-sunset": SunriseSunsetProvider,
+            "themealdb": TheMealDBProvider,
+            "espn": EspnScoresProvider,
         }
         if spec.provider_id == "document-service":
             return DocumentQAProvider(

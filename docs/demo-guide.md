@@ -150,7 +150,28 @@ Talking points:
 - The Mapper adapter validates corrections against the shared ontology before staging them.
 - The adversarial mock is intentionally present to show that claim evidence and unit checks matter.
 
-## 9. Evaluation
+## 9. Sprint 1 provider breadth
+
+Run any of these tasks to exercise the ten new providers. Each has a deterministic offline fixture, so the demo works without API keys:
+
+- **Hacker News:** `Latest news about artificial intelligence`
+- **CoinGecko:** `What is the price of bitcoin in USD?`
+- **TVMaze:** `Find TV shows like Breaking Bad`
+- **Open Library:** `Recommend books about machine learning`
+- **Google Books:** `Find books about distributed systems`
+- **MyMemory:** `Translate good morning from English to Urdu`
+- **WorldTimeAPI:** `What time is it in Tokyo?`
+- **Sunrise-Sunset:** `Sunrise in Lahore tomorrow` (geocoding feeds the coordinates)
+- **TheMealDB:** `Recipe for chicken biryani`
+- **ESPN:** `NBA scores`
+
+Talking points:
+
+- The planner detects each intent deterministically and binds typed slots before retrieval.
+- The registry now serves 25 providers: 19 primary tools and six backup mirrors, across 17 capabilities.
+- The ten new providers are primary-only; they are not used as substitutes for the existing mirror set.
+
+## 10. Evaluation
 
 Run:
 
@@ -160,7 +181,7 @@ Run:
 
 Show `reports/summary.json` and `reports/matching.json`. Mention that the reports are deterministic offline regression results and that live behavior is a separate manual check.
 
-## 10. Reset
+## 11. Reset
 
 Click **Reset demo** in the monitor header. This clears trust, breakers, drift alerts, mapper staging, provider failure overrides and cache.
 

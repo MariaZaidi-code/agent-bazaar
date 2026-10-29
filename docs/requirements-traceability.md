@@ -37,7 +37,7 @@ The requirement labels below are taken from the proposal's functional and non-fu
 |---|---|
 | Client agent with GraphRAG matching and ontology filtering | Complete |
 | Type/unit-checked composition and execution | Complete |
-| Provider wrappers for weather, currency, geocoding, countries, holidays, arXiv, SQL and documents | Complete |
+| Provider wrappers for weather, currency, geocoding, countries, holidays, arXiv, news, crypto, TV, books, translation, time, sunrise/sunset, recipes, sports, SQL and documents (25 registered providers) | Complete |
 | Trust registry with update history and demotion | Complete |
 | Circuit breaker and compatible substitution | Complete |
 | Trace viewer and developer interface | Complete |

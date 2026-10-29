@@ -175,7 +175,7 @@ small review run overwrites `data/out/logs/ontology_build.json` and
 python -m pytest
 ```
 
-Expected: 261 tests collected - 130 knowledge-layer, 50 application, 43
+Expected: 284 tests collected - 130 knowledge-layer, 73 application, 43
 integration, 32 Auditor and 6 Auditor bridge tests. The suite covers messages,
 ingestion, ontology generation, units, validation, graph store and queries, the
 quality profiles and offerings, vectors, Mapper rules/repair/staging, the corpus
@@ -535,10 +535,11 @@ Other switches:
 
 `data/overrides/pricing.yaml` is the human layer over the extraction rules. A
 curated entry always wins over the extracted value and carries `reviewer`,
-`checked_at` and `note`. The file currently covers the eight live application
-providers and three corpus tools whose earlier classification the corrected
-rules changed. Every entry still has an empty `reviewer`, so no licence has
-been signed off yet.
+`checked_at` and `note`. The file currently covers the eight original live
+application providers and three corpus tools whose earlier classification the
+corrected rules changed. Every entry still has an empty `reviewer`, so no
+licence has been signed off yet. The ten Sprint 1 providers are recorded in
+`app/data/tools.json` and do not yet have curated review entries.
 
 ### 9.3 The live probe set
 

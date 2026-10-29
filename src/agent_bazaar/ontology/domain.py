@@ -123,6 +123,31 @@ SEED_CONCEPTS: list[DomainConcept] = [
     _concept("Url", "URL", "string", ["link", "href", "website"]),
     _concept("Email", "Email", "string", ["email_address"]),
     _concept("PhoneNumber", "Phone number", "string", ["phone", "telephone"]),
+    # -- news ---------------------------------------------------------------
+    _concept("NewsTopic", "News topic", "string", ["news_query", "headline_topic"]),
+    _concept("NewsArticle", "News article", "object", ["story_record", "headline_record"]),
+    # -- crypto -------------------------------------------------------------
+    _concept("CryptoAsset", "Crypto asset", "string", ["coin", "token"]),
+    _concept("CryptoPrice", "Crypto price", "object", ["coin_price", "crypto_quote"]),
+    # -- television ---------------------------------------------------------
+    _concept("ShowQuery", "Show query", "string", ["show_title", "series_title"]),
+    _concept("TVShow", "TV show", "object", ["television_show", "series_record"]),
+    # -- books --------------------------------------------------------------
+    _concept("BookQuery", "Book query", "string", ["book_title", "book_subject"]),
+    _concept("Book", "Book", "object", ["book_record", "bibliographic_record", "volume"]),
+    # -- translation --------------------------------------------------------
+    _concept("LanguageCode", "Language code", "string", ["lang_code", "iso_language_code"]),
+    _concept("Translation", "Translation", "object", ["translated_text"]),
+    # -- time and sun -------------------------------------------------------
+    _concept("TimezoneName", "Timezone name", "string", ["iana_timezone_name", "tz_name"]),
+    _concept("CurrentTime", "Current time", "object", ["local_time", "clock_time"]),
+    _concept("SunTimes", "Sun times", "object", ["solar_times", "sunrise_sunset"]),
+    # -- food ---------------------------------------------------------------
+    _concept("RecipeQuery", "Recipe query", "string", ["dish_name", "recipe_search"]),
+    _concept("Recipe", "Recipe", "object", ["recipe_record", "meal_recipe"]),
+    # -- sports -------------------------------------------------------------
+    _concept("SportsLeague", "Sports league", "string", ["league_name", "competition_name"]),
+    _concept("SportsScore", "Sports score", "object", ["game_score", "match_score"]),
 ]
 
 

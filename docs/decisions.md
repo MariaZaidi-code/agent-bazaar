@@ -657,9 +657,9 @@ deliverable and one test command).
 
 **Consequences.** The merged suite has one Python requirement (`>=3.11`), one
 dependency set and one CLI entry point (`agent-bazaar-auditor`). Six of the
-fifteen catalogue tools are verified by the real Auditor; the three local-only
-providers retain deterministic labels, which is visible in the UI and the
-bridge tests. The Auditor's own trust ledger and the application trust
+fifteen catalogue tools are verified by the real Auditor; the application's
+local-only providers, including the ten Sprint 1 tools, retain deterministic
+labels, which is visible in the UI and the bridge tests. The Auditor's own trust ledger and the application trust
 registry remain separate but linked by contradiction updates. `demo/reset`
 clears both so repeated demonstrations are reproducible.
 

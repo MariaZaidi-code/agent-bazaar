@@ -3,9 +3,9 @@
 The Client and the interface were developed against :class:`AuditorStub`, which
 returns seeded labels. This module keeps that contract but delegates the six
 tools that the Auditor's catalogue can probe to
-``agent_bazaar_auditor``. Tools that have no catalogue entry (the local SQL,
-document and adversarial weather providers) keep the deterministic seeded
-fallback, so the application still works with no network access.
+``agent_bazaar_auditor``. Tools that have no catalogue entry (the local SQL, document, adversarial
+weather and Sprint 1 providers) keep the deterministic seeded fallback, so the
+application still works with no network access.
 
 The Auditor is synchronous and keeps mutable probe baselines and artifact
 stores, so every call is serialised through one lock and executed in a worker
