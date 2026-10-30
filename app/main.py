@@ -117,6 +117,46 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             llm_enabled=state.llm.enabled,
         )
 
+    @application.get("/api/health/ready")
+    async def ready(request: Request) -> dict[str, Any]:
+        state = services(request)
+        knowledge_available = state.knowledge is not None
+        graph_ready = len(state.graph.all()) > 0
+        ontology_ready = len(state.ontology.concepts) > 0
+        ready_flag = graph_ready and ontology_ready
+        return {
+            "status": "ready" if ready_flag else "not_ready",
+            "ready": ready_flag,
+            "checks": {
+                "graph": graph_ready,
+                "ontology": ontology_ready,
+                "knowledge_layer": knowledge_available,
+            },
+            "tools": len(state.graph.all()),
+            "concepts": len(state.ontology.concepts),
+        }
+
+    @application.get("/api/metrics")
+    async def metrics(request: Request) -> Response:
+        state = services(request)
+        providers = state.providers.all()
+        trust_rows = state.trust.all()
+        lines = [
+            "# HELP agent_bazaar_tools Number of registered tools.",
+            "# TYPE agent_bazaar_tools gauge",
+            f"agent_bazaar_tools {len(state.graph.all())}",
+            "# HELP agent_bazaar_providers Number of registered providers.",
+            "# TYPE agent_bazaar_providers gauge",
+            f"agent_bazaar_providers {len(providers)}",
+            "# HELP agent_bazaar_trust_providers Number of providers with trust state.",
+            "# TYPE agent_bazaar_trust_providers gauge",
+            f"agent_bazaar_trust_providers {len(trust_rows)}",
+            "# HELP agent_bazaar_breakers_open Number of open circuit breakers.",
+            "# TYPE agent_bazaar_breakers_open gauge",
+            f"agent_bazaar_breakers_open {sum(1 for item in state.breakers.snapshot() if item.get('state') == 'open')}",
+        ]
+        return Response("\n".join(lines) + "\n", media_type="text/plain; version=0.0.4; charset=utf-8")
+
     @application.get("/api/ontology")
     async def ontology(request: Request) -> dict[str, Any]:
         state = services(request)

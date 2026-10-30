@@ -270,3 +270,97 @@ ab:ToolOfferingShape a sh:NodeShape ;
         sh:nodeKind sh:IRI ;
         sh:message "A tool declares at most one offering." ;
     ] .
+
+# ---- Sprint 2 family shapes ----------------------------------------------
+# These shapes validate the declarations of the six new concept families.
+# Concept instances inherit the generic ConceptShape constraints.
+
+ab:MediaShape a sh:NodeShape ;
+    sh:targetClass ab:Media ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A media family has exactly one label." ;
+    ] ;
+    sh:property [
+        sh:path rdfs:subClassOf ;
+        sh:minCount 1 ;
+        sh:message "The media family is attached to the concept hierarchy." ;
+    ] .
+
+ab:EventShape a sh:NodeShape ;
+    sh:targetClass ab:Event ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "An event family has exactly one label." ;
+    ] ;
+    sh:property [
+        sh:path rdfs:subClassOf ;
+        sh:minCount 1 ;
+        sh:message "The event family is attached to the concept hierarchy." ;
+    ] .
+
+ab:OrganizationShape a sh:NodeShape ;
+    sh:targetClass ab:Organization ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "An organization family has exactly one label." ;
+    ] ;
+    sh:property [
+        sh:path rdfs:subClassOf ;
+        sh:minCount 1 ;
+        sh:message "The organization family is attached to the concept hierarchy." ;
+    ] .
+
+ab:PersonShape a sh:NodeShape ;
+    sh:targetClass ab:Person ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A person family has exactly one label." ;
+    ] ;
+    sh:property [
+        sh:path rdfs:subClassOf ;
+        sh:minCount 1 ;
+        sh:message "The person family is attached to the concept hierarchy." ;
+    ] .
+
+ab:ProductShape a sh:NodeShape ;
+    sh:targetClass ab:Product ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A product family has exactly one label." ;
+    ] ;
+    sh:property [
+        sh:path rdfs:subClassOf ;
+        sh:minCount 1 ;
+        sh:message "The product family is attached to the concept hierarchy." ;
+    ] .
+
+ab:LocationShape a sh:NodeShape ;
+    sh:targetClass ab:Location ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A location family has exactly one label." ;
+    ] ;
+    sh:property [
+        sh:path rdfs:subClassOf ;
+        sh:minCount 1 ;
+        sh:message "The location family is attached to the concept hierarchy." ;
+    ] .

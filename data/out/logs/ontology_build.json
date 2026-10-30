@@ -1,16 +1,16 @@
 {
- "source": "mixed",
- "concepts": 85,
- "uncovered_fields": 4,
+ "source": "seed",
+ "concepts": 179,
+ "uncovered_fields": 17219,
  "violations_found": 0,
  "violations_fixed": 0,
  "repair_rounds": 0,
- "llm_batches": 1,
+ "llm_batches": 0,
  "failed_batches": 0,
  "specs": {
-  "specs": 3,
-  "errors": 0,
-  "fields": 59
+  "specs": 98,
+  "errors": 1,
+  "fields": 25009
  },
- "ontology_path": "C:\\Users\\Go\\AppData\\Local\\Temp\\opencode\\llm_onto_demo\\out\\ontology.ttl"
+ "ontology_path": "C:\\Users\\HP\\Documents\\agent-bazaar\\data\\out\\ontology.ttl"
 }

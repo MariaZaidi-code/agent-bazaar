@@ -464,6 +464,12 @@ class KgStore:
         self.graph.serialize(destination=str(target), format="turtle")
         return target
 
+    def export_jsonld(self, path: str | Path) -> Path:
+        target = Path(path)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        self.graph.serialize(destination=str(target), format="json-ld")
+        return target
+
     def subclass_closure(self, concept_iri: str) -> set[str]:
         return query_subclass_closure(self.graph, concept_iri)
 

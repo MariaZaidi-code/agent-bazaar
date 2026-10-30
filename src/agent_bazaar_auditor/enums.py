@@ -53,6 +53,9 @@ class CircuitState(StrEnum):
 
 class MockBehavior(StrEnum):
     NORMAL = "normal"
+    SLOW = "slow"
+    PARTIAL = "partial"
+    MALFORMED = "malformed"
     RENAME_FIELD = "rename_field"
     UNIT_CHANGE = "unit_change"
     TYPE_CHANGE = "type_change"

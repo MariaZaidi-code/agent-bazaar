@@ -92,11 +92,14 @@ class PromptMapper:
     def _system_prompt(self) -> str:
         return (
             "You are the Mapper agent of Agent Bazaar. Map each field to exactly one ontology "
-            "concept from the candidates provided for that field whenever one fits. Propose a "
-            "unit only when the concept is unit-bearing, and only a unit from the concept's unit "
-            "family. Give a confidence between 0 and 1 and a short reason. Set unmapped to true "
-            "only when nothing fits. Return JSON only, matching the LLMDecisionBatch schema "
-            "with one decision per field."
+            "concept from the candidates provided for that field whenever one fits. The ontology "
+            "now covers Media, Event, Organization, Person, Product and Location concept families "
+            "in addition to the original geo, weather, currency and reference concepts. Propose "
+            "a unit only when the concept is unit-bearing, and only a unit from the concept's "
+            "unit family, including the new rating, data-size and frequency units. Give a "
+            "confidence between 0 and 1 and a short reason. Set unmapped to true only when "
+            "nothing fits. Return JSON only, matching the LLMDecisionBatch schema with one "
+            "decision per field."
         )
 
     @staticmethod

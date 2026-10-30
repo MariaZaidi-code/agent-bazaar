@@ -120,6 +120,33 @@ UNIT_FAMILIES: dict[str, dict[str, object]] = {
         "canonical": "Count",
         "units": [UnitDef("Count", "count", "CountUnit", factor=1.0)],
     },
+    "RatingUnit": {
+        "label": "Rating",
+        "canonical": "Star",
+        "units": [
+            UnitDef("Star", "star", "RatingUnit", factor=1.0, convertible=False),
+            UnitDef("Score", "score", "RatingUnit", factor=1.0, convertible=False),
+        ],
+    },
+    "DataSizeUnit": {
+        "label": "Data size",
+        "canonical": "Byte",
+        "units": [
+            UnitDef("Byte", "B", "DataSizeUnit", factor=1.0),
+            UnitDef("Kilobyte", "KB", "DataSizeUnit", factor=1024.0),
+            UnitDef("Megabyte", "MB", "DataSizeUnit", factor=1024.0**2),
+            UnitDef("Gigabyte", "GB", "DataSizeUnit", factor=1024.0**3),
+        ],
+    },
+    "FrequencyUnit": {
+        "label": "Frequency",
+        "canonical": "Hertz",
+        "units": [
+            UnitDef("Hertz", "Hz", "FrequencyUnit", factor=1.0),
+            UnitDef("Kilohertz", "kHz", "FrequencyUnit", factor=1000.0),
+            UnitDef("Megahertz", "MHz", "FrequencyUnit", factor=1_000_000.0),
+        ],
+    },
     "CurrencyUnit": {
         "label": "Currency",
         "canonical": "USD",

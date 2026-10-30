@@ -127,6 +127,10 @@ class ClientAgent:
             doc_quality_weight=self.settings.doc_quality_weight,
             mapping_coverage_weight=self.settings.mapping_coverage_weight,
             chain_fit_weight=self.settings.chain_fit_weight,
+            latency_weight=self.settings.latency_weight,
+            freshness_weight=self.settings.freshness_weight,
+            latency_normalizer_ms=self.settings.latency_normalizer_ms,
+            freshness_half_life_days=self.settings.freshness_half_life_days,
             min_rating_count=self.settings.min_rating_count,
             rating_floor=self.settings.rating_floor,
             contradicted_penalty=self.settings.contradicted_penalty,
@@ -601,6 +605,8 @@ class ClientAgent:
             doc_quality=doc_quality,
             mapping_coverage=mapping_coverage,
             chain_fit=chain_fit,
+            latency_ms=tool.latency_ms,
+            freshness_days=tool.freshness_days,
             claim_label=candidate.claim_label.value.lower(),
             demoted=bool(candidate.demoted) and self.settings.use_trust,
             breaker_open=(
@@ -1134,7 +1140,8 @@ class ClientAgent:
                 )
                 if state == BreakerStatus.open:
                     continue
-            evaluated.append((float(trust_state["score"]), tool))
+            score = self._substitution_score(tool, available, None, trust_state)
+            evaluated.append((score, tool))
         evaluated.sort(key=lambda item: (-item[0], item[1].id))
         self._trace(
             task_id,
@@ -1254,6 +1261,39 @@ class ClientAgent:
             for dep_id in subgoal.depends_on
             if dep_id in by_id
         ]
+
+    def _substitution_score(
+        self,
+        tool: ToolSpec,
+        available_inputs: list[str],
+        available_outputs: list[str] | None,
+        trust_state: dict[str, Any],
+    ) -> float:
+        """Score how safely and usefully a candidate can replace a failed tool."""
+        required = [item.concept for item in tool.inputs if item.required]
+        if required:
+            satisfied = sum(
+                1
+                for concept in required
+                if any(self.ontology.check_link(available, None, concept, None).valid for available in available_inputs)
+            )
+            input_score = satisfied / len(required)
+        else:
+            input_score = 1.0
+        outputs = [item.concept for item in tool.outputs if item.required]
+        if available_outputs and outputs:
+            matched = sum(
+                1
+                for concept in outputs
+                if any(self.ontology.check_link(concept, None, target, None).valid for target in available_outputs)
+            )
+            output_score = matched / len(outputs)
+        else:
+            output_score = 1.0
+        trust = float(trust_state.get("score", 0.5))
+        rating = tool.rating_value if tool.rating_value is not None else 0.5
+        rating = max(0.0, min(1.0, float(rating)))
+        return round(input_score * 0.45 + output_score * 0.25 + trust * 0.2 + rating * 0.1, 6)
 
     def _available_concepts(
         self, subgoal: SubGoal, subgoals: list[SubGoal]

@@ -48,6 +48,10 @@ class Settings(BaseSettings):
     doc_quality_weight: float = 0.4
     mapping_coverage_weight: float = 0.3
     chain_fit_weight: float = 0.3
+    latency_weight: float = 0.0
+    freshness_weight: float = 0.0
+    latency_normalizer_ms: float = 1000.0
+    freshness_half_life_days: float = 30.0
     min_rating_count: int = 3
     rating_floor: float = 0.5
     require_known_licence: bool = False
