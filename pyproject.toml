@@ -33,6 +33,16 @@ dev = [
     "pytest-cov>=5.0",
     "pytest-asyncio>=0.24,<1.0",
     "ruff>=0.7,<1.0",
+    "mypy>=1.10",
+]
+platform = [
+    "sqlalchemy>=2.1",
+    "alembic>=1.13",
+    "psycopg[binary]>=3.1",
+    "redis>=5.0",
+    "rq>=1.16",
+    "celery>=5.4",
+    "prometheus-client>=0.20",
 ]
 
 [project.scripts]
@@ -73,3 +83,9 @@ combine-as-imports = true
 "tests/test_drift.py" = ["E501"]
 "tests/test_probes.py" = ["E501"]
 "tests/test_trust_scheduler.py" = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+follow_imports = "skip"
+files = ["app/core", "app/main.py", "app/services.py", "app/knowledge/graph.py", "app/integration/graph_adapter.py"]

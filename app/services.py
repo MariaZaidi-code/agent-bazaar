@@ -60,11 +60,12 @@ class AppServices:
     def export_graph_jsonld(self) -> bool:
         trust = {item["provider_id"]: item for item in self.trust.all()}
         path = self.settings.runtime_dir / "knowledge_graph.jsonld"
-        if hasattr(self.graph, "export_jsonld"):
+        exporter = getattr(self.graph, "export_jsonld", None)
+        if callable(exporter):
             try:
-                return bool(self.graph.export_jsonld(path, trust=trust))
+                return bool(exporter(path, trust=trust))
             except TypeError:
-                return bool(self.graph.export_jsonld(path))
+                return bool(exporter(path))
         return False
 
     def monitoring(self) -> dict[str, Any]:

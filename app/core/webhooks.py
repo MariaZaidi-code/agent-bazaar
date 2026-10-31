@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import builtins
 import json
 import threading
 import urllib.error
@@ -15,7 +16,7 @@ from app.schemas import new_id, utcnow
 class WebhookSubscription:
     id: str
     url: str
-    events: list[str]
+    events: builtins.list[str]
     secret: str = ""
     created_at: str = field(default_factory=lambda: utcnow().isoformat())
     deliveries: int = 0
@@ -38,7 +39,7 @@ class WebhookRegistry:
         self._lock = threading.Lock()
         self._subscriptions: dict[str, WebhookSubscription] = {}
 
-    def register(self, url: str, events: list[str] | None = None, secret: str = "") -> dict[str, Any]:
+    def register(self, url: str, events: builtins.list[str] | None = None, secret: str = "") -> dict[str, Any]:
         parsed = urlparse(url)
         if parsed.scheme not in {"http", "https"} or not parsed.netloc:
             raise ValueError("webhook URL must be an absolute http(s) URL")
@@ -55,7 +56,7 @@ class WebhookRegistry:
             self._subscriptions[subscription.id] = subscription
         return subscription.to_dict()
 
-    def list(self) -> list[dict[str, Any]]:
+    def list(self) -> builtins.list[dict[str, Any]]:
         with self._lock:
             subscriptions = list(self._subscriptions.values())
         return [subscription.to_dict() for subscription in subscriptions]
@@ -64,7 +65,7 @@ class WebhookRegistry:
         with self._lock:
             return self._subscriptions.pop(subscription_id, None) is not None
 
-    def dispatch(self, event: str, payload: dict[str, Any]) -> list[dict[str, Any]]:
+    def dispatch(self, event: str, payload: dict[str, Any]) -> builtins.list[dict[str, Any]]:
         with self._lock:
             targets = [
                 subscription
