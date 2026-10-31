@@ -25,7 +25,7 @@ It is built as a pipeline of small, injectable components. The default compositi
 | Trust | `trust.py` | Beta-style ledger, feed, optional HTTP registry delivery. |
 | Scheduling | `scheduler.py` | Due-tool selection and adaptive re-probe intervals. |
 | Persistence | `store.py`, `drift/baseline.py` | JSON/JSONL artifacts, baselines, ledgers, reports. |
-| API | `api.py` | Read endpoints plus verify, monitor, probe, and mock control. |
+| API | `api.py` | Read endpoints plus single/batch verify, monitor, probe, and mock control. |
 | CLI | `cli.py` | Catalog, extract, verify, probe, monitor, evaluate, demo, serve. |
 | Evaluation | `evaluation/` | Metrics, claim/drift/trust experiments, combined report. |
 
@@ -115,6 +115,8 @@ Live mode includes:
 
 - a clear `User-Agent`;
 - timeout configuration via `ABA_REQUEST_TIMEOUT`;
+- bounded retries with exponential backoff for transient 429/5xx and transport failures;
+- `Retry-After` support with a capped delay;
 - per-host throttling;
 - a file-backed cache with a TTL;
 - safe JSON/XML parsing;

@@ -374,6 +374,29 @@ Response: `{"result": <VerifyResult>}`.
 
 `/monitor` accepts the same body plus `round` and `establish_baseline` (default false). Response: `{"result": <VerifyResult>}` with `drift_alerts`.
 
+`/verify/batch` and `/monitor/batch` accept up to 50 items:
+
+```json
+{"items": [{"tool_id": "open-meteo"}, {"tool_id": "frankfurter"}]}
+```
+
+Each item may include the single-request fields. The response has this shape:
+
+```json
+{
+  "monitoring": false,
+  "count": 2,
+  "succeeded": 1,
+  "failed": 1,
+  "results": [
+    {"index": 0, "tool_id": "open-meteo", "result": {"result": {"tool_id": "open-meteo"}}},
+    {"index": 1, "tool_id": "not-a-tool", "error": "Unknown tool: not-a-tool"}
+  ]
+}
+```
+
+One failed item does not fail the batch; the error is returned in that result entry.
+
 `/probe`:
 
 ```json

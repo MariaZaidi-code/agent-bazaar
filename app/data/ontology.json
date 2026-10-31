@@ -2,130 +2,2564 @@
   "version": "0.1-local",
   "description": "Local fallback ontology used by the Client when Maria's validated ontology export is unavailable.",
   "concepts": {
-    "Entity": {"parents": [], "description": "Root of the upper ontology."},
-    "Service": {"parents": ["Entity"], "description": "A callable third-party service."},
-    "Capability": {"parents": ["Entity"], "description": "What a service can do."},
-    "Claim": {"parents": ["Entity"], "description": "A provider statement about its service."},
-    "Evidence": {"parents": ["Entity"], "description": "Documentation or probe evidence."},
-    "Provider": {"parents": ["Entity"], "description": "The party offering a service."},
-    "LocationName": {"parents": ["Entity"], "description": "A place name supplied by a user."},
-    "CityName": {"parents": ["LocationName"], "description": "A city or settlement name."},
-    "CountryName": {"parents": ["LocationName"], "description": "A country name."},
+    "Entity": {
+      "parents": [],
+      "description": "Root of the upper ontology."
+    },
+    "Service": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A callable third-party service."
+    },
+    "Capability": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "What a service can do."
+    },
+    "Claim": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A provider statement about its service."
+    },
+    "Evidence": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "Documentation or probe evidence."
+    },
+    "Provider": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "The party offering a service."
+    },
+    "LocationName": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A place name supplied by a user."
+    },
+    "CityName": {
+      "parents": [
+        "LocationName"
+      ],
+      "description": "A city or settlement name."
+    },
+    "CountryName": {
+      "parents": [
+        "LocationName"
+      ],
+      "description": "A country name."
+    },
     "Coordinates": {
-      "parents": ["Entity"],
+      "parents": [
+        "Entity"
+      ],
       "description": "A latitude and longitude pair.",
-      "fields": ["latitude", "longitude", "display_name", "country_code"]
+      "fields": [
+        "latitude",
+        "longitude",
+        "display_name",
+        "country_code"
+      ]
     },
     "Temperature": {
-      "parents": ["Entity"],
+      "parents": [
+        "Entity"
+      ],
       "description": "An air temperature with a unit.",
-      "fields": ["temperature", "temp_max", "temp_min", "unit"]
+      "fields": [
+        "temperature",
+        "temp_max",
+        "temp_min",
+        "unit"
+      ]
     },
     "Money": {
-      "parents": ["Entity"],
+      "parents": [
+        "Entity"
+      ],
       "description": "A monetary amount in a currency.",
-      "fields": ["amount", "currency", "rate", "from", "to"]
+      "fields": [
+        "amount",
+        "currency",
+        "rate",
+        "from",
+        "to"
+      ]
     },
-    "MoneyAmount": {"parents": ["Number"], "description": "A numeric amount of money."},
-    "CurrencyCode": {"parents": ["Entity"], "description": "An ISO 4217 currency code."},
-    "CountryCode": {"parents": ["Entity"], "description": "An ISO 3166 country code."},
+    "MoneyAmount": {
+      "parents": [
+        "Number"
+      ],
+      "description": "A numeric amount of money."
+    },
+    "CurrencyCode": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "An ISO 4217 currency code."
+    },
+    "CountryCode": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "An ISO 3166 country code."
+    },
     "Country": {
-      "parents": ["Entity"],
+      "parents": [
+        "Entity"
+      ],
       "description": "A country and its public facts.",
-      "fields": ["name", "capital", "population", "region", "currencies", "country_code"]
+      "fields": [
+        "name",
+        "capital",
+        "population",
+        "region",
+        "currencies",
+        "country_code"
+      ]
     },
     "Holiday": {
-      "parents": ["Entity"],
+      "parents": [
+        "Entity"
+      ],
       "description": "A public holiday.",
-      "fields": ["date", "name", "local_name", "country_code"]
+      "fields": [
+        "date",
+        "name",
+        "local_name",
+        "country_code"
+      ]
     },
     "ResearchPaper": {
-      "parents": ["Entity"],
+      "parents": [
+        "Entity"
+      ],
       "description": "A research paper record.",
-      "fields": ["title", "summary", "url", "published"]
+      "fields": [
+        "title",
+        "summary",
+        "url",
+        "published"
+      ]
     },
-    "ResearchTopic": {"parents": ["Entity"], "description": "A research search topic."},
+    "ResearchTopic": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A research search topic."
+    },
     "NaturalLanguageQuery": {
-      "parents": ["Entity"],
+      "parents": [
+        "Entity"
+      ],
       "description": "A question over structured data."
     },
     "TabularAnswer": {
-      "parents": ["Entity"],
+      "parents": [
+        "Entity"
+      ],
       "description": "Rows and columns returned by a database query.",
-      "fields": ["columns", "rows", "sql", "row_count"]
+      "fields": [
+        "columns",
+        "rows",
+        "sql",
+        "row_count"
+      ]
     },
     "DocumentReference": {
-      "parents": ["Entity"],
+      "parents": [
+        "Entity"
+      ],
       "description": "An identifier for an uploaded document."
     },
     "DocumentQuestion": {
-      "parents": ["Entity"],
+      "parents": [
+        "Entity"
+      ],
       "description": "A question about an uploaded document."
     },
     "AnswerFromDocument": {
-      "parents": ["Entity"],
+      "parents": [
+        "Entity"
+      ],
       "description": "An extractive answer grounded in a document.",
-      "fields": ["answer", "citations", "document_id"]
+      "fields": [
+        "answer",
+        "citations",
+        "document_id"
+      ]
     },
-    "DateTimeISO": {"parents": ["Entity"], "description": "An ISO 8601 date or timestamp."},
-    "Number": {"parents": ["Entity"], "description": "A numeric literal."},
-    "Text": {"parents": ["Entity"], "description": "Plain text."}
+    "DateTimeISO": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "An ISO 8601 date or timestamp."
+    },
+    "Number": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A numeric literal."
+    },
+    "Text": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "Plain text."
+    },
+    "NewsTopic": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A topic, company or keyword used to search news."
+    },
+    "NewsArticle": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A news story with a source link.",
+      "fields": [
+        "title",
+        "url",
+        "author",
+        "published_at",
+        "points",
+        "source"
+      ]
+    },
+    "CryptoAsset": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A cryptocurrency name or ticker."
+    },
+    "CryptoPrice": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A cryptocurrency price in a fiat currency.",
+      "fields": [
+        "asset",
+        "currency",
+        "price",
+        "market_cap",
+        "last_updated"
+      ]
+    },
+    "ShowQuery": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A television show title or topic."
+    },
+    "TVShow": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A television show record.",
+      "fields": [
+        "name",
+        "genres",
+        "premiered",
+        "rating",
+        "url",
+        "summary"
+      ]
+    },
+    "BookQuery": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A book title, author or subject."
+    },
+    "Book": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A book catalogue record.",
+      "fields": [
+        "title",
+        "author",
+        "first_publish_year",
+        "url",
+        "key"
+      ]
+    },
+    "LanguageCode": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A language name or ISO 639 code."
+    },
+    "Translation": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "Translated text with its language pair.",
+      "fields": [
+        "text",
+        "source_language",
+        "target_language",
+        "match"
+      ]
+    },
+    "TimezoneName": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "An IANA timezone identifier."
+    },
+    "CurrentTime": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "The current time in a timezone.",
+      "fields": [
+        "datetime",
+        "timezone",
+        "utc_offset",
+        "day_of_week"
+      ]
+    },
+    "SunTimes": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "Sunrise, sunset and day length for a place and date.",
+      "fields": [
+        "sunrise",
+        "sunset",
+        "solar_noon",
+        "day_length"
+      ]
+    },
+    "RecipeQuery": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A dish or ingredient used to search recipes."
+    },
+    "Recipe": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A recipe with ingredients and instructions.",
+      "fields": [
+        "name",
+        "category",
+        "area",
+        "instructions",
+        "ingredients",
+        "image",
+        "source"
+      ]
+    },
+    "SportsLeague": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A sports league or competition name."
+    },
+    "SportsScore": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "A game result with teams and scores.",
+      "fields": [
+        "league",
+        "home_team",
+        "away_team",
+        "home_score",
+        "away_score",
+        "status",
+        "date"
+      ]
+    },
+    "Concept": {
+      "parents": [],
+      "description": "Root of the typed domain concept hierarchy."
+    },
+    "Media": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "Movies, television, podcasts, music and other published media."
+    },
+    "Event": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "Scheduled happenings such as games, festivals, alerts and holidays."
+    },
+    "Organization": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "Companies, publishers, networks, teams and other organisations."
+    },
+    "Person": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "People such as authors, directors, actors, athletes and artists."
+    },
+    "Product": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "Physical or digital products, including packaged food."
+    },
+    "Location": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "Places, administrative areas, routes and points of interest."
+    },
+    "Position": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Position",
+      "aliases": [
+        "location",
+        "coords",
+        "coordinates",
+        "geometry"
+      ]
+    },
+    "Latitude": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Latitude",
+      "unit_family": "AngleUnit",
+      "default_unit": "Degree",
+      "aliases": [
+        "lat"
+      ]
+    },
+    "Longitude": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Longitude",
+      "unit_family": "AngleUnit",
+      "default_unit": "Degree",
+      "aliases": [
+        "lon",
+        "lng",
+        "long"
+      ]
+    },
+    "Address": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Address",
+      "aliases": [
+        "street_address",
+        "formatted_address"
+      ]
+    },
+    "City": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "City",
+      "aliases": [
+        "town",
+        "municipality",
+        "city_name"
+      ]
+    },
+    "Region": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Region",
+      "aliases": [
+        "state",
+        "province",
+        "county"
+      ]
+    },
+    "PostalCode": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Postal code",
+      "aliases": [
+        "zip",
+        "zip_code",
+        "postcode"
+      ]
+    },
+    "PlaceName": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Place name",
+      "aliases": [
+        "place",
+        "location_name",
+        "display_name"
+      ]
+    },
+    "Timezone": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Timezone",
+      "aliases": [
+        "time_zone",
+        "tz",
+        "timezone_id"
+      ]
+    },
+    "Elevation": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Elevation",
+      "unit_family": "LengthUnit",
+      "default_unit": "Metre",
+      "aliases": [
+        "altitude",
+        "height"
+      ]
+    },
+    "FeelsLikeTemperature": {
+      "parents": [
+        "Temperature"
+      ],
+      "description": "Feels-like temperature",
+      "unit_family": "TemperatureUnit",
+      "default_unit": "Celsius",
+      "aliases": [
+        "apparent_temperature",
+        "feels_like",
+        "heat_index"
+      ]
+    },
+    "DewPoint": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Dew point",
+      "unit_family": "TemperatureUnit",
+      "default_unit": "Celsius",
+      "aliases": [
+        "dew_point",
+        "dewpoint"
+      ]
+    },
+    "WindSpeed": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Wind speed",
+      "unit_family": "SpeedUnit",
+      "default_unit": "MetrePerSecond",
+      "aliases": [
+        "wind_speed",
+        "windspeed",
+        "wind_speed_10m"
+      ]
+    },
+    "WindDirection": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Wind direction",
+      "unit_family": "AngleUnit",
+      "default_unit": "Degree",
+      "aliases": [
+        "wind_deg",
+        "wind_direction",
+        "winddir"
+      ]
+    },
+    "Humidity": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Relative humidity",
+      "unit_family": "PercentageUnit",
+      "default_unit": "Percent",
+      "aliases": [
+        "rh",
+        "relative_humidity"
+      ]
+    },
+    "Precipitation": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Precipitation",
+      "unit_family": "PrecipitationUnit",
+      "default_unit": "Millimetre",
+      "aliases": [
+        "rain",
+        "precip",
+        "precipitation_sum",
+        "rainfall"
+      ]
+    },
+    "Pressure": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Atmospheric pressure",
+      "unit_family": "PressureUnit",
+      "default_unit": "Hectopascal",
+      "aliases": [
+        "pressure_msl",
+        "surface_pressure",
+        "barometric_pressure"
+      ]
+    },
+    "CloudCover": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Cloud cover",
+      "unit_family": "PercentageUnit",
+      "default_unit": "Percent",
+      "aliases": [
+        "clouds",
+        "cloudiness",
+        "cloud_cover"
+      ]
+    },
+    "WeatherCondition": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Weather condition",
+      "aliases": [
+        "condition",
+        "weather",
+        "weather_description"
+      ]
+    },
+    "WeatherCode": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Weather code",
+      "aliases": [
+        "weather_code",
+        "wmo_code",
+        "condition_code"
+      ]
+    },
+    "UVIndex": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "UV index",
+      "aliases": [
+        "uv",
+        "uv_index"
+      ]
+    },
+    "Visibility": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Visibility",
+      "unit_family": "LengthUnit",
+      "default_unit": "Metre",
+      "aliases": [
+        "visibility_distance"
+      ]
+    },
+    "SunriseTime": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Sunrise time",
+      "aliases": [
+        "sunrise"
+      ]
+    },
+    "SunsetTime": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Sunset time",
+      "aliases": [
+        "sunset"
+      ]
+    },
+    "Forecast": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Forecast",
+      "aliases": [
+        "prediction",
+        "forecast_data",
+        "daily"
+      ]
+    },
+    "Currency": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Currency",
+      "aliases": [
+        "currency_name"
+      ]
+    },
+    "ExchangeRate": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Exchange rate",
+      "aliases": [
+        "rate",
+        "fx_rate",
+        "conversion_rate",
+        "exchange_rate"
+      ]
+    },
+    "BaseCurrency": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Base currency",
+      "aliases": [
+        "base",
+        "from_currency"
+      ]
+    },
+    "QuoteCurrency": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Quote currency",
+      "aliases": [
+        "quote",
+        "to_currency",
+        "target_currency"
+      ]
+    },
+    "HolidayName": {
+      "parents": [
+        "Name"
+      ],
+      "description": "Holiday name",
+      "aliases": [
+        "holiday_name"
+      ]
+    },
+    "HolidayDate": {
+      "parents": [
+        "ISODate"
+      ],
+      "description": "Holiday date",
+      "aliases": [
+        "holiday_date",
+        "local_date"
+      ]
+    },
+    "Capital": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Capital",
+      "aliases": [
+        "capital_city"
+      ]
+    },
+    "Language": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Language",
+      "aliases": [
+        "languages",
+        "language_code"
+      ]
+    },
+    "Population": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Population",
+      "unit_family": "CountUnit",
+      "default_unit": "Count",
+      "aliases": [
+        "pop",
+        "population_count"
+      ]
+    },
+    "AreaSize": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Area",
+      "unit_family": "AreaUnit",
+      "default_unit": "SquareKilometre",
+      "aliases": [
+        "area",
+        "land_area",
+        "surface_area"
+      ]
+    },
+    "FlagUrl": {
+      "parents": [
+        "Url"
+      ],
+      "description": "Flag URL",
+      "aliases": [
+        "flag",
+        "flag_link"
+      ]
+    },
+    "Distance": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Distance",
+      "unit_family": "LengthUnit",
+      "default_unit": "Metre",
+      "aliases": [
+        "distance_km",
+        "range"
+      ]
+    },
+    "Duration": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Duration",
+      "unit_family": "DurationUnit",
+      "default_unit": "Second",
+      "aliases": [
+        "duration_s",
+        "elapsed",
+        "length"
+      ]
+    },
+    "Speed": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Speed",
+      "unit_family": "SpeedUnit",
+      "default_unit": "MetrePerSecond",
+      "aliases": [
+        "velocity"
+      ]
+    },
+    "Mass": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Mass",
+      "unit_family": "MassUnit",
+      "default_unit": "Kilogram",
+      "aliases": [
+        "weight"
+      ]
+    },
+    "Percentage": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Percentage",
+      "unit_family": "PercentageUnit",
+      "default_unit": "Percent",
+      "aliases": [
+        "percent",
+        "share",
+        "ratio"
+      ]
+    },
+    "ISODate": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "ISO date",
+      "aliases": [
+        "date",
+        "day",
+        "calendar_date"
+      ]
+    },
+    "DateTime": {
+      "parents": [
+        "ISODate"
+      ],
+      "description": "Date-time instant",
+      "aliases": [
+        "timestamp",
+        "time",
+        "datetime_utc",
+        "iso_time"
+      ]
+    },
+    "Name": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Name",
+      "aliases": [
+        "title",
+        "label",
+        "display_name_text"
+      ]
+    },
+    "Description": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Description",
+      "aliases": [
+        "summary",
+        "text",
+        "details"
+      ]
+    },
+    "Identifier": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Identifier",
+      "aliases": [
+        "id",
+        "key",
+        "code"
+      ]
+    },
+    "Count": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Count",
+      "unit_family": "CountUnit",
+      "default_unit": "Count",
+      "aliases": [
+        "total",
+        "total_count",
+        "number_of_results"
+      ]
+    },
+    "Rank": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Rank",
+      "aliases": [
+        "position_rank",
+        "order",
+        "index"
+      ]
+    },
+    "Rating": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Rating",
+      "aliases": [
+        "score",
+        "stars"
+      ]
+    },
+    "BooleanFlag": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Boolean flag",
+      "aliases": [
+        "enabled",
+        "is_active",
+        "has_more",
+        "success"
+      ]
+    },
+    "Url": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "URL",
+      "aliases": [
+        "link",
+        "href",
+        "website"
+      ]
+    },
+    "Email": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Email",
+      "aliases": [
+        "email_address"
+      ]
+    },
+    "PhoneNumber": {
+      "parents": [
+        "Concept"
+      ],
+      "description": "Phone number",
+      "aliases": [
+        "phone",
+        "telephone"
+      ]
+    },
+    "Movie": {
+      "parents": [
+        "Media"
+      ],
+      "description": "Movie",
+      "aliases": [
+        "movie_record",
+        "film_record"
+      ]
+    },
+    "MovieTitle": {
+      "parents": [
+        "Movie"
+      ],
+      "description": "Movie title",
+      "aliases": [
+        "movie_title_text"
+      ]
+    },
+    "MovieReleaseYear": {
+      "parents": [
+        "Movie"
+      ],
+      "description": "Movie release year",
+      "aliases": [
+        "movie_release_year_value"
+      ]
+    },
+    "MovieRuntime": {
+      "parents": [
+        "Movie"
+      ],
+      "description": "Movie runtime",
+      "unit_family": "DurationUnit",
+      "default_unit": "Minute",
+      "aliases": [
+        "movie_runtime_minutes"
+      ]
+    },
+    "MovieGenre": {
+      "parents": [
+        "Media"
+      ],
+      "description": "Movie genre",
+      "aliases": [
+        "movie_genre_name"
+      ]
+    },
+    "MovieRating": {
+      "parents": [
+        "Rating"
+      ],
+      "description": "Movie rating",
+      "unit_family": "RatingUnit",
+      "default_unit": "Star",
+      "aliases": [
+        "movie_rating_value"
+      ]
+    },
+    "TVEpisode": {
+      "parents": [
+        "Media"
+      ],
+      "description": "TV episode",
+      "aliases": [
+        "tv_episode_record"
+      ]
+    },
+    "TVEpisodeTitle": {
+      "parents": [
+        "TVEpisode"
+      ],
+      "description": "TV episode title",
+      "aliases": [
+        "tv_episode_title_text"
+      ]
+    },
+    "TVEpisodeNumber": {
+      "parents": [
+        "TVEpisode"
+      ],
+      "description": "TV episode number",
+      "aliases": [
+        "tv_episode_number_value"
+      ]
+    },
+    "TVSeason": {
+      "parents": [
+        "Media"
+      ],
+      "description": "TV season",
+      "aliases": [
+        "tv_season_record"
+      ]
+    },
+    "TVSeasonNumber": {
+      "parents": [
+        "TVSeason"
+      ],
+      "description": "TV season number",
+      "aliases": [
+        "tv_season_number_value"
+      ]
+    },
+    "TVNetwork": {
+      "parents": [
+        "Organization"
+      ],
+      "description": "TV network",
+      "aliases": [
+        "tv_network_name"
+      ]
+    },
+    "Podcast": {
+      "parents": [
+        "Media"
+      ],
+      "description": "Podcast",
+      "aliases": [
+        "podcast_record"
+      ]
+    },
+    "PodcastEpisode": {
+      "parents": [
+        "Podcast"
+      ],
+      "description": "Podcast episode",
+      "aliases": [
+        "podcast_episode_record"
+      ]
+    },
+    "MusicTrack": {
+      "parents": [
+        "Media"
+      ],
+      "description": "Music track",
+      "aliases": [
+        "music_track_record"
+      ]
+    },
+    "MusicAlbum": {
+      "parents": [
+        "Media"
+      ],
+      "description": "Music album",
+      "aliases": [
+        "music_album_record"
+      ]
+    },
+    "MediaImageUrl": {
+      "parents": [
+        "Url"
+      ],
+      "description": "Media image URL",
+      "aliases": [
+        "media_image_url_value"
+      ]
+    },
+    "StreamUrl": {
+      "parents": [
+        "Url"
+      ],
+      "description": "Stream URL",
+      "aliases": [
+        "stream_url_value"
+      ]
+    },
+    "PodcastQuery": {
+      "parents": [
+        "Media"
+      ],
+      "description": "Podcast query",
+      "aliases": [
+        "podcast_search_query"
+      ]
+    },
+    "MusicQuery": {
+      "parents": [
+        "Media"
+      ],
+      "description": "Music query",
+      "aliases": [
+        "music_search_query"
+      ]
+    },
+    "EventRecord": {
+      "parents": [
+        "Event"
+      ],
+      "description": "Event",
+      "aliases": [
+        "event_record_data"
+      ]
+    },
+    "EventName": {
+      "parents": [
+        "EventRecord"
+      ],
+      "description": "Event name",
+      "aliases": [
+        "event_name_text"
+      ]
+    },
+    "EventStartDate": {
+      "parents": [
+        "EventRecord"
+      ],
+      "description": "Event start date",
+      "aliases": [
+        "event_start_datetime"
+      ]
+    },
+    "EventEndDate": {
+      "parents": [
+        "EventRecord"
+      ],
+      "description": "Event end date",
+      "aliases": [
+        "event_end_datetime"
+      ]
+    },
+    "EventVenue": {
+      "parents": [
+        "Location"
+      ],
+      "description": "Event venue",
+      "aliases": [
+        "event_venue_name"
+      ]
+    },
+    "EventCategory": {
+      "parents": [
+        "EventRecord"
+      ],
+      "description": "Event category",
+      "aliases": [
+        "event_category_name"
+      ]
+    },
+    "EventStatus": {
+      "parents": [
+        "EventRecord"
+      ],
+      "description": "Event status",
+      "aliases": [
+        "event_status_name"
+      ]
+    },
+    "EventUrl": {
+      "parents": [
+        "Url"
+      ],
+      "description": "Event URL",
+      "aliases": [
+        "event_ticket_url"
+      ]
+    },
+    "EventOrganizer": {
+      "parents": [
+        "Organization"
+      ],
+      "description": "Event organizer",
+      "aliases": [
+        "event_organizer_name"
+      ]
+    },
+    "WeatherAlert": {
+      "parents": [
+        "EventRecord"
+      ],
+      "description": "Weather alert",
+      "aliases": [
+        "weather_alert_record"
+      ]
+    },
+    "SportsSeason": {
+      "parents": [
+        "EventRecord"
+      ],
+      "description": "Sports season",
+      "aliases": [
+        "sports_season_name"
+      ]
+    },
+    "GameStatus": {
+      "parents": [
+        "EventRecord"
+      ],
+      "description": "Game status",
+      "aliases": [
+        "game_status_name"
+      ]
+    },
+    "EventQuery": {
+      "parents": [
+        "Event"
+      ],
+      "description": "Event query",
+      "aliases": [
+        "event_search_query"
+      ]
+    },
+    "OrganizationRecord": {
+      "parents": [
+        "Organization"
+      ],
+      "description": "Organization",
+      "aliases": [
+        "organization_record_data"
+      ]
+    },
+    "OrganizationName": {
+      "parents": [
+        "OrganizationRecord"
+      ],
+      "description": "Organization name",
+      "aliases": [
+        "organization_name_text"
+      ]
+    },
+    "OrganizationType": {
+      "parents": [
+        "OrganizationRecord"
+      ],
+      "description": "Organization type",
+      "aliases": [
+        "organization_type_name"
+      ]
+    },
+    "OrganizationUrl": {
+      "parents": [
+        "Url"
+      ],
+      "description": "Organization URL",
+      "aliases": [
+        "organization_url_value"
+      ]
+    },
+    "OrganizationCountry": {
+      "parents": [
+        "CountryName"
+      ],
+      "description": "Organization country",
+      "aliases": [
+        "organization_country_name"
+      ]
+    },
+    "OrganizationFoundedYear": {
+      "parents": [
+        "OrganizationRecord"
+      ],
+      "description": "Organization founded year",
+      "aliases": [
+        "organization_founded_year_value"
+      ]
+    },
+    "OrganizationLogoUrl": {
+      "parents": [
+        "Url"
+      ],
+      "description": "Organization logo URL",
+      "aliases": [
+        "organization_logo_url_value"
+      ]
+    },
+    "CompanyIndustry": {
+      "parents": [
+        "OrganizationRecord"
+      ],
+      "description": "Company industry",
+      "aliases": [
+        "company_industry_name"
+      ]
+    },
+    "CompanyEmployeeCount": {
+      "parents": [
+        "OrganizationRecord"
+      ],
+      "description": "Company employee count",
+      "unit_family": "CountUnit",
+      "default_unit": "Count",
+      "aliases": [
+        "company_employee_count_value"
+      ]
+    },
+    "OrganizationQuery": {
+      "parents": [
+        "Organization"
+      ],
+      "description": "Organization query",
+      "aliases": [
+        "organization_search_query"
+      ]
+    },
+    "PersonRecord": {
+      "parents": [
+        "Person"
+      ],
+      "description": "Person",
+      "aliases": [
+        "person_record_data"
+      ]
+    },
+    "PersonName": {
+      "parents": [
+        "PersonRecord"
+      ],
+      "description": "Person name",
+      "aliases": [
+        "person_name_text"
+      ]
+    },
+    "PersonRole": {
+      "parents": [
+        "PersonRecord"
+      ],
+      "description": "Person role",
+      "aliases": [
+        "person_role_name"
+      ]
+    },
+    "PersonBirthDate": {
+      "parents": [
+        "PersonRecord"
+      ],
+      "description": "Person birth date",
+      "aliases": [
+        "person_birth_date_value"
+      ]
+    },
+    "PersonNationality": {
+      "parents": [
+        "PersonRecord"
+      ],
+      "description": "Person nationality",
+      "aliases": [
+        "person_nationality_name"
+      ]
+    },
+    "PersonBio": {
+      "parents": [
+        "PersonRecord"
+      ],
+      "description": "Person biography",
+      "aliases": [
+        "person_biography_text"
+      ]
+    },
+    "PersonImageUrl": {
+      "parents": [
+        "Url"
+      ],
+      "description": "Person image URL",
+      "aliases": [
+        "person_image_url_value"
+      ]
+    },
+    "Author": {
+      "parents": [
+        "PersonRecord"
+      ],
+      "description": "Author",
+      "aliases": [
+        "author_name_text"
+      ]
+    },
+    "Director": {
+      "parents": [
+        "PersonRecord"
+      ],
+      "description": "Director",
+      "aliases": [
+        "director_name_text"
+      ]
+    },
+    "Actor": {
+      "parents": [
+        "PersonRecord"
+      ],
+      "description": "Actor",
+      "aliases": [
+        "actor_name_text"
+      ]
+    },
+    "Athlete": {
+      "parents": [
+        "PersonRecord"
+      ],
+      "description": "Athlete",
+      "aliases": [
+        "athlete_name_text"
+      ]
+    },
+    "PersonQuery": {
+      "parents": [
+        "Person"
+      ],
+      "description": "Person query",
+      "aliases": [
+        "person_search_query"
+      ]
+    },
+    "ProductRecord": {
+      "parents": [
+        "Product"
+      ],
+      "description": "Product",
+      "aliases": [
+        "product_record_data"
+      ]
+    },
+    "ProductName": {
+      "parents": [
+        "ProductRecord"
+      ],
+      "description": "Product name",
+      "aliases": [
+        "product_name_text"
+      ]
+    },
+    "ProductBrand": {
+      "parents": [
+        "ProductRecord"
+      ],
+      "description": "Product brand",
+      "aliases": [
+        "product_brand_name"
+      ]
+    },
+    "ProductCategory": {
+      "parents": [
+        "ProductRecord"
+      ],
+      "description": "Product category",
+      "aliases": [
+        "product_category_name"
+      ]
+    },
+    "ProductPrice": {
+      "parents": [
+        "ProductRecord"
+      ],
+      "description": "Product price",
+      "unit_family": "CurrencyUnit",
+      "default_unit": "USD",
+      "aliases": [
+        "product_price_value"
+      ]
+    },
+    "ProductCurrency": {
+      "parents": [
+        "CurrencyCode"
+      ],
+      "description": "Product currency",
+      "aliases": [
+        "product_currency_name"
+      ]
+    },
+    "ProductCode": {
+      "parents": [
+        "Identifier"
+      ],
+      "description": "Product code",
+      "aliases": [
+        "product_code_value"
+      ]
+    },
+    "ProductImageUrl": {
+      "parents": [
+        "Url"
+      ],
+      "description": "Product image URL",
+      "aliases": [
+        "product_image_url_value"
+      ]
+    },
+    "NutritionScore": {
+      "parents": [
+        "ProductRecord"
+      ],
+      "description": "Nutrition score",
+      "unit_family": "RatingUnit",
+      "default_unit": "Score",
+      "aliases": [
+        "nutrition_score_value"
+      ]
+    },
+    "NutritionGrade": {
+      "parents": [
+        "ProductRecord"
+      ],
+      "description": "Nutrition grade",
+      "aliases": [
+        "nutrition_grade_name"
+      ]
+    },
+    "Ingredients": {
+      "parents": [
+        "ProductRecord"
+      ],
+      "description": "Ingredients",
+      "aliases": [
+        "ingredient_list_text"
+      ]
+    },
+    "Allergens": {
+      "parents": [
+        "ProductRecord"
+      ],
+      "description": "Allergens",
+      "aliases": [
+        "allergen_list_text"
+      ]
+    },
+    "ServingSize": {
+      "parents": [
+        "ProductRecord"
+      ],
+      "description": "Serving size",
+      "unit_family": "MassUnit",
+      "default_unit": "Gram",
+      "aliases": [
+        "serving_size_grams"
+      ]
+    },
+    "ProductQuantity": {
+      "parents": [
+        "ProductRecord"
+      ],
+      "description": "Product quantity",
+      "unit_family": "MassUnit",
+      "default_unit": "Gram",
+      "aliases": [
+        "product_quantity_grams"
+      ]
+    },
+    "ProductQuery": {
+      "parents": [
+        "Product"
+      ],
+      "description": "Product query",
+      "aliases": [
+        "product_search_query"
+      ]
+    },
+    "LocationRecord": {
+      "parents": [
+        "Location"
+      ],
+      "description": "Location",
+      "aliases": [
+        "location_record_data"
+      ]
+    },
+    "LocationType": {
+      "parents": [
+        "LocationRecord"
+      ],
+      "description": "Location type",
+      "aliases": [
+        "location_type_name"
+      ]
+    },
+    "AdministrativeArea": {
+      "parents": [
+        "LocationRecord"
+      ],
+      "description": "Administrative area",
+      "aliases": [
+        "administrative_area_name"
+      ]
+    },
+    "Neighborhood": {
+      "parents": [
+        "LocationRecord"
+      ],
+      "description": "Neighborhood",
+      "aliases": [
+        "neighborhood_name"
+      ]
+    },
+    "District": {
+      "parents": [
+        "LocationRecord"
+      ],
+      "description": "District",
+      "aliases": [
+        "district_name_text"
+      ]
+    },
+    "StreetAddress": {
+      "parents": [
+        "Address"
+      ],
+      "description": "Street address",
+      "aliases": [
+        "street_address_text"
+      ]
+    },
+    "BoundingBox": {
+      "parents": [
+        "LocationRecord"
+      ],
+      "description": "Bounding box",
+      "aliases": [
+        "bounding_box_value"
+      ]
+    },
+    "LocationConfidence": {
+      "parents": [
+        "LocationRecord"
+      ],
+      "description": "Location confidence",
+      "unit_family": "PercentageUnit",
+      "default_unit": "Percent",
+      "aliases": [
+        "location_confidence_score"
+      ]
+    },
+    "PlaceId": {
+      "parents": [
+        "Identifier"
+      ],
+      "description": "Place identifier",
+      "aliases": [
+        "place_identifier_value"
+      ]
+    },
+    "WikidataId": {
+      "parents": [
+        "Identifier"
+      ],
+      "description": "Wikidata identifier",
+      "aliases": [
+        "wikidata_identifier_value"
+      ]
+    },
+    "OsmNodeId": {
+      "parents": [
+        "PlaceId"
+      ],
+      "description": "OpenStreetMap node ID",
+      "aliases": [
+        "osm_node_identifier"
+      ]
+    },
+    "OsmWayId": {
+      "parents": [
+        "PlaceId"
+      ],
+      "description": "OpenStreetMap way ID",
+      "aliases": [
+        "osm_way_identifier"
+      ]
+    },
+    "OsmRelationId": {
+      "parents": [
+        "PlaceId"
+      ],
+      "description": "OpenStreetMap relation ID",
+      "aliases": [
+        "osm_relation_identifier"
+      ]
+    },
+    "ElevationResolution": {
+      "parents": [
+        "Elevation"
+      ],
+      "description": "Elevation resolution",
+      "unit_family": "LengthUnit",
+      "default_unit": "Metre",
+      "aliases": [
+        "elevation_resolution_value"
+      ]
+    },
+    "TimezoneOffset": {
+      "parents": [
+        "Timezone"
+      ],
+      "description": "Timezone offset",
+      "unit_family": "DurationUnit",
+      "default_unit": "Second",
+      "aliases": [
+        "timezone_offset_seconds"
+      ]
+    },
+    "CountryCurrency": {
+      "parents": [
+        "CurrencyCode"
+      ],
+      "description": "Country currency",
+      "aliases": [
+        "country_currency_name"
+      ]
+    },
+    "CountryLanguages": {
+      "parents": [
+        "Country"
+      ],
+      "description": "Country languages",
+      "aliases": [
+        "country_languages_text"
+      ]
+    },
+    "CountryArea": {
+      "parents": [
+        "AreaSize"
+      ],
+      "description": "Country area",
+      "unit_family": "AreaUnit",
+      "default_unit": "SquareKilometre",
+      "aliases": [
+        "country_area_value"
+      ]
+    },
+    "CountryPopulation": {
+      "parents": [
+        "Population"
+      ],
+      "description": "Country population",
+      "unit_family": "CountUnit",
+      "default_unit": "Count",
+      "aliases": [
+        "country_population_value"
+      ]
+    },
+    "CountryCallingCode": {
+      "parents": [
+        "CountryCode"
+      ],
+      "description": "Country calling code",
+      "aliases": [
+        "country_calling_code_value"
+      ]
+    },
+    "CountryDrivingSide": {
+      "parents": [
+        "Country"
+      ],
+      "description": "Country driving side",
+      "aliases": [
+        "country_driving_side_value"
+      ]
+    },
+    "CountryBorders": {
+      "parents": [
+        "Country"
+      ],
+      "description": "Country borders",
+      "aliases": [
+        "country_borders_text"
+      ]
+    },
+    "CountrySubregion": {
+      "parents": [
+        "Region"
+      ],
+      "description": "Country subregion",
+      "aliases": [
+        "country_subregion_name"
+      ]
+    },
+    "OsmTags": {
+      "parents": [
+        "LocationRecord"
+      ],
+      "description": "OpenStreetMap tags",
+      "aliases": [
+        "osm_tags_value"
+      ]
+    },
+    "OsmPlaceRank": {
+      "parents": [
+        "LocationRecord"
+      ],
+      "description": "OpenStreetMap place rank",
+      "aliases": [
+        "osm_place_rank_value"
+      ]
+    },
+    "Route": {
+      "parents": [
+        "LocationRecord"
+      ],
+      "description": "Route",
+      "aliases": [
+        "route_record_data"
+      ]
+    },
+    "RouteDistance": {
+      "parents": [
+        "Distance"
+      ],
+      "description": "Route distance",
+      "unit_family": "LengthUnit",
+      "default_unit": "Metre",
+      "aliases": [
+        "route_distance_value"
+      ]
+    },
+    "RouteDuration": {
+      "parents": [
+        "Duration"
+      ],
+      "description": "Route duration",
+      "unit_family": "DurationUnit",
+      "default_unit": "Second",
+      "aliases": [
+        "route_duration_value"
+      ]
+    },
+    "PointOfInterest": {
+      "parents": [
+        "LocationRecord"
+      ],
+      "description": "Point of interest",
+      "aliases": [
+        "point_of_interest_record"
+      ]
+    },
+    "POICategory": {
+      "parents": [
+        "LocationRecord"
+      ],
+      "description": "Point of interest category",
+      "aliases": [
+        "poi_category_name"
+      ]
+    },
+    "NearbyPlace": {
+      "parents": [
+        "LocationRecord"
+      ],
+      "description": "Nearby place",
+      "aliases": [
+        "nearby_place_record"
+      ]
+    },
+    "SportsTeam": {
+      "parents": [
+        "Organization"
+      ],
+      "description": "Sports team",
+      "aliases": [
+        "team_record",
+        "club_record"
+      ]
+    }
   },
   "units": {
-    "C": {"dimension": "temperature", "convertible": ["F", "K"]},
-    "F": {"dimension": "temperature", "convertible": ["C", "K"]},
-    "K": {"dimension": "temperature", "convertible": ["C", "F"]},
-    "degrees": {"dimension": "angle", "convertible": []},
-    "USD": {"dimension": "currency", "convertible": ["PKR", "EUR", "GBP", "JPY", "INR", "AED"]},
-    "PKR": {"dimension": "currency", "convertible": ["USD", "EUR", "GBP", "JPY", "INR", "AED"]},
-    "EUR": {"dimension": "currency", "convertible": ["USD", "PKR", "GBP", "JPY", "INR", "AED"]},
-    "GBP": {"dimension": "currency", "convertible": ["USD", "PKR", "EUR", "JPY", "INR", "AED"]},
-    "JPY": {"dimension": "currency", "convertible": ["USD", "PKR", "EUR", "GBP", "INR", "AED"]},
-    "INR": {"dimension": "currency", "convertible": ["USD", "PKR", "EUR", "GBP", "JPY", "AED"]},
-    "AED": {"dimension": "currency", "convertible": ["USD", "PKR", "EUR", "GBP", "JPY", "INR"]},
-    "ISO8601": {"dimension": "time", "convertible": []},
-    "year": {"dimension": "time", "convertible": []}
+    "C": {
+      "dimension": "temperature",
+      "convertible": [
+        "F",
+        "K"
+      ]
+    },
+    "F": {
+      "dimension": "temperature",
+      "convertible": [
+        "C",
+        "K"
+      ]
+    },
+    "K": {
+      "dimension": "temperature",
+      "convertible": [
+        "C",
+        "F"
+      ]
+    },
+    "degrees": {
+      "dimension": "angle",
+      "convertible": []
+    },
+    "USD": {
+      "dimension": "currency",
+      "convertible": [
+        "PKR",
+        "EUR",
+        "GBP",
+        "JPY",
+        "INR",
+        "AED"
+      ]
+    },
+    "PKR": {
+      "dimension": "currency",
+      "convertible": [
+        "USD",
+        "EUR",
+        "GBP",
+        "JPY",
+        "INR",
+        "AED"
+      ]
+    },
+    "EUR": {
+      "dimension": "currency",
+      "convertible": [
+        "USD",
+        "PKR",
+        "GBP",
+        "JPY",
+        "INR",
+        "AED"
+      ]
+    },
+    "GBP": {
+      "dimension": "currency",
+      "convertible": [
+        "USD",
+        "PKR",
+        "EUR",
+        "JPY",
+        "INR",
+        "AED"
+      ]
+    },
+    "JPY": {
+      "dimension": "currency",
+      "convertible": [
+        "USD",
+        "PKR",
+        "EUR",
+        "GBP",
+        "INR",
+        "AED"
+      ]
+    },
+    "INR": {
+      "dimension": "currency",
+      "convertible": [
+        "USD",
+        "PKR",
+        "EUR",
+        "GBP",
+        "JPY",
+        "AED"
+      ]
+    },
+    "AED": {
+      "dimension": "currency",
+      "convertible": [
+        "USD",
+        "PKR",
+        "EUR",
+        "GBP",
+        "JPY",
+        "INR"
+      ]
+    },
+    "ISO8601": {
+      "dimension": "time",
+      "convertible": []
+    },
+    "year": {
+      "dimension": "time",
+      "convertible": []
+    },
+    "Star": {
+      "dimension": "rating",
+      "convertible": []
+    },
+    "Score": {
+      "dimension": "rating",
+      "convertible": []
+    },
+    "Byte": {
+      "dimension": "data_size",
+      "convertible": []
+    },
+    "Kilobyte": {
+      "dimension": "data_size",
+      "convertible": []
+    },
+    "Megabyte": {
+      "dimension": "data_size",
+      "convertible": []
+    },
+    "Gigabyte": {
+      "dimension": "data_size",
+      "convertible": []
+    },
+    "Hertz": {
+      "dimension": "frequency",
+      "convertible": []
+    },
+    "Kilohertz": {
+      "dimension": "frequency",
+      "convertible": []
+    },
+    "Megahertz": {
+      "dimension": "frequency",
+      "convertible": []
+    }
   },
   "capabilities": {
     "GeocodeLocation": {
       "description": "Resolve a place name to coordinates.",
-      "inputs": ["LocationName"],
-      "outputs": ["Coordinates"]
+      "inputs": [
+        "LocationName"
+      ],
+      "outputs": [
+        "Coordinates"
+      ]
     },
     "GetWeatherForecast": {
       "description": "Return a weather forecast for coordinates.",
-      "inputs": ["Coordinates"],
-      "outputs": ["Temperature"]
+      "inputs": [
+        "Coordinates"
+      ],
+      "outputs": [
+        "Temperature"
+      ]
     },
     "ConvertCurrency": {
       "description": "Convert an amount between currencies.",
-      "inputs": ["MoneyAmount", "CurrencyCode"],
-      "outputs": ["Money"]
+      "inputs": [
+        "MoneyAmount",
+        "CurrencyCode"
+      ],
+      "outputs": [
+        "Money"
+      ]
     },
     "GetCountryFacts": {
       "description": "Return facts about a country.",
-      "inputs": ["CountryName"],
-      "outputs": ["Country"]
+      "inputs": [
+        "CountryName"
+      ],
+      "outputs": [
+        "Country"
+      ]
     },
     "GetPublicHolidays": {
       "description": "Return public holidays for a country and year.",
-      "inputs": ["CountryCode", "Number"],
-      "outputs": ["Holiday"]
+      "inputs": [
+        "CountryCode",
+        "Number"
+      ],
+      "outputs": [
+        "Holiday"
+      ]
     },
     "SearchResearchPapers": {
       "description": "Search scholarly papers by topic.",
-      "inputs": ["ResearchTopic"],
-      "outputs": ["ResearchPaper"]
+      "inputs": [
+        "ResearchTopic"
+      ],
+      "outputs": [
+        "ResearchPaper"
+      ]
     },
     "QueryStructuredData": {
       "description": "Answer a question using a read-only SQL database.",
-      "inputs": ["NaturalLanguageQuery"],
-      "outputs": ["TabularAnswer"]
+      "inputs": [
+        "NaturalLanguageQuery"
+      ],
+      "outputs": [
+        "TabularAnswer"
+      ]
     },
     "AnswerFromDocument": {
       "description": "Answer a question from an uploaded document.",
-      "inputs": ["DocumentQuestion", "DocumentReference"],
-      "outputs": ["AnswerFromDocument"]
+      "inputs": [
+        "DocumentQuestion",
+        "DocumentReference"
+      ],
+      "outputs": [
+        "AnswerFromDocument"
+      ]
+    },
+    "SearchNews": {
+      "description": "Search recent news stories by topic.",
+      "inputs": [
+        "NewsTopic"
+      ],
+      "outputs": [
+        "NewsArticle"
+      ]
+    },
+    "GetCryptoPrice": {
+      "description": "Return a cryptocurrency price in a fiat currency.",
+      "inputs": [
+        "CryptoAsset",
+        "CurrencyCode"
+      ],
+      "outputs": [
+        "CryptoPrice"
+      ]
+    },
+    "SearchTVShows": {
+      "description": "Search television shows by title or topic.",
+      "inputs": [
+        "ShowQuery"
+      ],
+      "outputs": [
+        "TVShow"
+      ]
+    },
+    "SearchBooks": {
+      "description": "Search a book catalogue by title, author or subject.",
+      "inputs": [
+        "BookQuery"
+      ],
+      "outputs": [
+        "Book"
+      ]
+    },
+    "TranslateText": {
+      "description": "Translate text between two languages.",
+      "inputs": [
+        "Text",
+        "LanguageCode",
+        "LanguageCode"
+      ],
+      "outputs": [
+        "Translation"
+      ]
+    },
+    "GetCurrentTime": {
+      "description": "Return the current time in an IANA timezone.",
+      "inputs": [
+        "TimezoneName"
+      ],
+      "outputs": [
+        "CurrentTime"
+      ]
+    },
+    "GetSunTimes": {
+      "description": "Return sunrise and sunset times for coordinates and a date.",
+      "inputs": [
+        "Coordinates",
+        "DateTimeISO"
+      ],
+      "outputs": [
+        "SunTimes"
+      ]
+    },
+    "SearchRecipes": {
+      "description": "Search recipes by dish or ingredient.",
+      "inputs": [
+        "RecipeQuery"
+      ],
+      "outputs": [
+        "Recipe"
+      ]
+    },
+    "GetSportsScores": {
+      "description": "Return the latest scores for a sports league.",
+      "inputs": [
+        "SportsLeague"
+      ],
+      "outputs": [
+        "SportsScore"
+      ]
+    },
+    "SearchMovies": {
+      "description": "Search movies by title or topic.",
+      "inputs": [
+        "MovieTitle"
+      ],
+      "outputs": [
+        "Movie"
+      ]
+    },
+    "GetMovieDetails": {
+      "description": "Return detailed facts about a movie.",
+      "inputs": [
+        "MovieTitle"
+      ],
+      "outputs": [
+        "Movie"
+      ]
+    },
+    "SearchTVEpisodes": {
+      "description": "Search television episodes.",
+      "inputs": [
+        "ShowQuery"
+      ],
+      "outputs": [
+        "TVEpisode"
+      ]
+    },
+    "GetTVSeason": {
+      "description": "Return the episodes of a television season.",
+      "inputs": [
+        "ShowQuery"
+      ],
+      "outputs": [
+        "TVSeason"
+      ]
+    },
+    "SearchPodcasts": {
+      "description": "Search podcasts by name or topic.",
+      "inputs": [
+        "PodcastQuery"
+      ],
+      "outputs": [
+        "Podcast"
+      ]
+    },
+    "GetPodcastDetails": {
+      "description": "Return podcast details and episodes.",
+      "inputs": [
+        "PodcastQuery"
+      ],
+      "outputs": [
+        "Podcast"
+      ]
+    },
+    "SearchMusic": {
+      "description": "Search music tracks.",
+      "inputs": [
+        "MusicQuery"
+      ],
+      "outputs": [
+        "MusicTrack"
+      ]
+    },
+    "GetMusicAlbum": {
+      "description": "Return an album and its tracks.",
+      "inputs": [
+        "MusicQuery"
+      ],
+      "outputs": [
+        "MusicAlbum"
+      ]
+    },
+    "SearchEvents": {
+      "description": "Find events by topic, place or date.",
+      "inputs": [
+        "EventQuery"
+      ],
+      "outputs": [
+        "EventRecord"
+      ]
+    },
+    "GetEventDetails": {
+      "description": "Return details for one event.",
+      "inputs": [
+        "EventRecord"
+      ],
+      "outputs": [
+        "EventRecord"
+      ]
+    },
+    "GetWeatherAlerts": {
+      "description": "Return active weather alerts for a place.",
+      "inputs": [
+        "Coordinates"
+      ],
+      "outputs": [
+        "WeatherAlert"
+      ]
+    },
+    "GetSportsSchedule": {
+      "description": "Return upcoming games and their status.",
+      "inputs": [
+        "SportsLeague"
+      ],
+      "outputs": [
+        "EventRecord"
+      ]
+    },
+    "GetSportsTeams": {
+      "description": "Return the teams in a sports league.",
+      "inputs": [
+        "SportsLeague"
+      ],
+      "outputs": [
+        "SportsTeam"
+      ]
+    },
+    "SearchOrganizations": {
+      "description": "Search companies and other organisations.",
+      "inputs": [
+        "OrganizationQuery"
+      ],
+      "outputs": [
+        "OrganizationRecord"
+      ]
+    },
+    "GetOrganizationFacts": {
+      "description": "Return facts about an organisation.",
+      "inputs": [
+        "OrganizationName"
+      ],
+      "outputs": [
+        "OrganizationRecord"
+      ]
+    },
+    "SearchPeople": {
+      "description": "Search for people by name or role.",
+      "inputs": [
+        "PersonQuery"
+      ],
+      "outputs": [
+        "PersonRecord"
+      ]
+    },
+    "GetPersonFacts": {
+      "description": "Return biographical facts about a person.",
+      "inputs": [
+        "PersonName"
+      ],
+      "outputs": [
+        "PersonRecord"
+      ]
+    },
+    "SearchProducts": {
+      "description": "Search products by name, brand or category.",
+      "inputs": [
+        "ProductQuery"
+      ],
+      "outputs": [
+        "ProductRecord"
+      ]
+    },
+    "GetProductDetails": {
+      "description": "Return details for one product.",
+      "inputs": [
+        "ProductCode"
+      ],
+      "outputs": [
+        "ProductRecord"
+      ]
+    },
+    "SearchFoodProducts": {
+      "description": "Search packaged food products.",
+      "inputs": [
+        "ProductQuery"
+      ],
+      "outputs": [
+        "ProductRecord"
+      ]
+    },
+    "GetNutritionFacts": {
+      "description": "Return nutrition facts for a product.",
+      "inputs": [
+        "ProductCode"
+      ],
+      "outputs": [
+        "NutritionScore"
+      ]
+    },
+    "SearchLocations": {
+      "description": "Search for places and administrative areas.",
+      "inputs": [
+        "LocationName"
+      ],
+      "outputs": [
+        "LocationRecord"
+      ]
+    },
+    "ReverseGeocode": {
+      "description": "Resolve coordinates to a place.",
+      "inputs": [
+        "Coordinates"
+      ],
+      "outputs": [
+        "LocationRecord"
+      ]
+    },
+    "GetElevation": {
+      "description": "Return elevation for coordinates.",
+      "inputs": [
+        "Coordinates"
+      ],
+      "outputs": [
+        "Elevation"
+      ]
+    },
+    "GetTimezone": {
+      "description": "Return the timezone at coordinates.",
+      "inputs": [
+        "Coordinates"
+      ],
+      "outputs": [
+        "TimezoneName"
+      ]
+    },
+    "GetRoute": {
+      "description": "Return a route between two places.",
+      "inputs": [
+        "Coordinates"
+      ],
+      "outputs": [
+        "Route"
+      ]
+    },
+    "SearchPointsOfInterest": {
+      "description": "Find points of interest near a place.",
+      "inputs": [
+        "Coordinates"
+      ],
+      "outputs": [
+        "PointOfInterest"
+      ]
+    },
+    "GetCountrySubdivisions": {
+      "description": "Return the administrative subdivisions of a country.",
+      "inputs": [
+        "CountryCode"
+      ],
+      "outputs": [
+        "AdministrativeArea"
+      ]
+    },
+    "GetLocationBoundary": {
+      "description": "Return the boundary of a place.",
+      "inputs": [
+        "LocationName"
+      ],
+      "outputs": [
+        "BoundingBox"
+      ]
+    },
+    "GetNearbyPlaces": {
+      "description": "Return places near a coordinate pair.",
+      "inputs": [
+        "Coordinates"
+      ],
+      "outputs": [
+        "NearbyPlace"
+      ]
+    },
+    "GetPlaceDetails": {
+      "description": "Return detailed facts about a place.",
+      "inputs": [
+        "LocationName"
+      ],
+      "outputs": [
+        "LocationRecord"
+      ]
+    },
+    "GetExchangeMarkets": {
+      "description": "Return exchange-rate market data.",
+      "inputs": [
+        "CurrencyCode"
+      ],
+      "outputs": [
+        "ExchangeRate"
+      ]
     }
   }
 }

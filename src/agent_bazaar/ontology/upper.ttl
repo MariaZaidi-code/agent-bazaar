@@ -29,6 +29,38 @@ ab:Concept a owl:Class ;
     rdfs:label "Concept" ;
     rdfs:comment "A typed domain concept. Domain concepts are classes typed as ab:Concept." .
 
+# ---- domain families (Sprint 2) ------------------------------------------
+
+ab:Media a owl:Class ;
+    rdfs:subClassOf ab:Concept ;
+    rdfs:label "Media" ;
+    rdfs:comment "Movies, television, podcasts, music and other published media." .
+
+ab:Event a owl:Class ;
+    rdfs:subClassOf ab:Concept ;
+    rdfs:label "Event" ;
+    rdfs:comment "Scheduled happenings such as games, festivals, alerts and holidays." .
+
+ab:Organization a owl:Class ;
+    rdfs:subClassOf ab:Concept ;
+    rdfs:label "Organization" ;
+    rdfs:comment "Companies, publishers, networks, teams and other organisations." .
+
+ab:Person a owl:Class ;
+    rdfs:subClassOf ab:Concept ;
+    rdfs:label "Person" ;
+    rdfs:comment "People such as authors, directors, actors, athletes and artists." .
+
+ab:Product a owl:Class ;
+    rdfs:subClassOf ab:Concept ;
+    rdfs:label "Product" ;
+    rdfs:comment "Physical or digital products, including packaged food." .
+
+ab:Location a owl:Class ;
+    rdfs:subClassOf ab:Concept ;
+    rdfs:label "Location" ;
+    rdfs:comment "Places, administrative areas, routes and points of interest." .
+
 ab:Input a owl:Class ;
     rdfs:subClassOf ab:Concept ;
     rdfs:label "Input" .

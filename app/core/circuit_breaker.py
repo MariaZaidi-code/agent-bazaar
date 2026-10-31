@@ -16,6 +16,7 @@ class BreakerRecord:
     consecutive_failures: int = 0
     opened_at: float | None = None
     trial_in_flight: bool = False
+    trial_successes: int = 0
     last_error: str = ""
     transitions: list[dict[str, Any]] = field(default_factory=list)
 
@@ -26,10 +27,12 @@ class CircuitBreakerRegistry:
         failure_threshold: int = 2,
         cooldown_seconds: int = 30,
         clock: Callable[[], float] = time.monotonic,
+        probe_success_threshold: int = 1,
     ) -> None:
         self.failure_threshold = max(1, failure_threshold)
         self.cooldown_seconds = max(0, cooldown_seconds)
         self.clock = clock
+        self.probe_success_threshold = max(1, probe_success_threshold)
         self._records: dict[str, BreakerRecord] = {}
         self._lock = threading.RLock()
 
@@ -68,11 +71,13 @@ class CircuitBreakerRegistry:
                 if self.clock() - opened_at >= self.cooldown_seconds:
                     self._transition(record, BreakerStatus.half_open, "cool-down elapsed")
                     record.trial_in_flight = True
+                    record.trial_successes = 0
                     return True, record.state
                 return False, record.state
             if record.trial_in_flight:
                 return False, record.state
             record.trial_in_flight = True
+            record.trial_successes = 0
             return True, record.state
 
     def record_success(self, key: str, reason: str = "call succeeded") -> BreakerStatus:
@@ -81,6 +86,13 @@ class CircuitBreakerRegistry:
             record.consecutive_failures = 0
             record.trial_in_flight = False
             record.opened_at = None
+            if record.state == BreakerStatus.half_open:
+                record.trial_successes += 1
+                if record.trial_successes < self.probe_success_threshold:
+                    self._transition(record, BreakerStatus.half_open, reason)
+                    record.trial_in_flight = False
+                    return record.state
+            record.trial_successes = 0
             self._transition(record, BreakerStatus.closed, reason)
             return record.state
 
@@ -91,6 +103,7 @@ class CircuitBreakerRegistry:
             record.trial_in_flight = False
             if record.state == BreakerStatus.half_open:
                 record.opened_at = self.clock()
+                record.trial_successes = 0
                 self._transition(record, BreakerStatus.open, reason)
                 return record.state
             record.consecutive_failures += 1
@@ -105,6 +118,7 @@ class CircuitBreakerRegistry:
             record.opened_at = self.clock()
             record.last_error = reason
             record.trial_in_flight = False
+            record.trial_successes = 0
             self._transition(record, BreakerStatus.open, reason)
             return record.state
 
@@ -119,6 +133,7 @@ class CircuitBreakerRegistry:
                 record.consecutive_failures = 0
                 record.opened_at = None
                 record.trial_in_flight = False
+                record.trial_successes = 0
                 record.last_error = ""
                 record.transitions.clear()
 
@@ -134,6 +149,7 @@ class CircuitBreakerRegistry:
                 "key": record.key,
                 "state": record.state.value,
                 "consecutive_failures": record.consecutive_failures,
+                "trial_successes": record.trial_successes,
                 "opened_at": record.opened_at,
                 "last_error": record.last_error,
                 "transitions": record.transitions[-5:],

@@ -326,8 +326,8 @@ over the extracted value, and the fields it may set are `pricing_tier`,
 `probe_budget_per_minute`, `licence` and `terms_url`. Each entry carries
 `reviewer`, `checked_at` and `note`.
 
-The file covers the eight live application providers and three corpus tools
-whose earlier classification the corrected rules changed:
+The file covers the eight original live application providers and three corpus
+tools whose earlier classification the corrected rules changed:
 
 | Tool | Tier | Access | Note in the file |
 | --- | --- | --- | --- |
@@ -345,6 +345,11 @@ whose earlier classification the corrected rules changed:
 
 Every one of those entries currently has an empty `reviewer`, so the file
 records the checked facts but not a signed-off review.
+
+The ten Sprint 1 providers are recorded directly in `app/data/tools.json` as
+free and keyless, with their licence or terms noted. They do not yet have
+`data/overrides/pricing.yaml` review entries, so the curated human layer covers
+the original provider set only.
 
 ## 4. How the facts are stored in the graph
 

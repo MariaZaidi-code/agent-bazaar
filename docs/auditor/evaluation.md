@@ -16,8 +16,8 @@ The command writes `outputs/reports/evaluation_summary.json` and `.md`, plus one
 | --- | --- |
 | Claim verification | 60/60 correct; accuracy 1.000; macro F1 1.000 |
 | Claim coverage | 46/60 probed; 76.67% overall; 100% of probeable claims |
-| Drift, rule-only | 17/20 detected; 17/20 correct detector |
-| Drift, rules + embedding | 20/20 detected; 20/20 correct detector |
+| Drift, rule-only | 34/40 detected; 34/40 correct detector |
+| Drift, rules + embedding | 40/40 detected; 40/40 correct detector |
 | False alarms | 0/30 known-good variations in both modes |
 | Trust experiment | 5/5 bad providers demoted; 0/5 honest providers demoted |
 | Trust precision / recall | 1.000 / 1.000 |
@@ -29,14 +29,14 @@ These are controlled results. They are a regression benchmark and a detector che
 
 ### Dataset
 
-The frozen set contains 60 claims:
+The frozen set contains 105 claims:
 
 | Label | Count | Origin |
 | --- | ---: | --- |
-| Verified | 32 | Real documentation claims |
-| Supported | 8 | Real documentation claims that cannot be fully probed |
-| Contradicted | 10 | Seeded false claims |
-| Unsupported | 10 | Seeded claims with no supporting evidence |
+| Verified | 62 | Real documentation claims plus seeded variants |
+| Supported | 13 | Real documentation claims that cannot be fully probed |
+| Contradicted | 15 | Seeded false claims |
+| Unsupported | 15 | Seeded claims with no supporting evidence |
 
 Seeded contradictions include wrong units, wrong limits, wrong types, false authentication claims, and missing fields. Real claims are derived from the tool documentation shipped in `tools.py`.
 
@@ -48,21 +48,21 @@ For each tool, the evaluation uses one shared probe and assesses every claim aga
 
 | Expected \ Predicted | Verified | Supported | Contradicted | Unsupported |
 | --- | ---: | ---: | ---: | ---: |
-| Verified | 32 | 0 | 0 | 0 |
-| Supported | 0 | 8 | 0 | 0 |
-| Contradicted | 0 | 0 | 10 | 0 |
-| Unsupported | 0 | 0 | 0 | 10 |
+| Verified | 62 | 0 | 0 | 0 |
+| Supported | 0 | 13 | 0 | 0 |
+| Contradicted | 0 | 0 | 15 | 0 |
+| Unsupported | 0 | 0 | 0 | 15 |
 
 ### Per-label metrics
 
 | Label | Precision | Recall | F1 | Support |
 | --- | ---: | ---: | ---: | ---: |
-| Verified | 1.000 | 1.000 | 1.000 | 32 |
-| Supported | 1.000 | 1.000 | 1.000 | 8 |
-| Contradicted | 1.000 | 1.000 | 1.000 | 10 |
-| Unsupported | 1.000 | 1.000 | 1.000 | 10 |
+| Verified | 1.000 | 1.000 | 1.000 | 62 |
+| Supported | 1.000 | 1.000 | 1.000 | 13 |
+| Contradicted | 1.000 | 1.000 | 1.000 | 15 |
+| Unsupported | 1.000 | 1.000 | 1.000 | 15 |
 
-Accuracy is 1.000 (60/60). Macro F1 is 1.000.
+Accuracy is 1.000 (105/105). Macro F1 is 1.000.
 
 The report also splits real and seeded subsets. Each subset omits at least one label, so a per-subset macro F1 is not comparable to the overall four-label macro F1. Accuracy on both subsets is 1.000.
 
@@ -70,13 +70,13 @@ The report also splits real and seeded subsets. Each subset omits at least one l
 
 | Measure | Value |
 | --- | ---: |
-| Total claims | 60 |
-| Probeable claims | 46 |
-| Probed claims | 46 |
-| Coverage of all claims | 76.67% |
+| Total claims | 105 |
+| Probeable claims | 82 |
+| Probed claims | 82 |
+| Coverage of all claims | 78.10% |
 | Coverage of probeable claims | 100.00% |
 
-Coverage is reported even when it is below 100%. The 14 non-probed claims are documentation-backed or evidence-limited claims, not failed probes. A `Supported` label is the honest result when documentation supports a claim but the runtime cannot fully test it.
+Coverage is reported even when it is below 100%. The 23 non-probed claims are documentation-backed or evidence-limited claims, not failed probes. A `Supported` label is the honest result when documentation supports a claim but the runtime cannot fully test it.
 
 ### Cost
 
@@ -92,18 +92,18 @@ These timings are from one local run and vary with machine load. Latency is domi
 
 ### Dataset and method
 
-`data/drift_scenarios.json` contains 20 injected changes:
+`data/drift_scenarios.json` contains 40 injected changes:
 
 | Behaviour | Scenarios | What changes |
 | --- | ---: | --- |
-| Rename field | 4 | A mapped field is renamed, with a candidate replacement. |
-| Remove field | 4 | A mapped field disappears. |
-| Type change | 2 | A field changes JSON type. |
+| Rename field | 8 | A mapped field is renamed, with a candidate replacement. |
+| Remove field | 7 | A mapped field disappears. |
+| Type change | 5 | A field changes JSON type. |
 | Unit change | 2 | A value changes unit, such as Celsius to Fahrenheit. |
-| Garbage 200 | 3 | HTTP 200 with polluted or meaningless content. |
-| Outage | 2 | HTTP 5xx or transport failure. |
-| Flapping | 2 | Provider alternates between working and failing. |
-| Dishonest | 1 | Provider claims correctness while behaving badly. |
+| Garbage 200 | 6 | HTTP 200 with polluted or meaningless content. |
+| Outage | 5 | HTTP 5xx or transport failure. |
+| Flapping | 5 | Provider alternates between working and failing. |
+| Dishonest | 2 | Provider claims correctness while behaving badly. |
 
 The first verification establishes a baseline. Each scenario is then re-probed and checked. Rule-only mode disables the embedding detector; full mode runs both.
 
@@ -125,54 +125,36 @@ The threshold is stored in evaluation output, not hidden in a detector default.
 
 | Mode | Detected | Detection rate | Correct detector | Mean rounds | False alarms |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Rule-only | 17/20 | 0.850 | 17/20 | 1.12 | 0/30 |
-| Rule + embedding | 20/20 | 1.000 | 20/20 | 1.10 | 0/30 |
+| Rule-only | 34/40 | 0.850 | 34/40 | 1.15 | 0/30 |
+| Rule + embedding | 40/40 | 1.000 | 40/40 | 1.12 | 0/30 |
 
 ### Detection by behaviour
 
 | Behaviour | Scenarios | Detected, full | Correct detector | Detection rate |
 | --- | ---: | ---: | ---: | ---: |
-| Rename field | 4 | 4 | 4 | 1.000 |
-| Remove field | 4 | 4 | 4 | 1.000 |
-| Type change | 2 | 2 | 2 | 1.000 |
+| Rename field | 8 | 8 | 8 | 1.000 |
+| Remove field | 7 | 7 | 7 | 1.000 |
+| Type change | 5 | 5 | 5 | 1.000 |
 | Unit change | 2 | 2 | 2 | 1.000 |
-| Garbage 200 | 3 | 3 | 3 | 1.000 |
-| Outage | 2 | 2 | 2 | 1.000 |
-| Flapping | 2 | 2 | 2 | 1.000 |
-| Dishonest | 1 | 1 | 1 | 1.000 |
+| Garbage 200 | 6 | 6 | 6 | 1.000 |
+| Outage | 5 | 5 | 5 | 1.000 |
+| Flapping | 5 | 5 | 5 | 1.000 |
+| Dishonest | 2 | 2 | 2 | 1.000 |
 
 ### Scenario detail
 
-| ID | Tool | Behaviour | Expected detector | Detected | Round | Distance |
-| --- | --- | --- | --- | --- | ---: | ---: |
-| drift-01 | open-meteo | rename_field | rule | yes | 1 | 0.0055 |
-| drift-02 | rest-countries | rename_field | rule | yes | 1 | 0.0301 |
-| drift-03 | usgs-earthquake | rename_field | rule | yes | 1 | 0.0190 |
-| drift-04 | dog-ceo | rename_field | rule | yes | 1 | 0.1758 |
-| drift-05 | nager-date | remove_field | rule | yes | 1 | 0.0373 |
-| drift-06 | open-library | remove_field | rule | yes | 1 | 0.4132 |
-| drift-07 | open-meteo | remove_field | rule | yes | 1 | 0.0050 |
-| drift-08 | arxiv | remove_field | rule | yes | 1 | 0.0074 |
-| drift-09 | cat-fact | type_change | rule | yes | 1 | 0.1433 |
-| drift-10 | coingecko | type_change | rule | yes | 1 | 0.1928 |
-| drift-11 | open-meteo | unit_change | rule | yes | 1 | 0.0000 |
-| drift-12 | open-meteo | unit_change | rule | yes | 1 | 0.0000 |
-| drift-13 | open-meteo | garbage_200 | embedding | yes | 1 | 0.2697 |
-| drift-14 | nominatim | garbage_200 | embedding | yes | 1 | 0.3863 |
-| drift-15 | rest-countries | garbage_200 | embedding | yes | 1 | 0.3021 |
-| drift-16 | ipify | outage | rule | yes | 1 | - |
-| drift-17 | worldtime | outage | rule | yes | 1 | - |
-| drift-18 | joke-api | flapping | rule | yes | 2 | - |
-| drift-19 | datamuse | flapping | rule | yes | 2 | - |
-| drift-20 | open-meteo | dishonest | rule | yes | 1 | 0.0000 |
+The generated report contains the full 40-row scenario table, including the tool,
+behaviour, expected detector, detection round, distance and false-alarm state. See
+`outputs/reports/drift_evaluation.md`; the aggregate results above are the stable
+numbers to quote.
 
 ### Ablation interpretation
 
-The three garbage-200 scenarios are the deliberate ablation target. The HTTP response is `200`, the mapped fields and types survive, and a rule-only check sees nothing wrong. The schema summary changes, so the embedding distance exceeds the threshold.
+The six garbage-200 scenarios are the deliberate ablation target. The HTTP response is `200`, the mapped fields and types survive, and a rule-only check sees nothing wrong. The schema summary changes, so the embedding distance exceeds the threshold.
 
-Rule-only mode detects 17/20 and misses exactly those three garbage-200 cases. Full mode detects 20/20. Both modes produce zero false alarms on the 30 known-good variations. That is the evidence that the embedding detector adds value rather than only adding noise on this set.
+Rule-only mode detects 34/40 and misses exactly those six garbage-200 cases. Full mode detects 40/40. Both modes produce zero false alarms on the 30 known-good variations. That is the evidence that the embedding detector adds value rather than only adding noise on this set.
 
-Flapping requires two rounds because the mock alternates states. That is why the full mean is 1.10 rather than exactly 1.0.
+Flapping requires two rounds because the mock alternates states. That is why the full mean is 1.12 rather than exactly 1.0.
 
 ## Trust experiment
 

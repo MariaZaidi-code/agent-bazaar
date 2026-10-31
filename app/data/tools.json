@@ -509,5 +509,544 @@
     "probe_eligible": true,
     "execution": "mock",
     "tags": ["mock", "adversarial", "weather"]
+  },
+  {
+    "id": "hackernews-search",
+    "name": "Hacker News Story Search",
+    "provider_id": "hackernews",
+    "description": "Search recent technology and startup stories from Hacker News by topic and return titles, links, authors, timestamps and points.",
+    "capability": "SearchNews",
+    "inputs": [
+      {
+        "name": "news_query",
+        "concept": "NewsTopic",
+        "datatype": "string",
+        "required": true,
+        "description": "Topic, company or keyword to search in recent stories."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "articles",
+        "concept": "NewsArticle",
+        "datatype": "array",
+        "fields": ["title", "url", "author", "published_at", "points", "source"],
+        "description": "Ranked news stories with source links."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Searches Hacker News stories without an API key.",
+        "label": "Verified",
+        "evidence": "The Algolia Hacker News search API is publicly accessible without a key."
+      },
+      {
+        "text": "Returns story titles, links and publication timestamps.",
+        "label": "Supported",
+        "evidence": "Hacker News Search API response schema."
+      }
+    ],
+    "keywords": ["news", "headlines", "hacker news", "technology", "startup", "stories", "tech", "current events", "software"],
+    "docs_url": "https://hn.algolia.com/api",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.84,
+    "rating_count": 16,
+    "doc_quality": 0.82,
+    "mapping_coverage": 1.0,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["api", "news"]
+  },
+  {
+    "id": "coingecko-price",
+    "name": "CoinGecko Crypto Price",
+    "provider_id": "coingecko",
+    "description": "Return the current price and market capitalization of a cryptocurrency in a requested fiat currency.",
+    "capability": "GetCryptoPrice",
+    "inputs": [
+      {
+        "name": "asset",
+        "concept": "CryptoAsset",
+        "datatype": "string",
+        "required": true,
+        "description": "Cryptocurrency name or ticker such as bitcoin, BTC or ethereum."
+      },
+      {
+        "name": "currency",
+        "concept": "CurrencyCode",
+        "datatype": "string",
+        "required": true,
+        "description": "ISO 4217 quote currency such as USD or EUR."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "price",
+        "concept": "CryptoPrice",
+        "datatype": "object",
+        "fields": ["asset", "currency", "price", "market_cap", "last_updated"],
+        "description": "Current crypto price and market capitalization."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Returns crypto prices without an API key.",
+        "label": "Verified",
+        "evidence": "CoinGecko public simple-price endpoint."
+      },
+      {
+        "text": "Supports fiat quote currencies such as USD and EUR.",
+        "label": "Supported",
+        "evidence": "CoinGecko simple-price documentation."
+      }
+    ],
+    "keywords": ["crypto", "cryptocurrency", "bitcoin", "btc", "ethereum", "eth", "solana", "dogecoin", "price", "market cap", "coin"],
+    "docs_url": "https://docs.coingecko.com/reference/simple-price",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.82,
+    "rating_count": 21,
+    "doc_quality": 0.85,
+    "mapping_coverage": 1.0,
+    "licence": "CoinGecko API terms",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["api", "crypto", "finance"]
+  },
+  {
+    "id": "tvmaze-search",
+    "name": "TVMaze Show Search",
+    "provider_id": "tvmaze",
+    "description": "Search television programs by title or topic and return genres, premiere date, community rating and a summary.",
+    "capability": "SearchTVShows",
+    "inputs": [
+      {
+        "name": "show_query",
+        "concept": "ShowQuery",
+        "datatype": "string",
+        "required": true,
+        "description": "Television show title or topic."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "shows",
+        "concept": "TVShow",
+        "datatype": "array",
+        "fields": ["name", "genres", "premiered", "rating", "url", "summary"],
+        "description": "Matching television shows with metadata."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Searches television shows without an API key.",
+        "label": "Verified",
+        "evidence": "TVMaze public search endpoint."
+      },
+      {
+        "text": "Returns genres, premiere dates and ratings.",
+        "label": "Supported",
+        "evidence": "TVMaze API response schema."
+      }
+    ],
+    "keywords": ["tv", "television", "show", "shows", "series", "sitcom", "drama", "episode", "watch", "streaming"],
+    "docs_url": "https://www.tvmaze.com/api",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.78,
+    "rating_count": 11,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "CC-BY-SA-4.0",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["api", "media", "tv"]
+  },
+  {
+    "id": "open-library-search",
+    "name": "Open Library Book Search",
+    "provider_id": "open-library",
+    "description": "Search the Open Library catalogue by title, author or subject and return book titles, authors, first publication years and links.",
+    "capability": "SearchBooks",
+    "inputs": [
+      {
+        "name": "book_query",
+        "concept": "BookQuery",
+        "datatype": "string",
+        "required": true,
+        "description": "Book title, author or subject."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "books",
+        "concept": "Book",
+        "datatype": "array",
+        "fields": ["title", "author", "first_publish_year", "url", "key"],
+        "description": "Book records with catalogue links."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Searches Open Library without an API key.",
+        "label": "Verified",
+        "evidence": "Open Library public search API."
+      },
+      {
+        "text": "Returns titles, authors and first publication years.",
+        "label": "Supported",
+        "evidence": "Open Library search response schema."
+      }
+    ],
+    "keywords": ["book", "books", "novel", "novels", "author", "isbn", "library", "read", "literature", "title"],
+    "docs_url": "https://openlibrary.org/developers/api",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.83,
+    "rating_count": 13,
+    "doc_quality": 0.85,
+    "mapping_coverage": 1.0,
+    "licence": "CC0-1.0",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["api", "books", "reference"]
+  },
+  {
+    "id": "google-books-search",
+    "name": "Google Books Search",
+    "provider_id": "google-books",
+    "description": "Search the Google Books catalogue by title, author or subject and return book titles, authors, publication years and preview links.",
+    "capability": "SearchBooks",
+    "inputs": [
+      {
+        "name": "book_query",
+        "concept": "BookQuery",
+        "datatype": "string",
+        "required": true,
+        "description": "Book title, author or subject."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "books",
+        "concept": "Book",
+        "datatype": "array",
+        "fields": ["title", "author", "first_publish_year", "url", "key"],
+        "description": "Book records with preview links."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Searches Google Books without a user-supplied API key.",
+        "label": "Supported",
+        "evidence": "Google Books API public volume search; quota may apply."
+      },
+      {
+        "text": "Returns titles, authors and publication dates.",
+        "label": "Supported",
+        "evidence": "Google Books API response schema."
+      }
+    ],
+    "keywords": ["book", "books", "novel", "novels", "author", "isbn", "google books", "read", "literature", "volume"],
+    "docs_url": "https://developers.google.com/books/docs/v1/using",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.79,
+    "rating_count": 18,
+    "doc_quality": 0.86,
+    "mapping_coverage": 1.0,
+    "licence": "Google Books API terms",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["api", "books", "reference"]
+  },
+  {
+    "id": "mymemory-translate",
+    "name": "MyMemory Translation",
+    "provider_id": "mymemory",
+    "description": "Translate short text between languages with the public MyMemory translation memory API.",
+    "capability": "TranslateText",
+    "inputs": [
+      {
+        "name": "text",
+        "concept": "Text",
+        "datatype": "string",
+        "required": true,
+        "description": "Text to translate."
+      },
+      {
+        "name": "source_language",
+        "concept": "LanguageCode",
+        "datatype": "string",
+        "required": true,
+        "description": "Source language name or ISO code such as en or English."
+      },
+      {
+        "name": "target_language",
+        "concept": "LanguageCode",
+        "datatype": "string",
+        "required": true,
+        "description": "Target language name or ISO code such as ur or Urdu."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "translation",
+        "concept": "Translation",
+        "datatype": "object",
+        "fields": ["text", "source_language", "target_language", "match"],
+        "description": "Translated text and match confidence."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Translates short text without an API key.",
+        "label": "Verified",
+        "evidence": "MyMemory public get endpoint."
+      },
+      {
+        "text": "Returns the detected language pair and match score.",
+        "label": "Supported",
+        "evidence": "MyMemory response schema."
+      }
+    ],
+    "keywords": ["translate", "translation", "language", "urdu", "french", "spanish", "german", "arabic", "hindi", "meaning"],
+    "docs_url": "https://mymemory.translated.net/doc/spec.php",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.72,
+    "rating_count": 8,
+    "doc_quality": 0.7,
+    "mapping_coverage": 1.0,
+    "licence": "MyMemory terms",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["api", "language", "translation"]
+  },
+  {
+    "id": "worldtime-current",
+    "name": "WorldTimeAPI Current Time",
+    "provider_id": "worldtimeapi",
+    "description": "Return the current local date, time, UTC offset and weekday for an IANA timezone.",
+    "capability": "GetCurrentTime",
+    "inputs": [
+      {
+        "name": "timezone",
+        "concept": "TimezoneName",
+        "datatype": "string",
+        "required": true,
+        "description": "IANA timezone such as Asia/Karachi or Europe/London."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "time",
+        "concept": "CurrentTime",
+        "datatype": "object",
+        "fields": ["datetime", "timezone", "utc_offset", "day_of_week"],
+        "description": "Current time in the requested timezone."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Returns the current time without an API key.",
+        "label": "Verified",
+        "evidence": "WorldTimeAPI public timezone endpoint."
+      },
+      {
+        "text": "Reports the IANA timezone and UTC offset.",
+        "label": "Supported",
+        "evidence": "WorldTimeAPI response schema."
+      }
+    ],
+    "keywords": ["time", "current time", "timezone", "clock", "local time", "utc", "what time", "date", "day"],
+    "docs_url": "https://worldtimeapi.org/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.7,
+    "rating_count": 7,
+    "doc_quality": 0.68,
+    "mapping_coverage": 1.0,
+    "licence": "BSD-3-Clause",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["api", "time", "reference"]
+  },
+  {
+    "id": "sunrise-sunset-times",
+    "name": "Sunrise-Sunset Solar Times",
+    "provider_id": "sunrise-sunset",
+    "description": "Return sunrise, sunset, solar noon and day length for a coordinate pair and date.",
+    "capability": "GetSunTimes",
+    "inputs": [
+      {
+        "name": "coordinates",
+        "concept": "Coordinates",
+        "unit": "degrees",
+        "datatype": "object",
+        "required": true,
+        "description": "Latitude and longitude from a geocoder."
+      },
+      {
+        "name": "date",
+        "concept": "DateTimeISO",
+        "datatype": "string",
+        "required": false,
+        "description": "ISO date; today by default."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "sun",
+        "concept": "SunTimes",
+        "datatype": "object",
+        "fields": ["sunrise", "sunset", "solar_noon", "day_length"],
+        "description": "Solar times and day length in seconds."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Returns solar times without an API key.",
+        "label": "Verified",
+        "evidence": "Sunrise-Sunset public JSON endpoint."
+      },
+      {
+        "text": "Reports day length in seconds.",
+        "label": "Supported",
+        "evidence": "Sunrise-Sunset API response schema."
+      }
+    ],
+    "keywords": ["sunrise", "sunset", "solar noon", "day length", "sun", "astronomy", "golden hour", "daylight"],
+    "docs_url": "https://sunrise-sunset.org/api",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.76,
+    "rating_count": 9,
+    "doc_quality": 0.75,
+    "mapping_coverage": 1.0,
+    "licence": "CC0-1.0",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["api", "astronomy", "weather"]
+  },
+  {
+    "id": "themealdb-recipes",
+    "name": "TheMealDB Recipe Search",
+    "provider_id": "themealdb",
+    "description": "Search recipes by dish name and return category, cuisine, instructions, ingredients and an image.",
+    "capability": "SearchRecipes",
+    "inputs": [
+      {
+        "name": "recipe_query",
+        "concept": "RecipeQuery",
+        "datatype": "string",
+        "required": true,
+        "description": "Dish or ingredient to search for."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "meals",
+        "concept": "Recipe",
+        "datatype": "array",
+        "fields": ["name", "category", "area", "instructions", "ingredients", "image", "source"],
+        "description": "Recipe records with ingredient lists."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Searches recipes without an API key.",
+        "label": "Verified",
+        "evidence": "TheMealDB public search endpoint."
+      },
+      {
+        "text": "Returns ingredients, instructions and a meal image.",
+        "label": "Supported",
+        "evidence": "TheMealDB response schema."
+      }
+    ],
+    "keywords": ["recipe", "recipes", "meal", "meals", "cook", "cooking", "food", "dish", "ingredients", "dinner", "biryani"],
+    "docs_url": "https://www.themealdb.com/api.php",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 15,
+    "doc_quality": 0.78,
+    "mapping_coverage": 1.0,
+    "licence": "TheMealDB terms",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["api", "food", "recipes"]
+  },
+  {
+    "id": "espn-scores",
+    "name": "ESPN Scoreboard",
+    "provider_id": "espn",
+    "description": "Return the latest scoreboard for a sports league, including teams, scores, status and game time.",
+    "capability": "GetSportsScores",
+    "inputs": [
+      {
+        "name": "league",
+        "concept": "SportsLeague",
+        "datatype": "string",
+        "required": true,
+        "description": "League such as NFL, NBA, MLB, NHL, EPL or cricket."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "scores",
+        "concept": "SportsScore",
+        "datatype": "array",
+        "fields": ["league", "home_team", "away_team", "home_score", "away_score", "status", "date"],
+        "description": "Recent games and their scores."
+      }
+    ],
+    "claims": [
+      {
+        "text": "Returns sports scores without an API key.",
+        "label": "Verified",
+        "evidence": "ESPN public site scoreboard endpoint."
+      },
+      {
+        "text": "Reports home and away teams with game status.",
+        "label": "Supported",
+        "evidence": "ESPN scoreboard response schema."
+      }
+    ],
+    "keywords": ["score", "scores", "sports", "game", "match", "nba", "nfl", "mlb", "nhl", "epl", "football", "soccer", "cricket", "ipl"],
+    "docs_url": "https://site.api.espn.com/apis/site/v2/sports",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.74,
+    "rating_count": 10,
+    "doc_quality": 0.6,
+    "mapping_coverage": 1.0,
+    "licence": "ESPN terms",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": ["api", "sports"]
   }
 ]

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 import sys
 from pathlib import Path
@@ -149,7 +150,10 @@ def build_claim_dataset(catalog) -> dict:
                 "ground_truth_label": ClaimLabel.SUPPORTED.value,
                 "seeded": False,
                 "focus": "probe_error",
-                "rationale": "Documentation supports the claim, but the controlled outage makes the probe inconclusive.",
+                "rationale": (
+                    "Documentation supports the claim, but the controlled outage makes the probe "
+                    "inconclusive."
+                ),
             }
         )
 
@@ -164,7 +168,10 @@ def build_claim_dataset(catalog) -> dict:
             None,
             True,
             ["Open-Meteo returns the field `temperature_2m` in degrees Fahrenheit."],
-            "Subtle wrong-unit claim: the documentation was seeded to support Fahrenheit, while the API returns Celsius.",
+            (
+                "Subtle wrong-unit claim: the documentation was seeded to support Fahrenheit, "
+                "while the API returns Celsius."
+            ),
         ),
         (
             "open-meteo",
@@ -392,20 +399,50 @@ def build_claim_dataset(catalog) -> dict:
             }
         )
 
+    extra_plan = [
+        (ClaimLabel.VERIFIED, 30),
+        (ClaimLabel.SUPPORTED, 5),
+        (ClaimLabel.CONTRADICTED, 5),
+        (ClaimLabel.UNSUPPORTED, 5),
+    ]
+    for label, count in extra_plan:
+        pool = [item for item in items if item["ground_truth_label"] == label.value]
+        for index in range(1, count + 1):
+            variant = copy.deepcopy(pool[(index - 1) % len(pool)])
+            original_claim_id = variant["claim"]["id"]
+            variant["id"] = f"cv-extra-{label.value.lower()}-{index:02d}"
+            variant["claim"]["id"] = stable_id("extra", label.value, original_claim_id, index)
+            variant["claim"]["metadata"] = {
+                **variant["claim"].get("metadata", {}),
+                "seeded": True,
+                "variant_of": original_claim_id,
+            }
+            variant["seeded"] = True
+            variant["focus"] = f"extra_{variant['focus']}"
+            variant["rationale"] = f"Additional labelled variant. {variant.get('rationale', '')}".strip()
+            items.append(variant)
+
     counts: dict[str, int] = {}
     for item in items:
         label = item["ground_truth_label"]
         counts[label] = counts.get(label, 0) + 1
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "name": "Agent Bazaar claim-verification evaluation set",
-        "version": "1.0",
+        "version": "2.0",
         "created_for": "Auditor and Monitoring Lead (Qaim Hussnain)",
         "notes": [
-            "40 real claims and 20 seeded claims.",
+            f"{len(items)} labelled claims: 40 real claims and {len(items) - 40} seeded claims.",
+            (
+                "Extra seeded variants reuse frozen documentation and controlled probe behaviours "
+                "to exercise the decision table at scale."
+            ),
             "Seeded claims measure detection ability, not real-world prevalence.",
             "Documentation overrides are frozen for reproducibility.",
-            "Outage items produce probe-error evidence; the decision table labels them Supported when docs support the claim.",
+            (
+                "Outage items produce probe-error evidence; the decision table labels them Supported "
+                "when docs support the claim."
+            ),
         ],
         "counts": counts,
         "items": items,
@@ -609,13 +646,201 @@ def build_drift_dataset() -> dict:
             "expected_round": 1,
             "description": "Dishonest provider advertises Celsius-quality data but silently serves Fahrenheit values.",
         },
+        {
+            "id": "drift-21",
+            "tool_id": "frankfurter",
+            "behavior": "rename_field",
+            "options": {"field_path": "rates", "new_name": "fx_rates"},
+            "expected_detector": "rule",
+            "expected_round": 1,
+            "description": "Exchange-rate map renamed from rates to fx_rates.",
+        },
+        {
+            "id": "drift-22",
+            "tool_id": "nager-date",
+            "behavior": "rename_field",
+            "options": {"field_path": "name", "new_name": "holiday_name"},
+            "expected_detector": "rule",
+            "expected_round": 1,
+            "description": "Holiday name field renamed.",
+        },
+        {
+            "id": "drift-23",
+            "tool_id": "rest-countries",
+            "behavior": "remove_field",
+            "options": {"field_path": "population"},
+            "expected_detector": "rule",
+            "expected_round": 1,
+            "description": "Country population field removed.",
+        },
+        {
+            "id": "drift-24",
+            "tool_id": "dog-ceo",
+            "behavior": "remove_field",
+            "options": {"field_path": "status"},
+            "expected_detector": "rule",
+            "expected_round": 1,
+            "description": "Dog image status field removed.",
+        },
+        {
+            "id": "drift-25",
+            "tool_id": "open-meteo",
+            "behavior": "type_change",
+            "options": {"field_path": "current.temperature_2m", "replacement": "unavailable"},
+            "expected_detector": "rule",
+            "expected_round": 1,
+            "description": "Temperature changes from number to text.",
+        },
+        {
+            "id": "drift-26",
+            "tool_id": "rest-countries",
+            "behavior": "type_change",
+            "options": {"field_path": "population", "replacement": "many"},
+            "expected_detector": "rule",
+            "expected_round": 1,
+            "description": "Population changes from number to text.",
+        },
+        {
+            "id": "drift-27",
+            "tool_id": "frankfurter",
+            "behavior": "garbage_200",
+            "options": {},
+            "expected_detector": "embedding",
+            "expected_round": 1,
+            "description": "Exchange-rate response polluted with unrelated garbage structure.",
+        },
+        {
+            "id": "drift-28",
+            "tool_id": "open-library",
+            "behavior": "garbage_200",
+            "options": {},
+            "expected_detector": "embedding",
+            "expected_round": 1,
+            "description": "Book-search response polluted with unrelated garbage structure.",
+        },
+        {
+            "id": "drift-29",
+            "tool_id": "coingecko",
+            "behavior": "outage",
+            "options": {},
+            "expected_detector": "rule",
+            "expected_round": 1,
+            "description": "Cryptocurrency provider returns HTTP 503.",
+        },
+        {
+            "id": "drift-30",
+            "tool_id": "open-library",
+            "behavior": "outage",
+            "options": {},
+            "expected_detector": "rule",
+            "expected_round": 1,
+            "description": "Book-search provider goes offline.",
+        },
+        {
+            "id": "drift-31",
+            "tool_id": "open-meteo",
+            "behavior": "flapping",
+            "options": {"fail_on_calls": [2]},
+            "expected_detector": "rule",
+            "expected_round": 2,
+            "description": "Weather provider flaps on its second post-injection call.",
+        },
+        {
+            "id": "drift-32",
+            "tool_id": "ipify",
+            "behavior": "flapping",
+            "options": {"fail_on_calls": [2]},
+            "expected_detector": "rule",
+            "expected_round": 2,
+            "description": "IP service flaps on its second post-injection call.",
+        },
+        {
+            "id": "drift-33",
+            "tool_id": "open-meteo",
+            "behavior": "dishonest",
+            "options": {
+                "field_path": "current.wind_speed_10m",
+                "unit_path": "current_units.wind_speed_10m",
+                "from_unit": "km",
+                "to_unit": "m",
+            },
+            "expected_detector": "rule",
+            "expected_round": 1,
+            "description": "Dishonest provider silently changes wind-speed units.",
+        },
+        {
+            "id": "drift-34",
+            "tool_id": "ipify",
+            "behavior": "rename_field",
+            "options": {"field_path": "ip", "new_name": "address"},
+            "expected_detector": "rule",
+            "expected_round": 1,
+            "description": "Public IP field renamed to address.",
+        },
+        {
+            "id": "drift-35",
+            "tool_id": "cat-fact",
+            "behavior": "remove_field",
+            "options": {"field_path": "length"},
+            "expected_detector": "rule",
+            "expected_round": 1,
+            "description": "Cat-fact length field removed.",
+        },
+        {
+            "id": "drift-36",
+            "tool_id": "nager-date",
+            "behavior": "type_change",
+            "options": {"field_path": "date", "replacement": 12345},
+            "expected_detector": "rule",
+            "expected_round": 1,
+            "description": "Holiday date changes from string to integer.",
+        },
+        {
+            "id": "drift-37",
+            "tool_id": "ipify",
+            "behavior": "garbage_200",
+            "options": {},
+            "expected_detector": "embedding",
+            "expected_round": 1,
+            "description": "IP response polluted with unrelated garbage structure.",
+        },
+        {
+            "id": "drift-38",
+            "tool_id": "datamuse",
+            "behavior": "outage",
+            "options": {},
+            "expected_detector": "rule",
+            "expected_round": 1,
+            "description": "Word service goes offline.",
+        },
+        {
+            "id": "drift-39",
+            "tool_id": "datamuse",
+            "behavior": "flapping",
+            "options": {"fail_on_calls": [2]},
+            "expected_detector": "rule",
+            "expected_round": 2,
+            "description": "Word service flaps on its second post-injection call.",
+        },
+        {
+            "id": "drift-40",
+            "tool_id": "datamuse",
+            "behavior": "rename_field",
+            "options": {"field_path": "word", "new_name": "term"},
+            "expected_detector": "rule",
+            "expected_round": 1,
+            "description": "Word field renamed to term.",
+        },
     ]
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "name": "Agent Bazaar injected drift evaluation set",
-        "version": "1.0",
+        "version": "2.0",
         "notes": [
-            "20 injected changes across rename, remove, type, unit, garbage, outage, flapping and dishonest behaviours.",
+            (
+                f"{len(scenarios)} injected changes across rename, remove, type, unit, garbage, "
+                "outage, flapping and dishonest behaviours."
+            ),
             "Detection is evaluated after a normal baseline probe.",
             "Garbage 200 cases are expected to be missed by rule checks and caught by embedding drift.",
             "Flapping uses fail_on_calls [2], so detection is expected on the second post-injection probe.",

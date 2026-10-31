@@ -78,6 +78,8 @@ class ToolSpec(BaseModel):
     rating_count: int = 0
     doc_quality: float = 0.0
     mapping_coverage: float = 0.0
+    latency_ms: float | None = None
+    freshness_days: float | None = None
     licence: str = ""
     is_executable: bool = False
     probe_eligible: bool = True

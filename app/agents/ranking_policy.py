@@ -38,6 +38,8 @@ class CandidateFacts:
     doc_quality: float = 0.0
     mapping_coverage: float = 0.0
     chain_fit: float = 0.0
+    latency_ms: float | None = None
+    freshness_days: float | None = None
     claim_label: str = "unsupported"
     demoted: bool = False
     breaker_open: bool = False
@@ -54,6 +56,10 @@ class RankingPolicy:
     doc_quality_weight: float = 0.4
     mapping_coverage_weight: float = 0.3
     chain_fit_weight: float = 0.3
+    latency_weight: float = 0.0
+    freshness_weight: float = 0.0
+    latency_normalizer_ms: float = 1000.0
+    freshness_half_life_days: float = 30.0
     min_rating_count: int = 3
     rating_floor: float = 0.5
     contradicted_penalty: float = 0.6
@@ -80,16 +86,35 @@ def tier_rank(facts: CandidateFacts, policy: RankingPolicy) -> int:
     return policy.tier_order.index(tier)
 
 
+def latency_factor(facts: CandidateFacts, policy: RankingPolicy) -> float:
+    """Higher is better for low-latency candidates."""
+    if facts.latency_ms is None or policy.latency_normalizer_ms <= 0:
+        return 1.0
+    latency = max(0.0, float(facts.latency_ms))
+    return round(1.0 / (1.0 + latency / policy.latency_normalizer_ms), 6)
+
+
+def freshness_factor(facts: CandidateFacts, policy: RankingPolicy) -> float:
+    """Higher is better for recently verified or updated candidates."""
+    if facts.freshness_days is None or policy.freshness_half_life_days <= 0:
+        return 1.0
+    age = max(0.0, float(facts.freshness_days))
+    return round(0.5 ** (age / policy.freshness_half_life_days), 6)
+
+
 def quality_score(facts: CandidateFacts, policy: RankingPolicy) -> float:
-    """Weighted documentation, mapping and chain-fit quality."""
-    total = (
-        policy.doc_quality_weight * max(0.0, min(1.0, facts.doc_quality))
-        + policy.mapping_coverage_weight * max(0.0, min(1.0, facts.mapping_coverage))
-        + policy.chain_fit_weight * max(0.0, min(1.0, facts.chain_fit))
-    )
-    weight_sum = (
-        policy.doc_quality_weight + policy.mapping_coverage_weight + policy.chain_fit_weight
-    )
+    """Weighted documentation, mapping, chain-fit, latency and freshness quality."""
+    terms = [
+        (policy.doc_quality_weight, max(0.0, min(1.0, facts.doc_quality))),
+        (policy.mapping_coverage_weight, max(0.0, min(1.0, facts.mapping_coverage))),
+        (policy.chain_fit_weight, max(0.0, min(1.0, facts.chain_fit))),
+    ]
+    if policy.latency_weight > 0:
+        terms.append((policy.latency_weight, latency_factor(facts, policy)))
+    if policy.freshness_weight > 0:
+        terms.append((policy.freshness_weight, freshness_factor(facts, policy)))
+    total = sum(weight * value for weight, value in terms)
+    weight_sum = sum(weight for weight, _ in terms)
     if weight_sum <= 0:
         return 0.0
     return round(total / weight_sum, 6)

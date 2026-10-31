@@ -10,9 +10,9 @@ from agent_bazaar_auditor.paths import DATA_DIR
 def test_seeded_dataset_shape() -> None:
     claims = json.loads((DATA_DIR / "seeded_claims.json").read_text(encoding="utf-8"))
     drift = json.loads((DATA_DIR / "drift_scenarios.json").read_text(encoding="utf-8"))
-    assert len(claims["items"]) == 60
-    assert claims["counts"] == {"Verified": 32, "Supported": 8, "Contradicted": 10, "Unsupported": 10}
-    assert len(drift["scenarios"]) == 20
+    assert len(claims["items"]) == 105
+    assert claims["counts"] == {"Verified": 62, "Supported": 13, "Contradicted": 15, "Unsupported": 15}
+    assert len(drift["scenarios"]) == 40
     behaviors = {scenario["behavior"] for scenario in drift["scenarios"]}
     assert {"rename_field", "remove_field", "type_change", "unit_change", "garbage_200", "outage", "flapping", "dishonest"} <= behaviors
 

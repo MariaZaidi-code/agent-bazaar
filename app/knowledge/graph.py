@@ -122,6 +122,35 @@ class ToolKnowledgeGraph:
                 )
         return triples
 
+    def export_jsonld(self, path: Path, trust: dict[str, dict[str, Any]] | None = None) -> bool:
+        target = Path(path)
+        try:
+            from rdflib import OWL, RDF, RDFS, Graph, Literal, Namespace
+        except ImportError:
+            return False
+        graph = Graph()
+        AB = Namespace("https://agentbazaar.local/ontology#")
+        graph.bind("ab", AB)
+        graph.bind("rdf", RDF)
+        graph.bind("rdfs", RDFS)
+        graph.bind("owl", OWL)
+        for subject, predicate, obj in self.to_triples(trust):
+            subject_ref = self._uri(AB, subject)
+            predicate_ref = self._uri(AB, predicate)
+            if obj.startswith('"') and obj.endswith('"'):
+                obj_ref: Any = Literal(obj[1:-1])
+            elif predicate == "ab:hasTrust":
+                obj_ref = Literal(float(obj))
+            else:
+                obj_ref = self._uri(AB, obj)
+            graph.add((subject_ref, predicate_ref, obj_ref))
+        target.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            graph.serialize(destination=str(target), format="json-ld")
+        except (OSError, Exception):
+            return False
+        return True
+
     def export_turtle(self, path: Path, trust: dict[str, dict[str, Any]] | None = None) -> bool:
         try:
             from rdflib import OWL, RDF, RDFS, Graph, Literal, Namespace

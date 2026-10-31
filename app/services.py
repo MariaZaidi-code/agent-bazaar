@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from app.agents.auditor_bridge import AuditorBridge
@@ -12,10 +12,12 @@ from app.baselines.b2 import B2RagOnly
 from app.config import Settings
 from app.core.cache import Cache
 from app.core.circuit_breaker import CircuitBreakerRegistry
+from app.core.jobs import JobManager
 from app.core.llm import LLMClient
 from app.core.message_bus import MessageBus
 from app.core.tracing import TraceStore
 from app.core.trust_registry import TrustRegistry
+from app.core.webhooks import WebhookRegistry
 from app.integration.graph_adapter import RdfToolGraph
 from app.integration.mapper_adapter import KnowledgeMapper
 from app.integration.ontology_bridge import KnowledgeOntology
@@ -48,12 +50,24 @@ class AppServices:
     b2: B2RagOnly
     platform: PlatformStore
     knowledge: KnowledgeLayer | None = None
+    webhooks: WebhookRegistry = field(default_factory=WebhookRegistry)
+    jobs: JobManager = field(default_factory=JobManager)
 
     def export_graph(self) -> bool:
         trust = {item["provider_id"]: item for item in self.trust.all()}
         return self.graph.export_turtle(
             self.settings.runtime_dir / "knowledge_graph.ttl", trust=trust
         )
+
+    def export_graph_jsonld(self) -> bool:
+        trust = {item["provider_id"]: item for item in self.trust.all()}
+        path = self.settings.runtime_dir / "knowledge_graph.jsonld"
+        if hasattr(self.graph, "export_jsonld"):
+            try:
+                return bool(self.graph.export_jsonld(path, trust=trust))
+            except TypeError:
+                return bool(self.graph.export_jsonld(path))
+        return False
 
     def monitoring(self) -> dict[str, Any]:
         trust_rows = {item["provider_id"]: item for item in self.trust.all()}
@@ -96,6 +110,9 @@ class AppServices:
         self.mapper.reset()
         self.providers.reset_demo()
         self.cache.clear()
+
+    def shutdown(self) -> None:
+        self.jobs.shutdown()
 
 
 def build_services(settings: Settings | None = None) -> AppServices:
@@ -186,4 +203,5 @@ def build_services(settings: Settings | None = None) -> AppServices:
         knowledge=knowledge,
     )
     services.export_graph()
+    services.export_graph_jsonld()
     return services

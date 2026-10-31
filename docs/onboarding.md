@@ -154,13 +154,13 @@ Expected successful output (current committed seed):
 | Tools written | 8 |
 | Mapper mapping results | 512 |
 | Unmapped fields | 449 |
-| Distinct graph mappings | 467 |
+| Distinct graph mappings | 557 |
 | Graph claims | 0 |
 | Ontology-term vectors | 60 |
 | Tool-description vectors | 8 |
 | Correction vectors | 0 |
 
-512 mapping results become 467 graph nodes because mapping identity is a hash of
+606 mapping results become 557 graph nodes because mapping identity is a hash of
 tool, field path, and direction. See [graph-schema.md](graph-schema.md#mapping-identity-and-collisions).
 
 The build summary is authoritative for the run you just made. The number of
@@ -175,8 +175,8 @@ small review run overwrites `data/out/logs/ontology_build.json` and
 python -m pytest
 ```
 
-Expected: 261 tests collected - 130 knowledge-layer, 50 application, 43
-integration, 32 Auditor and 6 Auditor bridge tests. The suite covers messages,
+Expected: 289 tests collected - 130 knowledge-layer, 76 application, 43
+integration, 34 Auditor and 6 Auditor bridge tests. The suite covers messages,
 ingestion, ontology generation, units, validation, graph store and queries, the
 quality profiles and offerings, vectors, Mapper rules/repair/staging, the corpus
 sources and the extraction rules, the ranking policy and the ranking evaluation,
@@ -194,7 +194,7 @@ python -c "from agent_bazaar.vec import VectorService; v=VectorService.load_or_c
 ```
 
 Expected graph dictionary:
-`{'tools': 8, 'concepts': 60, 'mappings': 467, 'claims': 0}` and
+`{'tools': 8, 'concepts': 179, 'mappings': 557, 'claims': 0}` and
 `conforms: True`. Expected vector counts:
 `{'ontology_terms': 60, 'tool_descriptions': 8, 'corrections': 0}`.
 
@@ -535,10 +535,11 @@ Other switches:
 
 `data/overrides/pricing.yaml` is the human layer over the extraction rules. A
 curated entry always wins over the extracted value and carries `reviewer`,
-`checked_at` and `note`. The file currently covers the eight live application
-providers and three corpus tools whose earlier classification the corrected
-rules changed. Every entry still has an empty `reviewer`, so no licence has
-been signed off yet.
+`checked_at` and `note`. The file currently covers the eight original live
+application providers and three corpus tools whose earlier classification the
+corrected rules changed. Every entry still has an empty `reviewer`, so no
+licence has been signed off yet. The ten Sprint 1 providers are recorded in
+`app/data/tools.json` and do not yet have curated review entries.
 
 ### 9.3 The live probe set
 
@@ -583,7 +584,7 @@ build. Re-run the full command before seeding the graph.
 | persisted vector dimension mismatch | embedder changed | delete `data/vectors` and rebuild consistently |
 | graph has no tools / `written=False` | no outputs mapped, shape violation, or write error | inspect `outcome.error` and `outcome.result.unmapped`; ensure an output field maps |
 | `conforms: False` | invalid graph or stale artifact | inspect `s.validate().violations`; rebuild ontology then graph |
-| 512 vs 467 mismatch | mapping IRI collapse | expected; report both values |
+| 606 vs 557 mismatch | mapping IRI collapse | expected; report both values |
 | two `ab:recordedAt` values | onboarding maps then writes the tool; both add a timestamp | expected in the seed artifact; do not read it as two events |
 | no `demo_mapper.txt` update | demo prints, does not write a log | redirect output yourself (`*>` for stdout+stderr) |
 | a tool is written without an offering | the access requirement is not `keyless`, `api_key` or `paid_key` | expected; the graph never guesses a commercial fact. Check `spec.metadata["listing"]` and add a curated override if the document is wrong |

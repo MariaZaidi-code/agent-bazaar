@@ -108,6 +108,10 @@ class AuditorRequestHandler(BaseHTTPRequestHandler):
                 result = self._handle_verify(payload, monitoring=path == "/monitor")
                 self._send(HTTPStatus.OK, {"result": result.to_dict()})
                 return
+            if path in {"/verify/batch", "/monitor/batch"}:
+                batch = self._handle_batch(payload, monitoring=path == "/monitor/batch")
+                self._send(HTTPStatus.OK, batch)
+                return
             if path == "/probe":
                 tool_id = str(payload.get("tool_id", ""))
                 probe = self.auditor.probe(tool_id, force_live=bool(payload.get("force_live", False)))
@@ -155,6 +159,35 @@ class AuditorRequestHandler(BaseHTTPRequestHandler):
             force_live=force_live,
             establish_baseline=bool(payload.get("establish_baseline", True)),
         )
+
+    def _handle_batch(self, payload: dict[str, Any], monitoring: bool) -> dict[str, Any]:
+        items = payload.get("items")
+        if not isinstance(items, list) or not items:
+            raise ValueError("items must be a non-empty array")
+        if len(items) > 50:
+            raise ValueError("a batch may contain at most 50 items")
+        prefix = "monitor" if monitoring else "verify"
+        correlation_id = str(payload.get("correlation_id", "")).strip()
+        results = []
+        for index, item in enumerate(items):
+            if not isinstance(item, dict):
+                results.append({"index": index, "tool_id": "", "error": "item must be a JSON object"})
+                continue
+            current = dict(item)
+            current["correlation_id"] = str(current.get("correlation_id") or f"{prefix}-batch-{correlation_id or index}-{index}")
+            try:
+                result = self._handle_verify(current, monitoring=monitoring)
+                results.append({"index": index, "tool_id": result.tool_id, "result": result.to_dict()})
+            except Exception as error:
+                results.append({"index": index, "tool_id": str(current.get("tool_id", "")), "error": str(error)})
+        succeeded = sum(1 for item in results if "result" in item)
+        return {
+            "monitoring": monitoring,
+            "count": len(results),
+            "succeeded": succeeded,
+            "failed": len(results) - succeeded,
+            "results": results,
+        }
 
     def log_message(self, format: str, *args: Any) -> None:
         print(f"[auditor-api] {self.address_string()} {format % args}")

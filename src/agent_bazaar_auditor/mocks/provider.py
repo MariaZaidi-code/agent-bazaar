@@ -272,6 +272,21 @@ class MockProvider:
                 return response
             effective = MockBehavior.NORMAL
 
+        if effective is MockBehavior.SLOW:
+            latency = round(generator.uniform(2000.0, 4000.0), 2)
+
+        if effective is MockBehavior.MALFORMED:
+            response = ProviderResponse(
+                status_code=200,
+                payload=None,
+                raw_text="{not-json",
+                latency_ms=latency,
+                url=self.definition.endpoint,
+                metadata={"mock_behavior": self.behavior.value, "injected": True},
+            )
+            self._log_event("call", self.behavior, {"failed": False, "effective": effective.value})
+            return response
+
         if effective is MockBehavior.OUTAGE:
             response = self._simulate_failure("Simulated outage (HTTP 503).", round(generator.uniform(1800.0, 3000.0), 2))
             self._log_event("call", self.behavior, {"failed": True})
@@ -279,7 +294,10 @@ class MockProvider:
 
         payload = copy.deepcopy(self.definition.fixture)
 
-        if effective is MockBehavior.RENAME_FIELD:
+        if effective is MockBehavior.PARTIAL:
+            field_path = self.options.get("field_path") or self._first_field()
+            remove_path(payload, field_path)
+        elif effective is MockBehavior.RENAME_FIELD:
             field_path = self.options.get("field_path") or self._first_field()
             new_name = self.options.get("new_name") or f"{field_path.split('.')[-1]}_renamed"
             rename_path(payload, field_path, new_name)

@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     request_timeout_seconds: float = 15.0
     cache_ttl_seconds: int = 86_400
     seed_document: bool = True
+    rate_limit_enabled: bool = True
+    rate_limit_requests: int = 120
+    rate_limit_window_seconds: float = 60.0
 
     knowledge_backend: str = "auto"
     knowledge_graph_file: Path = BASE_DIR / "data" / "out" / "graph.ttl"
@@ -48,6 +51,10 @@ class Settings(BaseSettings):
     doc_quality_weight: float = 0.4
     mapping_coverage_weight: float = 0.3
     chain_fit_weight: float = 0.3
+    latency_weight: float = 0.0
+    freshness_weight: float = 0.0
+    latency_normalizer_ms: float = 1000.0
+    freshness_half_life_days: float = 30.0
     min_rating_count: int = 3
     rating_floor: float = 0.5
     require_known_licence: bool = False

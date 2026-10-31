@@ -29,9 +29,27 @@ ProviderRegistry
 TrustRegistry
 CircuitBreakerRegistry
 TraceStore
+WebhookRegistry
+JobManager
 ```
 
 Swap the concrete classes here. Keep `AppServices` fields stable or update every consumer through type checking and tests.
+
+`WebhookRegistry` and `JobManager` are process-local by design. They have no
+persistence contract, so a production deployment must replace them with a
+durable queue/webhook store without changing the Client loop. `AppServices.shutdown()`
+drains the job executor from the application lifespan.
+
+## Operations contract
+
+`POST /api/tasks` may dispatch a `task.completed` webhook in the background. The
+payload contains the task id, status, answer and correlation id. A webhook
+subscription has an id, URL, event list, optional secret, and delivery/failure
+counters. The secret is write-only at the admin API boundary.
+
+The Auditor batch endpoints are `/verify/batch` and `/monitor/batch` on the
+standalone Auditor service, not under `/api/auditor`. They accept at most 50
+items and return per-item results or errors without failing the whole batch.
 
 With the `auto` and the `rdf` backend the composition root also builds the knowledge-layer adapters; see [Knowledge layer integration](#knowledge-layer-integration).
 
@@ -97,9 +115,10 @@ The application tool id -> Auditor catalogue id mapping is:
 | `nager-holidays` | `nager-date` |
 | `arxiv-search` | `arxiv` |
 
-The remaining local providers (`university-sql`, `document-qa` and the
-adversarial weather mock) use the seeded labels and injected drift from
-`AuditorStub`. The Auditor is synchronous and owns mutable probe baselines, so
+The ten Sprint 1 tools (`hackernews-search` through `espn-scores`) have no
+Auditor catalogue entry yet. Together with the remaining local providers
+(`university-sql`, `document-qa` and the adversarial weather mock) they use the
+seeded labels and injected drift from `AuditorStub`. The Auditor is synchronous and owns mutable probe baselines, so
 `AuditorBridge` runs it in a worker thread and serialises calls with one lock.
 
 ### `async verify(task_id, subgoal_id, candidates, correlation_id) -> VerifyResultMessage`
@@ -315,7 +334,7 @@ Capabilities are canonicalised onto the curated taxonomy of the Client layer. Th
 
 A tool whose capability is not in the taxonomy is mapped from its output concepts (`CONCEPT_CAPABILITY` in `app/integration/canonical.py`); a tool that matches no rule is served with the fallback capability `general`.
 
-The concepts that only the app models are listed in `EXTERNAL_CONCEPTS`: `ResearchPaper`, `ResearchTopic`, `NaturalLanguageQuery`, `TabularAnswer`, `DocumentReference`, `DocumentQuestion`, `AnswerFromDocument` and the metadata classes `Entity`, `Service`, `Capability`, `Claim`, `Evidence` and `Provider`. Validation treats them as external rather than invalid, and they are served from the app's fallback ontology `app/data/ontology.json`.
+The concepts that the published RDF artifact does not model yet are listed in `EXTERNAL_CONCEPTS`: `ResearchPaper`, `ResearchTopic`, `NaturalLanguageQuery`, `TabularAnswer`, `DocumentReference`, `DocumentQuestion`, `AnswerFromDocument`, the metadata classes `Entity`, `Service`, `Capability`, `Claim`, `Evidence` and `Provider`, and the Sprint 1 concepts `NewsTopic`, `NewsArticle`, `CryptoAsset`, `CryptoPrice`, `ShowQuery`, `TVShow`, `BookQuery`, `Book`, `LanguageCode`, `Translation`, `TimezoneName`, `CurrentTime`, `SunTimes`, `RecipeQuery`, `Recipe`, `SportsLeague` and `SportsScore`. Validation treats them as external rather than invalid, and they are served from the app's fallback ontology `app/data/ontology.json` until the artifacts are rebuilt.
 
 ### The `knowledge_backend` setting
 
