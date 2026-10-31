@@ -13,6 +13,23 @@ from app.providers.countries import CountriesProvider
 from app.providers.crypto import CoinGeckoProvider
 from app.providers.currency import CurrencyProvider
 from app.providers.document_provider import DocumentQAProvider, DocumentStore
+from app.providers.extra import (
+    CoinDeskProvider,
+    GitHubProvider,
+    IpApiProvider,
+    LanguageToolProvider,
+    MetalsProvider,
+    OpenAlexProvider,
+    OpenAQProvider,
+    OpenElevationProvider,
+    OpenFDAProvider,
+    OpenFoodFactsProvider,
+    PubChemProvider,
+    QRCodeProvider,
+    RedditProvider,
+    SemanticScholarProvider,
+    StackExchangeProvider,
+)
 from app.providers.geocoding import GeocodingProvider
 from app.providers.holidays import HolidaysProvider
 from app.providers.itunes import ITunesProvider
@@ -63,6 +80,21 @@ class ProviderRegistry:
             "rest-countries": CountriesProvider,
             "nager-date": HolidaysProvider,
             "arxiv": ArxivProvider,
+            "openalex": OpenAlexProvider,
+            "semanticscholar": SemanticScholarProvider,
+            "github": GitHubProvider,
+            "stackexchange": StackExchangeProvider,
+            "openfoodfacts": OpenFoodFactsProvider,
+            "languagetool": LanguageToolProvider,
+            "qrcode": QRCodeProvider,
+            "ipapi": IpApiProvider,
+            "openelevation": OpenElevationProvider,
+            "coindesk": CoinDeskProvider,
+            "metals": MetalsProvider,
+            "reddit": RedditProvider,
+            "openaq": OpenAQProvider,
+            "pubchem": PubChemProvider,
+            "openfda": OpenFDAProvider,
             "university-db": UniversitySQLProvider,
             "mock-weather-fahrenheit": MockWeatherFahrenheitProvider,
             "hackernews": HackerNewsProvider,

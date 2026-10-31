@@ -1962,6 +1962,62 @@
         "team_record",
         "club_record"
       ]
+    },
+    "Compound": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "Compound",
+      "fields": []
+    },
+    "DrugLabel": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "DrugLabel",
+      "fields": []
+    },
+    "ImageUrl": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "ImageUrl",
+      "fields": []
+    },
+    "Issue": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "Issue",
+      "fields": []
+    },
+    "MetalPrice": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "MetalPrice",
+      "fields": []
+    },
+    "Post": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "Post",
+      "fields": []
+    },
+    "Question": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "Question",
+      "fields": []
+    },
+    "Repository": {
+      "parents": [
+        "Entity"
+      ],
+      "description": "Repository",
+      "fields": []
     }
   },
   "units": {
@@ -2559,6 +2615,105 @@
       ],
       "outputs": [
         "ExchangeRate"
+      ]
+    },
+    "CheckGrammar": {
+      "description": "Check grammar.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Issue"
+      ]
+    },
+    "GenerateQRCode": {
+      "description": "Generate QR code.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "ImageUrl"
+      ]
+    },
+    "GetAirQuality": {
+      "description": "Get air quality.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Location"
+      ]
+    },
+    "GetCompoundInfo": {
+      "description": "Get compound info.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Compound"
+      ]
+    },
+    "GetDrugLabel": {
+      "description": "Get drug label.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "DrugLabel"
+      ]
+    },
+    "GetFoodProduct": {
+      "description": "Get food product.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Product"
+      ]
+    },
+    "GetIPLocation": {
+      "description": "Get IP location.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Location"
+      ]
+    },
+    "GetMetalPrices": {
+      "description": "Get metal prices.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "MetalPrice"
+      ]
+    },
+    "GetSocialPosts": {
+      "description": "Get social posts.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Post"
+      ]
+    },
+    "SearchQuestions": {
+      "description": "Search questions.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Question"
+      ]
+    },
+    "SearchRepositories": {
+      "description": "Search repositories.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Repository"
       ]
     }
   }

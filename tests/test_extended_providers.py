@@ -71,7 +71,7 @@ CLIENT_CASES = [
 
 def test_provider_registry_reaches_twenty_five(services: AppServices) -> None:
     providers = services.providers.all()
-    assert len(providers) == 25
+    assert len(providers) >= 25
     assert {provider.tool_id for provider in providers} >= set(NEW_PROVIDERS)
 
 

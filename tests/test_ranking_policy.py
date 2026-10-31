@@ -46,6 +46,21 @@ EXPECTED_PROFILES = {
     "sunrise-sunset-times": ("free", "keyless", "CC0-1.0"),
     "themealdb-recipes": ("free", "keyless", "TheMealDB terms"),
     "espn-scores": ("free", "keyless", "ESPN terms"),
+    "openalex-search": ("free", "keyless", "CC0"),
+    "semanticscholar-search": ("free", "keyless", "unknown"),
+    "github-search": ("free", "keyless", "unknown"),
+    "stackexchange-search": ("free", "keyless", "CC-BY-SA"),
+    "openfoodfacts-product": ("free", "keyless", "ODbL"),
+    "languagetool-check": ("free", "keyless", "LGPL"),
+    "qrcode-generate": ("free", "keyless", "unknown"),
+    "ipapi-lookup": ("free", "keyless", "unknown"),
+    "openelevation-lookup": ("free", "keyless", "MIT"),
+    "coindesk-bitcoin": ("free", "keyless", "unknown"),
+    "metals-spot": ("free", "keyless", "unknown"),
+    "reddit-hot": ("free", "keyless", "unknown"),
+    "openaq-locations": ("free", "keyless", "CC-BY"),
+    "pubchem-compound": ("free", "keyless", "public domain"),
+    "openfda-label": ("free", "keyless", "public domain"),
 }
 
 SUBGOAL = SubGoal(

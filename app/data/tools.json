@@ -20,7 +20,12 @@
         "concept": "Coordinates",
         "unit": "degrees",
         "datatype": "object",
-        "fields": ["latitude", "longitude", "display_name", "country_code"],
+        "fields": [
+          "latitude",
+          "longitude",
+          "display_name",
+          "country_code"
+        ],
         "description": "WGS84 coordinates for the resolved place."
       }
     ],
@@ -36,7 +41,18 @@
         "evidence": "Nominatim API documentation."
       }
     ],
-    "keywords": ["geocode", "geocoding", "location", "city", "place", "map", "coordinates", "latitude", "longitude", "address"],
+    "keywords": [
+      "geocode",
+      "geocoding",
+      "location",
+      "city",
+      "place",
+      "map",
+      "coordinates",
+      "latitude",
+      "longitude",
+      "address"
+    ],
     "docs_url": "https://nominatim.org/release-docs/latest/api/Search/",
     "price": 0.0,
     "pricing_tier": "free",
@@ -49,7 +65,11 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["api", "geospatial", "backup-eligible"]
+    "tags": [
+      "api",
+      "geospatial",
+      "backup-eligible"
+    ]
   },
   {
     "id": "open-meteo-forecast",
@@ -80,7 +100,14 @@
         "concept": "Temperature",
         "unit": "C",
         "datatype": "object",
-        "fields": ["temperature", "temp_max", "temp_min", "precipitation_probability", "date", "timezone"],
+        "fields": [
+          "temperature",
+          "temp_max",
+          "temp_min",
+          "precipitation_probability",
+          "date",
+          "timezone"
+        ],
         "description": "Daily forecast values in degrees Celsius."
       }
     ],
@@ -101,7 +128,18 @@
         "evidence": "Open-Meteo forecast API documentation."
       }
     ],
-    "keywords": ["weather", "temperature", "forecast", "rain", "precipitation", "tomorrow", "celsius", "hot", "cold", "climate"],
+    "keywords": [
+      "weather",
+      "temperature",
+      "forecast",
+      "rain",
+      "precipitation",
+      "tomorrow",
+      "celsius",
+      "hot",
+      "cold",
+      "climate"
+    ],
     "docs_url": "https://open-meteo.com/en/docs",
     "price": 0.0,
     "pricing_tier": "free",
@@ -114,7 +152,11 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["api", "weather", "backup-eligible"]
+    "tags": [
+      "api",
+      "weather",
+      "backup-eligible"
+    ]
   },
   {
     "id": "frankfurter-currency",
@@ -150,7 +192,14 @@
         "name": "conversion",
         "concept": "Money",
         "datatype": "object",
-        "fields": ["amount", "currency", "rate", "from", "to", "date"],
+        "fields": [
+          "amount",
+          "currency",
+          "rate",
+          "from",
+          "to",
+          "date"
+        ],
         "description": "Converted amount and exchange rate."
       }
     ],
@@ -166,7 +215,19 @@
         "evidence": "Provider response schema."
       }
     ],
-    "keywords": ["currency", "exchange", "rate", "convert", "money", "usd", "pkr", "eur", "dollar", "rupee", "conversion"],
+    "keywords": [
+      "currency",
+      "exchange",
+      "rate",
+      "convert",
+      "money",
+      "usd",
+      "pkr",
+      "eur",
+      "dollar",
+      "rupee",
+      "conversion"
+    ],
     "docs_url": "https://www.frankfurter.app/docs/",
     "price": 0.0,
     "pricing_tier": "free",
@@ -179,7 +240,11 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["api", "finance", "backup-eligible"]
+    "tags": [
+      "api",
+      "finance",
+      "backup-eligible"
+    ]
   },
   {
     "id": "restcountries-facts",
@@ -201,7 +266,14 @@
         "name": "country",
         "concept": "Country",
         "datatype": "object",
-        "fields": ["name", "capital", "population", "region", "currencies", "country_code"],
+        "fields": [
+          "name",
+          "capital",
+          "population",
+          "region",
+          "currencies",
+          "country_code"
+        ],
         "description": "Country facts."
       }
     ],
@@ -217,7 +289,18 @@
         "evidence": "REST Countries response schema."
       }
     ],
-    "keywords": ["country", "population", "capital", "nation", "facts", "region", "currency", "japan", "pakistan", "germany"],
+    "keywords": [
+      "country",
+      "population",
+      "capital",
+      "nation",
+      "facts",
+      "region",
+      "currency",
+      "japan",
+      "pakistan",
+      "germany"
+    ],
     "docs_url": "https://restcountries.com/",
     "price": 0.0,
     "pricing_tier": "free",
@@ -230,7 +313,11 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["api", "reference", "backup-eligible"]
+    "tags": [
+      "api",
+      "reference",
+      "backup-eligible"
+    ]
   },
   {
     "id": "nager-holidays",
@@ -259,7 +346,12 @@
         "name": "holidays",
         "concept": "Holiday",
         "datatype": "array",
-        "fields": ["date", "name", "local_name", "country_code"],
+        "fields": [
+          "date",
+          "name",
+          "local_name",
+          "country_code"
+        ],
         "description": "Public holidays for the requested country and year."
       }
     ],
@@ -275,7 +367,17 @@
         "evidence": "Nager.Date public endpoint."
       }
     ],
-    "keywords": ["holiday", "holidays", "public holiday", "national holiday", "calendar", "eid", "christmas", "pakistan", "country"],
+    "keywords": [
+      "holiday",
+      "holidays",
+      "public holiday",
+      "national holiday",
+      "calendar",
+      "eid",
+      "christmas",
+      "pakistan",
+      "country"
+    ],
     "docs_url": "https://date.nager.at/Api",
     "price": 0.0,
     "pricing_tier": "free",
@@ -288,7 +390,11 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["api", "calendar", "backup-eligible"]
+    "tags": [
+      "api",
+      "calendar",
+      "backup-eligible"
+    ]
   },
   {
     "id": "arxiv-search",
@@ -310,7 +416,13 @@
         "name": "papers",
         "concept": "ResearchPaper",
         "datatype": "array",
-        "fields": ["title", "summary", "url", "published", "authors"],
+        "fields": [
+          "title",
+          "summary",
+          "url",
+          "published",
+          "authors"
+        ],
         "description": "Ranked paper records."
       }
     ],
@@ -326,7 +438,19 @@
         "evidence": "arXiv Atom feed schema."
       }
     ],
-    "keywords": ["research", "paper", "papers", "arxiv", "study", "literature", "graphrag", "ontology", "llm", "publication", "science"],
+    "keywords": [
+      "research",
+      "paper",
+      "papers",
+      "arxiv",
+      "study",
+      "literature",
+      "graphrag",
+      "ontology",
+      "llm",
+      "publication",
+      "science"
+    ],
     "docs_url": "https://info.arxiv.org/help/api/index.html",
     "price": 0.0,
     "pricing_tier": "free",
@@ -339,7 +463,11 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["api", "research", "backup-eligible"]
+    "tags": [
+      "api",
+      "research",
+      "backup-eligible"
+    ]
   },
   {
     "id": "university-sql",
@@ -361,7 +489,12 @@
         "name": "table",
         "concept": "TabularAnswer",
         "datatype": "object",
-        "fields": ["columns", "rows", "sql", "row_count"],
+        "fields": [
+          "columns",
+          "rows",
+          "sql",
+          "row_count"
+        ],
         "description": "Query result rows with the SQL that produced them."
       }
     ],
@@ -377,7 +510,21 @@
         "evidence": "SQL guard and allow-list checked before execution."
       }
     ],
-    "keywords": ["database", "sql", "students", "student", "program", "programs", "enrolment", "enrollment", "gpa", "courses", "university", "count", "rows"],
+    "keywords": [
+      "database",
+      "sql",
+      "students",
+      "student",
+      "program",
+      "programs",
+      "enrolment",
+      "enrollment",
+      "gpa",
+      "courses",
+      "university",
+      "count",
+      "rows"
+    ],
     "docs_url": "",
     "price": 0.0,
     "pricing_tier": "free",
@@ -390,7 +537,10 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["database", "local"]
+    "tags": [
+      "database",
+      "local"
+    ]
   },
   {
     "id": "document-qa",
@@ -419,7 +569,11 @@
         "name": "answer",
         "concept": "AnswerFromDocument",
         "datatype": "object",
-        "fields": ["answer", "citations", "document_id"],
+        "fields": [
+          "answer",
+          "citations",
+          "document_id"
+        ],
         "description": "Answer grounded in quoted document passages."
       }
     ],
@@ -435,7 +589,20 @@
         "evidence": "Local parsing and retrieval; the optional LLM is disabled by default."
       }
     ],
-    "keywords": ["document", "file", "uploaded", "upload", "pdf", "docx", "text", "according", "document says", "paper", "report", "notes"],
+    "keywords": [
+      "document",
+      "file",
+      "uploaded",
+      "upload",
+      "pdf",
+      "docx",
+      "text",
+      "according",
+      "document says",
+      "paper",
+      "report",
+      "notes"
+    ],
     "docs_url": "",
     "price": 0.0,
     "pricing_tier": "free",
@@ -448,7 +615,10 @@
     "is_executable": true,
     "probe_eligible": false,
     "execution": "live",
-    "tags": ["document", "local"]
+    "tags": [
+      "document",
+      "local"
+    ]
   },
   {
     "id": "mock-weather-fahrenheit",
@@ -479,7 +649,12 @@
         "concept": "Temperature",
         "unit": "F",
         "datatype": "object",
-        "fields": ["temperature", "temp_max", "temp_min", "unit"],
+        "fields": [
+          "temperature",
+          "temp_max",
+          "temp_min",
+          "unit"
+        ],
         "description": "Forecast values in Fahrenheit despite the Celsius claim."
       }
     ],
@@ -495,7 +670,14 @@
         "evidence": "Mock provider is local."
       }
     ],
-    "keywords": ["weather", "temperature", "mock", "fahrenheit", "unreliable", "forecast"],
+    "keywords": [
+      "weather",
+      "temperature",
+      "mock",
+      "fahrenheit",
+      "unreliable",
+      "forecast"
+    ],
     "docs_url": "",
     "price": 0.0,
     "pricing_tier": "free",
@@ -508,7 +690,11 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "mock",
-    "tags": ["mock", "adversarial", "weather"]
+    "tags": [
+      "mock",
+      "adversarial",
+      "weather"
+    ]
   },
   {
     "id": "hackernews-search",
@@ -530,7 +716,14 @@
         "name": "articles",
         "concept": "NewsArticle",
         "datatype": "array",
-        "fields": ["title", "url", "author", "published_at", "points", "source"],
+        "fields": [
+          "title",
+          "url",
+          "author",
+          "published_at",
+          "points",
+          "source"
+        ],
         "description": "Ranked news stories with source links."
       }
     ],
@@ -546,7 +739,17 @@
         "evidence": "Hacker News Search API response schema."
       }
     ],
-    "keywords": ["news", "headlines", "hacker news", "technology", "startup", "stories", "tech", "current events", "software"],
+    "keywords": [
+      "news",
+      "headlines",
+      "hacker news",
+      "technology",
+      "startup",
+      "stories",
+      "tech",
+      "current events",
+      "software"
+    ],
     "docs_url": "https://hn.algolia.com/api",
     "price": 0.0,
     "pricing_tier": "free",
@@ -559,7 +762,10 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["api", "news"]
+    "tags": [
+      "api",
+      "news"
+    ]
   },
   {
     "id": "coingecko-price",
@@ -588,7 +794,13 @@
         "name": "price",
         "concept": "CryptoPrice",
         "datatype": "object",
-        "fields": ["asset", "currency", "price", "market_cap", "last_updated"],
+        "fields": [
+          "asset",
+          "currency",
+          "price",
+          "market_cap",
+          "last_updated"
+        ],
         "description": "Current crypto price and market capitalization."
       }
     ],
@@ -604,7 +816,19 @@
         "evidence": "CoinGecko simple-price documentation."
       }
     ],
-    "keywords": ["crypto", "cryptocurrency", "bitcoin", "btc", "ethereum", "eth", "solana", "dogecoin", "price", "market cap", "coin"],
+    "keywords": [
+      "crypto",
+      "cryptocurrency",
+      "bitcoin",
+      "btc",
+      "ethereum",
+      "eth",
+      "solana",
+      "dogecoin",
+      "price",
+      "market cap",
+      "coin"
+    ],
     "docs_url": "https://docs.coingecko.com/reference/simple-price",
     "price": 0.0,
     "pricing_tier": "free",
@@ -617,7 +841,11 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["api", "crypto", "finance"]
+    "tags": [
+      "api",
+      "crypto",
+      "finance"
+    ]
   },
   {
     "id": "tvmaze-search",
@@ -639,7 +867,14 @@
         "name": "shows",
         "concept": "TVShow",
         "datatype": "array",
-        "fields": ["name", "genres", "premiered", "rating", "url", "summary"],
+        "fields": [
+          "name",
+          "genres",
+          "premiered",
+          "rating",
+          "url",
+          "summary"
+        ],
         "description": "Matching television shows with metadata."
       }
     ],
@@ -655,7 +890,18 @@
         "evidence": "TVMaze API response schema."
       }
     ],
-    "keywords": ["tv", "television", "show", "shows", "series", "sitcom", "drama", "episode", "watch", "streaming"],
+    "keywords": [
+      "tv",
+      "television",
+      "show",
+      "shows",
+      "series",
+      "sitcom",
+      "drama",
+      "episode",
+      "watch",
+      "streaming"
+    ],
     "docs_url": "https://www.tvmaze.com/api",
     "price": 0.0,
     "pricing_tier": "free",
@@ -668,7 +914,11 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["api", "media", "tv"]
+    "tags": [
+      "api",
+      "media",
+      "tv"
+    ]
   },
   {
     "id": "open-library-search",
@@ -690,7 +940,13 @@
         "name": "books",
         "concept": "Book",
         "datatype": "array",
-        "fields": ["title", "author", "first_publish_year", "url", "key"],
+        "fields": [
+          "title",
+          "author",
+          "first_publish_year",
+          "url",
+          "key"
+        ],
         "description": "Book records with catalogue links."
       }
     ],
@@ -706,7 +962,18 @@
         "evidence": "Open Library search response schema."
       }
     ],
-    "keywords": ["book", "books", "novel", "novels", "author", "isbn", "library", "read", "literature", "title"],
+    "keywords": [
+      "book",
+      "books",
+      "novel",
+      "novels",
+      "author",
+      "isbn",
+      "library",
+      "read",
+      "literature",
+      "title"
+    ],
     "docs_url": "https://openlibrary.org/developers/api",
     "price": 0.0,
     "pricing_tier": "free",
@@ -719,7 +986,11 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["api", "books", "reference"]
+    "tags": [
+      "api",
+      "books",
+      "reference"
+    ]
   },
   {
     "id": "google-books-search",
@@ -741,7 +1012,13 @@
         "name": "books",
         "concept": "Book",
         "datatype": "array",
-        "fields": ["title", "author", "first_publish_year", "url", "key"],
+        "fields": [
+          "title",
+          "author",
+          "first_publish_year",
+          "url",
+          "key"
+        ],
         "description": "Book records with preview links."
       }
     ],
@@ -757,7 +1034,18 @@
         "evidence": "Google Books API response schema."
       }
     ],
-    "keywords": ["book", "books", "novel", "novels", "author", "isbn", "google books", "read", "literature", "volume"],
+    "keywords": [
+      "book",
+      "books",
+      "novel",
+      "novels",
+      "author",
+      "isbn",
+      "google books",
+      "read",
+      "literature",
+      "volume"
+    ],
     "docs_url": "https://developers.google.com/books/docs/v1/using",
     "price": 0.0,
     "pricing_tier": "free",
@@ -770,7 +1058,11 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["api", "books", "reference"]
+    "tags": [
+      "api",
+      "books",
+      "reference"
+    ]
   },
   {
     "id": "mymemory-translate",
@@ -806,7 +1098,12 @@
         "name": "translation",
         "concept": "Translation",
         "datatype": "object",
-        "fields": ["text", "source_language", "target_language", "match"],
+        "fields": [
+          "text",
+          "source_language",
+          "target_language",
+          "match"
+        ],
         "description": "Translated text and match confidence."
       }
     ],
@@ -822,7 +1119,18 @@
         "evidence": "MyMemory response schema."
       }
     ],
-    "keywords": ["translate", "translation", "language", "urdu", "french", "spanish", "german", "arabic", "hindi", "meaning"],
+    "keywords": [
+      "translate",
+      "translation",
+      "language",
+      "urdu",
+      "french",
+      "spanish",
+      "german",
+      "arabic",
+      "hindi",
+      "meaning"
+    ],
     "docs_url": "https://mymemory.translated.net/doc/spec.php",
     "price": 0.0,
     "pricing_tier": "free",
@@ -835,7 +1143,11 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["api", "language", "translation"]
+    "tags": [
+      "api",
+      "language",
+      "translation"
+    ]
   },
   {
     "id": "worldtime-current",
@@ -857,7 +1169,12 @@
         "name": "time",
         "concept": "CurrentTime",
         "datatype": "object",
-        "fields": ["datetime", "timezone", "utc_offset", "day_of_week"],
+        "fields": [
+          "datetime",
+          "timezone",
+          "utc_offset",
+          "day_of_week"
+        ],
         "description": "Current time in the requested timezone."
       }
     ],
@@ -873,7 +1190,17 @@
         "evidence": "WorldTimeAPI response schema."
       }
     ],
-    "keywords": ["time", "current time", "timezone", "clock", "local time", "utc", "what time", "date", "day"],
+    "keywords": [
+      "time",
+      "current time",
+      "timezone",
+      "clock",
+      "local time",
+      "utc",
+      "what time",
+      "date",
+      "day"
+    ],
     "docs_url": "https://worldtimeapi.org/",
     "price": 0.0,
     "pricing_tier": "free",
@@ -886,7 +1213,11 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["api", "time", "reference"]
+    "tags": [
+      "api",
+      "time",
+      "reference"
+    ]
   },
   {
     "id": "sunrise-sunset-times",
@@ -916,7 +1247,12 @@
         "name": "sun",
         "concept": "SunTimes",
         "datatype": "object",
-        "fields": ["sunrise", "sunset", "solar_noon", "day_length"],
+        "fields": [
+          "sunrise",
+          "sunset",
+          "solar_noon",
+          "day_length"
+        ],
         "description": "Solar times and day length in seconds."
       }
     ],
@@ -932,7 +1268,16 @@
         "evidence": "Sunrise-Sunset API response schema."
       }
     ],
-    "keywords": ["sunrise", "sunset", "solar noon", "day length", "sun", "astronomy", "golden hour", "daylight"],
+    "keywords": [
+      "sunrise",
+      "sunset",
+      "solar noon",
+      "day length",
+      "sun",
+      "astronomy",
+      "golden hour",
+      "daylight"
+    ],
     "docs_url": "https://sunrise-sunset.org/api",
     "price": 0.0,
     "pricing_tier": "free",
@@ -945,7 +1290,11 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["api", "astronomy", "weather"]
+    "tags": [
+      "api",
+      "astronomy",
+      "weather"
+    ]
   },
   {
     "id": "themealdb-recipes",
@@ -967,7 +1316,15 @@
         "name": "meals",
         "concept": "Recipe",
         "datatype": "array",
-        "fields": ["name", "category", "area", "instructions", "ingredients", "image", "source"],
+        "fields": [
+          "name",
+          "category",
+          "area",
+          "instructions",
+          "ingredients",
+          "image",
+          "source"
+        ],
         "description": "Recipe records with ingredient lists."
       }
     ],
@@ -983,7 +1340,19 @@
         "evidence": "TheMealDB response schema."
       }
     ],
-    "keywords": ["recipe", "recipes", "meal", "meals", "cook", "cooking", "food", "dish", "ingredients", "dinner", "biryani"],
+    "keywords": [
+      "recipe",
+      "recipes",
+      "meal",
+      "meals",
+      "cook",
+      "cooking",
+      "food",
+      "dish",
+      "ingredients",
+      "dinner",
+      "biryani"
+    ],
     "docs_url": "https://www.themealdb.com/api.php",
     "price": 0.0,
     "pricing_tier": "free",
@@ -996,7 +1365,11 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["api", "food", "recipes"]
+    "tags": [
+      "api",
+      "food",
+      "recipes"
+    ]
   },
   {
     "id": "espn-scores",
@@ -1018,7 +1391,15 @@
         "name": "scores",
         "concept": "SportsScore",
         "datatype": "array",
-        "fields": ["league", "home_team", "away_team", "home_score", "away_score", "status", "date"],
+        "fields": [
+          "league",
+          "home_team",
+          "away_team",
+          "home_score",
+          "away_score",
+          "status",
+          "date"
+        ],
         "description": "Recent games and their scores."
       }
     ],
@@ -1034,7 +1415,22 @@
         "evidence": "ESPN scoreboard response schema."
       }
     ],
-    "keywords": ["score", "scores", "sports", "game", "match", "nba", "nfl", "mlb", "nhl", "epl", "football", "soccer", "cricket", "ipl"],
+    "keywords": [
+      "score",
+      "scores",
+      "sports",
+      "game",
+      "match",
+      "nba",
+      "nfl",
+      "mlb",
+      "nhl",
+      "epl",
+      "football",
+      "soccer",
+      "cricket",
+      "ipl"
+    ],
     "docs_url": "https://site.api.espn.com/apis/site/v2/sports",
     "price": 0.0,
     "pricing_tier": "free",
@@ -1047,6 +1443,580 @@
     "is_executable": true,
     "probe_eligible": true,
     "execution": "live",
-    "tags": ["api", "sports"]
+    "tags": [
+      "api",
+      "sports"
+    ]
+  },
+  {
+    "id": "openalex-search",
+    "name": "OpenAlex Research Search",
+    "provider_id": "openalex",
+    "description": "Search research works via OpenAlex.",
+    "capability": "SearchResearchPapers",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "query",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "ResearchPaper",
+        "name": "works",
+        "datatype": "array"
+      }
+    ],
+    "keywords": [
+      "research",
+      "openalex",
+      "papers"
+    ],
+    "docs_url": "https://openalex.org/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "licence": "CC0",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "research"
+    ]
+  },
+  {
+    "id": "semanticscholar-search",
+    "name": "Semantic Scholar Search",
+    "provider_id": "semanticscholar",
+    "description": "Search academic papers via Semantic Scholar.",
+    "capability": "SearchResearchPapers",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "query",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "ResearchPaper",
+        "name": "papers",
+        "datatype": "array"
+      }
+    ],
+    "keywords": [
+      "research",
+      "semanticscholar",
+      "papers"
+    ],
+    "docs_url": "https://www.semanticscholar.org/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "research"
+    ]
+  },
+  {
+    "id": "github-search",
+    "name": "GitHub Repository Search",
+    "provider_id": "github",
+    "description": "Search GitHub repositories.",
+    "capability": "SearchRepositories",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "query",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Repository",
+        "name": "repositories",
+        "datatype": "array"
+      }
+    ],
+    "keywords": [
+      "github",
+      "repo",
+      "code"
+    ],
+    "docs_url": "https://docs.github.com/rest",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "code"
+    ]
+  },
+  {
+    "id": "stackexchange-search",
+    "name": "StackExchange Question Search",
+    "provider_id": "stackexchange",
+    "description": "Search StackOverflow questions.",
+    "capability": "SearchQuestions",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "query",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Question",
+        "name": "questions",
+        "datatype": "array"
+      }
+    ],
+    "keywords": [
+      "stackoverflow",
+      "questions",
+      "programming"
+    ],
+    "docs_url": "https://api.stackexchange.com/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "licence": "CC-BY-SA",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "qa"
+    ]
+  },
+  {
+    "id": "openfoodfacts-product",
+    "name": "Open Food Facts Product",
+    "provider_id": "openfoodfacts",
+    "description": "Look up a food product by barcode.",
+    "capability": "GetFoodProduct",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "barcode",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Product",
+        "name": "product",
+        "datatype": "object"
+      }
+    ],
+    "keywords": [
+      "food",
+      "product",
+      "barcode"
+    ],
+    "docs_url": "https://world.openfoodfacts.org/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "licence": "ODbL",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "food"
+    ]
+  },
+  {
+    "id": "languagetool-check",
+    "name": "LanguageTool Grammar Check",
+    "provider_id": "languagetool",
+    "description": "Check grammar and style of text.",
+    "capability": "CheckGrammar",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "text",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Issue",
+        "name": "issues",
+        "datatype": "array"
+      }
+    ],
+    "keywords": [
+      "grammar",
+      "language",
+      "text"
+    ],
+    "docs_url": "https://languagetool.org/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "licence": "LGPL",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "text"
+    ]
+  },
+  {
+    "id": "qrcode-generate",
+    "name": "QR Code Generator",
+    "provider_id": "qrcode",
+    "description": "Generate a QR code image URL.",
+    "capability": "GenerateQRCode",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "text",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "ImageUrl",
+        "name": "qr_url"
+      }
+    ],
+    "keywords": [
+      "qr",
+      "code",
+      "image"
+    ],
+    "docs_url": "https://goqr.me/api/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "utility"
+    ]
+  },
+  {
+    "id": "ipapi-lookup",
+    "name": "IP Geolocation Lookup",
+    "provider_id": "ipapi",
+    "description": "Geolocate an IP address.",
+    "capability": "GetIPLocation",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "ip",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Location",
+        "name": "location",
+        "datatype": "object"
+      }
+    ],
+    "keywords": [
+      "ip",
+      "geolocation",
+      "location"
+    ],
+    "docs_url": "https://ip-api.com/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "geo"
+    ]
+  },
+  {
+    "id": "openelevation-lookup",
+    "name": "Open Elevation Lookup",
+    "provider_id": "openelevation",
+    "description": "Get elevation for coordinates.",
+    "capability": "GetElevation",
+    "inputs": [
+      {
+        "concept": "Number",
+        "name": "latitude"
+      },
+      {
+        "concept": "Number",
+        "name": "longitude"
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Number",
+        "name": "elevation"
+      }
+    ],
+    "keywords": [
+      "elevation",
+      "height",
+      "coordinates"
+    ],
+    "docs_url": "https://open-elevation.com/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "geo"
+    ]
+  },
+  {
+    "id": "coindesk-bitcoin",
+    "name": "CoinDesk Bitcoin Price",
+    "provider_id": "coindesk",
+    "description": "Get current Bitcoin price in USD.",
+    "capability": "GetCryptoPrice",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "query",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "CryptoPrice",
+        "name": "bitcoin",
+        "datatype": "object"
+      }
+    ],
+    "keywords": [
+      "bitcoin",
+      "crypto",
+      "price"
+    ],
+    "docs_url": "https://www.coindesk.com/coindesk-api/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "crypto"
+    ]
+  },
+  {
+    "id": "metals-spot",
+    "name": "Metals Spot Prices",
+    "provider_id": "metals",
+    "description": "Get gold and silver spot prices.",
+    "capability": "GetMetalPrices",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "query",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "MetalPrice",
+        "name": "metals",
+        "datatype": "object"
+      }
+    ],
+    "keywords": [
+      "gold",
+      "silver",
+      "metals"
+    ],
+    "docs_url": "https://metals.live/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "finance"
+    ]
+  },
+  {
+    "id": "reddit-hot",
+    "name": "Reddit Hot Posts",
+    "provider_id": "reddit",
+    "description": "Get hot posts from a subreddit.",
+    "capability": "GetSocialPosts",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "subreddit",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Post",
+        "name": "posts",
+        "datatype": "array"
+      }
+    ],
+    "keywords": [
+      "reddit",
+      "social",
+      "posts"
+    ],
+    "docs_url": "https://www.reddit.com/dev/api/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "social"
+    ]
+  },
+  {
+    "id": "openaq-locations",
+    "name": "OpenAQ Air Quality Locations",
+    "provider_id": "openaq",
+    "description": "Find air quality monitoring locations.",
+    "capability": "GetAirQuality",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "city",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Location",
+        "name": "locations",
+        "datatype": "array"
+      }
+    ],
+    "keywords": [
+      "air",
+      "quality",
+      "pollution"
+    ],
+    "docs_url": "https://docs.openaq.org/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "licence": "CC-BY",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "environment"
+    ]
+  },
+  {
+    "id": "pubchem-compound",
+    "name": "PubChem Compound Info",
+    "provider_id": "pubchem",
+    "description": "Get compound info from PubChem.",
+    "capability": "GetCompoundInfo",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "compound",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Compound",
+        "name": "compound",
+        "datatype": "object"
+      }
+    ],
+    "keywords": [
+      "chemistry",
+      "compound",
+      "pubchem"
+    ],
+    "docs_url": "https://pubchem.ncbi.nlm.nih.gov/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "licence": "public domain",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "science"
+    ]
+  },
+  {
+    "id": "openfda-label",
+    "name": "OpenFDA Drug Label",
+    "provider_id": "openfda",
+    "description": "Search drug labels via OpenFDA.",
+    "capability": "GetDrugLabel",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "drug",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "DrugLabel",
+        "name": "labels",
+        "datatype": "array"
+      }
+    ],
+    "keywords": [
+      "fda",
+      "drug",
+      "label"
+    ],
+    "docs_url": "https://open.fda.gov/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "licence": "public domain",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "health"
+    ]
   }
 ]

@@ -132,6 +132,17 @@ CURATED_CAPABILITIES: tuple[str, ...] = (
     "GetNearbyPlaces",
     "GetPlaceDetails",
     "GetExchangeMarkets",
+    "CheckGrammar",
+    "GenerateQRCode",
+    "GetAirQuality",
+    "GetCompoundInfo",
+    "GetDrugLabel",
+    "GetFoodProduct",
+    "GetIPLocation",
+    "GetMetalPrices",
+    "GetSocialPosts",
+    "SearchQuestions",
+    "SearchRepositories",
 )
 
 # Derived capability slug -> curated capability.
