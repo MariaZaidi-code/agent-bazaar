@@ -377,12 +377,41 @@ When the knowledge layer is not loaded, the route answers with `available: false
 6. Update `docs/message-protocol.md` only if a payload changes.
 7. Do not commit secrets; all default providers are keyless.
 
+## Platform and account integration
+
+The platform layer lives in `app/platform.py` and is composed into `AppServices.platform`.
+It is backed by `data/runtime/platform.db` and adds accounts, workspaces, saved tasks,
+favorites, workflows, shares, settings, notifications, credentials, analytics, admin
+controls and audit logging without changing the existing task or provider contracts.
+
+### Endpoints
+
+- Accounts: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`
+- Workspaces: `GET /api/workspaces`, `POST /api/workspaces`, `GET/PUT /api/platform/settings`
+- Saved work: `GET/POST/DELETE /api/favorites`, `GET/POST/DELETE /api/saved-tasks`, `GET/POST/DELETE /api/workflows`
+- History: `GET /api/tasks/recent` now supports `q`, `status`, `capability`, `date_from`, `date_to`, `offset`, `limit`
+- Shares and exports: `POST /api/tasks/{task_id}/share`, `GET /share/{token}`, `GET /api/tasks/{task_id}/export?format=json|csv|md|pdf`
+- Notifications: `GET /api/notifications`, `POST /api/notifications/read`
+- Credentials: `GET/POST/DELETE /api/api-keys`
+- Analytics: `GET /api/analytics`
+- Admin: `GET/PUT /api/admin/flags/{name}`, `GET/PUT /api/admin/overrides`, `GET/POST/DELETE /api/webhooks`, `GET/POST/DELETE /api/schedules`, `POST /api/schedules/run-due`, `GET/DELETE /api/cache`
+- Workspace data: `GET /api/workspace/export`, `POST /api/workspace/import`
+- Pages: `/help`, `/settings`, `/analytics`, `/admin`, `/share/{token}`
+
+The middleware in `app/main.py` applies a per-IP rate limit (default 180 requests per
+minute) to state-changing API calls and returns a friendly 429 response with
+`Retry-After`.
+
+The browser layer is split into `app/web/static/app.js` for the existing experience and
+`app/web/static/platform.js` for the platform features. Both load from the same
+`ASSET_VERSION` cache key.
+
 ## What remains intentionally stubbed
 
 - The Mapper now promotes corrections into the RDF knowledge graph instead of only staging them; the staging ledger of the adapter is a record of what happened, not a queue.
 - The local ontology (`app/data/ontology.json`) remains as the fallback for the concepts the knowledge layer does not model yet.
 - The Auditor uses seeded claim labels and injected drift rather than independent web/document probes.
 - The local graph is not a distributed RDF store.
-- The interface has no authentication; it is a local demonstration application.
+- The interface has no authentication; it is a local demonstration application. (The platform layer adds a demo account and session cookie, but it is not a production identity system.)
 
 These boundaries are deliberate so the assigned Client/Provider/Interface implementation is runnable without blocking on the other roles.

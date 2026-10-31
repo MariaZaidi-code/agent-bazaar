@@ -513,11 +513,19 @@ def test_seed_selection_prefers_keyless_and_free_tools() -> None:
     assert "keyless" in chosen[1][1]
 
 
+def corpus_directory() -> Path:
+    """Return the full generated corpus when present, else the committed seed."""
+    if (SPECS_DIR / "manifest.json").exists():
+        return SPECS_DIR
+    return SPECS_DIR / "seed"
+
+
 def keyless_corpus_tools() -> set[str]:
     """Return the corpus tools the extraction rules classify as keyless."""
     overrides = load_override(OVERRIDES_PATH)
     keyless: set[str] = set()
-    for path in sorted(SPECS_DIR.glob("*.json")):
+    directory = corpus_directory()
+    for path in sorted(directory.glob("*.json")):
         if path.name in {"manifest.json", "probe_set.json"}:
             continue
         try:
@@ -560,6 +568,8 @@ def test_probe_set_file_is_valid_and_holds_keyless_tools() -> None:
 
 
 def test_probe_set_holds_every_keyless_corpus_tool_and_nothing_else() -> None:
+    if not (SPECS_DIR / "manifest.json").exists():
+        pytest.skip("the full generated corpus is required for the probe-set equality check")
     payload = json.loads(PROBE_SET_PATH.read_text(encoding="utf-8"))
     selected = {tool["tool_id"] for tool in payload["tools"]}
 
@@ -674,7 +684,8 @@ def test_terms_of_service_wins_over_the_licence_url_for_the_terms_url() -> None:
 
 
 def test_corpus_manifest_agrees_with_the_corrected_access_rules() -> None:
-    manifest = json.loads((SPECS_DIR / "manifest.json").read_text(encoding="utf-8"))
+    directory = corpus_directory()
+    manifest = json.loads((directory / "manifest.json").read_text(encoding="utf-8"))
     by_file = {entry["file"]: entry for entry in manifest}
     corrected = {
         "ideal-postcodes-co-uk.json": ("freemium", "paid_key"),
@@ -694,17 +705,21 @@ def test_corpus_manifest_agrees_with_the_corrected_access_rules() -> None:
     }
 
     for file_name, (tier, access) in corrected.items():
-        entry = by_file[file_name]
+        entry = by_file.get(file_name)
+        if entry is None:
+            assert directory != SPECS_DIR, f"full corpus manifest is missing {file_name}"
+            continue
         assert (entry["pricing_tier"], entry["access_requirement"]) == (tier, access), file_name
 
 
 def test_corpus_manifest_is_in_sync_with_the_extraction_rules() -> None:
-    manifest = json.loads((SPECS_DIR / "manifest.json").read_text(encoding="utf-8"))
+    directory = corpus_directory()
+    manifest = json.loads((directory / "manifest.json").read_text(encoding="utf-8"))
     overrides = load_override(OVERRIDES_PATH)
 
     for entry in manifest:
         tool_id = entry["file"][: -len(".json")]
-        document = json.loads((SPECS_DIR / entry["file"]).read_text(encoding="utf-8"))
+        document = json.loads((directory / entry["file"]).read_text(encoding="utf-8"))
         metadata = extract_listing_metadata(document, tool_id=tool_id)
         override = overrides.get(tool_id)
         if override:

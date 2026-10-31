@@ -154,6 +154,19 @@ class TraceStore:
             ).fetchall()
         return [dict(row) for row in rows]
 
+    def result_rows(self, limit: int = 2000) -> list[dict[str, Any]]:
+        with self._lock:
+            rows = self._connection.execute(
+                """
+                SELECT task_id, task, status, result_json, created_at
+                FROM task_results
+                ORDER BY created_at DESC
+                LIMIT ?
+                """,
+                (limit,),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
     def log_message(self, message: BaseMessage, task_id: str | None = None) -> None:
         payload = message.model_dump(mode="json")
         with self._lock:

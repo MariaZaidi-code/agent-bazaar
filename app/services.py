@@ -23,6 +23,7 @@ from app.integration.runtime import KnowledgeLayer, build_knowledge_layer
 from app.knowledge.graph import ToolKnowledgeGraph
 from app.knowledge.ontology import Ontology
 from app.knowledge.retrieval import GraphRAGRetriever
+from app.platform import PlatformStore
 from app.providers.registry import ProviderRegistry
 
 
@@ -45,6 +46,7 @@ class AppServices:
     client: ClientAgent
     b1: B1ToolCalling
     b2: B2RagOnly
+    platform: PlatformStore
     knowledge: KnowledgeLayer | None = None
 
     def export_graph(self) -> bool:
@@ -120,6 +122,7 @@ def build_services(settings: Settings | None = None) -> AppServices:
         mapper = knowledge.mapper if knowledge is not None else local_mapper
     cache = Cache(resolved.cache_db, ttl_seconds=resolved.cache_ttl_seconds)
     traces = TraceStore(resolved.traces_db)
+    platform = PlatformStore(resolved.platform_db)
     trust = TrustRegistry(
         resolved.trust_db,
         signal_weights=resolved.trust_signal_weights,
@@ -179,6 +182,7 @@ def build_services(settings: Settings | None = None) -> AppServices:
         client=client,
         b1=b1,
         b2=b2,
+        platform=platform,
         knowledge=knowledge,
     )
     services.export_graph()

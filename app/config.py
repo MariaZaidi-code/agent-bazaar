@@ -77,6 +77,10 @@ class Settings(BaseSettings):
     use_substitution: bool = True
     use_circuit_breaker: bool = True
 
+    rate_limit_per_minute: int = 180
+    session_cookie_secure: bool = False
+    share_base_url: str = ""
+
     @field_validator("data_dir", "runtime_dir", mode="after")
     @classmethod
     def resolve_path(cls, value: Path) -> Path:
@@ -105,6 +109,10 @@ class Settings(BaseSettings):
     @property
     def documents_db(self) -> Path:
         return self.runtime_dir / "documents.db"
+
+    @property
+    def platform_db(self) -> Path:
+        return self.runtime_dir / "platform.db"
 
     @property
     def sample_sql_db(self) -> Path:

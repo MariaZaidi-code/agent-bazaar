@@ -11,18 +11,23 @@ def test_health_and_interface(api: TestClient) -> None:
     assert api.get("/").status_code == 200
     assert "Agent Bazaar" in api.get("/").text
     pages = {
-        "/dashboard": "Workflow workspace",
-        "/marketplace": "Service marketplace",
-        "/monitor": "Self-healing monitor",
-        "/library": "Trust Center",
-        "/documents": "Documents",
-        "/docs": "Documentation",
+        "/dashboard": ("Ask anything", "dashboard"),
+        "/marketplace": ("Find tools", "marketplace"),
+        "/monitor": ("System health", "monitor"),
+        "/library": ("Why trust this", "library"),
+        "/documents": ("Your files", "documents"),
+        "/docs": ("Documentation", "docs"),
+        "/help": ("Help", "help"),
+        "/settings": ("Settings", "settings"),
+        "/analytics": ("Usage analytics", "analytics"),
+        "/admin": ("Admin controls", "admin"),
     }
-    for path, title in pages.items():
+    for path, (title, page) in pages.items():
         response = api.get(path)
         assert response.status_code == 200
         assert f"<title>{title} | Agent Bazaar</title>" in response.text
-        assert f'data-page="{path.removeprefix("/")}"' in response.text
+        assert f'data-page="{page}"' in response.text
+    assert 'data-page="docs"' in api.get("/docs").text
     swagger = api.get("/api/docs")
     assert swagger.status_code == 200
     assert "swagger-ui" in swagger.text

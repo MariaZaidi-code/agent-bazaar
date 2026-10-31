@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Shared answer | Agent Bazaar</title>
+  <link rel="stylesheet" href="/static/styles.css?v={{ asset_version }}">
+  <link rel="stylesheet" href="/static/premium.css?v={{ asset_version }}">
+  <link rel="stylesheet" href="/static/platform.css?v={{ asset_version }}">
+</head>
+<body class="share-page">
+  <main class="share-shell">
+    <header class="share-head">
+      <a class="brand" href="/dashboard">
+        <span class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" fill="currentColor"/></svg></span>
+        <span class="brand-name">Agent Bazaar</span>
+      </a>
+      <span class="badge verified">Read-only shared answer</span>
+    </header>
+    <article class="window-card share-card">
+      <header class="window-bar"><span class="window-route">Answer</span><span class="badge neutral">{{ result.status }}</span></header>
+      <div class="window-body">
+        <h1>{{ result.task }}</h1>
+        <p class="small muted">Task {{ result.task_id }} · {{ result.created_at.strftime("%d %b %Y, %H:%M") if result.created_at else "" }} · {{ result.duration_ms|round|int }} ms</p>
+        <div class="answer-content">
+          <div><span class="answer-label">Answer</span><p>{{ result.answer or "No answer was recorded." }}</p></div>
+        </div>
+        {% if result.plan and result.plan.steps %}
+        <h2>How this was calculated</h2>
+        <div class="result-grid">
+          {% for step in result.plan.steps %}
+          <div class="window-card">
+            <div class="window-body">
+              <strong>{{ loop.index }}. {{ step.tool_name }}</strong>
+              <p class="small muted">{{ step.capability }} · {{ step.status }}</p>
+              {% if step.error %}<p class="small">Problem: {{ step.error }}</p>{% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% if result.warnings %}
+        <h2>Notes</h2>
+        <ul>{% for warning in result.warnings %}<li>{{ warning }}</li>{% endfor %}</ul>
+        {% endif %}
+        <div class="task-actions">
+          <a class="btn secondary" href="/api/tasks/{{ result.task_id }}/export?format=json">Download JSON</a>
+          <a class="btn secondary" href="/api/tasks/{{ result.task_id }}/export?format=csv">Download CSV</a>
+          <a class="btn secondary" href="/api/tasks/{{ result.task_id }}/export?format=md">Download Markdown</a>
+          <a class="btn secondary" href="/api/tasks/{{ result.task_id }}/export?format=pdf">Download PDF</a>
+          <a class="btn primary" href="/dashboard">Ask your own question</a>
+        </div>
+      </div>
+    </article>
+    <footer class="page-footer"><span>Shared from Agent Bazaar v{{ version }}</span><span>Read-only link</span></footer>
+  </main>
+  <style>
+    .share-page { min-height: 100dvh; padding: 24px; }
+    .share-shell { width: min(920px, 100%); margin: 0 auto; display: grid; gap: 16px; }
+    .share-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .share-card h1 { margin: 0 0 6px; font-size: clamp(24px, 4vw, 36px); }
+    .share-card h2 { margin: 24px 0 10px; font-size: 18px; }
+    .share-card .answer-content { margin-top: 18px; }
+    .share-card .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px; background: var(--accent); color: var(--accent-contrast); }
+    .share-card .brand-mark svg { width: 22px; height: 22px; }
+    @media (max-width: 640px) { .share-page { padding: 12px; } .share-head { align-items: flex-start; flex-direction: column; } }
+  </style>
+</body>
+</html>

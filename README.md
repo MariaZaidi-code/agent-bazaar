@@ -73,13 +73,14 @@ Auditor and monitoring:
 - **Resilience** with backup mirrors for six live providers, an adversarial Fahrenheit weather mock, trust-weighted ranking, a three-state circuit breaker and circuit-breaker substitution.
 - **Trust registry** with Beta-style scoring, signal history, contradiction penalties, demotion and replay verification.
 - **Trace viewer** persisting every decision, provider call, verification result and recovery event in SQLite.
-- **Responsive web interface** with six page routes: the workflow dashboard, the service
+- **Responsive web interface** with page routes for the workflow dashboard, the service
   marketplace, the self-healing monitor, the Documents workspace at `/documents`, the Trust
-  Center at `/library` and the in-app Documentation guide at `/docs`. It supports running
-  chains, inspecting candidates, viewing traces, monitoring trust and breakers, uploading,
-  previewing and deleting documents, asking cited document questions inline, exploring the
-  Trust Center's Auditor evidence and trust replay, using a keyboard command palette, staging
-  corrections and injecting demo failures.
+  Center at `/library`, the in-app Documentation guide at `/docs`, plus Help, Settings,
+  Usage analytics and Admin controls. It supports running chains, inspecting candidates,
+  viewing traces, monitoring trust and breakers, uploading, previewing and deleting documents,
+  asking cited document questions inline, exploring the Trust Center's Auditor evidence and
+  trust replay, using a keyboard command palette, staging corrections, saving tasks, tools
+  and workflows, sharing and exporting answers, and injecting demo failures.
 - **Evaluation suite** with 50 matching tasks, 15 chain tasks, B1/B2 baseline comparison, 7 substitution cases, 6 trust scenarios, a seven-configuration ablation and a 48-task free-first ranking suite.
 - **261 automated tests** across the merged application, knowledge-layer, Auditor and bridge suites, including 43 integration tests for the application/knowledge-layer bridge, plus Ruff checks and GitHub Actions CI.
 
@@ -127,8 +128,8 @@ python -m pytest
 ```
 
 `python -m pytest` runs the whole merged suite: the 130 knowledge-layer tests, the 50
-application tests, the 43 integration tests, the 32 Auditor tests and the 6 Auditor bridge
-tests, 261 in total.
+application tests, the 43 integration tests, the 32 Auditor tests, the 6 Auditor bridge
+tests and the platform tests, 264 in total.
 
 This uses the committed 8-spec seed corpus and the deterministic hashing
 embedder. No API key is needed. To fetch the full corpus and use the embedding

@@ -29,7 +29,9 @@ const state = {
     executable: false,
     verifiable: false,
     incidents: false,
+    saved: false,
   },
+  savedTools: new Set(),
   selectedTraceSeq: null,
   lastFocused: null,
   auditor: null,
@@ -602,13 +604,11 @@ function bindSidebar() {
   };
   menu?.addEventListener("click", () => setOpen(!document.body.classList.contains("sidebar-open")));
   $("#sidebar-scrim")?.addEventListener("click", () => setOpen(false));
-  $("#workspace-switcher")?.addEventListener("click", () => toast("This sandbox uses a single demo workspace."));
+  $("#workspace-switcher")?.addEventListener("click", () => {
+    document.dispatchEvent(new CustomEvent("platform:workspace-menu"));
+  });
   $("#notification-button")?.addEventListener("click", () => {
-    if (state.page === "monitor") {
-      $("#alert-feed")?.scrollIntoView({ behavior: "smooth", block: "center" });
-    } else {
-      window.location.href = "/monitor";
-    }
+    document.dispatchEvent(new CustomEvent("platform:notifications"));
   });
   $$("[data-nav]").forEach((item) => item.addEventListener("click", () => setOpen(false)));
   document.addEventListener("keydown", (event) => {
@@ -650,12 +650,16 @@ function bindModals() {
 }
 
 const PALETTE_NAV = [
-  { title: "Workspace", subtitle: "Ask a question and inspect the answer", icon: "grid", href: "/dashboard" },
-  { title: "Marketplace", subtitle: "Browse the service catalogue", icon: "box", href: "/marketplace" },
-  { title: "Monitor", subtitle: "Failures, breakers and recovery", icon: "pulse", href: "/monitor" },
-  { title: "Documents", subtitle: "Upload, preview and ask a document", icon: "file", href: "/documents" },
-  { title: "Trust Center", subtitle: "Evidence, history and staging", icon: "shield", href: "/library" },
+  { title: "Ask", subtitle: "Ask anything and inspect the answer", icon: "grid", href: "/dashboard" },
+  { title: "Find tools", subtitle: "Search the service catalogue", icon: "box", href: "/marketplace" },
+  { title: "Health", subtitle: "See what is working and what changed", icon: "pulse", href: "/monitor" },
+  { title: "Files", subtitle: "Upload, preview and ask about a file", icon: "file", href: "/documents" },
+  { title: "Why trust", subtitle: "See the evidence behind a tool", icon: "shield", href: "/library" },
+  { title: "Usage", subtitle: "Task analytics and popular tools", icon: "chart", href: "/analytics" },
+  { title: "Help", subtitle: "Quickstart, FAQ and troubleshooting", icon: "help", href: "/help" },
   { title: "Documentation", subtitle: "Guides, API reference and shortcuts", icon: "book", href: "/docs" },
+  { title: "Settings", subtitle: "Account, display, workspace and credentials", icon: "settings", href: "/settings" },
+  { title: "Admin", subtitle: "Feature switches, webhooks and schedules", icon: "flag", href: "/admin" },
 ];
 
 function paletteAction(title, subtitle, iconName, run) {
@@ -1235,6 +1239,7 @@ function renderResult(result) {
   renderTrace(result.trace || []);
   const footerTask = $("#footer-task-id");
   if (footerTask) footerTask.textContent = ` · ${result.task_id}`;
+  document.dispatchEvent(new CustomEvent("platform:result", { detail: { taskId: result.task_id } }));
 }
 
 function renderTrace(events) {
@@ -1376,8 +1381,15 @@ async function loadHistory() {
   if (!list) return;
   list.innerHTML = `<div class="empty-panel compact"><strong>Loading history</strong><p class="loading-dots"></p></div>`;
   try {
-    const data = await api("/api/tasks/recent?limit=20");
+    const params = new URLSearchParams({ limit: "20" });
+    const query = $("#history-query")?.value?.trim();
+    const status = $("#history-status")?.value;
+    if (query) params.set("q", query);
+    if (status) params.set("status", status);
+    const data = await api(`/api/tasks/recent?${params}`);
     state.recent = data.tasks || [];
+    const count = $("#history-count");
+    if (count) count.textContent = `${data.total || state.recent.length} run${Number(data.total) === 1 ? "" : "s"}`;
     list.innerHTML = state.recent.length
       ? state.recent
           .map(
@@ -1395,6 +1407,11 @@ async function loadHistory() {
 
 function bindHistory() {
   $("#open-history")?.addEventListener("click", () => openModal("history-modal"));
+  $("#history-apply")?.addEventListener("click", () => loadHistory());
+  $("#history-query")?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") loadHistory();
+  });
+  $("#history-status")?.addEventListener("change", () => loadHistory());
   $("#history-list")?.addEventListener("click", async (event) => {
     const item = event.target.closest("[data-history-task]");
     if (!item) return;
@@ -1558,6 +1575,7 @@ function filteredTools() {
       if (state.marketFilters.keyless && String(tool.access_requirement || "").toLowerCase() !== "keyless") return false;
       if (state.marketFilters.executable && !tool.is_executable) return false;
       if (state.marketFilters.verifiable && !mapped.has(tool.id)) return false;
+      if (state.marketFilters.saved && !state.savedTools.has(tool.id)) return false;
       if (state.marketFilters.incidents) {
         const stateValue = breakerByProvider.get(tool.provider_id) || tool.breaker || "closed";
         if (!["open", "half-open"].includes(breakerClass(stateValue))) return false;
@@ -1613,7 +1631,7 @@ function toolCard(tool) {
       <div class="tool-card-heading">
         <span class="tool-icon">${icon(capabilityIcon(tool.capability))}</span>
         <span class="tool-title"><strong>${esc(tool.name)}</strong><small>${esc(tool.capability)}</small></span>
-        ${icon("arrow-up-right")}
+        <button class="favorite-toggle ${state.savedTools.has(tool.id) ? "is-saved" : ""}" type="button" data-favorite-tool="${esc(tool.id)}" aria-pressed="${state.savedTools.has(tool.id)}" aria-label="${state.savedTools.has(tool.id) ? "Remove from saved tools" : "Save tool"}">${icon("star")}</button>
       </div>
       <p class="tool-description">${esc(tool.description)}</p>
       <div class="tool-claim-row">${claimBadge(claim)}${mapping ? `<span class="badge neutral" title="Auditor catalogue mapping: ${esc(mapping.catalog_tool_id)}">${icon("shield")}Auditor mapped</span>` : ""}<span class="tool-probe">${probes} probe${probes === 1 ? "" : "s"} · ${calls} call${calls === 1 ? "" : "s"}</span></div>
@@ -1695,6 +1713,10 @@ function renderMarketplace() {
   if (footerCount) footerCount.textContent = `${tools.length} of ${state.tools.length}`;
   const sync = $("#market-sync-time");
   if (sync) sync.textContent = state.toolsError ? "unavailable" : new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  $$("#market-advanced [data-tool-filter]").forEach((chip) => {
+    chip.setAttribute("aria-pressed", String(Boolean(state.marketFilters[chip.dataset.toolFilter])));
+  });
+  document.dispatchEvent(new CustomEvent("platform:market-rendered"));
 }
 
 function initMarketplace() {
@@ -1961,6 +1983,7 @@ function openToolModal(toolId) {
     window.location.href = "/dashboard";
   });
   openModal("tool-modal");
+  document.dispatchEvent(new CustomEvent("platform:tool-opened", { detail: { toolId: tool.id } }));
 }
 
 async function submitToolCorrection(event) {
@@ -3187,6 +3210,17 @@ function renderTrustMetrics() {
     trustMetricMarkup("Graph mappings", graphValue, graphDetail),
     trustMetricMarkup("Staged records", stagedValue, stagedDetail),
   ].join("");
+
+  const summary = $("#trust-summary");
+  if (summary) {
+    if (!auditor) {
+      summary.innerHTML = `<span class="badge neutral">Checking checks</span> Gathering the latest evidence.`;
+    } else {
+      const passed = mappings;
+      const total = Math.max(catalog, mappings);
+      summary.innerHTML = `<span class="badge ${total && passed === total ? "verified" : "neutral"}">${total ? `${passed} of ${total} checks passed` : "No checks recorded"}</span> ${total && passed === total ? "Every mapped tool passed its latest check." : `${Math.max(0, total - passed)} tool${total - passed === 1 ? "" : "s"} still need a check.`}`;
+    }
+  }
 
   const mode = $("#trust-mode");
   if (mode) {
