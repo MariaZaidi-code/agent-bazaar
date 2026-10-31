@@ -1,0 +1,29 @@
+    async def start_mcp(self) -> None:
+        if not self.settings.mcp_servers or self.mcp is None:
+            return
+        for entry in self.settings.mcp_servers:
+            parts = entry.split("|")
+            name = parts[0].strip()
+            command = parts[1].strip().split() if len(parts) > 1 else []
+            if not command:
+                continue
+            self.mcp.register(name, command)
+        try:
+            await self.mcp.start_all()
+        except Exception:
+            return
+        from app.mcp.adapter import MCPToolProvider, mcp_tool_to_spec
+        tools = await self.mcp.discover_tools()
+        for tool in tools:
+            server = tool.get("_server", "")
+            spec = mcp_tool_to_spec(server, tool)
+            try:
+                self.graph.add(spec)
+            except Exception:
+                continue
+            provider = MCPToolProvider(spec, self.settings, self.cache, self.mcp, server, tool.get("name", ""))
+            try:
+                self.providers.register_provider(provider)
+            except Exception:
+                pass
+PY

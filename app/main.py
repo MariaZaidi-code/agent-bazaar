@@ -258,9 +258,14 @@ async def _deliver_webhooks(hooks: list[dict[str, Any]], event: str, payload: di
 def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(application: FastAPI):
-        application.state.services = build_services(settings)
+        services = build_services(settings)
+        application.state.services = services
+        try:
+            await services.start_mcp()
+        except Exception:
+            pass
         application.state.rate_limiter = RateLimiter(
-            application.state.services.settings.rate_limit_per_minute
+            services.settings.rate_limit_per_minute
         )
         yield
 

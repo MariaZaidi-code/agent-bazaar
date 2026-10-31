@@ -25,6 +25,7 @@ from app.integration.runtime import KnowledgeLayer, build_knowledge_layer
 from app.knowledge.graph import ToolKnowledgeGraph
 from app.knowledge.ontology import Ontology
 from app.knowledge.retrieval import GraphRAGRetriever
+from app.mcp.registry import MCPServerRegistry
 from app.platform import PlatformStore
 from app.providers.registry import ProviderRegistry
 
@@ -50,8 +51,39 @@ class AppServices:
     b2: B2RagOnly
     platform: PlatformStore
     knowledge: KnowledgeLayer | None = None
+    mcp: MCPServerRegistry | None = None
     webhooks: WebhookRegistry = field(default_factory=WebhookRegistry)
     jobs: JobManager = field(default_factory=JobManager)
+
+    async def start_mcp(self) -> None:
+        if not self.settings.mcp_servers or self.mcp is None:
+            return
+        for entry in self.settings.mcp_servers:
+            parts = entry.split("|")
+            name = parts[0].strip()
+            command = parts[1].strip().split() if len(parts) > 1 else []
+            if not command:
+                continue
+            self.mcp.register(name, command)
+        try:
+            await self.mcp.start_all()
+        except Exception:
+            return
+        from app.mcp.adapter import MCPToolProvider, mcp_tool_to_spec
+
+        tools = await self.mcp.discover_tools()
+        for tool in tools:
+            server = tool.get("_server", "")
+            spec = mcp_tool_to_spec(server, tool)
+            try:
+                self.graph.add(spec)
+            except Exception:
+                continue
+            provider = MCPToolProvider(spec, self.settings, self.cache, self.mcp, server, tool.get("name", ""))
+            try:
+                self.providers.register(provider)
+            except Exception:
+                pass
 
     def export_graph(self) -> bool:
         trust = {item["provider_id"]: item for item in self.trust.all()}
@@ -181,6 +213,7 @@ def build_services(settings: Settings | None = None) -> AppServices:
     )
     b1 = B1ToolCalling(resolved, graph, providers, planner, llm)
     b2 = B2RagOnly(resolved, graph, providers, planner, llm)
+    mcp_registry = MCPServerRegistry()
     services = AppServices(
         settings=resolved,
         cache=cache,
@@ -201,6 +234,7 @@ def build_services(settings: Settings | None = None) -> AppServices:
         b2=b2,
         platform=platform,
         knowledge=knowledge,
+        mcp=mcp_registry,
     )
     services.export_graph()
     services.export_graph_jsonld()

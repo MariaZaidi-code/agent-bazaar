@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     data_dir: Path = BASE_DIR / "app" / "data"
     runtime_dir: Path = BASE_DIR / "data" / "runtime"
     offline_mode: bool = False
+    mcp_servers: list[str] = Field(default_factory=list)
     request_timeout_seconds: float = 15.0
     cache_ttl_seconds: int = 86_400
     seed_document: bool = True
