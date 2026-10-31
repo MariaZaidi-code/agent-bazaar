@@ -5,25 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark light">
   <meta name="theme-color" content="#101113" id="theme-color-meta">
-  <meta name="description" content="Agent Bazaar finds trusted tools, runs them, and shows the evidence. Ask anything in plain language.">
   <title>{{ page_title }} | Agent Bazaar</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232649c8'/%3E%3Cpath d='M9 9h5v5H9zM18 9h5v5h-5zM9 18h5v5H9zM18 18h5v5h-5z' fill='%23fff'/%3E%3C/svg%3E">
   <script>
     try {
       const saved = localStorage.getItem("agent-bazaar-theme");
       if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
-      if (localStorage.getItem("agent-bazaar-contrast") === "on") {
-        document.documentElement.dataset.contrast = "on";
-      }
     } catch (error) {}
   </script>
   <link rel="stylesheet" href="/static/styles.css?v={{ asset_version }}">
   <link rel="stylesheet" href="/static/premium.css?v={{ asset_version }}">
-  <link rel="stylesheet" href="/static/platform.css?v={{ asset_version }}">
 </head>
-<body data-page="{{ page }}" data-authenticated="{{ 'true' if authenticated else 'false' }}">
+<body data-page="{{ page }}">
   <a class="skip-link" href="#console-content">Skip to content</a>
-  <div class="sr-only" id="a11y-live" aria-live="polite" aria-atomic="true"></div>
   <svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.8v12.4c0 .8.9 1.3 1.6.9l9.5-6.2a1 1 0 0 0 0-1.7L9.6 4.9A1 1 0 0 0 8 5.8Z"/></symbol>
     <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></symbol>
@@ -69,18 +63,6 @@
     <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
     <symbol id="i-sort" viewBox="0 0 24 24"><path d="M8 5v14M5 8l3-3 3 3M16 19V5M13 16l3 3 3-3"/></symbol>
     <symbol id="i-loader" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></symbol>
-    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></symbol>
-    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></symbol>
-    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 5.2a3.5 3.5 0 0 1 0 6.5M17.5 14.2A6.5 6.5 0 0 1 21.5 20"/></symbol>
-    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></symbol>
-    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
-    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5M15 8l4 4-4 4M19 12H9"/></symbol>
-    <symbol id="i-contrast" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18V3Z"/></symbol>
-    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
-    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v5M14 11v5"/></symbol>
-    <symbol id="i-send" viewBox="0 0 24 24"><path d="m3 11 18-8-8 18-2.5-7.5L3 11Z"/></symbol>
-    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></symbol>
-    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
   </svg>
 
   <div class="app-shell">
@@ -91,55 +73,35 @@
         <span class="brand-name">Agent Bazaar</span>
       </a>
 
-      <button class="workspace-switcher" type="button" id="workspace-switcher" aria-haspopup="menu" aria-expanded="false">
-        <span class="workspace-avatar" id="workspace-avatar">{{ (workspace.name if workspace else "AB")[:2]|upper }}</span>
-        <span class="workspace-copy"><strong id="workspace-name">{{ workspace.name if workspace else "Demo workspace" }}</strong><small>{{ (workspace.role|capitalize ~ " workspace") if workspace else "Demo workspace" }}</small></span>
+      <button class="workspace-switcher" type="button" id="workspace-switcher">
+        <span class="workspace-avatar">AB</span>
+        <span class="workspace-copy"><strong>Acme Engineering</strong><small>Verification workspace</small></span>
         <svg><use href="#i-chevron-down"></use></svg>
       </button>
-      <div class="workspace-menu hidden" id="workspace-menu" role="menu" aria-label="Workspaces">
-        <div id="workspace-menu-list"></div>
-        <form id="workspace-create-form" class="workspace-create">
-          <label class="sr-only" for="workspace-create-name">New workspace name</label>
-          <input id="workspace-create-name" name="name" placeholder="New workspace" maxlength="80" required>
-          <button class="btn small secondary" type="submit">Add</button>
-        </form>
-      </div>
 
       <nav class="sidebar-nav" aria-label="Workspace">
         <p class="nav-label">Workspace</p>
         <a class="nav-item" data-nav="dashboard" href="/dashboard">
-          <svg><use href="#i-grid"></use></svg><span>Ask</span>
+          <svg><use href="#i-grid"></use></svg><span>Workspace</span>
         </a>
         <a class="nav-item" data-nav="marketplace" href="/marketplace">
-          <svg><use href="#i-box"></use></svg><span>Find tools</span>
+          <svg><use href="#i-box"></use></svg><span>Marketplace</span>
         </a>
         <a class="nav-item" data-nav="monitor" href="/monitor">
-          <svg><use href="#i-pulse"></use></svg><span>Health</span>
+          <svg><use href="#i-pulse"></use></svg><span>Monitor</span>
         </a>
 
-        <p class="nav-label">Your work</p>
+        <p class="nav-label">Knowledge</p>
         <a class="nav-item" data-nav="documents" href="/documents">
-          <svg><use href="#i-file"></use></svg><span>Files</span>
+          <svg><use href="#i-file"></use></svg><span>Documents</span>
         </a>
         <a class="nav-item" data-nav="library" href="/library">
-          <svg><use href="#i-shield"></use></svg><span>Why trust</span>
-        </a>
-        <a class="nav-item" data-nav="analytics" href="/analytics">
-          <svg><use href="#i-chart"></use></svg><span>Usage</span>
+          <svg><use href="#i-shield"></use></svg><span>Trust Center</span>
         </a>
 
-        <p class="nav-label">More</p>
-        <a class="nav-item" data-nav="help" href="/help">
-          <svg><use href="#i-help"></use></svg><span>Help</span>
-        </a>
+        <p class="nav-label">Resources</p>
         <a class="nav-item" data-nav="docs" href="/docs">
           <svg><use href="#i-book"></use></svg><span>Documentation</span>
-        </a>
-        <a class="nav-item" data-nav="settings" href="/settings">
-          <svg><use href="#i-settings"></use></svg><span>Settings</span>
-        </a>
-        <a class="nav-item" data-nav="admin" href="/admin">
-          <svg><use href="#i-flag"></use></svg><span>Admin</span>
         </a>
         <button class="nav-item" type="button" data-open-modal="api-modal">
           <svg><use href="#i-key"></use></svg><span>API &amp; environment</span>
@@ -156,13 +118,12 @@
       <div class="theme-switch" role="group" aria-label="Theme">
         <button type="button" data-set-theme="light"><svg><use href="#i-sun"></use></svg>Light</button>
         <button type="button" data-set-theme="dark"><svg><use href="#i-moon"></use></svg>Dark</button>
-        <button type="button" id="contrast-toggle" aria-pressed="false"><svg><use href="#i-contrast"></use></svg>Contrast</button>
       </div>
 
-      <div class="sidebar-user" id="sidebar-user">
-        <span class="user-avatar" id="sidebar-user-avatar">{{ (user.display_name or "D")[:1]|upper }}</span>
-        <span><strong id="sidebar-user-name">{{ user.display_name or "Demo user" }}</strong><small id="sidebar-user-role">{{ "Signed in" if authenticated else "Demo mode" }}</small></span>
-        <button class="user-plan as-button" type="button" id="account-button">{{ "Account" if authenticated else "Sign in" }}</button>
+      <div class="sidebar-user">
+        <span class="user-avatar">RB</span>
+        <span><strong>Rameen Babar</strong><small>Client lead</small></span>
+        <span class="user-plan">Pro</span>
       </div>
     </aside>
 
@@ -184,8 +145,8 @@
           <span class="demo-date" id="demo-date">Checking environment</span>
           <button class="icon-button" type="button" id="toolbar-theme" aria-label="Toggle theme"><svg><use href="#i-sun"></use></svg></button>
           <a class="icon-button" href="/documents" aria-label="Open documents" title="Documents"><svg><use href="#i-file"></use></svg></a>
-          <button class="icon-button notification-button" type="button" id="notification-button" aria-label="Open notifications" aria-haspopup="dialog"><svg><use href="#i-bell"></use></svg><span class="notification-dot hidden"></span></button>
-          <button class="user-avatar toolbar-avatar as-button" type="button" id="toolbar-user" aria-label="Open account">{{ (user.display_name or "D")[:1]|upper }}</button>
+          <button class="icon-button notification-button" type="button" id="notification-button" aria-label="Open monitor notifications"><svg><use href="#i-bell"></use></svg><span class="notification-dot hidden"></span></button>
+          <span class="user-avatar toolbar-avatar">RB</span>
         </div>
       </header>
 
@@ -193,31 +154,16 @@
         <section class="page-view" data-view="dashboard">
           <div class="page-heading">
             <div>
-              <p class="eyebrow">Ask anything</p>
-              <h1>What do you want to get done?</h1>
-              <p class="page-subtitle">Describe the outcome in your own words. We will find a trusted tool, run it, and show you how the answer was made.</p>
+              <p class="eyebrow">Build / Orchestrate / Verify</p>
+              <h1>Developer workspace</h1>
+              <p class="page-subtitle">Ask one question. Agent Bazaar finds trusted tools, runs them, and shows you the evidence.</p>
             </div>
             <div class="heading-actions">
-              <button class="btn secondary" type="button" id="open-history"><svg><use href="#i-history"></use></svg>Past tasks</button>
+              <button class="btn secondary" type="button" id="open-history"><svg><use href="#i-history"></use></svg>Execution history</button>
             </div>
           </div>
 
-          <div class="starter-grid" id="starter-grid" aria-label="Starter questions">
-            <button class="starter-card" type="button" data-starter="What is the temperature in Lahore tomorrow, and what is 200 USD in PKR?">
-              <svg><use href="#i-cloud"></use></svg><strong>Check weather and currency</strong><small>Try a two-tool question</small>
-            </button>
-            <button class="starter-card" type="button" data-starter="Which public holidays does Pakistan have in 2026?">
-              <svg><use href="#i-calendar"></use></svg><strong>Find public holidays</strong><small>Look up a country calendar</small>
-            </button>
-            <button class="starter-card" type="button" data-starter="Compare the population of Japan and find recent research papers on GraphRAG.">
-              <svg><use href="#i-book"></use></svg><strong>Compare countries and research</strong><small>Combine two trusted sources</small>
-            </button>
-            <button class="starter-card" type="button" data-starter="According to the uploaded document, what is the main goal of the project?">
-              <svg><use href="#i-file-text"></use></svg><strong>Ask your own document</strong><small>Upload a file, then ask</small>
-            </button>
-          </div>
-
-          <div class="workspace-strip" id="workspace-strip" aria-label="Workspace summary">
+          <div class="workspace-strip" id="workspace-strip" aria-label="Workspace summary" role="status" aria-live="polite">
             <div class="strip-metric"><span>Marketplace</span><strong class="skeleton" style="width:54px;height:22px">&nbsp;</strong><small>Loading catalogue</small></div>
             <div class="strip-metric"><span>Average trust</span><strong class="skeleton" style="width:70px;height:22px">&nbsp;</strong><small>No observations yet</small></div>
             <div class="strip-metric"><span>Open circuits</span><strong class="skeleton" style="width:36px;height:22px">&nbsp;</strong><small>Checking breakers</small></div>
@@ -232,8 +178,8 @@
               <form id="task-form">
                 <div class="prompt-line">
                   <svg class="prompt-glyph"><use href="#i-terminal"></use></svg>
-                  <textarea id="task-input" rows="1" placeholder="Ask anything… for example: What is the temperature in Lahore tomorrow?" aria-label="Ask anything" required></textarea>
-                  <span class="prompt-shortcut">Ctrl + Enter to run</span>
+                  <textarea id="task-input" rows="1" placeholder="Ask a question or describe a task…" aria-label="Task request" required></textarea>
+                  <span class="prompt-shortcut">⌘ + Enter to run</span>
                 </div>
                 <div class="composer-footer">
                   <div class="sample-block">
@@ -241,19 +187,9 @@
                     <div class="sample-chips" id="sample-chips"></div>
                     <span class="simulated-note">All results below are simulated.</span>
                   </div>
-                  <button class="btn primary run-button" type="submit" id="run-button"><svg><use href="#i-play"></use></svg>Get answer</button>
+                  <button class="btn primary run-button" type="submit" id="run-button"><svg><use href="#i-play"></use></svg>Run task</button>
                 </div>
               </form>
-            </div>
-          </article>
-
-          <article class="window-card recent-card" id="recent-card">
-            <header class="window-bar">
-              <span class="window-route">Recent tasks</span>
-              <button class="text-button" type="button" id="recent-refresh"><svg><use href="#i-refresh"></use></svg>Refresh</button>
-            </header>
-            <div class="window-body" id="recent-tasks" aria-live="polite">
-              <div class="task-skeleton"><span></span><span></span><span></span></div>
             </div>
           </article>
 
@@ -264,9 +200,9 @@
             <div class="window-body">
               <div class="inline-head">
                 <h2>Execution visualizer</h2>
-                <div class="run-meta" id="run-meta"><span class="muted">No run yet</span></div>
+                <div class="run-meta" id="run-meta" role="status" aria-live="polite"><span class="muted">No run yet</span></div>
               </div>
-              <div class="stepper" id="execution-stepper"></div>
+              <div class="stepper" id="execution-stepper" role="status" aria-live="polite"></div>
             </div>
           </article>
 
@@ -284,18 +220,13 @@
                 <strong>Ready for a request</strong>
                 <p>Run a sample or ask your own question. The verified answer and typed evidence will appear here.</p>
               </div>
-              <div id="answer-content" class="answer-content hidden">
+              <div id="answer-content" class="answer-content hidden" role="status" aria-live="polite">
                 <div class="answer-callout">
                   <span class="answer-icon"><svg><use href="#i-check-circle"></use></svg></span>
-                  <div><span class="answer-label">Verified response</span><p id="answer-text"></p></div>
+                  <div><span class="answer-label">Verified response</span><p id="answer-text" role="status" aria-live="polite"></p></div>
                 </div>
-                <div class="result-grid" id="result-cards"></div>
-                <div class="result-foot" id="result-foot"></div>
-                <div class="task-actions" id="task-actions"></div>
-                <details class="calc-details" id="calc-details">
-                  <summary>How this answer was calculated</summary>
-                  <div id="calc-body">Run a task to see the tools, inputs and checks used for the answer.</div>
-                </details>
+                <div class="result-grid" id="result-cards" role="status" aria-live="polite"></div>
+                <div class="result-foot" id="result-foot" role="status" aria-live="polite"></div>
               </div>
             </div>
           </article>
@@ -337,7 +268,7 @@
                 </div>
                 <button class="text-button" type="button" id="protocol-refresh"><svg><use href="#i-refresh"></use></svg>Refresh</button>
               </div>
-              <div id="protocol-body" class="empty-state inline">
+              <div id="protocol-body" class="empty-state inline" role="status" aria-live="polite">
                 <svg><use href="#i-layers"></use></svg>
                 <strong>No protocol messages yet</strong>
                 <p>Run a task to inspect every request and response envelope.</p>
@@ -358,11 +289,11 @@
             </header>
             <div class="window-body marketplace-heading">
               <div>
-                <p class="eyebrow">Find a tool</p>
-                <h1>Find a trusted tool</h1>
-                <p class="page-subtitle">Search by what you want to do. Each result shows what the tool does, how reliable it has been, and whether it fits your access level.</p>
+                <p class="eyebrow">Discover / Evaluate / Connect</p>
+                <h1>Service marketplace</h1>
+                <p class="page-subtitle">Find services by capability, compare their evidence, and add tools you trust.</p>
               </div>
-              <button class="btn primary" type="button" id="onboard-button"><svg><use href="#i-plus"></use></svg>Add a tool</button>
+              <button class="btn primary" type="button" id="onboard-button"><svg><use href="#i-plus"></use></svg>Onboard tool</button>
             </div>
           </article>
 
@@ -372,13 +303,13 @@
             <header class="window-bar">
               <span class="window-route">Catalogue health</span>
             </header>
-            <div class="window-body catalogue-stats" id="catalogue-stats"></div>
+            <div class="window-body catalogue-stats" id="catalogue-stats" role="status" aria-live="polite"></div>
           </article>
 
           <div class="market-controls">
             <label class="search-field">
               <svg><use href="#i-search"></use></svg>
-              <input id="market-search" type="search" placeholder="What do you want to do? For example: weather, currency, holidays" aria-label="Search tools by task" autocomplete="off">
+              <input id="market-search" type="search" placeholder="Search tools, capabilities or data types..." autocomplete="off">
               <kbd>/</kbd>
             </label>
             <label class="select-button"><svg><use href="#i-filter"></use></svg><select id="capability-filter" aria-label="Capability filter"></select></label>
@@ -399,12 +330,11 @@
             <button class="filter-chip" type="button" data-tool-filter="keyless"><svg><use href="#i-key"></use></svg>Keyless</button>
             <button class="filter-chip" type="button" data-tool-filter="executable"><svg><use href="#i-play"></use></svg>Executable</button>
             <button class="filter-chip" type="button" data-tool-filter="verifiable"><svg><use href="#i-shield"></use></svg>Auditor-mapped</button>
-              <button class="filter-chip" type="button" data-tool-filter="incidents"><svg><use href="#i-alert"></use></svg>Has incidents</button>
-              <button class="filter-chip" type="button" data-tool-filter="saved"><svg><use href="#i-star"></use></svg>Saved</button>
-              <button class="text-button" type="button" id="clear-tool-filters">Clear filters</button>
+            <button class="filter-chip" type="button" data-tool-filter="incidents"><svg><use href="#i-alert"></use></svg>Breaker incidents</button>
+            <button class="text-button" type="button" id="clear-tool-filters">Clear</button>
           </div>
           <div id="tools-loading" class="loading-line">Loading catalogue…</div>
-          <div class="tools-grid" id="tools-grid"></div>
+          <div class="tools-grid" id="tools-grid" role="status" aria-live="polite"></div>
           <div class="empty-panel hidden" id="tools-empty">
             <svg><use href="#i-search"></use></svg>
             <strong>No tools match</strong>
@@ -418,8 +348,12 @@
             <div class="window-body scoring-body">
               <span class="scoring-icon"><svg><use href="#i-activity"></use></svg></span>
               <div>
-                <h3>Trust is earned, not declared. <span class="mono">(s+1)/(s+f+2)</span></h3>
-                <p>Beta distribution posterior mean · s = successful probes · f = failed probes · Prior Beta(1,1). Auditor claims and circuit breakers are evaluated separately.</p>
+                <h3>Trust is earned, not declared.</h3>
+                <p>Trust score comes from successful and failed checks. Auditor checks and circuit breakers are reviewed separately.</p>
+                <details>
+                  <summary>How this is calculated</summary>
+                  <p class="small muted">Trust score = (successes + 1) / (successes + failures + 2). A tool with no checks starts at the Beta(1,1) prior of 0.5.</p>
+                </details>
               </div>
               <a class="text-link" href="/docs#trust">Scoring docs <svg><use href="#i-arrow-up-right"></use></svg></a>
             </div>
@@ -434,19 +368,19 @@
         <section class="page-view" data-view="monitor">
           <div class="page-heading monitor-heading">
             <div>
-              <p class="eyebrow">System health</p>
-              <h1>Is everything working?</h1>
-              <p class="page-subtitle">See which tools are healthy, what changed, and how the system recovered. No technical knowledge needed.</p>
+              <p class="eyebrow">Observe / Repair / Recover</p>
+              <h1>Self-healing monitor</h1>
+              <p class="page-subtitle">See failures as they happen, isolate unstable tools, and watch the system recover.</p>
             </div>
             <div class="heading-actions">
-              <button class="btn secondary" type="button" id="pause-feed"><svg><use href="#i-pause"></use></svg><span>Pause updates</span></button>
-              <button class="btn primary" type="button" id="simulate-drift"><svg><use href="#i-play"></use></svg>Test a problem</button>
+              <button class="btn secondary" type="button" id="pause-feed"><svg><use href="#i-pause"></use></svg><span>Pause feed</span></button>
+              <button class="btn primary" type="button" id="simulate-drift"><svg><use href="#i-play"></use></svg>Simulate a problem</button>
             </div>
           </div>
 
           <div id="monitor-notice" class="hidden" role="status" aria-live="polite"></div>
 
-          <div class="metric-grid" id="monitor-metrics"></div>
+          <div class="metric-grid" id="monitor-metrics" role="status" aria-live="polite"></div>
 
           <div class="control-room" id="monitor-control-room" aria-label="Incident controls">
             <div class="control-room-fields">
@@ -454,9 +388,9 @@
               <label class="control-field"><span>Failure count</span><input id="control-times" type="number" min="1" max="10" value="1" inputmode="numeric"></label>
             </div>
             <div class="control-actions">
-              <button class="btn small secondary" type="button" id="control-fail"><svg><use href="#i-alert"></use></svg>Make it fail next time</button>
+              <button class="btn small secondary" type="button" id="control-fail"><svg><use href="#i-alert"></use></svg>Schedule failure</button>
               <button class="btn small secondary" type="button" id="control-trip"><svg><use href="#i-x-circle"></use></svg>Pause this tool</button>
-              <button class="btn small secondary" type="button" id="control-monitor"><svg><use href="#i-shield"></use></svg>Check it now</button>
+              <button class="btn small secondary" type="button" id="control-monitor"><svg><use href="#i-shield"></use></svg>Probe with Auditor</button>
             </div>
             <div class="control-hint" id="control-hint">Choose any provider. Auditor probes are available for mapped tools only.</div>
             <div class="control-utilities">
@@ -483,9 +417,9 @@
             </article>
 
             <div class="monitor-detail-column">
-              <article class="window-card incident-card" id="incident-card"></article>
-              <article class="window-card mapping-card" id="mapping-card"></article>
-              <article class="window-card substitution-card" id="substitution-card"></article>
+              <article class="window-card incident-card" id="incident-card" role="status" aria-live="polite"></article>
+              <article class="window-card mapping-card" id="mapping-card" role="status" aria-live="polite"></article>
+              <article class="window-card substitution-card" id="substitution-card" role="status" aria-live="polite"></article>
             </div>
           </div>
 
@@ -494,7 +428,7 @@
               <span class="window-route">Provider evidence</span>
               <a class="text-link" href="/library">Open Trust Center <svg><use href="#i-arrow-up-right"></use></svg></a>
             </header>
-            <div id="monitor-trust-body" class="loading-line" style="padding: 14px 20px">Loading provider evidence…</div>
+            <div id="monitor-trust-body" class="loading-line" style="padding: 14px 20px" role="status" aria-live="polite">Loading provider evidence…</div>
           </article>
 
           <footer class="page-footer">
@@ -506,18 +440,17 @@
         <section class="page-view trust-page" data-view="library">
           <div class="trust-hero">
             <div>
-              <p class="eyebrow">Why trust this?</p>
-              <h1>Why you can trust an answer</h1>
-              <p>Every tool is checked before it is used. This page shows what was checked, what passed, and what needs a closer look.</p>
+              <p class="eyebrow">Verify / Attribute / Replay</p>
+              <h1>Trust Center</h1>
+              <p>See how each tool earned its trust score, what the Auditor checked, and what is waiting for review.</p>
             </div>
             <div class="trust-hero-meta">
               <span class="badge neutral" id="trust-mode">Checking Auditor…</span>
-              <button class="btn secondary" type="button" id="trust-refresh"><svg><use href="#i-refresh"></use></svg>Refresh checks</button>
+              <button class="btn secondary" type="button" id="trust-refresh"><svg><use href="#i-refresh"></use></svg>Refresh evidence</button>
             </div>
           </div>
 
-          <div class="trust-summary" id="trust-summary" role="status" aria-live="polite">Checking how many tools have passed their checks…</div>
-          <div class="trust-metrics" id="trust-metrics" aria-label="Trust summary">
+          <div class="trust-metrics" id="trust-metrics" aria-label="Trust summary" role="status" aria-live="polite">
             <div class="trust-metric"><span>Mapped tools</span><strong class="skeleton" style="width:48px;height:22px">&nbsp;</strong><small>Checking catalogue</small></div>
             <div class="trust-metric"><span>Auditor probes</span><strong class="skeleton" style="width:48px;height:22px">&nbsp;</strong><small>Checking ledger</small></div>
             <div class="trust-metric"><span>Trust observations</span><strong class="skeleton" style="width:48px;height:22px">&nbsp;</strong><small>Checking trust feed</small></div>
@@ -532,27 +465,27 @@
                   <div><h2>Auditor coverage</h2><p>Probe definitions and app-to-catalogue mappings.</p></div>
                   <span class="badge neutral" id="auditor-coverage-badge">—</span>
                 </div>
-                <div class="panel-body" id="auditor-overview">
+                <div class="panel-body" id="auditor-overview" role="status" aria-live="polite">
                   <div class="loading-line">Loading Auditor overview…</div>
                 </div>
               </article>
 
               <article class="panel">
                 <div class="panel-head">
-                  <div><h2>Trust leaderboard</h2><p>Posterior means from live probe observations.</p></div>
+                  <div><h2>Trust leaderboard</h2><p>Trust scores from live checks.</p></div>
                   <span class="badge neutral" id="leaderboard-count">—</span>
                 </div>
-                <div id="trust-leaderboard" class="panel-body flush">
+                <div id="trust-leaderboard" class="panel-body flush" role="status" aria-live="polite">
                   <div class="loading-line" style="padding: 0 18px">Loading trust observations…</div>
                 </div>
               </article>
 
               <article class="panel">
                 <div class="panel-head">
-                  <div><h2>Knowledge graph</h2><p>RDF store statistics and ontology scale.</p></div>
+                  <div><h2>Knowledge graph</h2><p>How tools connect and how many concepts are in use.</p></div>
                   <span class="badge neutral" id="knowledge-backend">—</span>
                 </div>
-                <div id="knowledge-body" class="panel-body flush">
+                <div id="knowledge-body" class="panel-body flush" role="status" aria-live="polite">
                   <div class="loading-line" style="padding: 0 18px">Loading graph statistics…</div>
                 </div>
               </article>
@@ -562,7 +495,7 @@
                   <div><h2>Staging ledger</h2><p>Corrections and listings awaiting promotion.</p></div>
                   <span class="badge neutral" id="staging-count">—</span>
                 </div>
-                <div id="staging-ledger" class="panel-body flush">
+                <div id="staging-ledger" class="panel-body flush" role="status" aria-live="polite">
                   <div class="loading-line" style="padding: 0 18px">Loading staging records…</div>
                 </div>
               </article>
@@ -582,8 +515,8 @@
                       </select>
                     </div>
                     <div class="auditor-console-row">
-                      <button class="btn primary small" type="button" id="verify-run"><svg><use href="#i-shield"></use></svg>Verify now</button>
-                      <button class="btn secondary small" type="button" id="verify-monitor"><svg><use href="#i-pulse"></use></svg>Monitor only</button>
+                      <button class="btn primary small" type="button" id="verify-run"><svg><use href="#i-shield"></use></svg>Run a check</button>
+                      <button class="btn secondary small" type="button" id="verify-monitor"><svg><use href="#i-pulse"></use></svg>Check health</button>
                       <a class="text-link" href="/docs#verification">Protocol docs <svg><use href="#i-arrow-up-right"></use></svg></a>
                     </div>
                     <div class="auditor-output" id="verify-output" role="status" aria-live="polite">
@@ -603,7 +536,7 @@
                   <select id="trust-provider" class="control-field" style="width:100%;min-height:32px;padding:5px 8px;font-size:11px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px" aria-label="Provider trust history">
                     <option value="">Select a provider</option>
                   </select>
-                  <div id="trust-detail" style="margin-top:10px">
+                  <div id="trust-detail" style="margin-top:10px" role="status" aria-live="polite">
                     <div class="empty-state inline"><strong>No provider selected</strong><p>Choose a provider to inspect its signals and replay consistency.</p></div>
                   </div>
                 </div>
@@ -614,7 +547,7 @@
                   <div><h2>Evaluation reports</h2><p>Offline suite results from the repository reports.</p></div>
                   <span class="badge neutral" id="evaluation-count">—</span>
                 </div>
-                <div class="panel-body" id="evaluations-body">
+                <div class="panel-body" id="evaluations-body" role="status" aria-live="polite">
                   <div class="loading-line">Loading evaluation reports…</div>
                 </div>
               </article>
@@ -629,9 +562,9 @@
         <section class="page-view documents-page" data-view="documents">
           <div class="page-heading">
             <div>
-              <p class="eyebrow">Your files</p>
-              <h1>Ask your own files</h1>
-              <p class="page-subtitle">Drop in a file, ask a question, and see the exact passage that supports the answer. Files stay in this demo workspace.</p>
+              <p class="eyebrow">Upload / Ground / Cite</p>
+              <h1>Documents</h1>
+              <p class="page-subtitle">Ask questions about a document you upload. Every answer stays on this page and quotes the passage it came from.</p>
             </div>
             <div class="heading-actions">
               <a class="btn secondary" href="/docs#documents"><svg><use href="#i-book"></use></svg>How documents work</a>
@@ -646,17 +579,16 @@
                 </div>
                 <div class="panel-body document-library">
                   <form id="upload-form" class="upload-form">
-                    <label class="dropzone compact" id="document-dropzone" for="document-file">
+                    <label class="dropzone compact" for="document-file">
                       <input id="document-file" type="file" accept=".txt,.md,.csv,.pdf,.docx" required>
                       <svg><use href="#i-upload"></use></svg>
-                      <strong>Drop a file here or choose one</strong>
-                      <span>TXT, Markdown, CSV, PDF or DOCX, up to 10 MB</span>
+                      <strong>Choose a document</strong>
+                      <span>TXT, Markdown, CSV, PDF or DOCX · up to 10 MB</span>
                     </label>
-                    <div class="upload-progress hidden" id="upload-progress" role="progressbar" aria-label="Upload progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
-                    <button class="btn primary block" type="submit"><svg><use href="#i-upload"></use></svg>Upload file</button>
+                    <button class="btn primary block" type="submit"><svg><use href="#i-upload"></use></svg>Upload document</button>
                   </form>
                   <div id="upload-result" class="inline-result hidden" role="status" aria-live="polite"></div>
-                  <div id="document-list" class="document-list" aria-live="polite">
+                  <div id="document-list" class="document-list" role="status" aria-live="polite">
                     <div class="loading-line">Loading documents…</div>
                   </div>
                 </div>
@@ -664,7 +596,7 @@
             </aside>
 
             <div class="documents-main">
-              <section class="panel document-detail-panel" aria-live="polite">
+              <section class="panel document-detail-panel" role="status" aria-live="polite">
                 <div id="document-empty" class="empty-panel document-empty">
                   <svg><use href="#i-file-text"></use></svg>
                   <strong>No document selected</strong>
@@ -766,7 +698,7 @@
                 <ol class="docs-flow">
                   <li><strong>Read the request.</strong> The Client splits the task into sub-goals such as geocoding, weather, currency, or a document question.</li>
                   <li><strong>Find tools.</strong> The knowledge graph shortlists services by capability, not by name alone.</li>
-                  <li><strong>Check compatibility and evidence.</strong> Ontology types, units, trust scores, breaker state, and Auditor claims filter the shortlist.</li>
+                  <li><strong>Check compatibility and evidence.</strong> Data types, units, trust scores, breaker state, and Auditor checks filter the shortlist.</li>
                   <li><strong>Execute and recover.</strong> The Client composes a typed chain, calls providers, and substitutes a compatible tool when one fails.</li>
                   <li><strong>Record the trace.</strong> Every decision, message, latency, and failure is stored so you can inspect or export it.</li>
                 </ol>
@@ -799,7 +731,11 @@
               <section class="docs-section" id="trust">
                 <p class="docs-kicker">Evidence</p>
                 <h2>Trust and verification</h2>
-                <p>Trust is a posterior mean, not a declaration: <code>(successes + 1) / (successes + failures + 2)</code>. A tool with no observations starts at the Beta(1,1) prior of 0.5.</p>
+                <p>Trust score reflects recent checks, not a guarantee.</p>
+                <details>
+                  <summary>How this is calculated</summary>
+                  <p>Trust score = (successes + 1) / (successes + failures + 2). A tool with no observations starts at the Beta(1,1) prior of 0.5.</p>
+                </details>
                 <ul class="docs-list">
                   <li><strong>Observations</strong> are real calls or probe results recorded in the trust ledger.</li>
                   <li><strong>Auditor probes</strong> compare provider responses with the mapped catalogue schema and declared claims.</li>
@@ -855,7 +791,7 @@
                     <p>A score of 50% with no observations is the prior, not a failed test. Run a task or an Auditor probe to create evidence.</p>
                   </details>
                   <details>
-                    <summary>Why is Verify now disabled?</summary>
+                    <summary>Why is Run a check disabled?</summary>
                     <p>The Auditor only verifies tools that have a catalogue mapping. The console now selects the first mapped tool automatically; choose another from the list if needed.</p>
                   </details>
                   <details>
@@ -882,152 +818,6 @@
             </article>
           </div>
         </section>
-
-        <section class="page-view help-page" data-view="help">
-          <div class="page-heading">
-            <div>
-              <p class="eyebrow">Help</p>
-              <h1>How can we help?</h1>
-              <p class="page-subtitle">Start with a question, understand what happened, or fix a problem in a few clicks.</p>
-            </div>
-            <div class="heading-actions">
-              <a class="btn primary" href="/dashboard"><svg><use href="#i-play"></use></svg>Ask a question</a>
-              <a class="btn secondary" href="/docs"><svg><use href="#i-book"></use></svg>Full documentation</a>
-            </div>
-          </div>
-
-          <div class="help-grid">
-            <article class="panel">
-              <div class="panel-head"><div><h2>Quickstart</h2><p>Three steps to your first answer.</p></div></div>
-              <ol class="plain-steps">
-                <li><strong>Describe the outcome.</strong><span>Type a question in your own words. You do not need to pick a tool.</span></li>
-                <li><strong>Run it.</strong><span>We choose trusted tools, run them, and check the result.</span></li>
-                <li><strong>Check the answer.</strong><span>Open “How this was calculated” to see every tool and check.</span></li>
-              </ol>
-            </article>
-            <article class="panel">
-              <div class="panel-head"><div><h2>Frequently asked</h2><p>Simple answers to common questions.</p></div></div>
-              <div class="faq-list">
-                <details><summary>Where does the answer come from?</summary><p>Each answer is built from tools listed on the answer card. Open the calculation details to inspect inputs, outputs and checks.</p></details>
-                <details><summary>What does “trust” mean?</summary><p>Trust is based on checks and real calls. A higher score means more successful evidence. It is not a promise that a tool is perfect.</p></details>
-                <details><summary>Can I use my own files?</summary><p>Yes. Open <a href="/documents">Files</a>, drop in a TXT, Markdown, CSV, PDF or DOCX file, then ask a question about it.</p></details>
-                <details><summary>What happens when a tool fails?</summary><p>The system tries a compatible alternative. When that happens the answer is labelled “Recovered response” and the trace shows what changed.</p></details>
-              </div>
-            </article>
-            <article class="panel">
-              <div class="panel-head"><div><h2>Troubleshooting</h2><p>Try these first.</p></div></div>
-              <div class="faq-list">
-                <details><summary>The page says I am going too fast</summary><p>Wait a moment and try again. This protects the shared demo from accidental repeated requests.</p></details>
-                <details><summary>A document will not upload</summary><p>Check that it is under 10 MB and one of TXT, Markdown, CSV, PDF or DOCX. Password-protected PDFs are not supported.</p></details>
-                <details><summary>I cannot find a tool</summary><p>Clear the filters on <a href="/marketplace">Find tools</a>, then search by the task you want to do rather than the tool name.</p></details>
-                <details><summary>Still stuck?</summary><p>Open <a href="/api/docs">API reference</a> for endpoint details or reset demo data from <a href="/monitor">Health</a>.</p></details>
-              </div>
-            </article>
-            <article class="panel">
-              <div class="panel-head"><div><h2>What’s new</h2><p>Recent improvements.</p></div></div>
-              <ul class="changelog-list">
-                <li><span class="badge verified">New</span><div><strong>Saved tasks and workflows</strong><small>Save an answer with a note, or replay a task in one click.</small></div></li>
-                <li><span class="badge neutral">Improved</span><div><strong>Plain-language labels</strong><small>Menus and status messages now describe outcomes, not internals.</small></div></li>
-                <li><span class="badge neutral">Improved</span><div><strong>Keyboard and mobile</strong><small>Larger controls, swipe navigation and visible focus throughout.</small></div></li>
-              </ul>
-            </article>
-          </div>
-        </section>
-
-        <section class="page-view settings-page" data-view="settings">
-          <div class="page-heading">
-            <div>
-              <p class="eyebrow">Settings</p>
-              <h1>Make it yours</h1>
-              <p class="page-subtitle">Account, display, workspace and private credentials. Changes are saved to this workspace.</p>
-            </div>
-          </div>
-          <div class="settings-grid">
-            <article class="panel">
-              <div class="panel-head"><div><h2>Account</h2><p>Sign in to keep your work across visits.</p></div><span class="badge neutral" id="settings-account-badge">Demo mode</span></div>
-              <div class="panel-body" id="settings-account">
-                <p class="small muted">You are using a shared demo workspace. Create an account to keep saved tasks, favorites and settings.</p>
-                <button class="btn primary" type="button" data-open-auth="register">Create an account</button>
-                <button class="btn secondary" type="button" data-open-auth="login">Sign in</button>
-              </div>
-            </article>
-            <article class="panel">
-              <div class="panel-head"><div><h2>Display</h2><p>Comfortable defaults for reading and focus.</p></div></div>
-              <form class="panel-body form-stack" id="settings-display-form">
-                <label>Theme<select id="settings-theme"><option value="dark">Dark</option><option value="light">Light</option><option value="system">Use device setting</option></select></label>
-                <label class="check-row"><input type="checkbox" id="settings-contrast"> High-contrast colors</label>
-                <label class="check-row"><input type="checkbox" id="settings-notifications"> Show a notification when a task finishes</label>
-                <button class="btn primary" type="submit">Save display settings</button>
-              </form>
-            </article>
-            <article class="panel">
-              <div class="panel-head"><div><h2>Workspace</h2><p>Separate work for different teams or clients.</p></div></div>
-              <div class="panel-body" id="settings-workspaces"></div>
-              <form class="panel-body form-stack" id="settings-workspace-form">
-                <label>New workspace name<input id="settings-workspace-name" maxlength="80" placeholder="Research team" required></label>
-                <button class="btn secondary" type="submit">Create workspace</button>
-              </form>
-            </article>
-            <article class="panel">
-              <div class="panel-head"><div><h2>Private credentials</h2><p>Keys are encrypted before they are stored.</p></div></div>
-              <form class="panel-body form-stack" id="settings-key-form">
-                <label>Provider<input id="settings-key-provider" maxlength="80" placeholder="Provider name" required></label>
-                <label>API key<input id="settings-key-value" type="password" maxlength="500" autocomplete="off" required></label>
-                <button class="btn secondary" type="submit">Save credential</button>
-              </form>
-              <div class="panel-body flush" id="settings-key-list"></div>
-            </article>
-            <article class="panel">
-              <div class="panel-head"><div><h2>Saved work</h2><p>Tasks, tools and workflows saved in this workspace.</p></div></div>
-              <div class="panel-body" id="settings-saved"></div>
-            </article>
-            <article class="panel">
-              <div class="panel-head"><div><h2>Your data</h2><p>Move your workspace or start fresh.</p></div></div>
-              <div class="panel-body settings-data-actions">
-                <a class="btn secondary" href="/api/workspace/export"><svg><use href="#i-download"></use></svg>Export workspace</a>
-                <label class="btn secondary file-button"><svg><use href="#i-upload"></use></svg>Import workspace<input id="settings-import" type="file" accept="application/json"></label>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section class="page-view analytics-page" data-view="analytics">
-          <div class="page-heading">
-            <div>
-              <p class="eyebrow">Usage</p>
-              <h1>How your workspace is used</h1>
-              <p class="page-subtitle">A quiet view of completed tasks, response times and the tools doing the work.</p>
-            </div>
-          </div>
-          <div class="metric-grid" id="analytics-metrics"></div>
-          <article class="window-card">
-            <header class="window-bar"><span class="window-route">Tasks over time</span></header>
-            <div class="window-body chart-body" id="analytics-chart"><div class="task-skeleton"><span></span><span></span><span></span></div></div>
-          </article>
-          <div class="settings-grid">
-            <article class="panel"><div class="panel-head"><div><h2>Most used tools</h2><p>Based on recorded plans.</p></div></div><div class="panel-body flush" id="analytics-tools"></div></article>
-            <article class="panel"><div class="panel-head"><div><h2>Most requested abilities</h2><p>What your tasks ask for.</p></div></div><div class="panel-body flush" id="analytics-capabilities"></div></article>
-          </div>
-        </section>
-
-        <section class="page-view admin-page" data-view="admin">
-          <div class="page-heading">
-            <div>
-              <p class="eyebrow">Admin</p>
-              <h1>Workspace controls</h1>
-              <p class="page-subtitle">Feature switches, provider overrides, reminders and audit history.</p>
-            </div>
-            <button class="btn secondary" type="button" id="admin-refresh"><svg><use href="#i-refresh"></use></svg>Refresh</button>
-          </div>
-          <div class="settings-grid">
-            <article class="panel"><div class="panel-head"><div><h2>Feature switches</h2><p>Turn optional features on or off.</p></div></div><div class="panel-body flush" id="admin-flags"></div></article>
-            <article class="panel"><div class="panel-head"><div><h2>Provider overrides</h2><p>Override a single field for a known tool.</p></div></div><form class="panel-body form-stack" id="admin-override-form"><label>Tool<select id="admin-override-tool"></select></label><label>Field<input id="admin-override-field" maxlength="80" placeholder="pricing_tier" required></label><label>Value<input id="admin-override-value" maxlength="500" required></label><button class="btn secondary" type="submit">Save override</button></form><div class="panel-body flush" id="admin-overrides"></div></article>
-            <article class="panel"><div class="panel-head"><div><h2>Webhooks</h2><p>Send task events to another service.</p></div></div><form class="panel-body form-stack" id="admin-webhook-form"><label>URL<input id="admin-webhook-url" type="url" placeholder="https://example.com/hook" required></label><label>Event<select id="admin-webhook-event"><option value="task.completed">Task completed</option><option value="task.failed">Task failed</option><option value="*">All events</option></select></label><button class="btn secondary" type="submit">Add webhook</button></form><div class="panel-body flush" id="admin-webhooks"></div></article>
-            <article class="panel"><div class="panel-head"><div><h2>Scheduled tasks</h2><p>Repeat a task and collect the results.</p></div></div><form class="panel-body form-stack" id="admin-schedule-form"><label>Task<textarea id="admin-schedule-task" rows="2" maxlength="1500" required></textarea></label><label>How often<select id="admin-schedule-cadence"><option value="daily">Every day</option><option value="hourly">Every hour</option><option value="weekly">Every week</option></select></label><button class="btn secondary" type="submit">Add schedule</button><button class="text-button" type="button" id="admin-run-due">Run due schedules now</button></form><div class="panel-body flush" id="admin-schedules"></div></article>
-            <article class="panel"><div class="panel-head"><div><h2>Cache</h2><p>Clear temporary results if data looks stale.</p></div><button class="btn danger small" type="button" id="admin-clear-cache">Clear cache</button></div><div class="panel-body" id="admin-cache"></div></article>
-            <article class="panel"><div class="panel-head"><div><h2>Audit history</h2><p>Recent changes in this workspace.</p></div></div><div class="panel-body flush" id="admin-audit"></div></article>
-          </div>
-        </section>
       </main>
     </div>
   </div>
@@ -1037,16 +827,9 @@
     <section class="modal-panel">
       <header class="window-bar"><span class="window-route">Run history</span><button class="window-close" type="button" data-close-modal aria-label="Close"><svg><use href="#i-x"></use></svg></button></header>
       <div class="modal-body">
-        <h2 id="history-title">Past tasks</h2>
-        <p class="modal-subtitle">Search, filter and open a previous answer.</p>
-        <div class="history-filters">
-          <label class="sr-only" for="history-query">Search past tasks</label>
-          <input id="history-query" type="search" placeholder="Search by words in the task">
-          <label class="sr-only" for="history-status">Filter by status</label>
-          <select id="history-status"><option value="">Any status</option><option value="completed">Completed</option><option value="partial">Partial</option><option value="failed">Failed</option></select>
-          <button class="btn secondary small" type="button" id="history-apply">Apply</button>
-        </div>
-        <div class="history-list" id="history-list"></div>
+        <h2 id="history-title">Execution history</h2>
+        <p class="modal-subtitle">Select a previous run to inspect its trace and evidence.</p>
+        <div class="history-list" id="history-list" role="status" aria-live="polite"></div>
       </div>
     </section>
   </div>
@@ -1073,15 +856,15 @@
             </span>
           </label>
           <div class="uploaded-file hidden" id="onboard-file-row"><svg><use href="#i-file"></use></svg><div><strong id="onboard-file-name"></strong><small>Ready to parse · local preview</small></div><span class="badge verified"><svg><use href="#i-check"></use></svg>Attached</span></div>
-          <label>Target ontology<span class="label-side">Suggested from capability</span><span class="ontology-field" id="onboard-ontology"><svg><use href="#i-layers"></use></svg><span>Select a category</span><svg><use href="#i-chevron-down"></use></svg></span></label>
+          <label>Target data type<span class="label-side">Suggested from capability</span><span class="ontology-field" id="onboard-ontology"><svg><use href="#i-layers"></use></svg><span>Select a category</span><svg><use href="#i-chevron-down"></use></svg></span></label>
           <div class="validation-queue" id="onboard-queue">
             <div class="queue-head"><strong>Validation queue</strong><span class="badge neutral" id="onboard-queue-status">Ready</span></div>
             <div class="queue-row" data-stage="parser"><span class="queue-icon"><svg><use href="#i-terminal"></use></svg></span><div><strong>Parser</strong><small>Waiting for specification</small></div><em>Queued</em></div>
-            <div class="queue-row" data-stage="mapper"><span class="queue-icon"><svg><use href="#i-layers"></use></svg></span><div><strong>Mapper</strong><small>Waiting for ontology types</small></div><em>Queued</em></div>
-            <div class="queue-row" data-stage="shacl"><span class="queue-icon"><svg><use href="#i-shield"></use></svg></span><div><strong>SHACL validation</strong><small>Checks required fields, types and shape constraints</small></div><em>Queued</em></div>
+            <div class="queue-row" data-stage="mapper"><span class="queue-icon"><svg><use href="#i-layers"></use></svg></span><div><strong>Mapper</strong><small>Waiting for data types</small></div><em>Queued</em></div>
+            <div class="queue-row" data-stage="shacl"><span class="queue-icon"><svg><use href="#i-shield"></use></svg></span><div><strong>Shape check</strong><small>Checks required fields, types and shape constraints</small></div><em>Queued</em></div>
           </div>
-          <div class="inline-result hidden" id="onboard-result"></div>
-          <p class="form-note"><svg><use href="#i-help"></use></svg>Registration stays locked until SHACL passes. Listings are staged for the Mapper; an upload does not confer Verified status.</p>
+          <div class="inline-result hidden" id="onboard-result" role="status" aria-live="polite"></div>
+          <p class="form-note"><svg><use href="#i-help"></use></svg>Registration stays locked until the shape check passes. Listings are staged for the Mapper; an upload does not confer Verified status.</p>
           <div class="modal-actions"><span class="modal-sandbox"><svg><use href="#i-flask"></use></svg>Sandbox preview · no production requests</span><span><button class="btn secondary" type="button" data-close-modal>Cancel</button><button class="btn primary" type="submit" id="onboard-submit"><svg><use href="#i-shield"></use></svg>Register tool</button></span></div>
         </form>
       </div>
@@ -1123,87 +906,7 @@ AB_LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free</pre>
       <div class="modal-body">
         <h2 id="logs-title">All monitor events</h2>
         <p class="modal-subtitle">Drift, breaker and recovery events collected from the current sandbox.</p>
-        <div class="log-table" id="logs-modal-body"></div>
-      </div>
-    </section>
-  </div>
-
-  <div class="modal" id="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
-    <div class="modal-backdrop" data-close-modal></div>
-    <section class="modal-panel">
-      <header class="window-bar"><span class="window-route">Your account</span><button class="window-close" type="button" data-close-modal aria-label="Close"><svg><use href="#i-x"></use></svg></button></header>
-      <div class="modal-body">
-        <h2 id="auth-title">Sign in or create an account</h2>
-        <p class="modal-subtitle">Accounts keep your saved tasks, favorites, workflows and settings together.</p>
-        <div class="segmented" role="tablist" aria-label="Account action">
-          <button type="button" role="tab" data-auth-mode="login" aria-selected="true">Sign in</button>
-          <button type="button" role="tab" data-auth-mode="register" aria-selected="false">Create account</button>
-        </div>
-        <form id="auth-form" class="form-stack">
-          <label id="auth-name-row" class="hidden">Your name<input id="auth-name" maxlength="80" autocomplete="name" placeholder="Alex Morgan"></label>
-          <label>Email<input id="auth-email" type="email" maxlength="200" autocomplete="email" required placeholder="you@example.com"></label>
-          <label>Password<input id="auth-password" type="password" minlength="8" maxlength="200" autocomplete="current-password" required placeholder="At least 8 characters"></label>
-          <label id="auth-workspace-row" class="hidden">Workspace name<input id="auth-workspace" maxlength="80" placeholder="My workspace"></label>
-          <div class="inline-result hidden" id="auth-result" role="status" aria-live="polite"></div>
-          <button class="btn primary" type="submit" id="auth-submit">Sign in</button>
-        </form>
-        <div id="auth-signed-in" class="hidden">
-          <div class="api-note"><svg><use href="#i-user"></use></svg><div><strong id="auth-user-name">Signed in</strong><p id="auth-user-email"></p></div></div>
-          <div class="modal-actions"><a class="btn secondary" href="/settings">Open settings</a><button class="btn danger" type="button" id="auth-logout">Sign out</button></div>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <div class="modal" id="notifications-modal" role="dialog" aria-modal="true" aria-labelledby="notifications-title">
-    <div class="modal-backdrop" data-close-modal></div>
-    <section class="modal-panel">
-      <header class="window-bar"><span class="window-route">Notifications</span><button class="window-close" type="button" data-close-modal aria-label="Close"><svg><use href="#i-x"></use></svg></button></header>
-      <div class="modal-body">
-        <h2 id="notifications-title">What changed</h2>
-        <p class="modal-subtitle">Task results, scheduled runs and workspace updates.</p>
-        <div class="notification-list" id="notification-list" aria-live="polite"></div>
-        <button class="text-button" type="button" id="mark-notifications-read">Mark all as read</button>
-      </div>
-    </section>
-  </div>
-
-  <div class="modal" id="share-modal" role="dialog" aria-modal="true" aria-labelledby="share-title">
-    <div class="modal-backdrop" data-close-modal></div>
-    <section class="modal-panel">
-      <header class="window-bar"><span class="window-route">Share or export</span><button class="window-close" type="button" data-close-modal aria-label="Close"><svg><use href="#i-x"></use></svg></button></header>
-      <div class="modal-body">
-        <h2 id="share-title">Share this answer</h2>
-        <p class="modal-subtitle">Anyone with the link can read the answer and its evidence, but cannot change your workspace.</p>
-        <div class="share-row"><input id="share-url" readonly aria-label="Read-only share link"><button class="btn primary" type="button" id="copy-share"><svg><use href="#i-copy"></use></svg>Copy link</button></div>
-        <p class="small muted" id="share-status">Create a read-only link, or download a copy.</p>
-        <div class="export-grid" id="share-exports">
-          <button class="btn secondary" type="button" data-export="json">JSON</button>
-          <button class="btn secondary" type="button" data-export="csv">CSV</button>
-          <button class="btn secondary" type="button" data-export="md">Markdown</button>
-          <button class="btn secondary" type="button" data-export="pdf">PDF</button>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <div class="tour" id="tour" role="dialog" aria-modal="true" aria-labelledby="tour-title">
-    <div class="tour-card">
-      <span class="badge verified" id="tour-step">Step 1 of 3</span>
-      <h2 id="tour-title">Ask in your own words</h2>
-      <p id="tour-copy">No menus or tool names needed. Describe the outcome and press Get answer.</p>
-      <div class="modal-actions"><button class="text-button" type="button" id="tour-skip">Skip tour</button><button class="btn primary" type="button" id="tour-next">Next</button></div>
-    </div>
-  </div>
-
-  <div class="modal" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-    <div class="modal-backdrop" data-close-modal></div>
-    <section class="modal-panel compact-panel">
-      <header class="window-bar"><span class="window-route">Please confirm</span><button class="window-close" type="button" data-close-modal aria-label="Close"><svg><use href="#i-x"></use></svg></button></header>
-      <div class="modal-body">
-        <h2 id="confirm-title">Are you sure?</h2>
-        <p id="confirm-copy">This action cannot be undone.</p>
-        <div class="modal-actions"><button class="btn secondary" type="button" data-close-modal>Cancel</button><button class="btn danger" type="button" id="confirm-action">Continue</button></div>
+        <div class="log-table" id="logs-modal-body" role="status" aria-live="polite"></div>
       </div>
     </section>
   </div>
@@ -1234,6 +937,5 @@ AB_LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free</pre>
     window.__VERSION__ = "{{ version }}";
   </script>
   <script src="/static/app.js?v={{ asset_version }}" defer></script>
-  <script src="/static/platform.js?v={{ asset_version }}" defer></script>
 </body>
 </html>

@@ -930,6 +930,12 @@ kbd,
   width: 100%;
 }
 
+@media (max-width: 768px) {
+  .btn {
+    min-height: 40px;
+  }
+}
+
 .text-button {
   display: inline-flex;
   align-items: center;

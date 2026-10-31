@@ -72,11 +72,23 @@ const SAMPLES = [
   },
   {
     label: "Country + research",
-    text: "Compare the population of Japan and find recent research papers on GraphRAG.",
+    text: "Compare the population of Japan and find recent research papers on knowledge graphs.",
   },
   {
     label: "Document QA",
     text: "According to the uploaded document, what is the main goal of the project?",
+  },
+  {
+    label: "Space + joke",
+    text: "What was the latest SpaceX launch, and tell me a random joke.",
+  },
+  {
+    label: "Cat fact + trivia",
+    text: "Give me a random cat fact and a trivia question.",
+  },
+  {
+    label: "Advice + activity",
+    text: "Give me some advice and suggest an activity to do when bored.",
   },
 ];
 
@@ -89,6 +101,14 @@ const CAPABILITY_ICONS = {
   SearchResearchPapers: "book",
   QueryStructuredData: "database",
   AnswerFromDocument: "file-text",
+  GetLatestLaunch: "cloud",
+  GetCatFact: "book",
+  GetDogImage: "image",
+  GetActivity: "activity",
+  GetAdvice: "help",
+  GetJoke: "help",
+  GetTrivia: "help",
+  GetNumberFact: "database",
 };
 
 const TRACE_GROUPS = [
@@ -98,8 +118,8 @@ const TRACE_GROUPS = [
     types: ["task_started", "task_decomposed"],
   },
   {
-    title: "GraphRAG retrieval",
-    description: "Candidate discovery and ontology filtering",
+    title: "Finding tools",
+    description: "Candidate discovery and type filtering",
     types: ["graphrag_shortlist", "ontology_filtered"],
   },
   {
@@ -133,9 +153,9 @@ const TASK_DRAFTS = {
   GeocodeLocation: "Find the coordinates of Islamabad.",
   GetWeatherForecast: "What is the temperature in Lahore tomorrow?",
   ConvertCurrency: "What is 200 USD in PKR?",
-  GetCountryFacts: "Compare the population of Japan and find recent research papers on GraphRAG.",
+  GetCountryFacts: "Compare the population of Japan and find recent research papers on knowledge graphs.",
   GetPublicHolidays: "Which public holidays does Pakistan have in 2026?",
-  SearchResearchPapers: "Find recent research papers on GraphRAG.",
+  SearchResearchPapers: "Find recent research papers on knowledge graphs.",
   QueryStructuredData: "How many students are enrolled in the BS Artificial Intelligence program?",
   AnswerFromDocument: "According to the uploaded document, what is the main goal of the project?",
 };
@@ -379,7 +399,9 @@ function openModal(id) {
   document.body.style.overflow = "hidden";
   if (id === "history-modal") loadHistory();
   if (id === "onboard-modal") resetOnboardState();
-  const focusTarget = modal.querySelector("input, textarea, select, button");
+  const focusTarget =
+    modal.querySelector("input, textarea, select, button:not(.window-close)") ||
+    modal.querySelector("button");
   if (focusTarget) window.setTimeout(() => focusTarget.focus(), 40);
 }
 
@@ -401,13 +423,15 @@ function closeAllModals() {
   }
 }
 
-function trapModalFocus(event) {
+function trapDialogFocus(event) {
   if (event.key !== "Tab") return;
   const modal = $(".modal.is-open");
-  if (!modal) return;
+  const palette = $("#command-palette.is-open");
+  const container = modal || palette;
+  if (!container) return;
   const focusable = $$(
     'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-    modal
+    container
   ).filter((element) => element.offsetParent !== null);
   if (!focusable.length) return;
   const first = focusable[0];
@@ -470,7 +494,7 @@ function loadOntologyData() {
       return data;
     })
     .catch((error) => {
-      toast(`Ontology unavailable: ${error.message}`, "bad");
+      toast(`Data types unavailable: ${error.message}`, "bad");
       return null;
     });
 }
@@ -644,8 +668,11 @@ function bindModals() {
     }
   });
   document.addEventListener("keydown", (event) => {
-    trapModalFocus(event);
-    if (event.key === "Escape") closeAllModals();
+    trapDialogFocus(event);
+    if (event.key === "Escape") {
+      closePalette();
+      closeAllModals();
+    }
   });
 }
 
@@ -729,7 +756,7 @@ function buildPaletteItems(query) {
   if (normalized) {
     groups.push(
       ...concepts.map((name) => ({
-        group: "Ontology",
+        group: "Concepts",
         title: name,
         subtitle: "Search the marketplace for this concept",
         icon: "layers",
@@ -952,8 +979,8 @@ function idleStepper() {
   const container = $("#execution-stepper");
   if (!container) return;
   const stages = [
-    ["GraphRAG Shortlisting", "Candidate discovery across the marketplace"],
-    ["Ontology Filtering", "Typed input/output compatibility gate"],
+    ["Finding tools", "Candidate discovery across the marketplace"],
+    ["Type checking", "Typed input/output compatibility gate"],
     ["Claim Verification", "Evidence labels before ranking"],
     ["Type-Checked Composition", "Link validation before execution"],
     ["Execution", "Provider calls with automatic recovery"],
@@ -985,8 +1012,8 @@ function loadingStepper() {
   const container = $("#execution-stepper");
   if (!container) return;
   const stages = [
-    ["GraphRAG Shortlisting", "Resolving capabilities and candidates", "running"],
-    ["Ontology Filtering", "Waiting for candidates", "queued"],
+    ["Finding tools", "Resolving capabilities and candidates", "running"],
+    ["Type checking", "Waiting for candidates", "queued"],
     ["Claim Verification", "Waiting for filtered tools", "queued"],
     ["Type-Checked Composition", "Waiting for verified tools", "queued"],
     ["Execution", "Provider calls queued", "queued"],
@@ -1023,7 +1050,7 @@ function stageData(result) {
     result.status === "completed" ? "completed" : result.status === "partial" ? "partial" : "failed";
   return [
     {
-      title: "GraphRAG Shortlisting",
+      title: "Finding tools",
       summary: candidates.length
         ? `${candidates.length} candidates across ${result.candidate_lists?.length || 0} capabilities`
         : "No candidates retrieved",
@@ -1031,7 +1058,7 @@ function stageData(result) {
       ms: result.metrics?.retrieval_ms,
     },
     {
-      title: "Ontology Filtering",
+      title: "Type checking",
       summary: `${eligible.length} / ${candidates.length} candidates passed typed filtering`,
       status: eligible.length ? "completed" : "failed",
       ms: null,
@@ -1356,7 +1383,7 @@ async function runTask(text) {
     toast(message, result.status === "completed" ? "ok" : result.status === "partial" ? "" : "bad");
     loadMonitoringData();
   } catch (error) {
-    toast(`Task failed: ${error.message}`, "bad");
+    toast(`We couldn't run that task: ${error.message}`, "bad");
     idleStepper();
   } finally {
     if (button) {
@@ -1372,7 +1399,7 @@ async function loadTask(taskId) {
     renderResult(result);
     loadProtocolMessages(result.task_id);
   } catch (error) {
-    toast(`Run unavailable: ${error.message}`, "bad");
+    toast(`We couldn't load that run: ${error.message}`, "bad");
   }
 }
 
@@ -1871,7 +1898,7 @@ async function runToolAuditor(toolId, mode) {
     output.classList.remove("pending");
     output.classList.add("bad");
     output.textContent = error.message;
-    toast(`Auditor ${mode} failed: ${error.message}`, "bad");
+    toast(`We couldn't run that check: ${error.message}`, "bad");
   } finally {
     buttons.forEach((button) => {
       button.disabled = false;
@@ -1926,8 +1953,8 @@ function openToolModal(toolId) {
         mapping
           ? `<p class="small muted" style="margin:0">Catalogue target <code>${esc(mapping.catalog_tool_id)}</code>. Verification always establishes a fresh baseline; fixture probes are labelled as fixtures.</p>
             <div class="auditor-block-actions">
-              <button class="btn small secondary" type="button" data-auditor-action="verify" data-auditor-tool="${esc(tool.id)}">${icon("shield")}Verify now</button>
-              <button class="btn small secondary" type="button" data-auditor-action="monitor" data-auditor-tool="${esc(tool.id)}">${icon("pulse")}Monitor only</button>
+              <button class="btn small secondary" type="button" data-auditor-action="verify" data-auditor-tool="${esc(tool.id)}">${icon("shield")}Run a check</button>
+              <button class="btn small secondary" type="button" data-auditor-action="monitor" data-auditor-tool="${esc(tool.id)}">${icon("pulse")}Check health</button>
               <label class="auditor-live-option"><input id="tool-force-live" type="checkbox"> Force live network</label>
             </div>
             <div class="inline-result hidden" id="tool-auditor-result" role="status" aria-live="polite"></div>`
@@ -1937,7 +1964,7 @@ function openToolModal(toolId) {
     ${
       fields.length
         ? `<details class="correction-details">
-            <summary>Suggest an ontology correction</summary>
+            <summary>Suggest a data type correction</summary>
             <form class="correction-form" id="tool-correction-form" data-tool-id="${esc(tool.id)}">
               <div class="form-grid">
                 <label>Field<select id="correction-field">${fields
@@ -1945,12 +1972,12 @@ function openToolModal(toolId) {
                     (entry, index) => `<option value="${esc(entry.name || entry.concept)}" data-concept="${esc(entry.concept || "")}" data-unit="${esc(entry.unit || "")}"${index === 0 ? " selected" : ""}>${esc(entry.direction)} · ${esc(entry.name || entry.concept)} (${esc(entry.concept || "untyped")})</option>`
                   )
                   .join("")}</select></label>
-                <label>Corrected ontology concept<select id="correction-concept" required>${ontologyConceptOptions(fields[0]?.concept, conceptFallback)}</select></label>
+                <label>Corrected data type<select id="correction-concept" required>${ontologyConceptOptions(fields[0]?.concept, conceptFallback)}</select></label>
                 <label>Unit<input id="correction-unit" value="${esc(fields[0]?.unit || "")}" placeholder="C"></label>
                 <label>Note<input id="correction-note" placeholder="Why should the mapping change?"></label>
               </div>
               <button class="btn secondary small" type="submit">Submit correction</button>
-              <div class="inline-result hidden" id="tool-correction-result"></div>
+              <div class="inline-result hidden" id="tool-correction-result" role="status" aria-live="polite"></div>
             </form>
           </details>`
         : `<p class="small muted" style="margin-top:12px">This tool has no typed fields to correct.</p>`
@@ -2025,7 +2052,7 @@ async function submitToolCorrection(event) {
       toast("Correction accepted and promoted into the graph.", "ok");
     } else if (staged) {
       output.classList.add("pending");
-      output.innerHTML = `${icon("clock")} <strong>Staged for review.</strong> ${esc(result.message || violations.join("; ") || "The Mapper will review this correction before promotion.")} <span class="mono">${esc(result.correction_id)}</span>`;
+      output.innerHTML = `${icon("clock")} <strong>Staged for review, waiting for the Mapper.</strong> ${esc(result.message || violations.join("; ") || "The Mapper will review this correction before promotion.")} <span class="mono">${esc(result.correction_id)}</span>`;
       toast("Correction staged for Mapper review.", "ok");
     } else {
       output.classList.add("bad");
@@ -2145,7 +2172,7 @@ async function submitListing(event) {
     setQueueRow("parser", "running", `Reading ${file.name}…`, "Running");
     await delay(360);
     setQueueRow("parser", "done", `Spec attached · ${file.name}`, "Complete");
-    setQueueRow("mapper", "running", "Resolving ontology types…", "Running");
+    setQueueRow("mapper", "running", "Resolving data types…", "Running");
     await delay(420);
     const capabilitySpec = state.ontology?.capabilities?.[capability] || { inputs: [], outputs: [] };
     const inputs = (capabilitySpec.inputs || []).map((concept) => ({
@@ -2219,7 +2246,7 @@ async function submitListing(event) {
       resultBox.classList.add("bad");
       resultBox.textContent = error.message;
     }
-    toast(`Listing failed: ${error.message}`, "bad");
+    toast(`We couldn't register that tool: ${error.message}`, "bad");
   } finally {
     if (submit) {
       submit.disabled = false;
@@ -2409,7 +2436,7 @@ async function uploadDocument(event) {
     output.classList.remove("hidden", "good");
     output.classList.add("bad");
     output.textContent = error.message;
-    toast(`Upload failed: ${error.message}`, "bad");
+    toast(`We couldn't upload that file: ${error.message}`, "bad");
   } finally {
     if (submit) {
       submit.disabled = false;
@@ -2527,7 +2554,7 @@ async function askDocument(event) {
       status.className = "badge contradicted";
       status.textContent = "Failed";
     }
-    toast(`Document question failed: ${error.message}`, "bad");
+    toast(`We couldn't answer that question: ${error.message}`, "bad");
   } finally {
     if (button) {
       button.disabled = !state.selectedDocument;
@@ -2687,7 +2714,7 @@ function renderMonitorMetrics() {
     <div class="metric-card">${icon("box")}<strong>${providers.length}</strong><label>Registered providers</label><small>${new Set(state.tools.map((tool) => tool.capability)).size} capabilities · ${esc(monitoring.mode || "sandbox")}</small></div>
     <div class="metric-card">${icon("shield")}<strong class="${open ? "alert" : ""}">${open}</strong><label>Open circuits</label><small>${breakers.length} links monitored</small></div>
     <div class="metric-card">${icon("alert")}<strong class="${alerts.length ? "alert" : ""}">${alerts.length}</strong><label>Drift alerts</label><small>Auditor ${esc(monitoring.auditor?.mode || "unknown")} · ${Number(monitoring.auditor?.mapped_tools || 0)}/${Number(monitoring.auditor?.catalog_tools || 0)} mapped</small></div>
-    <div class="metric-card">${icon("pulse")}<strong>${trust === null ? "—" : formatTrust(trust)}</strong><label>Average live trust</label><small>${observed.length ? `${observed.length} observed provider${observed.length === 1 ? "" : "s"} · posterior mean` : "No calls or probes recorded"}</small></div>`;
+    <div class="metric-card">${icon("pulse")}<strong>${trust === null ? "—" : formatTrust(trust)}</strong><label>Average live trust</label><small>${observed.length ? `${observed.length} observed provider${observed.length === 1 ? "" : "s"} · trust score` : "No calls or probes recorded"}</small></div>`;
 }
 
 function selectedMonitorEvent() {
@@ -2751,7 +2778,7 @@ function mappingForEvent(event) {
           <div class="mapping-panel"><span>Original capability</span><pre>${esc(`${event.data.step.capability}\n  inputs: bound\n  output: ${original?.name || event.data.step.substituted_from}`)}</pre></div>
           <div class="mapping-panel positive"><span>Substitute contract</span><pre>${esc(`tool: ${event.data.step.tool_id}\n  output: schema-valid\n  substituted_from: ${event.data.step.substituted_from}`)}</pre></div>
         </div>
-        <div class="mapping-foot">${icon("check")}Type-compatible substitute selected; no ontology repair required.</div>
+        <div class="mapping-foot">${icon("check")}Type-compatible substitute selected; no type repair required.</div>
       </div>`;
   }
   if (event.kind === "failure") {
@@ -2977,7 +3004,7 @@ function bindMonitor() {
       renderMonitor();
     } catch (error) {
       setControlResult("bad", esc(error.message));
-      toast(`Could not schedule failure: ${error.message}`, "bad");
+      toast(`We couldn't schedule that failure: ${error.message}`, "bad");
     }
   });
   $("#control-trip")?.addEventListener("click", async () => {
@@ -2995,7 +3022,7 @@ function bindMonitor() {
       renderMonitor();
     } catch (error) {
       setControlResult("bad", esc(error.message));
-      toast(`Could not trip breaker: ${error.message}`, "bad");
+      toast(`We couldn't pause that tool: ${error.message}`, "bad");
     }
   });
   $("#control-monitor")?.addEventListener("click", async () => {
@@ -3063,7 +3090,7 @@ function bindMonitor() {
       toast("Demo state reset. Task traces and documents were kept.", "ok");
     } catch (error) {
       setControlResult("bad", esc(error.message));
-      toast(`Could not reset the demo: ${error.message}`, "bad");
+      toast(`We couldn't reset the demo: ${error.message}`, "bad");
     } finally {
       resetButton.disabled = false;
       resetButton.innerHTML = `${icon("refresh")}<span>Reset demo data…</span>`;
@@ -3085,7 +3112,7 @@ function bindMonitor() {
       state.monitorSelected = state.monitorActivity.find((event) => event.kind === "drift")?.key || state.monitorSelected;
       renderMonitor();
     } catch (error) {
-      toast(`Could not inject drift: ${error.message}`, "bad");
+      toast(`We couldn't simulate that problem: ${error.message}`, "bad");
     } finally {
       if (button) button.disabled = false;
     }
@@ -3394,7 +3421,7 @@ function renderKnowledge() {
         ["Mappings", graph.mappings],
         ["Claims", graph.claims],
         ["Published", knowledge.tools?.length || 0],
-        ["Ontology", knowledge.concepts || 0],
+        ["Concepts", knowledge.concepts || 0],
       ]
         .map(
           ([label, value]) => `<div class="kg-stat"><span>${esc(label)}</span><strong>${formatNumber(value || 0, 0)}</strong></div>`
@@ -3683,7 +3710,7 @@ async function runTrustVerification(mode) {
     }
   } catch (error) {
     output.innerHTML = noticeMarkup("error", "Auditor request failed.", error.message);
-    toast(`Auditor request failed: ${error.message}`, "bad");
+    toast(`We couldn't run that check: ${error.message}`, "bad");
   } finally {
     buttons.forEach((button) => {
       if (button) button.disabled = !state.verifyTool;

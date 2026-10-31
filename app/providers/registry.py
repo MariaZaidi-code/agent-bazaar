@@ -15,6 +15,7 @@ from app.providers.currency import CurrencyProvider
 from app.providers.document_provider import DocumentQAProvider, DocumentStore
 from app.providers.geocoding import GeocodingProvider
 from app.providers.holidays import HolidaysProvider
+from app.providers.itunes import ITunesProvider
 from app.providers.mirror import MirrorProvider, make_mirror_spec
 from app.providers.news import HackerNewsProvider
 from app.providers.recipes import TheMealDBProvider
@@ -65,6 +66,7 @@ class ProviderRegistry:
             "university-db": UniversitySQLProvider,
             "mock-weather-fahrenheit": MockWeatherFahrenheitProvider,
             "hackernews": HackerNewsProvider,
+            "itunes": ITunesProvider,
             "coingecko": CoinGeckoProvider,
             "tvmaze": TVMazeProvider,
             "open-library": OpenLibraryProvider,
