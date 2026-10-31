@@ -3925,35 +3925,42 @@ function scrollToPageHash() {
 }
 
 async function bootstrap() {
-  setActivePage();
-  bindTheme();
-  bindSidebar();
-  bindModals();
-  bindPalette();
-  bindTrace();
-  bindDocuments();
-  bindOnboarding();
-  bindProtocol();
-  await Promise.allSettled([
-    loadHealth(),
-    loadToolsData(),
-    loadOntologyData(),
-    loadMonitoringData(),
-    loadAuditorData(),
-  ]);
-  if (state.page === "dashboard") initDashboard();
-  if (state.page === "marketplace") initMarketplace();
-  if (state.page === "monitor") {
-    await loadMonitorActivity();
-    initMonitor();
+  try {
+    setActivePage();
+    bindTheme();
+    bindSidebar();
+    bindModals();
+    bindPalette();
+    bindTrace();
+    bindDocuments();
+    bindOnboarding();
+    bindProtocol();
+    await Promise.allSettled([
+      loadHealth(),
+      loadToolsData(),
+      loadOntologyData(),
+      loadMonitoringData(),
+      loadAuditorData(),
+    ]);
+    if (state.page === "dashboard") initDashboard();
+    if (state.page === "marketplace") initMarketplace();
+    if (state.page === "monitor") {
+      await loadMonitorActivity();
+      initMonitor();
+    }
+    if (state.page === "library") {
+      await Promise.allSettled([loadKnowledgeData(), loadStagedData(), loadEvaluationsData()]);
+      initTrustCenter();
+    }
+    if (state.page === "documents") await initDocumentsPage();
+    if (state.page === "docs") scrollToPageHash();
+    if (state.page !== "dashboard") bindHistory();
+  } catch (error) {
+    const main = document.getElementById("console-content");
+    if (main) {
+      main.innerHTML = `<div class="empty-panel" role="alert"><svg><use href="#i-alert"></use></svg><strong>Something went wrong</strong><p>${esc(error?.message || "The page could not be loaded.")}</p><button class="btn primary" type="button" onclick="window.location.reload()">Refresh page</button></div>`;
+    }
   }
-  if (state.page === "library") {
-    await Promise.allSettled([loadKnowledgeData(), loadStagedData(), loadEvaluationsData()]);
-    initTrustCenter();
-  }
-  if (state.page === "documents") await initDocumentsPage();
-  if (state.page === "docs") scrollToPageHash();
-  if (state.page !== "dashboard") bindHistory();
 }
 
 document.addEventListener("DOMContentLoaded", bootstrap);

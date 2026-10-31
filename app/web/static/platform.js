@@ -1221,6 +1221,24 @@ function platformBindSwipe() {
   );
 }
 
+function platformShowErrorBoundary(error) {
+  const main = document.getElementById("console-content");
+  if (!main) return;
+  main.innerHTML = `<div class="error-boundary" role="alert">
+    <div class="empty-panel">
+      <svg><use href="#i-alert"></use></svg>
+      <strong>Something went wrong</strong>
+      <p>We could not finish loading this page. You can refresh or return to the start.</p>
+      <div class="task-actions">
+        <button class="btn primary" type="button" id="error-boundary-reload">Refresh page</button>
+        <a class="btn secondary" href="/dashboard">Go to start</a>
+      </div>
+      <details class="calc-details"><summary>Technical details</summary><div>${platformEsc(error?.message || error || "Unknown error")}</div></details>
+    </div>
+  </div>`;
+  document.getElementById("error-boundary-reload")?.addEventListener("click", () => window.location.reload());
+}
+
 function platformRouteFocus() {
   if (!document.referrer.startsWith(window.location.origin)) return;
   const main = document.getElementById("console-content");
@@ -1259,21 +1277,33 @@ function platformBindGlobal() {
   document.getElementById("mark-notifications-read")?.addEventListener("click", platformMarkNotificationsRead);
 }
 
+window.addEventListener("error", (event) => {
+  platformShowErrorBoundary(event.error || event.message);
+});
+
+window.addEventListener("unhandledrejection", (event) => {
+  platformShowErrorBoundary(event.reason);
+});
+
 async function platformBootstrap() {
-  platformBindGlobal();
-  await platformLoadMe();
-  platformRouteFocus();
-  const page = document.body.dataset.page;
-  if (page === "dashboard") {
-    await Promise.allSettled([platformLoadRecent(), platformRunFromQuery()]);
-    if (typeof state !== "undefined" && state.result) {
-      platformTaskActions();
-      platformRenderCalculation();
+  try {
+    platformBindGlobal();
+    await platformLoadMe();
+    platformRouteFocus();
+    const page = document.body.dataset.page;
+    if (page === "dashboard") {
+      await Promise.allSettled([platformLoadRecent(), platformRunFromQuery()]);
+      if (typeof state !== "undefined" && state.result) {
+        platformTaskActions();
+        platformRenderCalculation();
+      }
     }
+    if (page === "settings") await platformRenderSettingsPage();
+    if (page === "analytics") await platformRenderAnalytics();
+    if (page === "admin") await platformAdminLoad();
+  } catch (error) {
+    platformShowErrorBoundary(error);
   }
-  if (page === "settings") await platformRenderSettingsPage();
-  if (page === "analytics") await platformRenderAnalytics();
-  if (page === "admin") await platformAdminLoad();
 }
 
 document.addEventListener("DOMContentLoaded", platformBootstrap);
