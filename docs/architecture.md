@@ -59,6 +59,10 @@ FastAPI (app/main.py)
 | Trust registry | Beta score, history, replay, demotion | `app/core/trust_registry.py` |
 | Circuit breaker | Per Client-to-Provider link state machine | `app/core/circuit_breaker.py` |
 | Trace store | Durable events, task results and messages | `app/core/tracing.py` |
+| Observability | Request counts, status buckets, latency and correlation IDs | `app/core/observability.py` |
+| Webhooks | In-memory task-completion subscriptions and delivery attempts | `app/core/webhooks.py` |
+| Jobs | Bounded background executor for graph export and demo reset | `app/core/jobs.py` |
+| Versioning | SHA-256/byte fingerprints and dataset metadata for artifacts | `app/core/versioning.py` |
 | Interface | Task workbench, trace, Trust Center, monitoring, documents, in-app guide | `app/web/` |
 
 ## Client loop
@@ -122,6 +126,28 @@ own mock provider and rename drift detector when the tool is in the catalogue;
 for local-only tools it falls back to the documented injected alert. Drift
 alerts are converted into the application `DriftAlertMessage`, recorded as a
 contradiction in the trust registry, and surfaced by `/api/monitoring`.
+
+## Operations surface
+
+Every request passes through middleware that accepts or creates
+`X-Correlation-ID`, applies the per-client sliding-window rate limit, records
+status/latency metrics and returns `X-Response-Time-Ms`. Health, readiness,
+metrics and admin routes are exempt from rate limiting. The default limit is 120
+requests per 60 seconds and is controlled by `AB_RATE_LIMIT_ENABLED`,
+`AB_RATE_LIMIT_REQUESTS` and `AB_RATE_LIMIT_WINDOW_SECONDS`.
+
+Admin endpoints are under `/api/admin` and have no authentication in this local
+demo. They expose aggregate stats, artifact versions, webhook CRUD, the cache
+clear action, and background jobs. Jobs run in a two-worker in-process executor
+and support `export_graph` and `reset_demo`. Webhook subscriptions and job
+results are in-memory and reset with the process; the webhook secret is omitted
+from list/stats responses and sent only as `X-Agent-Bazaar-Secret` when a
+`task.completed` event is dispatched.
+
+`GET /api/admin/versions` builds the version manifest at request time. It
+includes the application version, knowledge backend, concept/tool counts,
+seeded-claims and drift metadata, and SHA-256 plus byte counts for the ontology,
+tool catalogue, datasets, graph and RDF ontology artifacts.
 
 ## Circuit breaker
 

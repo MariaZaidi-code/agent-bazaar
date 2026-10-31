@@ -1,17 +1,17 @@
 {
  "specs": 8,
  "tools_written": 8,
- "mappings": 512,
- "unmapped_fields": 449,
+ "mappings": 606,
+ "unmapped_fields": 359,
  "failures": [],
  "graph": {
   "tools": 8,
-  "concepts": 60,
-  "mappings": 467,
+  "concepts": 179,
+  "mappings": 557,
   "claims": 0
  },
- "graph_path": "C:\\Users\\Go\\agent-bazaar\\data\\out\\graph.ttl",
+ "graph_path": "C:\\Users\\HP\\Documents\\agent-bazaar\\data\\out\\graph.ttl",
  "vector_counts": {
-  "ontology_terms": 60
+  "ontology_terms": 179
  }
 }

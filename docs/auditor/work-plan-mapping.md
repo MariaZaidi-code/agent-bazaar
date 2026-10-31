@@ -16,7 +16,7 @@ This document maps the **Auditor and Monitoring Lead** work plan (10 weeks, Prop
 | Mock providers and control interface | Implemented for all listed behaviours | `mocks/provider.py`, `mocks/registry.py` |
 | Scheduler with shorter unstable intervals | Implemented, including manual trigger | `scheduler.py` |
 | TrustUpdate feed | Implemented with local ledger and optional HTTP registry | `trust.py` |
-| Seeded claim dataset and evaluations | Implemented: 60 claims, 20 drift scenarios, trust experiment | `data/`, `evaluation/` |
+| Seeded claim dataset and evaluations | Implemented: 105 claims, 40 drift scenarios, trust experiment | `data/`, `evaluation/` |
 | Documentation of messages, probes and mock controls | Implemented | `README.md`, `docs/`, `probes/definitions.py` |
 | Closed loop with Mapper, Client and registry | Contract-ready only | Out of this repository |
 | Independent blind labelling and Cohen's kappa | Not done | Shared team duty |
@@ -88,8 +88,8 @@ Status: **implemented standalone**. The long-running daemon is not part of the C
 
 ### 7. Evaluation reports
 
-- 60 claims: 32 real Verified, 8 real Supported, 10 seeded Contradicted, 10 seeded Unsupported.
-- 20 injected drift scenarios across eight behaviours.
+- 105 claims: 62 real/seeded Verified, 13 real/seeded Supported, 15 seeded Contradicted, 15 seeded Unsupported.
+- 40 injected drift scenarios across eight behaviours.
 - Rule-only versus full ablation with a garbage-200 focus.
 - 30 known-good variations for false alarms.
 - Trust experiment with 5 honest and 5 bad providers.

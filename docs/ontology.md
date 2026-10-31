@@ -2,9 +2,9 @@
 
 The ontology is the shared vocabulary used by the Mapper, the graph queries, and
 the Client's type checks. It has a small hand-written upper layer, a unit registry
-that is also emitted as RDF, and a curated domain layer of 77 concepts. The
-committed artifact `data/out/ontology.ttl` is the previous 60-concept offline
-seed build; rebuild it after the Sprint 1 additions. The LLM generation path can
+that is also emitted as RDF, and a curated seed domain layer of 179 concepts
+(206 in the local app fallback). The committed artifact `data/out/ontology.ttl`
+is rebuilt from that seed layer. The LLM generation path can
 extend the source layer when a provider key and cache are available.
 
 ## 1. Namespaces and IRIs
@@ -237,7 +237,7 @@ The generator is `src/agent_bazaar/ontology/generator.py`; the CLI is
    not intersect the seed vocabulary.
 4. **Fallback.** If the client is `None`, `use_llm` is false, the provider is
    `offline`, or there are no uncovered fields, `_seed_layer()` validates and
-   returns the 77 concepts with `source="seed"` (`generator.py:385-430`).
+   returns the 179 concepts with `source="seed"` (`generator.py:385-430`).
 5. **LLM batches.** Uncovered fields are chunked (default 40). The system prompt
    lists upper classes, properties, valid data types, and unit families/units.
    The model returns a `ProposalBatch`.

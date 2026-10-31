@@ -49,14 +49,14 @@ a different schema.
 | SHACL shapes and rule checks | `src/agent_bazaar/ontology/shapes.ttl`, `validator.py` | Shapes plus duplicate-label, unit-family, and mapping-unit checks |
 | Ontology artifact | `data/out/ontology.ttl` | Offline seed build; upper + units + 60 concepts |
 | RDF graph schema and store | `src/agent_bazaar/kg/store.py`, `queries.py` | Validated write, save/load, query helpers |
-| Seed graph artifact | `data/out/graph.ttl` | 8 tools written, 512 mapped field results, 467 distinct mapping nodes, 60 concepts |
+| Seed graph artifact | `data/out/graph.ttl` | 8 tools written, 512 mapped field results, 557 distinct mapping nodes, 60 concepts |
 | Vector index | `src/agent_bazaar/vec/` | Three collections; persisted seed run has 60 ontology terms and 8 tool descriptions |
 | Ingestion utility | `src/agent_bazaar/ingestion/` | OpenAPI, PDF, DOCX, text; normalized `NormalizedSpec` |
 | Mapper agent | `src/agent_bazaar/mapper/` | MapRequest/MapResult, repair, staging, drift, memory |
 | Evaluation template | `data/eval/mapping_gold.jsonl` | 916 unlabelled fields from the 8 seed tools, no gold labels yet |
 | Tests | `tests/` | 89 tests pass on this branch |
 
-The difference between 512 mapped field results and 467 distinct mapping nodes is
+The difference between 512 mapped field results and 557 distinct mapping nodes is
 explained in [graph-schema.md](graph-schema.md): the mapping IRI is a deterministic
 hash of `(tool_id, field_path, direction)`, so repeated identical mappings collapse
 to one RDF node.

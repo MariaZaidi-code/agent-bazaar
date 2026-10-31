@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+import logging
+import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
-from fastapi.responses import HTMLResponse, Response
+from fastapi import BackgroundTasks, FastAPI, File, HTTPException, Query, Request, UploadFile
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
@@ -14,6 +16,8 @@ from starlette.concurrency import run_in_threadpool
 
 from app import __version__
 from app.config import BASE_DIR, Settings
+from app.core.observability import RequestMetrics, SlidingWindowRateLimiter
+from app.core.versioning import build_version_manifest
 from app.schemas import (
     CorrectionRequest,
     HealthResponse,
@@ -40,11 +44,33 @@ class FailNextInput(BaseModel):
     times: int = Field(default=1, ge=1, le=10)
 
 
+class WebhookInput(BaseModel):
+    url: str = Field(min_length=8, max_length=500)
+    events: list[str] = Field(default_factory=lambda: ["task.completed"])
+    secret: str = Field(default="", max_length=256)
+
+
+class JobInput(BaseModel):
+    kind: str = Field(pattern="^(export_graph|export_graph_jsonld|reset_demo)$")
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
+    resolved_settings = settings or Settings()
+    request_metrics = RequestMetrics()
+    rate_limiter = SlidingWindowRateLimiter(
+        limit=resolved_settings.rate_limit_requests,
+        window_seconds=resolved_settings.rate_limit_window_seconds,
+    )
+    request_logger = logging.getLogger("agent_bazaar.http")
+
     @asynccontextmanager
     async def lifespan(application: FastAPI):
-        application.state.services = build_services(settings)
-        yield
+        application.state.services = build_services(resolved_settings)
+        application.state.started_at = time.time()
+        try:
+            yield
+        finally:
+            application.state.services.shutdown()
 
     application = FastAPI(
         title="Agent Bazaar",
@@ -56,6 +82,54 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         lifespan=lifespan,
     )
     application.mount("/static", StaticFiles(directory=str(WEB_DIR / "static")), name="static")
+
+    @application.middleware("http")
+    async def observe_request(request: Request, call_next):
+        path = request.url.path
+        correlation_id = request.headers.get("X-Correlation-ID") or new_id("req")
+        request.state.correlation_id = correlation_id
+        client_key = request.client.host if request.client else "anonymous"
+        exempt = path in {"/api/health", "/api/health/ready", "/api/metrics"}
+        exempt = exempt or path.startswith("/api/admin/")
+        if resolved_settings.rate_limit_enabled and not exempt:
+            allowed, retry_after = rate_limiter.allow(client_key)
+            if not allowed:
+                request_metrics.record(request.method, path, 429, 0.0)
+                return JSONResponse(
+                    status_code=429,
+                    content={"detail": "Too many requests", "retry_after_seconds": round(retry_after, 2)},
+                    headers={
+                        "X-Correlation-ID": correlation_id,
+                        "Retry-After": str(max(1, int(retry_after + 0.999))),
+                        "X-RateLimit-Limit": str(resolved_settings.rate_limit_requests),
+                    },
+                )
+        started = time.perf_counter()
+        try:
+            response = await call_next(request)
+        except Exception:
+            duration_ms = (time.perf_counter() - started) * 1000.0
+            request_metrics.record(request.method, path, 500, duration_ms)
+            request_logger.exception(
+                json.dumps({"correlation_id": correlation_id, "method": request.method, "path": path})
+            )
+            raise
+        duration_ms = (time.perf_counter() - started) * 1000.0
+        request_metrics.record(request.method, path, response.status_code, duration_ms)
+        response.headers["X-Correlation-ID"] = correlation_id
+        response.headers["X-Response-Time-Ms"] = f"{duration_ms:.3f}"
+        request_logger.info(
+            json.dumps(
+                {
+                    "correlation_id": correlation_id,
+                    "method": request.method,
+                    "path": path,
+                    "status": response.status_code,
+                    "duration_ms": round(duration_ms, 3),
+                }
+            )
+        )
+        return response
 
     def services(request: Request) -> AppServices:
         return request.app.state.services
@@ -155,7 +229,103 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "# TYPE agent_bazaar_breakers_open gauge",
             f"agent_bazaar_breakers_open {sum(1 for item in state.breakers.snapshot() if item.get('state') == 'open')}",
         ]
+        request_snapshot = request_metrics.snapshot()
+        lines.extend(
+            [
+                "# HELP agent_bazaar_http_requests_total Number of HTTP requests served.",
+                "# TYPE agent_bazaar_http_requests_total counter",
+                f"agent_bazaar_http_requests_total {request_snapshot['requests']}",
+                "# HELP agent_bazaar_http_errors_total Number of HTTP 5xx responses.",
+                "# TYPE agent_bazaar_http_errors_total counter",
+                f"agent_bazaar_http_errors_total {request_snapshot['errors']}",
+            ]
+        )
         return Response("\n".join(lines) + "\n", media_type="text/plain; version=0.0.4; charset=utf-8")
+
+    @application.get("/api/admin/stats")
+    async def admin_stats(request: Request) -> dict[str, Any]:
+        state = services(request)
+        started_at = float(getattr(request.app.state, "started_at", time.time()))
+        return {
+            "version": __version__,
+            "uptime_seconds": round(time.time() - started_at, 3),
+            "mode": "offline" if state.settings.offline_mode else "live",
+            "requests": request_metrics.snapshot(),
+            "jobs": state.jobs.list(limit=20),
+            "webhooks": state.webhooks.list(),
+            "knowledge_available": state.knowledge is not None,
+            "rate_limit": {
+                "enabled": state.settings.rate_limit_enabled,
+                "requests": state.settings.rate_limit_requests,
+                "window_seconds": state.settings.rate_limit_window_seconds,
+            },
+        }
+
+    @application.get("/api/admin/versions")
+    async def admin_versions(request: Request) -> dict[str, Any]:
+        state = services(request)
+        return build_version_manifest(
+            state.settings,
+            ontology_concepts=len(state.ontology.concepts),
+            graph_tools=len(state.graph.all()),
+        )
+
+    @application.post("/api/admin/cache/clear")
+    async def admin_clear_cache(request: Request) -> dict[str, Any]:
+        services(request).cache.clear()
+        return {"status": "cleared"}
+
+    @application.get("/api/admin/webhooks")
+    async def admin_list_webhooks(request: Request) -> dict[str, Any]:
+        return {"webhooks": services(request).webhooks.list()}
+
+    @application.post("/api/admin/webhooks")
+    async def admin_create_webhook(payload: WebhookInput, request: Request) -> dict[str, Any]:
+        try:
+            webhook = services(request).webhooks.register(
+                payload.url,
+                events=payload.events,
+                secret=payload.secret,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        return {"webhook": webhook}
+
+    @application.delete("/api/admin/webhooks/{webhook_id}")
+    async def admin_delete_webhook(webhook_id: str, request: Request) -> dict[str, Any]:
+        if not services(request).webhooks.delete(webhook_id):
+            raise HTTPException(status_code=404, detail="Webhook not found")
+        return {"deleted": True, "webhook_id": webhook_id}
+
+    @application.get("/api/admin/jobs")
+    async def admin_list_jobs(request: Request, limit: int = Query(default=20, ge=1, le=100)) -> dict[str, Any]:
+        return {"jobs": services(request).jobs.list(limit=limit)}
+
+    @application.get("/api/admin/jobs/{job_id}")
+    async def admin_get_job(job_id: str, request: Request) -> dict[str, Any]:
+        job = services(request).jobs.get(job_id)
+        if job is None:
+            raise HTTPException(status_code=404, detail="Job not found")
+        return {"job": job}
+
+    @application.post("/api/admin/jobs")
+    async def admin_submit_job(payload: JobInput, request: Request) -> dict[str, Any]:
+        state = services(request)
+        functions = {
+            "export_graph": state.export_graph,
+            "export_graph_jsonld": state.export_graph_jsonld,
+            "reset_demo": state.reset_demo,
+        }
+        job = state.jobs.submit(payload.kind, functions[payload.kind])
+        return {"job": job}
+
+    @application.get("/api/admin/graph.jsonld")
+    async def admin_export_graph_jsonld(request: Request) -> dict[str, Any]:
+        state = services(request)
+        exported = state.export_graph_jsonld()
+        if not exported:
+            raise HTTPException(status_code=503, detail="JSON-LD export unavailable")
+        return {"exported": True, "path": str(state.settings.runtime_dir / "knowledge_graph.jsonld")}
 
     @application.get("/api/ontology")
     async def ontology(request: Request) -> dict[str, Any]:
@@ -212,11 +382,26 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return {"tools": payload, "count": len(payload)}
 
     @application.post("/api/tasks", response_model=TaskResult)
-    async def run_task(payload: TaskInput, request: Request) -> TaskResult:
+    async def run_task(
+        payload: TaskInput,
+        request: Request,
+        background_tasks: BackgroundTasks,
+    ) -> TaskResult:
         state = services(request)
         if payload.document_id and state.providers.document_store.get(payload.document_id) is None:
             raise HTTPException(status_code=404, detail="Document not found")
-        return await state.client.run(payload.task, document_id=payload.document_id)
+        result = await state.client.run(payload.task, document_id=payload.document_id)
+        background_tasks.add_task(
+            state.webhooks.dispatch,
+            "task.completed",
+            {
+                "task_id": result.task_id,
+                "status": result.status.value,
+                "answer": result.answer,
+                "correlation_id": getattr(request.state, "correlation_id", ""),
+            },
+        )
+        return result
 
     @application.get("/api/tasks/recent")
     async def recent_tasks(request: Request, limit: int = Query(default=15, ge=1, le=100)):

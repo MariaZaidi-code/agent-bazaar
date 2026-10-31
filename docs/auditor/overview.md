@@ -30,8 +30,8 @@ The Auditor produces evidence for each claim and turns drift into machine-readab
 - **Mock providers** for normal, rename, remove, type change, unit change, garbage `200`, outage, flapping, dishonest, and exaggerated-claim behaviors.
 - **Scheduler** with normal and unstable re-probe intervals and persistence.
 - **Artifact store** for probes, verifications, drift alerts, trust updates, and reports.
-- **HTTP API** for verify, monitor, probe, trust, and mock control.
-- **Reproducible evaluation:** 60 claims, 20 injected drift scenarios, rule-only versus full comparison, false alarms, trust experiment, and cost notes.
+- **HTTP API** for single and batched verify/monitor, probe, trust, and mock control.
+- **Reproducible evaluation:** 105 claims, 40 injected drift scenarios, rule-only versus full comparison, false alarms, trust experiment, and cost notes.
 
 ## Quickstart on Windows
 
@@ -93,10 +93,10 @@ agent-bazaar-auditor evaluate
 
 | Area | Result |
 | --- | --- |
-| Claims | 60/60 correct; accuracy 1.000; macro F1 1.000 |
-| Claim coverage | 76.67% of all claims; 100% of probeable claims |
-| Drift, rule-only | 17/20 scenarios detected |
-| Drift, rule + embedding | 20/20 scenarios detected; correct detector 20/20 |
+| Claims | 105/105 correct; accuracy 1.000; macro F1 1.000 |
+| Claim coverage | 78.10% of all claims; 100% of probeable claims |
+| Drift, rule-only | 34/40 scenarios detected |
+| Drift, rule + embedding | 40/40 scenarios detected; correct detector 40/40 |
 | Drift false alarms | 0/30 known-good variations in both modes |
 | Trust experiment | 5/5 bad providers demoted; 0/5 honest providers demoted |
 
@@ -234,7 +234,7 @@ These are the hand-off points to the Mapper, Client, and trust registry. Re-mapp
 
 ## Limitations
 
-- The 60-claim set is curated and the full score reflects that curation; real-world precision and recall must be measured on a larger, independently labelled sample.
+- The 105-claim set is curated and the full score reflects that curation; real-world precision and recall must be measured on a larger, independently labelled sample.
 - Drift is mostly evaluated on controlled injected changes because real keyless APIs rarely change inside a short project window.
 - The embedding threshold is tuned on 30 synthetic known-good variations. Baseline collection should continue across days before a production threshold is frozen.
 - The hashing embedder is deterministic and dependency-free, not a semantic transformer. The interface allows a stronger embedder to be substituted.

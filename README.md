@@ -73,6 +73,8 @@ Auditor and monitoring:
 - **Resilience** with backup mirrors for six live providers, an adversarial Fahrenheit weather mock, trust-weighted ranking, a three-state circuit breaker and circuit-breaker substitution.
 - **Trust registry** with Beta-style scoring, signal history, contradiction penalties, demotion and replay verification.
 - **Trace viewer** persisting every decision, provider call, verification result and recovery event in SQLite.
+- **Operations platform** with correlation IDs, request metrics, sliding-window rate limiting,
+  webhook subscriptions, background jobs and admin stats/version-manifest endpoints.
 - **Responsive web interface** with six page routes: the workflow dashboard, the service
   marketplace, the self-healing monitor, the Documents workspace at `/documents`, the Trust
   Center at `/library` and the in-app Documentation guide at `/docs`. It supports running
@@ -81,7 +83,7 @@ Auditor and monitoring:
   Trust Center's Auditor evidence and trust replay, using a keyboard command palette, staging
   corrections and injecting demo failures.
 - **Evaluation suite** with 50 matching tasks, 15 chain tasks, B1/B2 baseline comparison, 7 substitution cases, 6 trust scenarios, a seven-configuration ablation and a 48-task free-first ranking suite.
-- **284 automated tests** across the merged application, knowledge-layer, Auditor and bridge suites, including 23 Sprint 1 provider, planner and client tests and 43 integration tests for the application/knowledge-layer bridge, plus Ruff checks and GitHub Actions CI.
+- **289 automated tests** across the merged application, knowledge-layer, Auditor and bridge suites, including 23 Sprint 1 provider, planner and client tests and 43 integration tests for the application/knowledge-layer bridge, plus Ruff checks and GitHub Actions CI.
 
 ### Auditor and Monitoring
 
@@ -90,13 +92,13 @@ Auditor and monitoring:
 - **Drift monitoring** that combines rule checks with schema embeddings and emits field-level `DriftAlert` messages.
 - **Trust updates** through a Beta-style ledger and an optional HTTP registry feed.
 - **Mock providers** for rename, removal, type change, unit change, garbage `200`, outage, flapping and dishonest responses.
-- **Reproducible evaluation** with 60 labelled claims, 20 injected drift scenarios, false-alarm controls and a dishonest-provider trust experiment.
+- **Reproducible evaluation** with 105 labelled claims, 40 injected drift scenarios, false-alarm controls and a dishonest-provider trust experiment.
 - **Application integration** through `AuditorBridge`: the six catalogue tools used by the app are verified by the real Auditor, the local SQL/document/mock providers keep the seeded fallback, and `/api/auditor/*` exposes catalog, verify, monitor and trust data.
-- **32 Auditor tests** in addition to the application and knowledge-layer suites.
+- **34 Auditor tests** in addition to the application and knowledge-layer suites.
 
 ### Knowledge layer and Mapper
 
-- **Ontology** with a frozen 12-class upper ontology, a curated domain layer of 77 concepts, unit families with compatibility rules, and SHACL shapes for validation.
+- **Ontology** with a frozen 12-class upper ontology, a curated seed domain layer of 179 concepts (206 in the local app fallback), unit families with compatibility rules, and SHACL shapes for validation.
 - **RDF knowledge graph** store with loaders and query helpers for tools, concepts, units, capabilities and mappings.
 - **API sourcing** with a pluggable source protocol, the APIs.guru directory and a local upload source, a manifest v2 that carries the commercial and access facts of every document, a refresh diff, and a curated override file that wins over the extraction rules.
 - **Quality profiles** with one `ab:Offering` node per tool: pricing tier, access requirement, price, rate limit, probe budget, licence, terms URL, documentation quality, mapping coverage, rating and the evidence behind each fact.
@@ -126,9 +128,9 @@ python scripts/demo_mapper.py
 python -m pytest
 ```
 
-`python -m pytest` runs the whole merged suite: the 130 knowledge-layer tests, the 73
-application tests, the 43 integration tests, the 32 Auditor tests and the 6 Auditor bridge
-tests, 284 in total.
+`python -m pytest` runs the whole merged suite: the 130 knowledge-layer tests, the 76
+application tests, the 43 integration tests, the 34 Auditor tests and the 6 Auditor bridge
+tests, 289 in total.
 
 This uses the committed 8-spec seed corpus and the deterministic hashing
 embedder. No API key is needed. To fetch the full corpus and use the embedding
@@ -378,18 +380,19 @@ config/          settings.example.yaml; settings.yaml is gitignored
 run.py           development entry point
 ```
 
-Committed artifacts: `data/out/ontology.ttl` (upper ontology, units and the 60 concepts
-from the previous seed build), `data/out/graph.ttl` (8 tools, 467 mapping nodes),
+Committed artifacts: `data/out/ontology.ttl` (upper ontology, units and the 179-concept
+seed layer), `data/out/graph.ttl` (8 tools, 557 mapping nodes),
 `data/out/ontology_llm_demo.ttl` and the other demo/domain TTLs, `data/out/logs/` build
 summaries, `data/eval/mapping_gold.jsonl`, the 8-spec seed corpus, `reports/*.json` and the
-documents under `docs/`. The Sprint 1 source seed adds 17 concepts; rebuild the published
-artifacts with `scripts/build_ontology.py --offline` and `scripts/seed_graph.py --offline`
-before republishing them. Until then the ten new tools are served from the local catalogue.
+documents under `docs/`. The ontology artifact is rebuilt from the 179-concept seed. The
+published graph still comes from the 8-spec seed; rebuild it with
+`scripts/seed_graph.py --offline` before republishing. Until then the ten Sprint 1 tools
+are served from the local catalogue.
 
 The Mapper writes validated mappings and uses a bounded repair loop; corrections
 are staged before promotion. See the Mapper protocol and decisions documents for
-current limitations, including the difference between 512 mapping results and
-467 distinct mapping nodes.
+current limitations, including the difference between 606 mapping results and
+557 distinct mapping nodes.
 
 ## Integration between the knowledge layer and the app
 
@@ -421,8 +424,8 @@ whole application from the knowledge layer, and `local` never loads it.
 `GET /api/knowledge` reports the RDF layer that is loaded: the graph counts, the number
 of concepts, the tools and the paths of the graph and ontology artifacts.
 
-`python -m pytest` runs 284 tests across the knowledge layer, application, integration,
-Auditor and bridge suites. All 284 pass on the current checkout. The app-side adapter
+`python -m pytest` runs 289 tests across the knowledge layer, application, integration,
+Auditor and bridge suites. All 289 pass on the current checkout. The app-side adapter
 boundaries and the method-level contracts are documented in
 [docs/integration.md](docs/integration.md).
 
@@ -508,7 +511,7 @@ python scripts\run_eval.py --template
 | Committed seed specifications | 8 | `data/specs/seed/` |
 | Tools written | 8 | `data/out/logs/seed_graph.json` |
 | Mapping results | 512 | `data/out/logs/seed_graph.json` |
-| Distinct graph mapping nodes | 467 | `data/out/graph.ttl` |
+| Distinct graph mapping nodes | 557 | `data/out/graph.ttl` |
 | Unmapped fields | 449 | `data/out/logs/seed_graph.json` |
 | Frozen domain concepts | 60 | `data/out/ontology.ttl` |
 | Mapping evaluation template rows | 916 | `data/eval/mapping_gold.jsonl` |
@@ -535,8 +538,8 @@ yet.
 .\.venv\Scripts\ruff.exe check app src tests run.py
 ```
 
-The merged suite holds 284 tests: 130 knowledge-layer tests, 73 application tests, 43
-integration tests, 32 Auditor tests and 6 Auditor bridge tests. The application tests cover trust updates and replay, breaker
+The merged suite holds 289 tests: 130 knowledge-layer tests, 76 application tests, 43
+integration tests, 34 Auditor tests and 6 Auditor bridge tests. The application tests cover trust updates and replay, breaker
 transitions, ontology links, graph substitutes, all example chains, SQL, document QA,
 injected failure substitution, breaker routing, mapper corrections, baselines, the
 ranking policy and the HTTP API. The knowledge-layer tests cover the ontology generator, the RDF store and
@@ -562,6 +565,13 @@ Swagger page.
 | `GET /api/auditor/trust` | Auditor trust leaderboard and feed summary |
 | `POST /api/auditor/verify/{tool}` | Verify one catalogue tool (add `?live=true` for a live probe) |
 | `POST /api/auditor/monitor/{tool}` | Re-probe one catalogue tool and return drift alerts |
+| `GET /api/admin/stats` | Runtime stats, request metrics, jobs, webhooks and rate-limit state |
+| `GET /api/admin/versions` | App/dataset/artifact version manifest with SHA-256 fingerprints |
+| `GET /api/admin/jobs` | Background jobs and their results |
+| `POST /api/admin/jobs` | Queue an `export_graph` or `reset_demo` job |
+| `GET /api/admin/webhooks` | List webhook subscriptions |
+| `POST /api/admin/webhooks` | Register a webhook subscription |
+| `DELETE /api/admin/webhooks/{id}` | Remove a webhook subscription |
 | `GET /api/trust/{provider_id}` | Trust state, history and replay |
 | `GET /api/tools` | Tool catalogue with trust and validation |
 | `GET /api/ontology` | Concepts, units and capabilities |
@@ -581,6 +591,12 @@ Swagger page.
 | `GET /api/evaluations` | Evaluation reports |
 
 `POST /api/tasks` returns 404 when `document_id` does not match a stored document.
+
+API responses include `X-Correlation-ID` and `X-Response-Time-Ms`. Non-admin requests are
+limited by a sliding-window limiter (`AB_RATE_LIMIT_REQUESTS`,
+`AB_RATE_LIMIT_WINDOW_SECONDS`) and return `429` with `Retry-After` when exhausted. The
+standalone Auditor server adds `POST /verify/batch` and `POST /monitor/batch` with a
+50-item cap and per-item error reporting.
 
 ## Integration hand-off
 

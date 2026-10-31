@@ -1,19 +1,20 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "name": "Agent Bazaar claim-verification evaluation set",
-  "version": "1.0",
+  "version": "2.0",
   "created_for": "Auditor and Monitoring Lead (Qaim Hussnain)",
   "notes": [
-    "40 real claims and 20 seeded claims.",
+    "105 labelled claims: 40 real claims and 65 seeded claims.",
+    "Extra seeded variants reuse frozen documentation and controlled probe behaviours to exercise the decision table at scale.",
     "Seeded claims measure detection ability, not real-world prevalence.",
     "Documentation overrides are frozen for reproducibility.",
     "Outage items produce probe-error evidence; the decision table labels them Supported when docs support the claim."
   ],
   "counts": {
-    "Verified": 32,
-    "Supported": 8,
-    "Contradicted": 10,
-    "Unsupported": 10
+    "Verified": 62,
+    "Supported": 13,
+    "Contradicted": 15,
+    "Unsupported": 15
   },
   "items": [
     {
@@ -1711,6 +1712,1370 @@
       "seeded": true,
       "focus": "seeded_no_evidence",
       "rationale": "Uptime is not testable from a single probe and no evidence is supplied."
+    },
+    {
+      "id": "cv-extra-verified-01",
+      "tool_id": "open-meteo",
+      "claim": {
+        "id": "3f3c4f1de34f",
+        "tool_id": "open-meteo",
+        "text": "Returns temperature in degrees Celsius.",
+        "claim_type": "unit",
+        "field_path": "current.temperature_2m",
+        "expected_type": "number",
+        "expected_unit": "celsius",
+        "expected_min": -90,
+        "expected_max": 60,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns temperature in degrees Celsius.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "61759eb13ddc"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real unit claim; fixture probe agrees."
+    },
+    {
+      "id": "cv-extra-verified-02",
+      "tool_id": "open-meteo",
+      "claim": {
+        "id": "82ec13630e11",
+        "tool_id": "open-meteo",
+        "text": "No API key is required.",
+        "claim_type": "authentication",
+        "field_path": null,
+        "expected_type": "boolean",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "No API key is required.",
+        "ground_truth_label": null,
+        "metadata": {
+          "expects_key": false,
+          "seeded": true,
+          "variant_of": "9f7258cdeb71"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-03",
+      "tool_id": "open-meteo",
+      "claim": {
+        "id": "af550cb6a247",
+        "tool_id": "open-meteo",
+        "text": "Supports forecasts up to 16 days.",
+        "claim_type": "limit",
+        "field_path": null,
+        "expected_type": "number",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": 16,
+        "probeable": true,
+        "source_text": "Supports forecasts up to 16 days.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "6d14b5e61e58"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-04",
+      "tool_id": "open-meteo",
+      "claim": {
+        "id": "2a41a9d35fd0",
+        "tool_id": "open-meteo",
+        "text": "Returns wind speed in km/h.",
+        "claim_type": "unit",
+        "field_path": "current.wind_speed_10m",
+        "expected_type": "number",
+        "expected_unit": "km",
+        "expected_min": 0,
+        "expected_max": 500,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns wind speed in km/h.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "95d0ce9af742"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-05",
+      "tool_id": "frankfurter",
+      "claim": {
+        "id": "7171bc8adc23",
+        "tool_id": "frankfurter",
+        "text": "Returns exchange rates as a JSON object.",
+        "claim_type": "output_field",
+        "field_path": "rates",
+        "expected_type": "object",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns exchange rates as a JSON object.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "bb858cac0d1a"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real response-shape claim."
+    },
+    {
+      "id": "cv-extra-verified-06",
+      "tool_id": "frankfurter",
+      "claim": {
+        "id": "a26134370c6e",
+        "tool_id": "frankfurter",
+        "text": "No API key is required.",
+        "claim_type": "authentication",
+        "field_path": null,
+        "expected_type": "boolean",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "No API key is required.",
+        "ground_truth_label": null,
+        "metadata": {
+          "expects_key": false,
+          "seeded": true,
+          "variant_of": "0dde82d62e88"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-07",
+      "tool_id": "nominatim",
+      "claim": {
+        "id": "a731226a72d1",
+        "tool_id": "nominatim",
+        "text": "Returns geocoding results as a JSON array.",
+        "claim_type": "output_field",
+        "field_path": "",
+        "expected_type": "array",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns geocoding results as a JSON array.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "22d7bcd49681"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-08",
+      "tool_id": "nominatim",
+      "claim": {
+        "id": "284b3b8fdc25",
+        "tool_id": "nominatim",
+        "text": "Returns latitude and longitude as strings.",
+        "claim_type": "output_field",
+        "field_path": "lat",
+        "expected_type": "string",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns latitude and longitude as strings.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "0ecbf0269f4f"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-09",
+      "tool_id": "rest-countries",
+      "claim": {
+        "id": "fae95dab1913",
+        "tool_id": "rest-countries",
+        "text": "Returns the common country name.",
+        "claim_type": "output_field",
+        "field_path": "name.common",
+        "expected_type": "string",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns the common country name.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "57d7a3361d83"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-10",
+      "tool_id": "rest-countries",
+      "claim": {
+        "id": "08e7060b9302",
+        "tool_id": "rest-countries",
+        "text": "Returns country population as a number.",
+        "claim_type": "output_field",
+        "field_path": "population",
+        "expected_type": "number",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns country population as a number.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "c9253ce1108b"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-11",
+      "tool_id": "nager-date",
+      "claim": {
+        "id": "02fb6f7b8ab4",
+        "tool_id": "nager-date",
+        "text": "Returns public holidays as a JSON array.",
+        "claim_type": "output_field",
+        "field_path": "",
+        "expected_type": "array",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns public holidays as a JSON array.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "3ca0964f01f9"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-12",
+      "tool_id": "nager-date",
+      "claim": {
+        "id": "3590ce69cc6d",
+        "tool_id": "nager-date",
+        "text": "Each holiday includes a date field.",
+        "claim_type": "output_field",
+        "field_path": "date",
+        "expected_type": "string",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Each holiday includes a date field.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "a7b4400d7638"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-13",
+      "tool_id": "arxiv",
+      "claim": {
+        "id": "588839884a7a",
+        "tool_id": "arxiv",
+        "text": "Returns an Atom feed with entry elements.",
+        "claim_type": "output_field",
+        "field_path": "",
+        "expected_type": "xml",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns an Atom feed with entry elements.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "61db25052b12"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-14",
+      "tool_id": "arxiv",
+      "claim": {
+        "id": "a99ed9864664",
+        "tool_id": "arxiv",
+        "text": "Each entry contains a title.",
+        "claim_type": "output_field",
+        "field_path": "title",
+        "expected_type": "string",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Each entry contains a title.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "cbd3df9374cd"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-15",
+      "tool_id": "open-library",
+      "claim": {
+        "id": "f24586469a09",
+        "tool_id": "open-library",
+        "text": "Returns search results in a docs array.",
+        "claim_type": "output_field",
+        "field_path": "docs",
+        "expected_type": "array",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns search results in a docs array.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "a8b05cdc5c2d"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-16",
+      "tool_id": "open-library",
+      "claim": {
+        "id": "2263fce0fd84",
+        "tool_id": "open-library",
+        "text": "Each doc contains a title.",
+        "claim_type": "output_field",
+        "field_path": "title",
+        "expected_type": "string",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Each doc contains a title.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "62a5f124f1de"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-17",
+      "tool_id": "dog-ceo",
+      "claim": {
+        "id": "f3576bea9c65",
+        "tool_id": "dog-ceo",
+        "text": "Returns an image URL in the message field.",
+        "claim_type": "output_field",
+        "field_path": "message",
+        "expected_type": "string",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns an image URL in the message field.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "bc5e15aadfcc"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-18",
+      "tool_id": "dog-ceo",
+      "claim": {
+        "id": "f607169b5c3c",
+        "tool_id": "dog-ceo",
+        "text": "Returns status success.",
+        "claim_type": "output_field",
+        "field_path": "status",
+        "expected_type": "string",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns status success.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "7de8cb3562ae"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-19",
+      "tool_id": "cat-fact",
+      "claim": {
+        "id": "890f6a980b35",
+        "tool_id": "cat-fact",
+        "text": "Returns a fact string.",
+        "claim_type": "output_field",
+        "field_path": "fact",
+        "expected_type": "string",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns a fact string.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "e6b72c1ed7fc"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-20",
+      "tool_id": "cat-fact",
+      "claim": {
+        "id": "0fe7fdb77eb7",
+        "tool_id": "cat-fact",
+        "text": "Returns the fact length as a number.",
+        "claim_type": "output_field",
+        "field_path": "length",
+        "expected_type": "number",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns the fact length as a number.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "eb70f4b95aa7"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-21",
+      "tool_id": "joke-api",
+      "claim": {
+        "id": "4aa7539c5aea",
+        "tool_id": "joke-api",
+        "text": "Returns a setup field.",
+        "claim_type": "output_field",
+        "field_path": "setup",
+        "expected_type": "string",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns a setup field.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "bedeb3426cdc"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-22",
+      "tool_id": "joke-api",
+      "claim": {
+        "id": "33e16bfc1628",
+        "tool_id": "joke-api",
+        "text": "Returns a punchline field.",
+        "claim_type": "output_field",
+        "field_path": "punchline",
+        "expected_type": "string",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns a punchline field.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "c29c442ad5f0"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-23",
+      "tool_id": "ipify",
+      "claim": {
+        "id": "1e69cc958e28",
+        "tool_id": "ipify",
+        "text": "Returns the public IP address.",
+        "claim_type": "output_field",
+        "field_path": "ip",
+        "expected_type": "string",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns the public IP address.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "95df0a5191ee"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-24",
+      "tool_id": "ipify",
+      "claim": {
+        "id": "8138f28ad712",
+        "tool_id": "ipify",
+        "text": "No API key is required.",
+        "claim_type": "authentication",
+        "field_path": null,
+        "expected_type": "boolean",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "No API key is required.",
+        "ground_truth_label": null,
+        "metadata": {
+          "expects_key": false,
+          "seeded": true,
+          "variant_of": "620b7e568395"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-25",
+      "tool_id": "usgs-earthquake",
+      "claim": {
+        "id": "94f7461d332e",
+        "tool_id": "usgs-earthquake",
+        "text": "Returns a features array.",
+        "claim_type": "output_field",
+        "field_path": "features",
+        "expected_type": "array",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns a features array.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "edfff245a094"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-26",
+      "tool_id": "usgs-earthquake",
+      "claim": {
+        "id": "565da2a053dd",
+        "tool_id": "usgs-earthquake",
+        "text": "Each feature has a magnitude number.",
+        "claim_type": "output_field",
+        "field_path": "properties.mag",
+        "expected_type": "number",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Each feature has a magnitude number.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "b1d27ccc5ae9"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-27",
+      "tool_id": "worldtime",
+      "claim": {
+        "id": "283bf3fee7fb",
+        "tool_id": "worldtime",
+        "text": "Returns the current datetime.",
+        "claim_type": "output_field",
+        "field_path": "datetime",
+        "expected_type": "string",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns the current datetime.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "05dab54a15fd"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-28",
+      "tool_id": "worldtime",
+      "claim": {
+        "id": "88caab2b420b",
+        "tool_id": "worldtime",
+        "text": "Returns the timezone name.",
+        "claim_type": "output_field",
+        "field_path": "timezone",
+        "expected_type": "string",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns the timezone name.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "20a785e03b70"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-29",
+      "tool_id": "datamuse",
+      "claim": {
+        "id": "58b30bd8ceda",
+        "tool_id": "datamuse",
+        "text": "Returns word suggestions as a JSON array.",
+        "claim_type": "output_field",
+        "field_path": "",
+        "expected_type": "array",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Returns word suggestions as a JSON array.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "6779ab2b0ab1"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-verified-30",
+      "tool_id": "datamuse",
+      "claim": {
+        "id": "45393eeac3c3",
+        "tool_id": "datamuse",
+        "text": "Each suggestion has a word.",
+        "claim_type": "output_field",
+        "field_path": "word",
+        "expected_type": "string",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Each suggestion has a word.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "7d8812cfb455"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Verified",
+      "seeded": true,
+      "focus": "extra_real",
+      "rationale": "Additional labelled variant. Real documentation claim with a probeable deterministic check."
+    },
+    {
+      "id": "cv-extra-supported-01",
+      "tool_id": "frankfurter",
+      "claim": {
+        "id": "16ea00d99285",
+        "tool_id": "frankfurter",
+        "text": "Rates are updated on working days.",
+        "claim_type": "availability",
+        "field_path": null,
+        "expected_type": null,
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": false,
+        "source_text": "Rates are updated on working days.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "189c01e3a534"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Supported",
+      "seeded": true,
+      "focus": "extra_not_probeable",
+      "rationale": "Additional labelled variant. Documentation supports the claim but the claim is not testable with a safe live call."
+    },
+    {
+      "id": "cv-extra-supported-02",
+      "tool_id": "nominatim",
+      "claim": {
+        "id": "520c0d65edfc",
+        "tool_id": "nominatim",
+        "text": "A descriptive User-Agent header is required.",
+        "claim_type": "behaviour",
+        "field_path": null,
+        "expected_type": null,
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": false,
+        "source_text": "A descriptive User-Agent header is required.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "80d1ca588ca4"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Supported",
+      "seeded": true,
+      "focus": "extra_not_probeable",
+      "rationale": "Additional labelled variant. Documentation supports the claim but the claim is not testable with a safe live call."
+    },
+    {
+      "id": "cv-extra-supported-03",
+      "tool_id": "arxiv",
+      "claim": {
+        "id": "101bcdc66708",
+        "tool_id": "arxiv",
+        "text": "Results are sorted by relevance by default.",
+        "claim_type": "behaviour",
+        "field_path": null,
+        "expected_type": null,
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": false,
+        "source_text": "Results are sorted by relevance by default.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "8440a0054a15"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Supported",
+      "seeded": true,
+      "focus": "extra_not_probeable",
+      "rationale": "Additional labelled variant. Documentation supports the claim but the claim is not testable with a safe live call."
+    },
+    {
+      "id": "cv-extra-supported-04",
+      "tool_id": "coingecko",
+      "claim": {
+        "id": "1269065060fe",
+        "tool_id": "coingecko",
+        "text": "The free endpoint is rate limited.",
+        "claim_type": "limit",
+        "field_path": null,
+        "expected_type": null,
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": false,
+        "source_text": "The free endpoint is rate limited.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "a75f5b098d9c"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Supported",
+      "seeded": true,
+      "focus": "extra_not_probeable",
+      "rationale": "Additional labelled variant. Documentation supports the claim but the claim is not testable with a safe live call."
+    },
+    {
+      "id": "cv-extra-supported-05",
+      "tool_id": "arxiv",
+      "claim": {
+        "id": "c0c322eee4bb",
+        "tool_id": "arxiv",
+        "text": "No API key is required.",
+        "claim_type": "authentication",
+        "field_path": null,
+        "expected_type": "boolean",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "No API key is required.",
+        "ground_truth_label": null,
+        "metadata": {
+          "expects_key": false,
+          "seeded": true,
+          "variant_of": "c037e67c6a75"
+        }
+      },
+      "documentation": null,
+      "mock_behavior": "outage",
+      "mock_options": {},
+      "ground_truth_label": "Supported",
+      "seeded": true,
+      "focus": "extra_probe_error",
+      "rationale": "Additional labelled variant. Documentation supports the claim, but the controlled outage makes the probe inconclusive."
+    },
+    {
+      "id": "cv-extra-contradicted-01",
+      "tool_id": "open-meteo",
+      "claim": {
+        "id": "7464e4356892",
+        "tool_id": "open-meteo",
+        "text": "The current temperature is returned in degrees Fahrenheit.",
+        "claim_type": "unit",
+        "field_path": "current.temperature_2m",
+        "expected_type": "number",
+        "expected_unit": "fahrenheit",
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "The current temperature is returned in degrees Fahrenheit.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "a44c82f49884"
+        }
+      },
+      "documentation": [
+        "Open-Meteo returns the field `temperature_2m` in degrees Fahrenheit."
+      ],
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Contradicted",
+      "seeded": true,
+      "focus": "extra_seeded_false_claim",
+      "rationale": "Additional labelled variant. Subtle wrong-unit claim: the documentation was seeded to support Fahrenheit, while the API returns Celsius."
+    },
+    {
+      "id": "cv-extra-contradicted-02",
+      "tool_id": "open-meteo",
+      "claim": {
+        "id": "08ec812ca617",
+        "tool_id": "open-meteo",
+        "text": "Forecasts are available up to 30 days.",
+        "claim_type": "limit",
+        "field_path": null,
+        "expected_type": "number",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": 30,
+        "probeable": true,
+        "source_text": "Forecasts are available up to 30 days.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "7f087dab4fdc"
+        }
+      },
+      "documentation": [
+        "Forecasts are available up to 30 days."
+      ],
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Contradicted",
+      "seeded": true,
+      "focus": "extra_seeded_false_claim",
+      "rationale": "Additional labelled variant. Wrong-limit claim: the safe probe request returns 16 daily entries."
+    },
+    {
+      "id": "cv-extra-contradicted-03",
+      "tool_id": "frankfurter",
+      "claim": {
+        "id": "04ef210c517c",
+        "tool_id": "frankfurter",
+        "text": "An API key is required to access exchange rates.",
+        "claim_type": "authentication",
+        "field_path": null,
+        "expected_type": "boolean",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "An API key is required to access exchange rates.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "94da52859e6d"
+        }
+      },
+      "documentation": [
+        "An API key is required for this endpoint."
+      ],
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Contradicted",
+      "seeded": true,
+      "focus": "extra_seeded_false_claim",
+      "rationale": "Additional labelled variant. False authentication claim: the keyless probe succeeds."
+    },
+    {
+      "id": "cv-extra-contradicted-04",
+      "tool_id": "frankfurter",
+      "claim": {
+        "id": "71b4cb3232fa",
+        "tool_id": "frankfurter",
+        "text": "The response returns `rates` as a JSON array.",
+        "claim_type": "output_field",
+        "field_path": "rates",
+        "expected_type": "array",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "The response returns `rates` as a JSON array.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "81af3c973518"
+        }
+      },
+      "documentation": [
+        "The response includes `rates` as a JSON array."
+      ],
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Contradicted",
+      "seeded": true,
+      "focus": "extra_seeded_false_claim",
+      "rationale": "Additional labelled variant. Wrong response-shape claim: the probe returns an object, not an array."
+    },
+    {
+      "id": "cv-extra-contradicted-05",
+      "tool_id": "nominatim",
+      "claim": {
+        "id": "d1e07575b6e9",
+        "tool_id": "nominatim",
+        "text": "Latitude and longitude are returned as numbers.",
+        "claim_type": "output_field",
+        "field_path": "lat",
+        "expected_type": "number",
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": true,
+        "source_text": "Latitude and longitude are returned as numbers.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "8653028b2b37"
+        }
+      },
+      "documentation": [
+        "Each result includes `lat` and `lon` as numbers in decimal degrees."
+      ],
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Contradicted",
+      "seeded": true,
+      "focus": "extra_seeded_false_claim",
+      "rationale": "Additional labelled variant. Wrong-type claim: the real API returns coordinate strings."
+    },
+    {
+      "id": "cv-extra-unsupported-01",
+      "tool_id": "open-meteo",
+      "claim": {
+        "id": "c357f54fc307",
+        "tool_id": "open-meteo",
+        "text": "Forecasts are 99% accurate.",
+        "claim_type": "availability",
+        "field_path": null,
+        "expected_type": null,
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": false,
+        "source_text": "Forecasts are 99% accurate.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "877297ed5e7f"
+        }
+      },
+      "documentation": [],
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Unsupported",
+      "seeded": true,
+      "focus": "extra_seeded_no_evidence",
+      "rationale": "Additional labelled variant. Accuracy is not stated in the supplied documentation and cannot be tested by a safe call."
+    },
+    {
+      "id": "cv-extra-unsupported-02",
+      "tool_id": "open-meteo",
+      "claim": {
+        "id": "fb869070a9e7",
+        "tool_id": "open-meteo",
+        "text": "Weather data refreshes every ten seconds.",
+        "claim_type": "availability",
+        "field_path": null,
+        "expected_type": null,
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": false,
+        "source_text": "Weather data refreshes every ten seconds.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "1d66c8fac962"
+        }
+      },
+      "documentation": [],
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Unsupported",
+      "seeded": true,
+      "focus": "extra_seeded_no_evidence",
+      "rationale": "Additional labelled variant. No evidence is supplied for the refresh interval."
+    },
+    {
+      "id": "cv-extra-unsupported-03",
+      "tool_id": "frankfurter",
+      "claim": {
+        "id": "4fbf4bd195af",
+        "tool_id": "frankfurter",
+        "text": "Exchange rates are updated every hour.",
+        "claim_type": "availability",
+        "field_path": null,
+        "expected_type": null,
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": false,
+        "source_text": "Exchange rates are updated every hour.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "203d5b2c2ae5"
+        }
+      },
+      "documentation": [],
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Unsupported",
+      "seeded": true,
+      "focus": "extra_seeded_no_evidence",
+      "rationale": "Additional labelled variant. The documentation does not state an hourly update schedule."
+    },
+    {
+      "id": "cv-extra-unsupported-04",
+      "tool_id": "nominatim",
+      "claim": {
+        "id": "da1c8841d4e8",
+        "tool_id": "nominatim",
+        "text": "Batch geocoding supports 1000 addresses per request.",
+        "claim_type": "limit",
+        "field_path": null,
+        "expected_type": null,
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": false,
+        "source_text": "Batch geocoding supports 1000 addresses per request.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "304d4a453008"
+        }
+      },
+      "documentation": [],
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Unsupported",
+      "seeded": true,
+      "focus": "extra_seeded_no_evidence",
+      "rationale": "Additional labelled variant. The documentation is silent and the claim is excluded from probing to respect usage limits."
+    },
+    {
+      "id": "cv-extra-unsupported-05",
+      "tool_id": "rest-countries",
+      "claim": {
+        "id": "043b52db1ce0",
+        "tool_id": "rest-countries",
+        "text": "Country records are updated every day at midnight.",
+        "claim_type": "availability",
+        "field_path": null,
+        "expected_type": null,
+        "expected_unit": null,
+        "expected_min": null,
+        "expected_max": null,
+        "expected_limit": null,
+        "probeable": false,
+        "source_text": "Country records are updated every day at midnight.",
+        "ground_truth_label": null,
+        "metadata": {
+          "seeded": true,
+          "variant_of": "e406b3ac037d"
+        }
+      },
+      "documentation": [],
+      "mock_behavior": "normal",
+      "mock_options": {},
+      "ground_truth_label": "Unsupported",
+      "seeded": true,
+      "focus": "extra_seeded_no_evidence",
+      "rationale": "Additional labelled variant. No update-time evidence exists in the supplied documentation."
     }
   ]
 }

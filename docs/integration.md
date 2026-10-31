@@ -29,9 +29,27 @@ ProviderRegistry
 TrustRegistry
 CircuitBreakerRegistry
 TraceStore
+WebhookRegistry
+JobManager
 ```
 
 Swap the concrete classes here. Keep `AppServices` fields stable or update every consumer through type checking and tests.
+
+`WebhookRegistry` and `JobManager` are process-local by design. They have no
+persistence contract, so a production deployment must replace them with a
+durable queue/webhook store without changing the Client loop. `AppServices.shutdown()`
+drains the job executor from the application lifespan.
+
+## Operations contract
+
+`POST /api/tasks` may dispatch a `task.completed` webhook in the background. The
+payload contains the task id, status, answer and correlation id. A webhook
+subscription has an id, URL, event list, optional secret, and delivery/failure
+counters. The secret is write-only at the admin API boundary.
+
+The Auditor batch endpoints are `/verify/batch` and `/monitor/batch` on the
+standalone Auditor service, not under `/api/auditor`. They accept at most 50
+items and return per-item results or errors without failing the whole batch.
 
 With the `auto` and the `rdf` backend the composition root also builds the knowledge-layer adapters; see [Knowledge layer integration](#knowledge-layer-integration).
 

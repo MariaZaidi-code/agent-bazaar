@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     request_timeout_seconds: float = 15.0
     cache_ttl_seconds: int = 86_400
     seed_document: bool = True
+    rate_limit_enabled: bool = True
+    rate_limit_requests: int = 120
+    rate_limit_window_seconds: float = 60.0
 
     knowledge_backend: str = "auto"
     knowledge_graph_file: Path = BASE_DIR / "data" / "out" / "graph.ttl"

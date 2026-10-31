@@ -146,6 +146,14 @@ class RdfToolGraph:
             candidates.append(tool)
         return candidates
 
+    def export_jsonld(self, path: Path) -> bool:
+        target = Path(path)
+        try:
+            self.store.export_jsonld(target)
+        except OSError:
+            return False
+        return True
+
     def export_turtle(self, path: Path, trust: dict[str, dict[str, Any]] | None = None) -> bool:
         target = Path(path)
         try:
