@@ -88,6 +88,10 @@ class SavedTaskInput(BaseModel):
     title: str = Field(default="", max_length=300)
 
 
+class DocumentTagsInput(BaseModel):
+    tags: list[str] = Field(default_factory=list)
+
+
 class WorkflowInput(BaseModel):
     name: str = Field(default="Saved workflow", max_length=120)
     task: str = Field(min_length=3, max_length=1500)
@@ -1282,6 +1286,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def list_documents(request: Request) -> dict[str, Any]:
         return {"documents": services(request).providers.document_store.list()}
 
+    @application.get("/api/documents/search")
+    async def search_documents(
+        request: Request, q: str = Query(..., min_length=1), top_k: int = Query(5, ge=1, le=50)
+    ) -> dict[str, Any]:
+        results = services(request).providers.document_store.search_documents(q, top_k)
+        return {"query": q, "results": results}
+
     @application.get("/api/documents/{document_id}")
     async def get_document(document_id: str, request: Request) -> dict[str, Any]:
         document = services(request).providers.document_store.get(document_id)
@@ -1304,6 +1315,23 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if not deleted:
             raise HTTPException(status_code=404, detail="Document not found")
         return {"deleted": True, "document_id": document_id}
+
+    @application.put("/api/documents/{document_id}/tags")
+    async def set_document_tags(
+        document_id: str, payload: DocumentTagsInput, request: Request
+    ) -> dict[str, Any]:
+        store = services(request).providers.document_store
+        if not store.set_tags(document_id, payload.tags):
+            raise HTTPException(status_code=404, detail="Document not found")
+        document = store.get(document_id)
+        return {"document": document}
+
+    @application.get("/api/documents/{document_id}/chunks")
+    async def get_document_chunks(document_id: str, request: Request) -> dict[str, Any]:
+        store = services(request).providers.document_store
+        if store.get(document_id) is None:
+            raise HTTPException(status_code=404, detail="Document not found")
+        return {"chunks": store.get_chunks(document_id)}
 
     @application.post("/api/corrections")
     async def submit_correction(payload: CorrectionRequest, request: Request) -> dict[str, Any]:

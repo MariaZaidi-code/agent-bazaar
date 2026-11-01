@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import io
+import json
 import re
+import sqlite3
 import threading
 from datetime import UTC, datetime
 from pathlib import Path
@@ -31,11 +33,37 @@ class DocumentStore:
                 path TEXT NOT NULL,
                 size_bytes INTEGER NOT NULL,
                 text TEXT NOT NULL,
+                tags TEXT NOT NULL DEFAULT '[]',
+                version INTEGER NOT NULL DEFAULT 1,
+                chunk_count INTEGER NOT NULL DEFAULT 0,
                 created_at TEXT NOT NULL
             )
             """
         )
+        self._connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS document_chunks (
+                chunk_id TEXT PRIMARY KEY,
+                document_id TEXT NOT NULL,
+                chunk_index INTEGER NOT NULL,
+                text TEXT NOT NULL,
+                FOREIGN KEY(document_id) REFERENCES documents(document_id) ON DELETE CASCADE
+            )
+            """
+        )
         self._connection.commit()
+        for column, definition in (
+            ("tags", "TEXT NOT NULL DEFAULT '[]'"),
+            ("version", "INTEGER NOT NULL DEFAULT 1"),
+            ("chunk_count", "INTEGER NOT NULL DEFAULT 0"),
+        ):
+            try:
+                self._connection.execute(
+                    f"ALTER TABLE documents ADD COLUMN {column} {definition}"
+                )
+                self._connection.commit()
+            except sqlite3.OperationalError:
+                pass
         if settings.seed_document and not self.list():
             self.add_document(
                 "agent_bazaar_project_brief.txt",
@@ -81,6 +109,28 @@ class DocumentStore:
                 continue
         return data.decode("utf-8", errors="ignore").strip()
 
+    @staticmethod
+    def _chunk_text(text: str, max_chars: int = 500) -> list[str]:
+        pieces = [part.strip() for part in re.split(r"\n+", text) if part.strip()]
+        chunks: list[str] = []
+        for piece in pieces:
+            if len(piece) <= max_chars:
+                chunks.append(piece)
+                continue
+            sentences = SENTENCE_SPLIT.split(piece)
+            current = ""
+            for sentence in sentences:
+                if len(current) + len(sentence) + 1 > max_chars and current:
+                    chunks.append(current.strip())
+                    current = sentence
+                else:
+                    current = f"{current} {sentence}".strip()
+            if current:
+                chunks.append(current.strip())
+        if not chunks:
+            chunks = [text[i : i + max_chars].strip() for i in range(0, len(text), max_chars) if text[i : i + max_chars].strip()]
+        return chunks or [text[:max_chars]]
+
     def add_document(self, name: str, data: bytes) -> DocumentInfo:
         if not data:
             raise ValueError("document is empty")
@@ -92,47 +142,90 @@ class DocumentStore:
         path = self.settings.uploads_dir / f"{document_id}{suffix}"
         path.write_bytes(data)
         created_at = datetime.now(UTC)
+        chunks = self._chunk_text(text, 500)
         with self._lock:
             self._connection.execute(
                 """
                 INSERT INTO documents
-                    (document_id, name, path, size_bytes, text, created_at)
-                VALUES (?, ?, ?, ?, ?, ?)
-                """,
+                    (document_id, name, path, size_bytes, text, tags, version, chunk_count, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """
+                ,
                 (
                     document_id,
                     name,
                     str(path),
                     len(data),
                     text,
+                    "[]",
+                    1,
+                    len(chunks),
                     created_at.isoformat(),
                 ),
             )
+            for index, chunk in enumerate(chunks):
+                self._connection.execute(
+                    """
+                    INSERT INTO document_chunks (chunk_id, document_id, chunk_index, text)
+                    VALUES (?, ?, ?, ?)
+                    """
+                    ,
+                    (f"{document_id}_{index}", document_id, index, chunk),
+                )
             self._connection.commit()
         return DocumentInfo(
             document_id=document_id,
             name=name,
             size_bytes=len(data),
             text_chars=len(text),
+            tags=[],
+            version=1,
+            chunks=len(chunks),
             created_at=created_at,
         )
+
+    def _parse_tags(self, value: Any) -> list[str]:
+        if isinstance(value, list):
+            return [str(item) for item in value]
+        if not value:
+            return []
+        try:
+            parsed = json.loads(value)
+            if isinstance(parsed, list):
+                return [str(item) for item in parsed]
+        except (json.JSONDecodeError, TypeError):
+            pass
+        return []
 
     def list(self) -> list[dict[str, Any]]:
         with self._lock:
             rows = self._connection.execute(
                 """
-                SELECT document_id, name, size_bytes, length(text) AS text_chars, created_at
+                SELECT document_id, name, size_bytes, length(text) AS text_chars, tags, version, chunk_count, created_at
                 FROM documents ORDER BY created_at DESC
                 """
             ).fetchall()
-        return [dict(row) for row in rows]
+        result = []
+        for row in rows:
+            item = dict(row)
+            item["tags"] = self._parse_tags(item.get("tags"))
+            item["version"] = int(item.get("version") or 1)
+            item["chunks"] = int(item.get("chunk_count") or 0)
+            result.append(item)
+        return result
 
     def get(self, document_id: str) -> dict[str, Any] | None:
         with self._lock:
             row = self._connection.execute(
                 "SELECT * FROM documents WHERE document_id = ?", (document_id,)
             ).fetchone()
-        return dict(row) if row else None
+        if row is None:
+            return None
+        item = dict(row)
+        item["tags"] = self._parse_tags(item.get("tags"))
+        item["version"] = int(item.get("version") or 1)
+        item["chunks"] = int(item.get("chunk_count") or 0)
+        return item
 
     def latest(self) -> dict[str, Any] | None:
         with self._lock:
@@ -141,6 +234,66 @@ class DocumentStore:
             ).fetchone()
         return dict(row) if row else None
 
+    def get_chunks(self, document_id: str) -> list[dict[str, Any]]:
+        with self._lock:
+            rows = self._connection.execute(
+                """
+                SELECT chunk_id, document_id, chunk_index, text
+                FROM document_chunks WHERE document_id = ? ORDER BY chunk_index
+                """
+                ,
+                (document_id,),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
+    def set_tags(self, document_id: str, tags: list[str]) -> bool:
+        with self._lock:
+            row = self._connection.execute(
+                "SELECT document_id FROM documents WHERE document_id = ?", (document_id,)
+            ).fetchone()
+            if row is None:
+                return False
+            self._connection.execute(
+                """
+                UPDATE documents SET tags = ?, version = version + 1 WHERE document_id = ?
+                """
+                ,
+                (json.dumps(tags), document_id),
+            )
+            self._connection.commit()
+        return True
+
+    def search_documents(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
+        with self._lock:
+            rows = self._connection.execute(
+                """
+                SELECT dc.document_id, dc.chunk_index, dc.text, d.name
+                FROM document_chunks dc JOIN documents d ON d.document_id = dc.document_id
+                """
+            ).fetchall()
+        if not rows:
+            return []
+        documents = {
+            f"{row['document_id']}:{row['chunk_index']}": row["text"] for row in rows
+        }
+        index = TfidfIndex(documents)
+        ranked = index.search(query, top_k=top_k)
+        meta = {f"{row['document_id']}:{row['chunk_index']}": row for row in rows}
+        results = []
+        for key, score in ranked:
+            row = meta[key]
+            results.append(
+                {
+                    "document_id": row["document_id"],
+                    "name": row["name"],
+                    "chunk_index": row["chunk_index"],
+                    "snippet": row["text"][:300],
+                    "text": row["text"],
+                    "score": round(float(score), 4),
+                }
+            )
+        return results
+
     def delete(self, document_id: str) -> bool:
         with self._lock:
             row = self._connection.execute(
@@ -148,6 +301,9 @@ class DocumentStore:
             ).fetchone()
             if row is None:
                 return False
+            self._connection.execute(
+                "DELETE FROM document_chunks WHERE document_id = ?", (document_id,)
+            )
             self._connection.execute(
                 "DELETE FROM documents WHERE document_id = ?", (document_id,)
             )

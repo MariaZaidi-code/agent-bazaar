@@ -166,6 +166,7 @@ class ClientAgent:
                 answer=f"I could not complete the task: {exc}",
                 duration_ms=round((time.perf_counter() - started) * 1000, 2),
                 mode=self._mode(),
+                document_context=document_chunks,
             )
         result.trace = self.traces.events(task_id)
         result.duration_ms = round((time.perf_counter() - started) * 1000, 2)
@@ -180,6 +181,19 @@ class ClientAgent:
         document_id: str | None = None,
     ) -> TaskResult:
         metrics = TaskMetrics()
+        document_chunks: list[dict[str, Any]] = []
+        if document_id:
+            try:
+                document_chunks = self.providers.document_store.search_documents(task, top_k=5)
+            except Exception:
+                document_chunks = []
+            self._trace(
+                task_id,
+                "document_context_retrieved",
+                "client",
+                f"Retrieved {len(document_chunks)} document chunk(s).",
+                {"document_id": document_id, "chunks": document_chunks},
+            )
         await self._publish(
             TaskRequestMessage(
                 sender="interface",
@@ -265,6 +279,7 @@ class ClientAgent:
                 mode=self._mode(),
                 metrics=metrics,
                 error="; ".join(composition_errors),
+                document_context=document_chunks,
             )
             self._trace(
                 task_id,
@@ -313,6 +328,7 @@ class ClientAgent:
             mode=self._mode(plan),
             metrics=metrics,
             error="; ".join(step_failures) if step_failures else None,
+            document_context=document_chunks,
         )
         self._trace(
             task_id,

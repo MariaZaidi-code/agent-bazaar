@@ -348,6 +348,7 @@ class TaskResult(BaseModel):
     duration_ms: float = 0.0
     mode: str = "live"
     metrics: TaskMetrics = Field(default_factory=TaskMetrics)
+    document_context: list[dict[str, Any]] = Field(default_factory=list)
     error: str | None = None
     created_at: datetime = Field(default_factory=utcnow)
 
@@ -374,6 +375,9 @@ class DocumentInfo(BaseModel):
     name: str
     size_bytes: int
     text_chars: int
+    tags: list[str] = Field(default_factory=list)
+    version: int = 1
+    chunks: int = 0
     created_at: datetime = Field(default_factory=utcnow)
 
 

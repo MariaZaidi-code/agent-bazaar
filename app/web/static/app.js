@@ -11,6 +11,7 @@ const state = {
   result: null,
   documents: [],
   selectedDocument: "",
+  documentQuery: "",
   documentDetail: null,
   documentAnswer: null,
   recent: [],
@@ -2358,15 +2359,19 @@ function renderDocumentList() {
       : "No files uploaded yet";
   }
   if (!list) return;
-  if (!state.documents.length) {
+  const query = (state.documentQuery || "").toLowerCase();
+  const filtered = query
+    ? state.documents.filter((item) => (item.name || "").toLowerCase().includes(query) || (item.tags || []).some((t) => String(t).toLowerCase().includes(query)))
+    : state.documents;
+  if (!filtered.length) {
     list.innerHTML = emptyMarkup(
-      "No documents yet",
-      "Upload a text, Markdown, CSV, PDF or DOCX file to start a grounded question.",
+      query ? "No matching documents" : "No documents yet",
+      query ? "Try a different search term." : "Upload a text, Markdown, CSV, PDF or DOCX file to start a grounded question.",
       "file-text"
     );
     return;
   }
-  list.innerHTML = state.documents
+  list.innerHTML = filtered
     .map(
       (item) => `<button class="document-row ${item.document_id === state.selectedDocument ? "is-selected" : ""}" type="button" data-document-id="${esc(item.document_id)}" aria-pressed="${item.document_id === state.selectedDocument}">
         <span class="document-row-icon">${icon("file-text")}</span>
@@ -2656,6 +2661,10 @@ function bindDocuments() {
   $("#document-list")?.addEventListener("click", (event) => {
     const row = event.target.closest("[data-document-id]");
     if (row) selectDocument(row.dataset.documentId);
+  });
+  $("#document-search")?.addEventListener("input", (event) => {
+    state.documentQuery = event.target.value.trim().toLowerCase();
+    renderDocumentList();
   });
   $("#document-delete")?.addEventListener("click", deleteDocument);
 }
