@@ -8,6 +8,7 @@ from app.core.cache import Cache
 from app.knowledge.graph import ToolKnowledgeGraph
 from app.providers.arxiv_provider import ArxivProvider
 from app.providers.base import BaseProvider
+from app.providers.generic import GenericHttpProvider
 from app.providers.books import GoogleBooksProvider, OpenLibraryProvider
 from app.providers.countries import CountriesProvider
 from app.providers.crypto import CoinGeckoProvider
@@ -198,6 +199,7 @@ class ProviderRegistry:
             "dictionary": DictionaryProvider,
             "geonames": GeoNamesProvider,
             "coincap": CoinCapProvider,
+            "generic": GenericHttpProvider,
         }
         if spec.provider_id == "document-service":
             return DocumentQAProvider(

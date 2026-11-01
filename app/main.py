@@ -34,9 +34,12 @@ from app.schemas import (
     HealthResponse,
     ListingIngestRequest,
     TaskResult,
+    ToolSpec,
     new_id,
 )
 from app.services import AppServices, build_services
+from app.discovery import CURATED_APIS, sync_discovered
+from app.providers.generic import DISCOVERED_CONFIG, GenericHttpProvider
 
 WEB_DIR = Path(__file__).resolve().parent / "web"
 STATIC_DIR = WEB_DIR / "static"
@@ -137,6 +140,13 @@ class NotificationReadInput(BaseModel):
 class FlagInput(BaseModel):
     enabled: bool = False
 
+
+class DiscoveryAddInput(BaseModel):
+    name: str = Field(min_length=1, max_length=120)
+    base_url: str = Field(min_length=1, max_length=500)
+    path: str = Field(default="", max_length=200)
+    params: list[str] = Field(default_factory=list)
+    capability: str = Field(default="GenericLookup", max_length=80)
 
 def _export_task(result: TaskResult, fmt: str) -> tuple[bytes, str, str]:
     data = result.model_dump(mode="json")
@@ -978,6 +988,64 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             data["auditor_tool_id"] = state.auditor.catalog_tool_id(tool.id) or ""
             payload.append(data)
         return {"tools": payload, "count": len(payload)}
+
+    @application.get("/api/discovery/candidates")
+    async def discovery_candidates(request: Request) -> dict[str, Any]:
+        state = services(request)
+        installed = {tool.id for tool in state.graph.all()}
+        payload = []
+        for candidate in CURATED_APIS:
+            item = dict(candidate)
+            item["installed"] = candidate["id"] in installed
+            payload.append(item)
+        return {"candidates": payload, "count": len(payload)}
+
+    @application.post("/api/discovery/sync")
+    async def discovery_sync(request: Request) -> dict[str, Any]:
+        state = services(request)
+        added = sync_discovered(state.settings, state.graph, state.providers)
+        try:
+            state.retriever.rebuild()
+        except Exception:
+            pass
+        return {"added": added, "count": len(added)}
+
+    @application.post("/api/discovery/add")
+    async def discovery_add(payload: DiscoveryAddInput, request: Request) -> dict[str, Any]:
+        state = services(request)
+        tool_id = payload.name.lower().replace(" ", "-")
+        config = {
+            "base_url": payload.base_url,
+            "path": payload.path,
+            "params": payload.params,
+        }
+        DISCOVERED_CONFIG[tool_id] = config
+        spec = ToolSpec(
+            id=tool_id,
+            name=payload.name,
+            provider_id="generic",
+            description=f"Discovered API: {payload.name}",
+            capability=payload.capability,
+            tags=["discovered"],
+            execution="live",
+            is_executable=True,
+        )
+        state.graph.add(spec)
+        provider = GenericHttpProvider(spec, state.settings, state.cache)
+        state.providers.register(provider)
+        # persist
+        try:
+            records = json.loads(state.settings.tools_file.read_text(encoding="utf-8"))
+            if not any(r.get("id") == tool_id for r in records):
+                records.append(spec.model_dump(mode="json"))
+                state.settings.tools_file.write_text(json.dumps(records, indent=2), encoding="utf-8")
+        except Exception:
+            pass
+        try:
+            state.retriever.rebuild()
+        except Exception:
+            pass
+        return {"added": tool_id, "tool_id": tool_id}
 
     @application.post("/api/tasks", response_model=TaskResult)
     async def run_task(
