@@ -15,10 +15,18 @@ from app.providers.currency import CurrencyProvider
 from app.providers.document_provider import DocumentQAProvider, DocumentStore
 from app.providers.extra import (
     CoinDeskProvider,
+    ExchangerateProvider,
     GitHubProvider,
     IpApiProvider,
+    IsGdProvider,
     LanguageToolProvider,
+    LibreTranslateProvider,
+    MastodonProvider,
     MetalsProvider,
+    NasaEonetProvider,
+    NasaMarsProvider,
+    NoaaAlertsProvider,
+    NoaaTidesProvider,
     OpenAlexProvider,
     OpenAQProvider,
     OpenElevationProvider,
@@ -29,10 +37,48 @@ from app.providers.extra import (
     RedditProvider,
     SemanticScholarProvider,
     StackExchangeProvider,
+    TheSportsDBProvider,
+    UpcItemDbProvider,
+)
+from app.providers.geonames import GeoNamesProvider
+from app.providers.extra2 import (
+    CoinCapProvider,
+    DataTransformProvider,
+    DbpediaProvider,
+    DictionaryProvider,
+    EmailValidateProvider,
+    IpifyProvider,
+    IssLocationProvider,
+    LaunchLibraryProvider,
+    OpenMeteoAirProvider,
+    OpenMeteoMarineProvider,
+    PasswordToolsProvider,
+    RssFeedProvider,
+    UuidProvider,
+    WikidataProvider,
+    WikivoyageProvider,
+    WorldBankProvider,
+    YahooFinanceProvider,
+    ZenQuotesProvider,
 )
 from app.providers.geocoding import GeocodingProvider
 from app.providers.holidays import HolidaysProvider
+from app.providers.advice import AdviceSlipProvider
+from app.providers.bored import BoredProvider
+from app.providers.catfacts import CatFactsProvider
+from app.providers.crossref import CrossrefProvider
+from app.providers.dogceo import DogCEOProvider
 from app.providers.itunes import ITunesProvider
+from app.providers.jikan import JikanProvider
+from app.providers.joke import JokeProvider
+from app.providers.nasa_apod import NasaApodProvider
+from app.providers.numbers import NumbersProvider
+from app.providers.pokeapi import PokeAPIProvider
+from app.providers.spacex import SpaceXProvider
+from app.providers.trivia import TriviaProvider
+from app.providers.usgs import UsgsProvider
+from app.providers.wikipedia import WikipediaProvider
+from app.providers.wttr import WttrProvider
 from app.providers.mirror import MirrorProvider, make_mirror_spec
 from app.providers.news import HackerNewsProvider
 from app.providers.recipes import TheMealDBProvider
@@ -99,6 +145,21 @@ class ProviderRegistry:
             "mock-weather-fahrenheit": MockWeatherFahrenheitProvider,
             "hackernews": HackerNewsProvider,
             "itunes": ITunesProvider,
+            "wttr": WttrProvider,
+            "usgs": UsgsProvider,
+            "wikipedia": WikipediaProvider,
+            "crossref": CrossrefProvider,
+            "joke": JokeProvider,
+            "catfacts": CatFactsProvider,
+            "dogceo": DogCEOProvider,
+            "advice": AdviceSlipProvider,
+            "bored": BoredProvider,
+            "trivia": TriviaProvider,
+            "numbers": NumbersProvider,
+            "spacex": SpaceXProvider,
+            "pokeapi": PokeAPIProvider,
+            "jikan": JikanProvider,
+            "nasa-apod": NasaApodProvider,
             "coingecko": CoinGeckoProvider,
             "tvmaze": TVMazeProvider,
             "open-library": OpenLibraryProvider,
@@ -108,6 +169,35 @@ class ProviderRegistry:
             "sunrise-sunset": SunriseSunsetProvider,
             "themealdb": TheMealDBProvider,
             "espn": EspnScoresProvider,
+            "nasa-eonet": NasaEonetProvider,
+            "noaa-alerts": NoaaAlertsProvider,
+            "noaa-tides": NoaaTidesProvider,
+            "exchangerate": ExchangerateProvider,
+            "libretranslate": LibreTranslateProvider,
+            "mastodon": MastodonProvider,
+            "thesportsdb": TheSportsDBProvider,
+            "upcitemdb": UpcItemDbProvider,
+            "isgd": IsGdProvider,
+            "nasa-mars": NasaMarsProvider,
+            "wikidata": WikidataProvider,
+            "wikivoyage": WikivoyageProvider,
+            "yahoo-finance": YahooFinanceProvider,
+            "rss": RssFeedProvider,
+            "dbpedia": DbpediaProvider,
+            "iss-location": IssLocationProvider,
+            "open-meteo-air": OpenMeteoAirProvider,
+            "open-meteo-marine": OpenMeteoMarineProvider,
+            "email-validate": EmailValidateProvider,
+            "password-tools": PasswordToolsProvider,
+            "uuid": UuidProvider,
+            "data-transform": DataTransformProvider,
+            "ipify": IpifyProvider,
+            "zenquotes": ZenQuotesProvider,
+            "launch-library": LaunchLibraryProvider,
+            "worldbank": WorldBankProvider,
+            "dictionary": DictionaryProvider,
+            "geonames": GeoNamesProvider,
+            "coincap": CoinCapProvider,
         }
         if spec.provider_id == "document-service":
             return DocumentQAProvider(
@@ -126,9 +216,7 @@ class ProviderRegistry:
         self.providers_by_tool[provider.tool_id] = provider
         self.graph.add(provider.spec)
         ontology = getattr(self.graph, "ontology", None)
-        self.validation[provider.tool_id] = (
-            ontology.validate_tool(provider.spec) if ontology is not None else []
-        )
+        self.validation[provider.tool_id] = ontology.validate_tool(provider.spec) if ontology is not None else []
 
     def get(self, provider_id: str) -> BaseProvider | None:
         return self.providers.get(provider_id)
@@ -145,9 +233,7 @@ class ProviderRegistry:
             payload = provider.status()
             payload["tool_name"] = provider.spec.name
             payload["capability"] = provider.spec.capability
-            payload["claims"] = [
-                claim.model_dump(mode="json") for claim in provider.spec.claims
-            ]
+            payload["claims"] = [claim.model_dump(mode="json") for claim in provider.spec.claims]
             payload["validation"] = self.validation.get(provider.tool_id, [])
             entries.append(payload)
         return entries

@@ -3,13 +3,14 @@ from __future__ import annotations
 import csv
 import io
 import json
+import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
 import httpx
 from fastapi import BackgroundTasks, FastAPI, File, HTTPException, Query, Request, UploadFile
-from fastapi.responses import HTMLResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
@@ -17,6 +18,7 @@ from starlette.concurrency import run_in_threadpool
 
 from app import __version__
 from app.config import BASE_DIR, Settings
+from app.core.observability import RequestMetrics
 from app.platform import (
     DEMO_USER_ID,
     SESSION_COOKIE,
@@ -279,9 +281,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         lifespan=lifespan,
     )
     application.mount("/static", StaticFiles(directory=str(WEB_DIR / "static")), name="static")
+    application.state.metrics = RequestMetrics()
 
     @application.middleware("http")
     async def platform_guard(request: Request, call_next):
+        started = time.perf_counter()
         if request.url.path.startswith("/api/") and request.method in {"POST", "PUT", "PATCH", "DELETE"}:
             limiter = getattr(request.app.state, "rate_limiter", None)
             if limiter is not None:
@@ -297,9 +301,25 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                         headers={"Retry-After": str(retry_after)},
                     )
         response = await call_next(request)
+        metrics = getattr(request.app.state, "metrics", None)
+        if metrics is not None:
+            metrics.record(
+                request.method,
+                request.url.path,
+                response.status_code,
+                (time.perf_counter() - started) * 1000,
+            )
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
         response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault(
+            "Content-Security-Policy",
+            "default-src 'self'; script-src 'self' 'unsafe-inline'; "
+            "style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; "
+            "font-src 'self' data:; connect-src 'self'; worker-src 'self'; "
+            "manifest-src 'self'; frame-ancestors 'none'; "
+            "base-uri 'self'; form-action 'self'",
+        )
         return response
 
     def services(request: Request) -> AppServices:
@@ -425,6 +445,21 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @application.get("/favicon.ico")
     async def favicon() -> Response:
         return Response(status_code=204)
+
+    @application.get("/manifest.webmanifest")
+    async def web_manifest() -> FileResponse:
+        return FileResponse(
+            STATIC_DIR / "manifest.webmanifest",
+            media_type="application/manifest+json",
+        )
+
+    @application.get("/sw.js")
+    async def service_worker() -> FileResponse:
+        return FileResponse(
+            STATIC_DIR / "sw.js",
+            media_type="application/javascript",
+            headers={"Service-Worker-Allowed": "/"},
+        )
 
     def auth_payload(request: Request, user: dict[str, Any], workspace_id: str) -> dict[str, Any]:
         state = services(request)
@@ -851,6 +886,44 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             tools=len(state.graph.all()),
             llm_enabled=state.llm.enabled,
         )
+
+    @application.get("/readyz")
+    async def readyz(request: Request) -> JSONResponse:
+        state = getattr(request.app.state, "services", None)
+        providers = len(state.providers.all()) if state is not None else 0
+        ready = state is not None and providers > 0
+        return JSONResponse(
+            status_code=200 if ready else 503,
+            content={
+                "ready": ready,
+                "providers": providers,
+                "mode": "offline" if state and state.settings.offline_mode else "live",
+            },
+        )
+
+    @application.get("/metrics")
+    async def metrics(request: Request) -> Response:
+        state = services(request)
+        snapshot = request.app.state.metrics.snapshot()
+        lines = [
+            "# HELP agent_bazaar_requests_total Total HTTP requests served.",
+            "# TYPE agent_bazaar_requests_total counter",
+            f"agent_bazaar_requests_total {snapshot['requests']}",
+            "# HELP agent_bazaar_request_errors_total Total HTTP 5xx responses.",
+            "# TYPE agent_bazaar_request_errors_total counter",
+            f"agent_bazaar_request_errors_total {snapshot['errors']}",
+            "# HELP agent_bazaar_tools_total Tools loaded in the catalogue.",
+            "# TYPE agent_bazaar_tools_total gauge",
+            f"agent_bazaar_tools_total {len(state.providers.all())}",
+        ]
+        for key, value in snapshot["statuses"].items():
+            lines.append(f'agent_bazaar_responses_total{{status="{key}"}} {value}')
+        for provider in state.providers.all():
+            score = state.trust.get(provider.provider_id).get("score", 0.0)
+            lines.append(
+                f'agent_bazaar_trust_score{{provider="{provider.provider_id}"}} {float(score):.4f}'
+            )
+        return Response("\n".join(lines) + "\n", media_type="text/plain; version=0.0.4")
 
     @application.get("/api/ontology")
     async def ontology(request: Request) -> dict[str, Any]:

@@ -346,10 +346,32 @@ async function api(path, options = {}) {
   return response.json();
 }
 
-function toast(message, kind = "") {
+function suggestFixForError(message) {
+  const text = String(message || "").toLowerCase();
+  if (text.includes("network") || text.includes("failed to fetch")) {
+    return "Suggested fix: check your connection and retry.";
+  }
+  if (text.includes("unavailable") || text.includes("offline")) {
+    return "Suggested fix: refresh the page or try again once the service is back.";
+  }
+  if (text.includes("required") || text.includes("invalid")) {
+    return "Suggested fix: check the required fields and try again.";
+  }
+  if (text.includes("not found") || text.includes("404")) {
+    return "Suggested fix: refresh the data and retry the action.";
+  }
+  return "Suggested fix: retry the action or refresh the page.";
+}
+
+function toast(message, kind = "", suggestion = "") {
   const element = $("#toast");
   if (!element) return;
-  element.textContent = message;
+  let text = String(message ?? "");
+  if (kind === "bad") {
+    const fix = suggestion || suggestFixForError(text);
+    if (fix && !text.toLowerCase().includes("suggested fix")) text = `${text} ${fix}`;
+  }
+  element.textContent = text;
   element.className = `toast ${kind}`.trim();
   window.clearTimeout(toast.timer);
   toast.timer = window.setTimeout(() => element.classList.add("hidden"), 4200);
@@ -360,17 +382,24 @@ function delay(milliseconds) {
 }
 
 function currentTheme() {
-  return document.documentElement.dataset.theme === "light" ? "light" : "dark";
+  const theme = document.documentElement.dataset.theme;
+  return theme === "light" || theme === "high-contrast" ? theme : "dark";
 }
 
 function applyTheme(theme) {
-  const normalized = theme === "light" ? "light" : "dark";
+  const normalized =
+    theme === "light" ? "light" : theme === "high-contrast" ? "high-contrast" : "dark";
   document.documentElement.dataset.theme = normalized;
   try {
     localStorage.setItem("agent-bazaar-theme", normalized);
   } catch {}
   const meta = $("#theme-color-meta");
-  if (meta) meta.setAttribute("content", normalized === "light" ? "#f5f3ee" : "#101113");
+  if (meta) {
+    meta.setAttribute(
+      "content",
+      normalized === "light" ? "#f5f3ee" : normalized === "high-contrast" ? "#000000" : "#101113"
+    );
+  }
   $$("[data-set-theme]").forEach((button) => {
     const active = button.dataset.setTheme === normalized;
     button.classList.toggle("active", active);
@@ -379,12 +408,15 @@ function applyTheme(theme) {
   const toggle = $("#toolbar-theme");
   if (toggle) {
     toggle.innerHTML = icon(normalized === "dark" ? "sun" : "moon");
-    toggle.setAttribute("title", normalized === "dark" ? "Switch to light theme" : "Switch to dark theme");
+    toggle.setAttribute("title", `Switch theme (current: ${normalized})`);
   }
 }
 
 function toggleTheme() {
-  applyTheme(currentTheme() === "dark" ? "light" : "dark");
+  const order = ["dark", "light", "high-contrast"];
+  const current = currentTheme();
+  const next = order[(order.indexOf(current) + 1) % order.length];
+  applyTheme(next);
 }
 
 function openModal(id) {
@@ -1752,23 +1784,78 @@ function initMarketplace() {
   state.marketCapability = capability || "all";
   state.marketQuery = params.get("q") || "";
   const search = $("#market-search");
+  const recentBox = $("#recent-searches");
+  function recentSearches() {
+    try {
+      return JSON.parse(localStorage.getItem("ab_recent_searches") || "[]");
+    } catch {
+      return [];
+    }
+  }
+  function storeRecentSearch(term) {
+    const value = String(term || "").trim();
+    if (!value) return;
+    const next = [value, ...recentSearches().filter((entry) => entry !== value)].slice(0, 8);
+    try {
+      localStorage.setItem("ab_recent_searches", JSON.stringify(next));
+    } catch {}
+    renderRecentSearchDropdown(search.value);
+  }
+  function renderRecentSearchDropdown(filter = "") {
+    if (!recentBox) return;
+    const normalized = String(filter || "").trim().toLowerCase();
+    const items = recentSearches().filter((entry) => !normalized || entry.toLowerCase().includes(normalized));
+    if (!items.length) {
+      recentBox.classList.add("hidden");
+      recentBox.innerHTML = "";
+      return;
+    }
+    recentBox.innerHTML = items
+      .map(
+        (entry) => `<button type="button" class="recent-search-item" data-recent-search="${esc(entry)}">${icon("history")}<span>${esc(entry)}</span></button>`
+      )
+      .join("");
+    recentBox.classList.remove("hidden");
+  }
   if (search) {
     search.value = state.marketQuery;
     search.addEventListener("input", () => {
       state.marketQuery = search.value;
       updateMarketQueryUrl();
       renderMarketplace();
+      renderRecentSearchDropdown(search.value);
     });
+    search.addEventListener("focus", () => renderRecentSearchDropdown(search.value));
     search.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") event.preventDefault();
+      if (event.key === "Enter") {
+        event.preventDefault();
+        storeRecentSearch(search.value);
+        recentBox?.classList.add("hidden");
+      }
       if (event.key === "Escape") {
         search.value = "";
         state.marketQuery = "";
         updateMarketQueryUrl();
         renderMarketplace();
+        recentBox?.classList.add("hidden");
       }
     });
+    search.addEventListener("blur", () => {
+      window.setTimeout(() => recentBox?.classList.add("hidden"), 120);
+    });
   }
+  recentBox?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-recent-search]");
+    if (!button) return;
+    const value = button.dataset.recentSearch || "";
+    search.value = value;
+    state.marketQuery = value;
+    updateMarketQueryUrl();
+    renderMarketplace();
+    storeRecentSearch(value);
+    recentBox.classList.add("hidden");
+    search.focus();
+  });
   $("#capability-filter")?.addEventListener("change", (event) => {
     state.marketCapability = event.target.value;
     updateMarketQueryUrl();
@@ -3279,7 +3366,7 @@ function renderAuditorOverview() {
     return;
   }
   if (!state.auditor) {
-    container.innerHTML = `<div class="loading-line">${icon("loader")}Loading Auditor overview…</div>`;
+    container.innerHTML = `<div class="loading-line"><span class="skeleton" style="width:120px;height:16px">&nbsp;</span>${icon("loader")}Loading Auditor overview…</div>`;
     if (badge) badge.textContent = "…";
     return;
   }
@@ -3330,7 +3417,7 @@ function renderTrustLeaderboard() {
   }
   if (!state.auditorTrust) {
     container.className = "panel-body flush";
-    container.innerHTML = `<div class="loading-line" style="padding:0 18px">${icon("loader")}Loading trust observations…</div>`;
+    container.innerHTML = `<div class="loading-line" style="padding:0 18px"><span class="skeleton" style="width:120px;height:16px">&nbsp;</span>${icon("loader")}Loading trust observations…</div>`;
     if (badge) badge.textContent = "…";
     return;
   }
@@ -3362,13 +3449,17 @@ function renderTrustLeaderboard() {
             const label = tool?.name || mapping?.app_tool_id || row.tool_id;
             return `<tr>
               <td><strong>${esc(label)}</strong><br><small class="mono">${esc(row.tool_id)}${mapping ? ` · ${esc(mapping.app_tool_id)}` : ""}</small></td>
-              <td>${row.observations || 0} observation${row.observations === 1 ? "" : "s"}<br><small>${esc(row.successes || 0)} success weight · ${esc(row.failures || 0)} failure weight</small></td>
+              <td><strong>${formatNumber(row.successes || 0, 0)} of ${row.observations || 0} recent checks passed</strong><br><small>${formatTrust(row.score)} trust score · ${esc(row.failures || 0)} failed</small></td>
               <td class="num"><div class="score-cell">${scoreTrack(Number(row.score || 0), Number(row.failures || 0) ? "open" : "closed")}<span>${formatTrust(row.score)}</span></div></td>
             </tr>`;
           })
           .join("")}
       </tbody>
     </table>
+    <details class="trust-formula-disclosure">
+      <summary>How this is calculated</summary>
+      <p class="small muted">Trust score = (successes + 1) / (successes + failures + 2). A tool with no checks starts at the Beta(1,1) prior of 0.5.</p>
+    </details>
     <div class="kg-foot">
       <span>${totalObservations} evidence observation${totalObservations === 1 ? "" : "s"} · ${feed.delivery_failures || 0} delivery failure${feed.delivery_failures === 1 ? "" : "s"}</span>
       <span>${rows.filter((row) => row.last_outcome === "probe_pass").length} tool${rows.filter((row) => row.last_outcome === "probe_pass").length === 1 ? "" : "s"} last passed</span>
@@ -3390,7 +3481,7 @@ function renderKnowledge() {
   }
   if (!state.knowledge) {
     container.className = "panel-body flush";
-    container.innerHTML = `<div class="loading-line" style="padding:0 18px">${icon("loader")}Loading graph statistics…</div>`;
+    container.innerHTML = `<div class="loading-line" style="padding:0 18px"><span class="skeleton" style="width:120px;height:16px">&nbsp;</span>${icon("loader")}Loading graph statistics…</div>`;
     if (badge) badge.textContent = "…";
     return;
   }
@@ -3449,7 +3540,7 @@ function renderStagedLedger() {
   }
   if (!state.staged) {
     container.className = "panel-body flush";
-    container.innerHTML = `<div class="loading-line" style="padding:0 18px">${icon("loader")}Loading staging records…</div>`;
+    container.innerHTML = `<div class="loading-line" style="padding:0 18px"><span class="skeleton" style="width:120px;height:16px">&nbsp;</span>${icon("loader")}Loading staging records…</div>`;
     if (badge) badge.textContent = "…";
     return;
   }
@@ -3521,7 +3612,7 @@ function renderEvaluations() {
     return;
   }
   if (!state.evaluations) {
-    container.innerHTML = `<div class="loading-line">${icon("loader")}Loading evaluation reports…</div>`;
+    container.innerHTML = `<div class="loading-line"><span class="skeleton" style="width:120px;height:16px">&nbsp;</span>${icon("loader")}Loading evaluation reports…</div>`;
     if (badge) badge.textContent = "…";
     return;
   }
@@ -3951,6 +4042,91 @@ function scrollToPageHash() {
   window.requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
 }
 
+const ONBOARDING_STEPS = [
+  {
+    title: "Ask one question",
+    copy: "Describe a task in plain language. Agent Bazaar finds trusted tools, runs them, and shows the verified answer and evidence.",
+  },
+  {
+    title: "Search the marketplace",
+    copy: "Use the prominent search box and filter chips to compare services by capability, trust score, and pricing before you connect them.",
+  },
+  {
+    title: "Check the evidence",
+    copy: "Open the Trust Center to see how each tool earned its trust score, what the Auditor checked, and what is waiting for review.",
+  },
+];
+
+let onboardingIndex = 0;
+
+function renderOnboarding() {
+  const title = $("#onboarding-title");
+  const copy = $("#onboarding-copy");
+  const steps = $("#onboarding-steps");
+  const progress = $("#onboarding-progress");
+  const back = $("#onboarding-back");
+  const next = $("#onboarding-next");
+  const step = ONBOARDING_STEPS[onboardingIndex];
+  if (title) title.textContent = step.title;
+  if (copy) copy.textContent = step.copy;
+  if (steps) {
+    steps.innerHTML = ONBOARDING_STEPS.map(
+      (_, index) => `<span class="onboarding-dot ${index === onboardingIndex ? "is-active" : ""} ${index < onboardingIndex ? "is-done" : ""}"></span>`
+    ).join("");
+  }
+  if (progress) progress.textContent = `Step ${onboardingIndex + 1} of ${ONBOARDING_STEPS.length}`;
+  if (back) back.disabled = onboardingIndex === 0;
+  if (next) next.textContent = onboardingIndex === ONBOARDING_STEPS.length - 1 ? "Finish" : "Next";
+}
+
+function showOnboarding() {
+  const overlay = $("#onboarding-overlay");
+  if (!overlay) return;
+  onboardingIndex = 0;
+  renderOnboarding();
+  overlay.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+function hideOnboarding(store) {
+  const overlay = $("#onboarding-overlay");
+  if (overlay) overlay.classList.add("hidden");
+  document.body.style.overflow = "";
+  if (store) {
+    try {
+      localStorage.setItem("ab_onboarded", "1");
+    } catch {}
+  }
+}
+
+function initOnboarding() {
+  const overlay = $("#onboarding-overlay");
+  if (!overlay) return;
+  $("#onboarding-skip")?.addEventListener("click", () => hideOnboarding(true));
+  $("#onboarding-back")?.addEventListener("click", () => {
+    if (onboardingIndex > 0) {
+      onboardingIndex -= 1;
+      renderOnboarding();
+    }
+  });
+  $("#onboarding-next")?.addEventListener("click", () => {
+    if (onboardingIndex < ONBOARDING_STEPS.length - 1) {
+      onboardingIndex += 1;
+      renderOnboarding();
+    } else {
+      hideOnboarding(true);
+    }
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !$("#onboarding-overlay")?.classList.contains("hidden")) {
+      hideOnboarding(true);
+    }
+  });
+  try {
+    if (!localStorage.getItem("ab_onboarded")) showOnboarding();
+  } catch {}
+}
+
 async function bootstrap() {
   try {
     setActivePage();
@@ -3958,6 +4134,7 @@ async function bootstrap() {
     bindSidebar();
     bindModals();
     bindPalette();
+    initOnboarding();
     bindTrace();
     bindDocuments();
     bindOnboarding();
@@ -3991,3 +4168,9 @@ async function bootstrap() {
 }
 
 document.addEventListener("DOMContentLoaded", bootstrap);
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => undefined);
+  });
+}

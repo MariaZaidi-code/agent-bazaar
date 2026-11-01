@@ -114,6 +114,52 @@
   --code-bg: #f1eee7;
 }
 
+[data-theme="high-contrast"] {
+  color-scheme: dark;
+  --bg: #000000;
+  --bg-elevated: #000000;
+  --surface: #000000;
+  --surface-2: #111111;
+  --surface-3: #222222;
+  --surface-hover: #222222;
+  --border: #ffffff;
+  --border-strong: #ffffff;
+  --border-soft: #ffffff;
+  --text: #ffffff;
+  --text-soft: #ffffff;
+  --muted: #ffff00;
+  --faint: #ffff00;
+  --accent: #ffff00;
+  --accent-hover: #ffff66;
+  --accent-soft: #333300;
+  --accent-border: #ffff00;
+  --accent-contrast: #000000;
+  --accent-shadow: none;
+  --green: #00ff00;
+  --green-soft: #002200;
+  --green-border: #00ff00;
+  --green-text: #00ff00;
+  --red: #ff0000;
+  --red-soft: #220000;
+  --red-border: #ff0000;
+  --red-text: #ff0000;
+  --amber: #ffff00;
+  --amber-soft: #333300;
+  --amber-border: #ffff00;
+  --amber-text: #ffff00;
+  --blue: #ffff00;
+  --blue-soft: #333300;
+  --blue-border: #ffff00;
+  --blue-text: #ffff00;
+  --shadow: none;
+  --shadow-panel: none;
+  --glow: none;
+  --grid-line: transparent;
+  --paper-noise: none;
+  --toolbar-bg: #000000;
+  --code-bg: #111111;
+}
+
 *,
 *::before,
 *::after {
@@ -473,7 +519,7 @@ pre {
 
 .theme-switch {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 2px;
   padding: 3px;
   margin-bottom: 12px;
@@ -5818,3 +5864,118 @@ button.mapping-list-row:focus-visible {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* --------------------------------------------------------------------------
+   Onboarding tour
+   -------------------------------------------------------------------------- */
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.onboarding-overlay.hidden { display: none; }
+.onboarding-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+}
+.onboarding-panel {
+  position: relative;
+  width: min(520px, 100%);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-float);
+  overflow: hidden;
+}
+.onboarding-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.onboarding-body {
+  padding: 22px;
+}
+.onboarding-step-indicator {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.onboarding-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border-strong);
+}
+.onboarding-dot.is-active { background: var(--accent); }
+.onboarding-dot.is-done { background: var(--green); }
+.onboarding-body h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 620;
+  letter-spacing: -0.02em;
+}
+.onboarding-body p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.onboarding-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-soft);
+  background: var(--surface-2);
+}
+.onboarding-progress {
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   Recent searches dropdown
+   -------------------------------------------------------------------------- */
+.search-field { position: relative; }
+.recent-searches {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 200;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-float);
+}
+.recent-searches.hidden { display: none; }
+.recent-search-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 28px;
+  padding: 5px 8px;
+  color: var(--text-soft);
+  font-size: 11.5px;
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border-radius: 5px;
+}
+.recent-search-item:hover { background: var(--surface-2); }
+.recent-search-item svg { width: 12px; height: 12px; color: var(--faint); }

@@ -194,8 +194,6 @@ class KnowledgeOntology:
             violations.append(f"{tool.id}: capability is missing")
         elif capability not in CURATED_CAPABILITIES:
             violations.append(f"{tool.id}: capability {tool.capability} is not in the ontology")
-        if not tool.inputs:
-            violations.append(f"{tool.id}: no typed inputs")
         if not tool.outputs:
             violations.append(f"{tool.id}: no typed outputs")
         for direction, concepts in (("input", tool.inputs), ("output", tool.outputs)):

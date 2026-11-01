@@ -10,11 +10,14 @@
   <script>
     try {
       const saved = localStorage.getItem("agent-bazaar-theme");
-      if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
+      if (saved === "light" || saved === "dark" || saved === "high-contrast") document.documentElement.dataset.theme = saved;
     } catch (error) {}
   </script>
   <link rel="stylesheet" href="/static/styles.css?v={{ asset_version }}">
   <link rel="stylesheet" href="/static/premium.css?v={{ asset_version }}">
+  <link rel="stylesheet" href="/static/platform.css?v={{ asset_version }}">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/static/icon.svg">
 </head>
 <body data-page="{{ page }}">
   <a class="skip-link" href="#console-content">Skip to content</a>
@@ -118,6 +121,7 @@
       <div class="theme-switch" role="group" aria-label="Theme">
         <button type="button" data-set-theme="light"><svg><use href="#i-sun"></use></svg>Light</button>
         <button type="button" data-set-theme="dark"><svg><use href="#i-moon"></use></svg>Dark</button>
+        <button type="button" data-set-theme="high-contrast"><svg><use href="#i-alert"></use></svg>High contrast</button>
       </div>
 
       <div class="sidebar-user">
@@ -303,7 +307,7 @@
             <header class="window-bar">
               <span class="window-route">Catalogue health</span>
             </header>
-            <div class="window-body catalogue-stats" id="catalogue-stats" role="status" aria-live="polite"></div>
+            <div class="window-body catalogue-stats" id="catalogue-stats" role="status" aria-live="polite"><span class="skeleton" style="width:120px;height:18px">&nbsp;</span></div>
           </article>
 
           <div class="market-controls">
@@ -311,6 +315,7 @@
               <svg><use href="#i-search"></use></svg>
               <input id="market-search" type="search" placeholder="Search tools, capabilities or data types..." autocomplete="off">
               <kbd>/</kbd>
+              <div class="recent-searches hidden" id="recent-searches" role="listbox" aria-label="Recent searches"></div>
             </label>
             <label class="select-button"><svg><use href="#i-filter"></use></svg><select id="capability-filter" aria-label="Capability filter"></select></label>
             <label class="select-button"><svg><use href="#i-sort"></use></svg><select id="sort-filter" aria-label="Sort tools">
@@ -380,7 +385,7 @@
 
           <div id="monitor-notice" class="hidden" role="status" aria-live="polite"></div>
 
-          <div class="metric-grid" id="monitor-metrics" role="status" aria-live="polite"></div>
+          <div class="metric-grid" id="monitor-metrics" role="status" aria-live="polite"><div class="skeleton" style="width:100%;height:72px"></div><div class="skeleton" style="width:100%;height:72px"></div><div class="skeleton" style="width:100%;height:72px"></div><div class="skeleton" style="width:100%;height:72px"></div></div>
 
           <div class="control-room" id="monitor-control-room" aria-label="Incident controls">
             <div class="control-room-fields">
@@ -466,7 +471,7 @@
                   <span class="badge neutral" id="auditor-coverage-badge">—</span>
                 </div>
                 <div class="panel-body" id="auditor-overview" role="status" aria-live="polite">
-                  <div class="loading-line">Loading Auditor overview…</div>
+                  <div class="loading-line"><span class="skeleton" style="width:120px;height:16px">&nbsp;</span>Loading Auditor overview…</div>
                 </div>
               </article>
 
@@ -476,7 +481,7 @@
                   <span class="badge neutral" id="leaderboard-count">—</span>
                 </div>
                 <div id="trust-leaderboard" class="panel-body flush" role="status" aria-live="polite">
-                  <div class="loading-line" style="padding: 0 18px">Loading trust observations…</div>
+                  <div class="loading-line" style="padding: 0 18px"><span class="skeleton" style="width:120px;height:16px">&nbsp;</span>Loading trust observations…</div>
                 </div>
               </article>
 
@@ -486,7 +491,7 @@
                   <span class="badge neutral" id="knowledge-backend">—</span>
                 </div>
                 <div id="knowledge-body" class="panel-body flush" role="status" aria-live="polite">
-                  <div class="loading-line" style="padding: 0 18px">Loading graph statistics…</div>
+                  <div class="loading-line" style="padding: 0 18px"><span class="skeleton" style="width:120px;height:16px">&nbsp;</span>Loading graph statistics…</div>
                 </div>
               </article>
 
@@ -496,7 +501,7 @@
                   <span class="badge neutral" id="staging-count">—</span>
                 </div>
                 <div id="staging-ledger" class="panel-body flush" role="status" aria-live="polite">
-                  <div class="loading-line" style="padding: 0 18px">Loading staging records…</div>
+                  <div class="loading-line" style="padding: 0 18px"><span class="skeleton" style="width:120px;height:16px">&nbsp;</span>Loading staging records…</div>
                 </div>
               </article>
             </div>
@@ -548,7 +553,7 @@
                   <span class="badge neutral" id="evaluation-count">—</span>
                 </div>
                 <div class="panel-body" id="evaluations-body" role="status" aria-live="polite">
-                  <div class="loading-line">Loading evaluation reports…</div>
+                  <div class="loading-line"><span class="skeleton" style="width:120px;height:16px">&nbsp;</span>Loading evaluation reports…</div>
                 </div>
               </article>
             </div>
@@ -589,7 +594,7 @@
                   </form>
                   <div id="upload-result" class="inline-result hidden" role="status" aria-live="polite"></div>
                   <div id="document-list" class="document-list" role="status" aria-live="polite">
-                    <div class="loading-line">Loading documents…</div>
+                    <div class="loading-line"><span class="skeleton" style="width:120px;height:16px">&nbsp;</span>Loading documents…</div>
                   </div>
                 </div>
               </section>
@@ -818,6 +823,22 @@
             </article>
           </div>
         </section>
+        <section class="page-view" data-view="help">
+          <header class="page-header"><h1>Help</h1><p>Quickstart, FAQ, API reference and troubleshooting.</p></header>
+          <article class="card"><h2>Getting started</h2><p>Ask anything in the search box. Agent Bazaar decomposes your task, retrieves tools, verifies claims, runs them, and synthesises an answer with citations.</p></article>
+        </section>
+        <section class="page-view" data-view="settings">
+          <header class="page-header"><h1>Settings</h1><p>Theme, offline mode, notifications and workspace preferences.</p></header>
+          <article class="card"><p>Manage your preferences in the settings panel.</p></article>
+        </section>
+        <section class="page-view" data-view="analytics">
+          <header class="page-header"><h1>Usage analytics</h1><p>Tasks per day, top tools, success rate and latency.</p></header>
+          <article class="card"><p>Analytics are available from the admin dashboard.</p></article>
+        </section>
+        <section class="page-view" data-view="admin">
+          <header class="page-header"><h1>Admin controls</h1><p>Manage users, tools, overrides and feature flags.</p></header>
+          <article class="card"><p>Admin tools are available to workspace administrators.</p></article>
+        </section>
       </main>
     </div>
   </div>
@@ -930,6 +951,26 @@ AB_LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free</pre>
     </section>
   </div>
 
+  <div class="onboarding-overlay hidden" id="onboarding-overlay" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+    <div class="onboarding-backdrop"></div>
+    <section class="onboarding-panel">
+      <header class="onboarding-head">
+        <span class="window-route">Welcome</span>
+        <button class="window-close" type="button" id="onboarding-skip" aria-label="Skip tour"><svg><use href="#i-x"></use></svg></button>
+      </header>
+      <div class="onboarding-body">
+        <div class="onboarding-step-indicator" id="onboarding-steps"></div>
+        <h2 id="onboarding-title"></h2>
+        <p id="onboarding-copy"></p>
+      </div>
+      <footer class="onboarding-foot">
+        <button class="text-button" type="button" id="onboarding-back">Back</button>
+        <span class="onboarding-progress" id="onboarding-progress"></span>
+        <button class="btn primary" type="button" id="onboarding-next">Next</button>
+      </footer>
+    </section>
+  </div>
+
   <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -937,5 +978,6 @@ AB_LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free</pre>
     window.__VERSION__ = "{{ version }}";
   </script>
   <script src="/static/app.js?v={{ asset_version }}" defer></script>
+  <script src="/static/platform.js?v={{ asset_version }}" defer></script>
 </body>
 </html>

@@ -2715,6 +2715,227 @@
       "outputs": [
         "Repository"
       ]
+    },
+    "GetNaturalEvents": {
+      "description": "List active natural events tracked by an agency.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Text"
+      ]
+    },
+    "GetTideTimes": {
+      "description": "Get tide predictions for a coastal station.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Text"
+      ]
+    },
+    "GetExchangeRate": {
+      "description": "Get the latest exchange rate between two currencies.",
+      "inputs": [
+        "CurrencyCode"
+      ],
+      "outputs": [
+        "ExchangeRate"
+      ]
+    },
+    "TranslateTextLibre": {
+      "description": "Translate text with LibreTranslate.",
+      "inputs": [
+        "Text",
+        "LanguageCode"
+      ],
+      "outputs": [
+        "Translation"
+      ]
+    },
+    "GetPublicPosts": {
+      "description": "Read a public social timeline.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Text"
+      ]
+    },
+    "GetSportsEvents": {
+      "description": "List scheduled sports events.",
+      "inputs": [
+        "SportsLeague",
+        "Text"
+      ],
+      "outputs": [
+        "Text"
+      ]
+    },
+    "ShortenUrl": {
+      "description": "Create a short URL.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Text"
+      ]
+    },
+    "GetMarsPhotos": {
+      "description": "Get photos from Mars rovers.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Text"
+      ]
+    },
+    "SearchWikidata": {
+      "description": "Search knowledge-base entities.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Text"
+      ]
+    },
+    "GetTravelGuide": {
+      "description": "Get a destination travel guide summary.",
+      "inputs": [
+        "LocationName"
+      ],
+      "outputs": [
+        "Text"
+      ]
+    },
+    "GetStockQuote": {
+      "description": "Get a stock or ETF quote.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "MoneyAmount"
+      ]
+    },
+    "GetRSSFeed": {
+      "description": "Read items from an RSS or Atom feed.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "NewsArticle"
+      ]
+    },
+    "GetDBpediaSummary": {
+      "description": "Get an encyclopedic summary from DBpedia.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Text"
+      ]
+    },
+    "GetISSPosition": {
+      "description": "Get the current ISS position.",
+      "inputs": [],
+      "outputs": [
+        "Coordinates"
+      ]
+    },
+    "GetAirQualityForecast": {
+      "description": "Get current air quality measurements.",
+      "inputs": [
+        "Coordinates"
+      ],
+      "outputs": [
+        "Text"
+      ]
+    },
+    "GetMarineForecast": {
+      "description": "Get current marine conditions.",
+      "inputs": [
+        "Coordinates"
+      ],
+      "outputs": [
+        "Text"
+      ]
+    },
+    "ValidateEmail": {
+      "description": "Validate an email address locally.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Text"
+      ]
+    },
+    "CheckPasswordStrength": {
+      "description": "Estimate password strength locally.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Text"
+      ]
+    },
+    "GenerateUUID": {
+      "description": "Generate random UUIDs locally.",
+      "inputs": [
+        "Number"
+      ],
+      "outputs": [
+        "Text"
+      ]
+    },
+    "TransformData": {
+      "description": "Parse CSV or JSON text into a table.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "TabularAnswer"
+      ]
+    },
+    "GetPublicIP": {
+      "description": "Get the public IP address.",
+      "inputs": [],
+      "outputs": [
+        "Text"
+      ]
+    },
+    "GetQuote": {
+      "description": "Get a random quote.",
+      "inputs": [],
+      "outputs": [
+        "Text"
+      ]
+    },
+    "GetSpaceLaunches": {
+      "description": "List upcoming space launches.",
+      "inputs": [
+        "Number"
+      ],
+      "outputs": [
+        "Event"
+      ]
+    },
+    "GetCountryIndicator": {
+      "description": "Get a World Bank development indicator.",
+      "inputs": [
+        "CountryCode"
+      ],
+      "outputs": [
+        "Number"
+      ]
+    },
+    "GetWordDefinition": {
+      "description": "Look up a word definition.",
+      "inputs": [
+        "Text"
+      ],
+      "outputs": [
+        "Text"
+      ]
     }
   }
 }

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import time
 from collections.abc import Sequence
 from typing import Any
@@ -298,6 +299,8 @@ class ClientAgent:
         else:
             status = TaskStatus.failed
         answer = self._synthesize_answer(plan, status, step_failures)
+        reflection_warnings, reflection = await self._reflect(task, plan, status, answer)
+        warnings.extend(reflection_warnings)
         result = TaskResult(
             task_id=task_id,
             task=task,
@@ -310,6 +313,13 @@ class ClientAgent:
             mode=self._mode(plan),
             metrics=metrics,
             error="; ".join(step_failures) if step_failures else None,
+        )
+        self._trace(
+            task_id,
+            "self_reflection",
+            "client",
+            "Checked the answer against the executed tool results.",
+            reflection,
         )
         result.metrics.total_ms = round((time.perf_counter() - started) * 1000, 2)
         self._trace(
@@ -1491,6 +1501,74 @@ class ClientAgent:
                 ordered.extend(remaining.values())
                 break
         return ordered
+
+    async def _reflect(
+        self,
+        task: str,
+        plan: ExecutionPlan,
+        status: TaskStatus,
+        answer: str,
+    ) -> tuple[list[str], dict[str, Any]]:
+        warnings: list[str] = []
+        completed = [
+            step
+            for step in plan.steps
+            if step.status in {StepStatus.completed, StepStatus.substituted}
+        ]
+        checks = {
+            "completed_steps": len(completed),
+            "answer_present": bool(answer.strip()),
+            "empty_outputs": [
+                step.tool_id
+                for step in completed
+                if not step.output
+            ],
+            "fixture_sources": [
+                step.tool_id for step in completed if step.source == "fixture"
+            ],
+        }
+        if not completed:
+            warnings.append("Self-review: no tool returned a result, so the answer is a failure summary.")
+        elif not answer.strip():
+            warnings.append("Self-review: the answer was empty after execution.")
+        if checks["empty_outputs"]:
+            warnings.append(
+                "Self-review: these tools returned no usable output: "
+                + ", ".join(checks["empty_outputs"])
+                + "."
+            )
+        if (
+            completed
+            and not self.settings.offline_mode
+            and all(step.source == "fixture" for step in completed)
+        ):
+            warnings.append("Self-review: every tool result came from an offline fixture.")
+        if status == TaskStatus.failed and completed:
+            warnings.append("Self-review: the task is marked failed although some steps completed.")
+        if self.planner.llm.enabled and self.settings.reasoning_mode in {"llm", "hybrid"}:
+            summary = "\n".join(
+                f"- {step.tool_id} ({step.capability}): {json.dumps(step.output or {})[:400]}"
+                for step in completed
+            )
+            prompt = (
+                f"Task: {task}\n\nAnswer:\n{answer}\n\nTool results:\n{summary}\n\n"
+                "Reply with OK if the answer is supported by the tool results. "
+                "Otherwise reply with one short sentence describing the problem."
+            )
+            review = await self.planner.llm.complete(
+                prompt,
+                system=(
+                    "You are a careful reviewer. Check that the answer only uses the "
+                    "provided tool results. Be brief."
+                ),
+                max_tokens=160,
+            )
+            if review.ok:
+                verdict = review.text.strip()
+                checks["llm_review"] = verdict[:300]
+                if verdict and not verdict.upper().startswith("OK"):
+                    warnings.append(f"Self-review: {verdict[:240]}")
+        return warnings, {"checks": checks, "warnings": warnings}
 
     def _synthesize_answer(
         self,

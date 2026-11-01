@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Agent Bazaar">
+  <rect width="512" height="512" rx="112" fill="#2649c8"/>
+  <g fill="#ffffff">
+    <rect x="120" y="120" width="104" height="104" rx="18"/>
+    <rect x="288" y="120" width="104" height="104" rx="18"/>
+    <rect x="120" y="288" width="104" height="104" rx="18"/>
+    <rect x="288" y="288" width="104" height="104" rx="18"/>
+  </g>
+</svg>

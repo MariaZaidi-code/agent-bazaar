@@ -119,7 +119,7 @@ class Ontology:
             violations.append(f"{tool.id}: capability is missing")
         elif tool.capability not in self.capabilities:
             violations.append(f"{tool.id}: capability {tool.capability} is not in the ontology")
-        if not tool.inputs:
+        if not tool.inputs and (self.capabilities.get(tool.capability) or {}).get("inputs"):
             violations.append(f"{tool.id}: no typed inputs")
         if not tool.outputs:
             violations.append(f"{tool.id}: no typed outputs")

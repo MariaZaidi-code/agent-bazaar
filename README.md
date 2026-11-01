@@ -47,6 +47,8 @@ Client, Provider and Interface:
 - [Demonstration script](docs/demo-guide.md)
 - [Mapper/Auditor integration contracts](docs/integration.md)
 - [Requirement-to-code traceability](docs/requirements-traceability.md)
+- [MCP client/server and reasoning modes](docs/mcp.md)
+- [Docker, Kubernetes, health, metrics and security](docs/operations.md)
 
 Auditor and monitoring:
 
@@ -69,8 +71,10 @@ Auditor and monitoring:
 
 - **Client agent** with decomposition, GraphRAG retrieval, ontology filtering, claim-aware ranking, dependency-aware composition, type/unit link checks, execution, recovery and answer synthesis.
 - **Free-first ranking** with a deterministic tier partition (free, freemium, paid, unknown), weighted quality factors, a shrunk rating factor and an executability gate: paid and keyed tools are ranked and shown with a reason but never called.
-- **Provider layer** for Open-Meteo, Frankfurter, OpenStreetMap Nominatim, REST Countries, Nager.Date, arXiv, a read-only university SQLite database and uploaded-document question answering.
-- **Resilience** with backup mirrors for six live providers, an adversarial Fahrenheit weather mock, trust-weighted ranking, a three-state circuit breaker and circuit-breaker substitution.
+- **Provider layer with 62 free, keyless, executable tools** across 15 categories: weather and environment, geography and places, finance and crypto, news and media, knowledge and reference, science and health, food, travel, sports, entertainment, language, developer utilities, data and conversion, space, and local-only tools (SQL, document QA, adversarial mock). Every tool has typed inputs/outputs, an offline fixture and a catalogue contract test.
+- **MCP client and server**: Agent Bazaar exposes `run_task`, `search_tools`, `get_trace`, `list_providers`, `verify_tool` and `monitor_tool`, three resources and three prompts over stdio, and can consume other MCP servers configured through `AB_MCP_SERVERS`.
+- **Reasoning agents** with deterministic planning, an optional LLM planner and LLM self-review, and a recorded `self_reflection` trace event. `AB_REASONING_MODE` selects `none`, `llm` or `hybrid` (default).
+- **Resilience** with backup mirrors for live providers, an adversarial Fahrenheit weather mock, trust-weighted ranking, a three-state circuit breaker and circuit-breaker substitution.
 - **Trust registry** with Beta-style scoring, signal history, contradiction penalties, demotion and replay verification.
 - **Trace viewer** persisting every decision, provider call, verification result and recovery event in SQLite.
 - **Responsive web interface** with page routes for the workflow dashboard, the service
@@ -82,22 +86,23 @@ Auditor and monitoring:
   trust replay, using a keyboard command palette, staging corrections, saving tasks, tools
   and workflows, sharing and exporting answers, and injecting demo failures.
 - **Evaluation suite** with 50 matching tasks, 15 chain tasks, B1/B2 baseline comparison, 7 substitution cases, 6 trust scenarios, a seven-configuration ablation and a 48-task free-first ranking suite.
-- **261 automated tests** across the merged application, knowledge-layer, Auditor and bridge suites, including 43 integration tests for the application/knowledge-layer bridge, plus Ruff checks and GitHub Actions CI.
+- **Operations surface**: Dockerfile, Compose file, Kubernetes manifests, `/readyz`, Prometheus `/metrics`, CSP and security headers, PWA manifest, service worker and offline page.
+- **Automated tests** across the merged application, knowledge-layer, Auditor and bridge suites, including catalogue-contract tests for every tool, MCP protocol tests, ops endpoint tests and reasoning-reflection tests, plus Ruff checks and GitHub Actions CI with Docker build and manifest validation.
 
 ### Auditor and Monitoring
 
-- **Claim verification** over 15 keyless APIs and 47 curated claims, with the fixed four-label decision table and evidence from both documentation and probes.
+- **Claim verification** over 125 curated, labelled claims with the fixed four-label decision table and evidence from both documentation and probes.
 - **Safe probing** with fixtures, rate limiting, caching and JSON/XML payload validation.
-- **Drift monitoring** that combines rule checks with schema embeddings and emits field-level `DriftAlert` messages.
+- **Drift monitoring** that combines rule checks with schema embeddings and emits field-level `DriftAlert` messages, with 45 labelled drift scenarios.
 - **Trust updates** through a Beta-style ledger and an optional HTTP registry feed.
 - **Mock providers** for rename, removal, type change, unit change, garbage `200`, outage, flapping and dishonest responses.
-- **Reproducible evaluation** with 60 labelled claims, 20 injected drift scenarios, false-alarm controls and a dishonest-provider trust experiment.
+- **Reproducible evaluation** with false-alarm controls, batch `verify`/`monitor` methods and a dishonest-provider trust experiment.
 - **Application integration** through `AuditorBridge`: the six catalogue tools used by the app are verified by the real Auditor, the local SQL/document/mock providers keep the seeded fallback, and `/api/auditor/*` exposes catalog, verify, monitor and trust data.
 - **32 Auditor tests** in addition to the application and knowledge-layer suites.
 
 ### Knowledge layer and Mapper
 
-- **Ontology** with a frozen 12-class upper ontology, a curated domain layer of 60 concepts, unit families with compatibility rules, and SHACL shapes for validation.
+- **Ontology** with a frozen 12-class upper ontology, 203 seed concepts and 85 capabilities, unit families with compatibility rules, and SHACL shapes for validation.
 - **RDF knowledge graph** store with loaders and query helpers for tools, concepts, units, capabilities and mappings.
 - **API sourcing** with a pluggable source protocol, the APIs.guru directory and a local upload source, a manifest v2 that carries the commercial and access facts of every document, a refresh diff, and a curated override file that wins over the extraction rules.
 - **Quality profiles** with one `ab:Offering` node per tool: pricing tier, access requirement, price, rate limit, probe budget, licence, terms URL, documentation quality, mapping coverage, rating and the evidence behind each fact.
@@ -106,7 +111,6 @@ Auditor and monitoring:
 - **Mapper agent** with retrieval, LLM mapping, SHACL repair, bounded staging of corrections and drift detection.
 - **Pipeline** that takes a service listing through ingestion, mapping and a validated graph write.
 - **Mapping evaluation** helpers for metrics, ablations and learning curves.
-- **130 unit and end-to-end tests**.
 
 ## Quickstart (PowerShell)
 
@@ -127,9 +131,8 @@ python scripts/demo_mapper.py
 python -m pytest
 ```
 
-`python -m pytest` runs the whole merged suite: the 130 knowledge-layer tests, the 50
-application tests, the 43 integration tests, the 32 Auditor tests, the 6 Auditor bridge
-tests and the platform tests, 264 in total.
+`python -m pytest` runs the whole merged suite: application, knowledge-layer, Auditor,
+bridge, provider-contract, MCP, ops and platform tests.
 
 This uses the committed 8-spec seed corpus and the deterministic hashing
 embedder. No API key is needed. To fetch the full corpus and use the embedding
@@ -215,7 +218,15 @@ AB_AUDITOR_PERSIST=true
 
 `AB_OFFLINE_MODE=true` is recommended for the first run and for evaluation. Live mode contacts only free, keyless public APIs. Set `AB_OFFLINE_MODE=false` to use them. If a live provider fails, the app falls back to an offline fixture and records the failure.
 
-The optional LLM planner supports OpenAI-compatible providers (`none`, `openrouter`, `groq`, `gemini`). The complete demonstration and evaluation work without an LLM.
+The optional LLM planner supports OpenAI-compatible providers (`none`, `openrouter`, `groq`, `gemini`). The complete demonstration and evaluation work without an LLM. `AB_REASONING_MODE=none|llm|hybrid` controls whether the LLM is used for planning and self-review; the default `hybrid` uses deterministic planning first and adds an LLM review when one is configured. See [docs/mcp.md](docs/mcp.md#reasoning-modes).
+
+Agent Bazaar can also consume other MCP servers:
+
+```dotenv
+AB_MCP_SERVERS=["filesystem|npx -y @modelcontextprotocol/server-filesystem C:\\data"]
+```
+
+See [docs/mcp.md](docs/mcp.md) for the server's tools, resources and prompts, and for client configuration.
 
 The free-first ranking policy has its own settings, all optional:
 
@@ -265,7 +276,7 @@ Developer UI
 
 Knowledge layer (src/agent_bazaar)
    listing -> ingestion -> Mapper -> validated RDF graph write
-   ontology (upper classes, 60 domain concepts, units, SHACL shapes)
+   ontology (upper classes, 203 seed concepts, 85 capabilities, units, SHACL shapes)
    graph (tools, concepts, units, capabilities, mappings)
    vector index (ontology terms, tool descriptions, corrections)
    |
@@ -315,6 +326,7 @@ app/
   evaluation/    datasets, metrics and runnable suites
   integration/   bridge between the knowledge layer and the app (canonical vocabulary and adapters)
   knowledge/     ontology, tool graph, GraphRAG retrieval
+  mcp/           MCP client, registry, adapter, protocol and stdio server
   providers/     live/fixture provider agents and mirrors
   web/           FastAPI templates and vanilla JS/CSS interface
   config.py      typed settings with environment overrides
@@ -361,10 +373,13 @@ data/
   demo/          generated demo workspace from scripts/demo_mapper.py
   runtime/       application runtime state (not committed)
 config/          settings.example.yaml; settings.yaml is gitignored
+deploy/k8s/      Kubernetes namespace, config, PVC, deployment, service and ingress
+Dockerfile       production-style image with a /readyz health check
+docker-compose.yml
 run.py           development entry point
 ```
 
-Committed artifacts: `data/out/ontology.ttl` (upper ontology, units and 60 concepts),
+Committed artifacts: `data/out/ontology.ttl` (upper ontology, units and the frozen domain layer),
 `data/out/graph.ttl` (8 tools, 467 mapping nodes), `data/out/ontology_llm_demo.ttl` and the
 other demo/domain TTLs, `data/out/logs/` build summaries, `data/eval/mapping_gold.jsonl`, the
 8-spec seed corpus, `reports/*.json` and the documents under `docs/`.
@@ -562,6 +577,8 @@ Swagger page.
 | `POST /api/demo/trip/{tool}` | Manually trip a breaker |
 | `POST /api/demo/reset` | Clear trust, breakers, drift and overrides |
 | `GET /api/evaluations` | Evaluation reports |
+| `GET /readyz` | Readiness probe; 503 until providers are loaded |
+| `GET /metrics` | Prometheus text metrics for requests, errors, tools and trust |
 
 `POST /api/tasks` returns 404 when `document_id` does not match a stored document.
 
@@ -574,6 +591,24 @@ Swagger page.
 - The graph is exposed as Turtle at `data/runtime/knowledge_graph.ttl`; the local ontology and graph classes are the fallback for the concepts and the tools the knowledge layer does not model.
 
 See [docs/integration.md](docs/integration.md) for method-level contracts.
+
+## Docker and Kubernetes
+
+```powershell
+docker compose up --build
+```
+
+The image runs as a non-root user and exposes a `/readyz` health check. To deploy to a
+cluster:
+
+```powershell
+docker build -t agent-bazaar:local .
+kubectl apply -f deploy/k8s/agent-bazaar.yaml
+```
+
+The manifest creates a namespace, config map, persistent volume claim, deployment, service
+and ingress. See [docs/operations.md](docs/operations.md) for health, metrics and security
+defaults.
 
 ## Push to GitHub
 

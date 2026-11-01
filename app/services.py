@@ -84,6 +84,10 @@ class AppServices:
                 self.providers.register(provider)
             except Exception:
                 pass
+        try:
+            self.retriever.rebuild()
+        except Exception:
+            pass
 
     def export_graph(self) -> bool:
         trust = {item["provider_id"]: item for item in self.trust.all()}
@@ -196,7 +200,7 @@ def build_services(settings: Settings | None = None) -> AppServices:
         live=resolved.auditor_live,
         persist=resolved.auditor_persist,
     )
-    planner = TaskPlanner(ontology, llm)
+    planner = TaskPlanner(ontology, llm, resolved)
     bus = MessageBus(traces)
     client = ClientAgent(
         resolved,

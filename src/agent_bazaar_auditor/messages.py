@@ -50,6 +50,36 @@ class Message:
     def to_json(self) -> str:
         return json.dumps(self.to_dict(), indent=2, ensure_ascii=False)
 
+    def __getitem__(self, key: Any) -> Any:
+        if not isinstance(key, str):
+            raise KeyError(key)
+        if key == "type":
+            return self.message_type
+        try:
+            return getattr(self, key)
+        except AttributeError as error:
+            raise KeyError(key) from error
+
+    def get(self, key: Any, default: Any = None) -> Any:
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def __contains__(self, key: Any) -> bool:
+        if not isinstance(key, str):
+            return False
+        return key == "type" or hasattr(self, key)
+
+    def keys(self) -> list[str]:
+        return [item.name for item in fields(self)] + ["type"]
+
+    def values(self) -> list[Any]:
+        return [self[key] for key in self.keys()]
+
+    def items(self) -> list[tuple[str, Any]]:
+        return [(key, self[key]) for key in self.keys()]
+
 
 @dataclass
 class CoverageReport:

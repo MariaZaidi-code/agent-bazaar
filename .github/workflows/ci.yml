@@ -116,3 +116,27 @@ jobs:
             data/out/graph.ttl
             data/out/logs/
         if-no-files-found: error
+
+  container:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build the image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: agent-bazaar:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Validate Kubernetes manifests
+        run: |
+          python -m pip install pyyaml
+          python -c "import yaml; from pathlib import Path; docs = list(yaml.safe_load_all(Path('deploy/k8s/agent-bazaar.yaml').read_text())); assert docs and all(isinstance(d, dict) for d in docs); print('validated', len(docs), 'Kubernetes documents')"

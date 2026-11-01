@@ -1,0 +1,32 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: agent-bazaar:local
+    ports:
+      - "8000:8000"
+    environment:
+      AB_HOST: "0.0.0.0"
+      AB_PORT: "8000"
+      AB_RUNTIME_DIR: "/app/data/runtime"
+      AB_OFFLINE_MODE: "${AB_OFFLINE_MODE:-false}"
+      AB_LLM_PROVIDER: "${AB_LLM_PROVIDER:-none}"
+      AB_LLM_API_KEY: "${AB_LLM_API_KEY:-}"
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - agent_bazaar_runtime:/app/data/runtime
+      - agent_bazaar_out:/app/data/out
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8000/readyz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  agent_bazaar_runtime:
+  agent_bazaar_out:

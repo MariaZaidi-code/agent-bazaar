@@ -256,6 +256,36 @@ SEED_CONCEPTS: list[DomainConcept] = [
     _concept("PointOfInterest", "Point of interest", "object", ["point_of_interest_record"], parents=["LocationRecord"]),
     _concept("POICategory", "Point of interest category", "string", ["poi_category_name"], parents=["LocationRecord"]),
     _concept("NearbyPlace", "Nearby place", "object", ["nearby_place_record"], parents=["LocationRecord"]),
+    # -- sprint 2/4 additions: media ------------------------------------------------
+    _concept("StreamingService", "Streaming service", "object", ["streaming_service", "platform_name"], parents=["Media"]),
+    _concept("VideoGame", "Video game", "object", ["video_game", "game_record"], parents=["Media"]),
+    _concept("Audiobook", "Audiobook", "object", ["audiobook_record", "audio_book"], parents=["Media"]),
+    _concept("MediaReleaseDate", "Media release date", "datetime", ["media_release_date", "release_date"], parents=["Media"]),
+    # -- sprint 2/4 additions: events -----------------------------------------------
+    _concept("EventTicket", "Event ticket", "object", ["event_ticket", "ticket_record"], parents=["EventRecord"]),
+    _concept("EventCapacity", "Event capacity", "integer", ["event_capacity", "capacity"], parents=["EventRecord"], unit_family="CountUnit", default_unit="Count"),
+    _concept("EventPrice", "Event price", "float", ["event_price", "ticket_price"], parents=["EventRecord"], unit_family="CurrencyUnit", default_unit="USD"),
+    _concept("EventImage", "Event image", "string", ["event_image", "event_image_url"], parents=["EventRecord"]),
+    # -- sprint 2/4 additions: organizations ---------------------------------------
+    _concept("OrganizationRevenue", "Organization revenue", "float", ["organization_revenue", "annual_revenue"], parents=["OrganizationRecord"], unit_family="CurrencyUnit", default_unit="USD"),
+    _concept("OrganizationHeadquarters", "Organization headquarters", "string", ["headquarters", "hq_location"], parents=["OrganizationRecord"]),
+    _concept("OrganizationFoundedDate", "Organization founded date", "date", ["organization_founded_date", "founded_date"], parents=["OrganizationRecord"]),
+    _concept("OrganizationSocialUrl", "Organization social URL", "string", ["organization_social_url", "social_url"], parents=["OrganizationRecord"]),
+    # -- sprint 2/4 additions: people -----------------------------------------------
+    _concept("PersonEmail", "Person email", "string", ["person_email", "contact_email"], parents=["PersonRecord"]),
+    _concept("PersonPhone", "Person phone", "string", ["person_phone", "contact_phone"], parents=["PersonRecord"]),
+    _concept("PersonWebsite", "Person website", "string", ["person_website", "personal_url"], parents=["PersonRecord"]),
+    _concept("PersonOccupation", "Person occupation", "string", ["occupation", "job_title"], parents=["PersonRecord"]),
+    # -- sprint 2/4 additions: products ---------------------------------------------
+    _concept("ProductWeight", "Product weight", "float", ["product_weight", "weight_grams"], parents=["ProductRecord"], unit_family="MassUnit", default_unit="Gram"),
+    _concept("ProductDimensions", "Product dimensions", "string", ["product_dimensions", "dimensions"], parents=["ProductRecord"]),
+    _concept("ProductManufacturer", "Product manufacturer", "string", ["manufacturer", "maker"], parents=["ProductRecord"]),
+    _concept("ProductAvailability", "Product availability", "string", ["availability", "stock_status"], parents=["ProductRecord"]),
+    # -- sprint 2/4 additions: locations --------------------------------------------
+    _concept("LocationPopulation", "Location population", "integer", ["location_population", "population_count"], parents=["LocationRecord"], unit_family="CountUnit", default_unit="Count"),
+    _concept("LocationArea", "Location area", "float", ["location_area", "area_size"], parents=["LocationRecord"], unit_family="AreaUnit", default_unit="SquareKilometre"),
+    _concept("LocationLandmark", "Location landmark", "object", ["location_landmark", "landmark_record"], parents=["LocationRecord"]),
+    _concept("LocationPostalCode", "Location postal code", "string", ["location_postal_code", "zip_code_value"], parents=["LocationRecord"]),
 ]
 
 

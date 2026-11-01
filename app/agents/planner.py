@@ -202,9 +202,10 @@ SPORTS_LEAGUES = {
 
 
 class TaskPlanner:
-    def __init__(self, ontology: Ontology, llm: LLMClient) -> None:
+    def __init__(self, ontology: Ontology, llm: LLMClient, settings: Settings | None = None) -> None:
         self.ontology = ontology
         self.llm = llm
+        self.settings = settings if settings is not None else getattr(llm, "settings", None)
 
     async def decompose(
         self, task: str, correlation_id: str = ""
@@ -216,7 +217,7 @@ class TaskPlanner:
         warnings: list[str] = []
         if subgoals:
             return subgoals, warnings
-        if self.llm.enabled:
+        if self.llm.enabled and self.settings.reasoning_mode in {"llm", "hybrid"}:
             llm_subgoals = await self._llm_plan(cleaned)
             if llm_subgoals:
                 warnings.append("Plan produced by the optional LLM planner.")

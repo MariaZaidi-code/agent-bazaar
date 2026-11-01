@@ -67,6 +67,53 @@ def aggregate_coverage(results: Iterable[VerifyResult]) -> CoverageReport:
     )
 
 
+class BatchResult(dict):
+    def __init__(self, entries: list[dict[str, Any]], monitoring: bool) -> None:
+        super().__init__()
+        self._entries = list(entries)
+        self.monitoring = bool(monitoring)
+        self.results = self._entries
+        self.count = len(self._entries)
+        self.succeeded = sum(1 for entry in self._entries if "result" in entry)
+        self.failed = self.count - self.succeeded
+        for entry in self._entries:
+            if "result" in entry and entry.get("tool_id"):
+                self[entry["tool_id"]] = entry["result"]
+
+    def __getitem__(self, key: Any) -> Any:
+        if isinstance(key, str):
+            if key == "monitoring":
+                return self.monitoring
+            if key == "count":
+                return self.count
+            if key == "succeeded":
+                return self.succeeded
+            if key == "failed":
+                return self.failed
+            if key == "results":
+                return self._entries
+            if key in self:
+                return super().__getitem__(key)
+            for entry in self._entries:
+                if entry.get("tool_id") == key:
+                    return entry.get("result")
+        return super().__getitem__(key)
+
+    def __contains__(self, key: Any) -> bool:
+        if isinstance(key, str) and key in {"monitoring", "count", "succeeded", "failed", "results"}:
+            return True
+        return super().__contains__(key)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "monitoring": self.monitoring,
+            "count": self.count,
+            "succeeded": self.succeeded,
+            "failed": self.failed,
+            "results": self._entries,
+        }
+
+
 class Auditor:
     def __init__(
         self,
@@ -244,7 +291,11 @@ class Auditor:
         notes: list[str],
     ) -> CoverageReport:
         total = len(assessments)
-        probeable = sum(1 for item in assessments if item.probed or (item.claim.probeable and item.probe_outcome is not ProbeOutcome.NOT_PROBEABLE))
+        probeable = sum(
+            1
+            for item in assessments
+            if item.probed or (item.claim.probeable and item.probe_outcome is not ProbeOutcome.NOT_PROBEABLE)
+        )
         probed = sum(1 for item in assessments if item.probed)
         sources: dict[str, int] = {}
         if probe is not None and probed:
@@ -337,7 +388,9 @@ class Auditor:
         artifact = ""
         drift_check: DriftCheck | None = None
         definition = self.definitions.get(tool_id)
-        should_probe = definition is not None and definition.probeable and any(claim.probeable for claim in request_claims)
+        should_probe = (
+            definition is not None and definition.probeable and any(claim.probeable for claim in request_claims)
+        )
         if should_probe:
             probe = self.probe(tool_id, force_live=force_live)
             if self.store is not None:
@@ -455,6 +508,88 @@ class Auditor:
             reprobe_round=probe_round,
             force_live=force_live,
             establish_baseline=establish_baseline,
+        )
+
+    def _normalize_batch_items(self, tool_ids: Any) -> list[dict[str, Any]]:
+        if isinstance(tool_ids, dict):
+            if "items" in tool_ids and isinstance(tool_ids["items"], list):
+                tool_ids = tool_ids["items"]
+            elif "tool_ids" in tool_ids and isinstance(tool_ids["tool_ids"], list):
+                tool_ids = tool_ids["tool_ids"]
+            else:
+                tool_ids = list(tool_ids.values())
+        if isinstance(tool_ids, str):
+            tool_ids = [tool_ids]
+        if not isinstance(tool_ids, (list, tuple, set)):
+            tool_ids = [tool_ids]
+        items: list[dict[str, Any]] = []
+        for entry in tool_ids:
+            if isinstance(entry, str):
+                items.append({"tool_id": entry})
+            elif isinstance(entry, dict):
+                items.append(dict(entry))
+            else:
+                items.append({"tool_id": getattr(entry, "tool_id", str(entry))})
+        return items
+
+    def _run_batch(
+        self, items: list[dict[str, Any]], monitoring: bool, force_live: bool = False, correlation_id: str = ""
+    ) -> BatchResult:
+        prefix = "monitor" if monitoring else "verify"
+        entries: list[dict[str, Any]] = []
+        for index, item in enumerate(items):
+            current = dict(item)
+            current["correlation_id"] = str(
+                current.get("correlation_id") or f"{prefix}-batch-{correlation_id or index}-{index}"
+            )
+            tool_id = str(current.get("tool_id", ""))
+            try:
+                if monitoring:
+                    result = self.monitor_tool(
+                        tool_id,
+                        probe_round=int(current.get("round", current.get("probe_round", 1))),
+                        force_live=force_live or bool(current.get("force_live", False)),
+                        establish_baseline=bool(current.get("establish_baseline", False)),
+                    )
+                else:
+                    claims = None
+                    if current.get("claims"):
+                        claims = [Claim.from_dict(claim_item) for claim_item in current["claims"]]
+                    result = self.verify(
+                        tool_id,
+                        claims=claims,
+                        correlation_id=current["correlation_id"],
+                        reprobe_round=int(current.get("round", current.get("reprobe_round", 0))),
+                        force_live=force_live or bool(current.get("force_live", False)),
+                        request_id=str(current.get("request_id", "")),
+                        establish_baseline=bool(current.get("establish_baseline", True)),
+                        documentation=current.get("documentation"),
+                    )
+                entries.append({"index": index, "tool_id": result.tool_id, "result": result})
+            except Exception as error:  # noqa: BLE001
+                entries.append({"index": index, "tool_id": tool_id, "error": str(error)})
+        return BatchResult(entries, monitoring)
+
+    def batch_verify(
+        self, tool_ids: Any, force_live: bool = False, correlation_id: str = "", **kwargs: Any
+    ) -> BatchResult:
+        items = self._normalize_batch_items(tool_ids)
+        return self._run_batch(
+            items,
+            monitoring=False,
+            force_live=force_live or bool(kwargs.get("force_live", False)),
+            correlation_id=correlation_id or str(kwargs.get("correlation_id", "")),
+        )
+
+    def batch_monitor(
+        self, tool_ids: Any, force_live: bool = False, correlation_id: str = "", **kwargs: Any
+    ) -> BatchResult:
+        items = self._normalize_batch_items(tool_ids)
+        return self._run_batch(
+            items,
+            monitoring=True,
+            force_live=force_live or bool(kwargs.get("force_live", False)),
+            correlation_id=correlation_id or str(kwargs.get("correlation_id", "")),
         )
 
     def trust_snapshot(self) -> list[dict[str, Any]]:

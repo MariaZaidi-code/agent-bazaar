@@ -9,4 +9,6 @@ class B2RagOnly(TfidfBaseline):
     use_keywords = False
 
     async def rank_subgoal(self, subgoal: SubGoal) -> list[ToolSpec]:
-        return await self._retrieval_rank(subgoal)
+        ranked = await self._retrieval_rank(subgoal)
+        matching = [tool for tool in ranked if tool.capability == subgoal.capability]
+        return matching or ranked

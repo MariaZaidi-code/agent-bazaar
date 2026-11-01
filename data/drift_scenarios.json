@@ -461,6 +461,65 @@
       "expected_detector": "rule",
       "expected_round": 1,
       "description": "Word field renamed to term."
+    },
+    {
+      "id": "drift-41",
+      "tool_id": "open-meteo",
+      "behavior": "rename_field",
+      "options": {
+        "field_path": "current.temperature_2m",
+        "new_name": "temperature"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Mapped temperature field renamed from temperature_2m to temperature."
+    },
+    {
+      "id": "drift-43",
+      "tool_id": "rest-countries",
+      "behavior": "rename_field",
+      "options": {
+        "field_path": "population",
+        "new_name": "pop"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Population field renamed to pop."
+    },
+    {
+      "id": "drift-45",
+      "tool_id": "usgs-earthquake",
+      "behavior": "rename_field",
+      "options": {
+        "field_path": "properties.mag",
+        "new_name": "magnitude"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Nested magnitude field renamed."
+    },
+    {
+      "id": "drift-47",
+      "tool_id": "dog-ceo",
+      "behavior": "rename_field",
+      "options": {
+        "field_path": "message",
+        "new_name": "image_url"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Image URL field renamed."
+    },
+    {
+      "id": "drift-49",
+      "tool_id": "nager-date",
+      "behavior": "remove_field",
+      "options": {
+        "field_path": "date"
+      },
+      "expected_detector": "rule",
+      "expected_round": 1,
+      "description": "Holiday date field removed."
     }
   ]
 }

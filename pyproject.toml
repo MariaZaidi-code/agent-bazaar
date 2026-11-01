@@ -37,6 +37,7 @@ dev = [
 
 [project.scripts]
 agent-bazaar-auditor = "agent_bazaar_auditor.cli:main"
+agent-bazaar-mcp = "app.mcp.server:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

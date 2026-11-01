@@ -525,7 +525,7 @@
       "count",
       "rows"
     ],
-    "docs_url": "",
+    "docs_url": "https://sqlite.org/lang_select.html",
     "price": 0.0,
     "pricing_tier": "free",
     "access_requirement": "keyless",
@@ -603,7 +603,7 @@
       "report",
       "notes"
     ],
-    "docs_url": "",
+    "docs_url": "https://en.wikipedia.org/wiki/Question_answering",
     "price": 0.0,
     "pricing_tier": "free",
     "access_requirement": "keyless",
@@ -678,7 +678,7 @@
       "unreliable",
       "forecast"
     ],
-    "docs_url": "",
+    "docs_url": "https://open-meteo.com/",
     "price": 0.0,
     "pricing_tier": "free",
     "access_requirement": "keyless",
@@ -1458,7 +1458,9 @@
       {
         "concept": "Text",
         "name": "query",
-        "required": false
+        "datatype": "string",
+        "required": true,
+        "description": "query"
       }
     ],
     "outputs": [
@@ -1496,7 +1498,9 @@
       {
         "concept": "Text",
         "name": "query",
-        "required": false
+        "datatype": "string",
+        "required": true,
+        "description": "query"
       }
     ],
     "outputs": [
@@ -1534,7 +1538,9 @@
       {
         "concept": "Text",
         "name": "query",
-        "required": false
+        "datatype": "string",
+        "required": true,
+        "description": "query"
       }
     ],
     "outputs": [
@@ -1572,7 +1578,9 @@
       {
         "concept": "Text",
         "name": "query",
-        "required": false
+        "datatype": "string",
+        "required": true,
+        "description": "query"
       }
     ],
     "outputs": [
@@ -1610,7 +1618,9 @@
       {
         "concept": "Text",
         "name": "barcode",
-        "required": false
+        "datatype": "string",
+        "required": true,
+        "description": "barcode"
       }
     ],
     "outputs": [
@@ -1648,7 +1658,9 @@
       {
         "concept": "Text",
         "name": "text",
-        "required": false
+        "datatype": "string",
+        "required": true,
+        "description": "text"
       }
     ],
     "outputs": [
@@ -1686,7 +1698,9 @@
       {
         "concept": "Text",
         "name": "text",
-        "required": false
+        "datatype": "string",
+        "required": true,
+        "description": "text"
       }
     ],
     "outputs": [
@@ -1760,11 +1774,17 @@
     "inputs": [
       {
         "concept": "Number",
-        "name": "latitude"
+        "name": "latitude",
+        "datatype": "number",
+        "required": true,
+        "description": "latitude"
       },
       {
         "concept": "Number",
-        "name": "longitude"
+        "name": "longitude",
+        "datatype": "number",
+        "required": true,
+        "description": "longitude"
       }
     ],
     "outputs": [
@@ -1795,7 +1815,7 @@
     "id": "coindesk-bitcoin",
     "name": "CoinDesk Bitcoin Price",
     "provider_id": "coindesk",
-    "description": "Get current Bitcoin price in USD.",
+    "description": "Bitcoin spot price in US dollars from CoinDesk.",
     "capability": "GetCryptoPrice",
     "inputs": [
       {
@@ -1953,7 +1973,9 @@
       {
         "concept": "Text",
         "name": "compound",
-        "required": false
+        "datatype": "string",
+        "required": true,
+        "description": "compound"
       }
     ],
     "outputs": [
@@ -1991,7 +2013,9 @@
       {
         "concept": "Text",
         "name": "drug",
-        "required": false
+        "datatype": "string",
+        "required": true,
+        "description": "drug"
       }
     ],
     "outputs": [
@@ -2017,6 +2041,2498 @@
     "tags": [
       "api",
       "health"
+    ]
+  },
+  {
+    "id": "nasa-eonet-events",
+    "name": "NASA EONET Natural Events",
+    "provider_id": "nasa-eonet",
+    "description": "Get natural events tracked by NASA EONET.",
+    "capability": "GetNaturalEvents",
+    "inputs": [
+      {
+        "name": "category",
+        "concept": "Text",
+        "required": false
+      },
+      {
+        "name": "limit",
+        "concept": "Text",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "events",
+        "concept": "Text",
+        "datatype": "array",
+        "fields": [
+          "title",
+          "category",
+          "date",
+          "link"
+        ]
+      }
+    ],
+    "keywords": [
+      "nasa",
+      "eonet",
+      "natural",
+      "events",
+      "wildfire",
+      "storm"
+    ],
+    "docs_url": "https://eonet.gsfc.nasa.gov/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "science",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "noaa-weather-alerts",
+    "name": "NOAA Weather Alerts",
+    "provider_id": "noaa-alerts",
+    "description": "Get active weather alerts for a US state.",
+    "capability": "GetWeatherAlerts",
+    "inputs": [
+      {
+        "name": "state",
+        "concept": "Text",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "alerts",
+        "concept": "Text",
+        "datatype": "array",
+        "fields": [
+          "event",
+          "headline",
+          "severity",
+          "area",
+          "expires"
+        ]
+      }
+    ],
+    "keywords": [
+      "noaa",
+      "weather",
+      "alerts",
+      "warnings"
+    ],
+    "docs_url": "https://api.weather.gov/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "weather",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "noaa-tides",
+    "name": "NOAA Tide Predictions",
+    "provider_id": "noaa-tides",
+    "description": "Get tide predictions for a NOAA station.",
+    "capability": "GetTideTimes",
+    "inputs": [
+      {
+        "name": "station",
+        "concept": "Text",
+        "required": false
+      },
+      {
+        "name": "date",
+        "concept": "Text",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "tides",
+        "concept": "Text",
+        "datatype": "array",
+        "fields": [
+          "time",
+          "height",
+          "type"
+        ]
+      }
+    ],
+    "keywords": [
+      "noaa",
+      "tides",
+      "ocean",
+      "predictions"
+    ],
+    "docs_url": "https://api.tidesandcurrents.noaa.gov/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "weather",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "exchangerate-latest",
+    "name": "ExchangeRate Latest",
+    "provider_id": "exchangerate",
+    "description": "Get latest exchange rate between two currencies.",
+    "capability": "GetExchangeRate",
+    "inputs": [
+      {
+        "name": "base",
+        "concept": "Text",
+        "required": false
+      },
+      {
+        "name": "target",
+        "concept": "Text",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "rate",
+        "concept": "Text",
+        "datatype": "object",
+        "fields": [
+          "base",
+          "target",
+          "rate",
+          "date"
+        ]
+      }
+    ],
+    "keywords": [
+      "exchange",
+      "rate",
+      "currency",
+      "fx"
+    ],
+    "docs_url": "https://open.er-api.com/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "finance",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "libretranslate-translate",
+    "name": "LibreTranslate",
+    "provider_id": "libretranslate",
+    "description": "Translate text using LibreTranslate.",
+    "capability": "TranslateTextLibre",
+    "inputs": [
+      {
+        "name": "text",
+        "concept": "Text",
+        "required": true
+      },
+      {
+        "name": "source",
+        "concept": "Text",
+        "required": false
+      },
+      {
+        "name": "target",
+        "concept": "Text",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "translation",
+        "concept": "Text",
+        "datatype": "object",
+        "fields": [
+          "text",
+          "source",
+          "target",
+          "translated"
+        ]
+      }
+    ],
+    "keywords": [
+      "translate",
+      "libretranslate",
+      "language"
+    ],
+    "docs_url": "https://libretranslate.com/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.75,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "translation",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "mastodon-public-posts",
+    "name": "Mastodon Public Timeline",
+    "provider_id": "mastodon",
+    "description": "Get public posts from Mastodon.",
+    "capability": "GetPublicPosts",
+    "inputs": [
+      {
+        "name": "limit",
+        "concept": "Text",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "posts",
+        "concept": "Text",
+        "datatype": "array",
+        "fields": [
+          "content",
+          "account",
+          "created_at",
+          "url"
+        ]
+      }
+    ],
+    "keywords": [
+      "mastodon",
+      "social",
+      "posts",
+      "fediverse"
+    ],
+    "docs_url": "https://docs.joinmastodon.org/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.75,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "social",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "thesportsdb-events",
+    "name": "TheSportsDB Events",
+    "provider_id": "thesportsdb",
+    "description": "Get sports events by sport and date.",
+    "capability": "GetSportsEvents",
+    "inputs": [
+      {
+        "name": "sport",
+        "concept": "Text",
+        "required": false
+      },
+      {
+        "name": "date",
+        "concept": "Text",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "events",
+        "concept": "Text",
+        "datatype": "array",
+        "fields": [
+          "event",
+          "sport",
+          "league",
+          "date",
+          "home",
+          "away"
+        ]
+      }
+    ],
+    "keywords": [
+      "sports",
+      "events",
+      "thesportsdb"
+    ],
+    "docs_url": "https://www.thesportsdb.com/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.75,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "sports",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "upcitemdb-lookup",
+    "name": "UPC Item DB Lookup",
+    "provider_id": "upcitemdb",
+    "description": "Look up product details by UPC barcode.",
+    "capability": "GetProductDetails",
+    "inputs": [
+      {
+        "name": "barcode",
+        "concept": "Text",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "product",
+        "concept": "Text",
+        "datatype": "object",
+        "fields": [
+          "title",
+          "brand",
+          "category",
+          "upc"
+        ]
+      }
+    ],
+    "keywords": [
+      "upc",
+      "barcode",
+      "product",
+      "lookup"
+    ],
+    "docs_url": "https://www.upcitemdb.com/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.75,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "products",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "isgd-shorten",
+    "name": "is.gd URL Shortener",
+    "provider_id": "isgd",
+    "description": "Shorten a URL using is.gd.",
+    "capability": "ShortenUrl",
+    "inputs": [
+      {
+        "name": "url",
+        "concept": "Text",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "short_url",
+        "concept": "Text",
+        "datatype": "object",
+        "fields": [
+          "original",
+          "short"
+        ]
+      }
+    ],
+    "keywords": [
+      "shorten",
+      "url",
+      "link",
+      "is.gd"
+    ],
+    "docs_url": "https://is.gd/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.75,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "utility",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "nasa-mars-photos",
+    "name": "NASA Mars Rover Photos",
+    "provider_id": "nasa-mars",
+    "description": "Get photos from NASA Mars rovers.",
+    "capability": "GetMarsPhotos",
+    "inputs": [
+      {
+        "name": "rover",
+        "concept": "Text",
+        "required": false
+      },
+      {
+        "name": "sol",
+        "concept": "Text",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "photos",
+        "concept": "Text",
+        "datatype": "array",
+        "fields": [
+          "img_src",
+          "earth_date",
+          "rover",
+          "camera"
+        ]
+      }
+    ],
+    "keywords": [
+      "nasa",
+      "mars",
+      "rover",
+      "photos"
+    ],
+    "docs_url": "https://api.nasa.gov/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "science",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "wikidata-search",
+    "name": "Wikidata Search",
+    "provider_id": "wikidata",
+    "description": "Search Wikidata entities and return their labels, descriptions and canonical URLs.",
+    "capability": "SearchWikidata",
+    "inputs": [
+      {
+        "name": "query",
+        "concept": "Text",
+        "required": true,
+        "datatype": "string",
+        "description": "Entity name or topic to search."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "results",
+        "concept": "Text",
+        "datatype": "array"
+      }
+    ],
+    "keywords": [
+      "wikidata",
+      "entities",
+      "knowledge",
+      "reference",
+      "facts"
+    ],
+    "docs_url": "https://www.wikidata.org/w/api.php",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "knowledge",
+      "reference",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "wikivoyage-guide",
+    "name": "Wikivoyage Guide",
+    "provider_id": "wikivoyage",
+    "description": "Get a plain-language travel guide summary for a destination from Wikivoyage.",
+    "capability": "GetTravelGuide",
+    "inputs": [
+      {
+        "name": "place",
+        "concept": "LocationName",
+        "required": true,
+        "datatype": "string",
+        "description": "Destination name."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "guide",
+        "concept": "Text",
+        "datatype": "object",
+        "fields": [
+          "title",
+          "extract",
+          "url"
+        ]
+      }
+    ],
+    "keywords": [
+      "wikivoyage",
+      "travel",
+      "guide",
+      "destination",
+      "tourism"
+    ],
+    "docs_url": "https://en.wikivoyage.org/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "travel",
+      "knowledge",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "yahoo-finance-quote",
+    "name": "Yahoo Finance Quote",
+    "provider_id": "yahoo-finance",
+    "description": "Get an unofficial stock or ETF quote from Yahoo Finance.",
+    "capability": "GetStockQuote",
+    "inputs": [
+      {
+        "name": "symbol",
+        "concept": "Text",
+        "required": true,
+        "datatype": "string",
+        "description": "Ticker symbol, for example AAPL."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "quote",
+        "concept": "Text",
+        "datatype": "object",
+        "fields": [
+          "symbol",
+          "price",
+          "currency",
+          "exchange",
+          "previous_close"
+        ]
+      }
+    ],
+    "keywords": [
+      "stock",
+      "share",
+      "ticker",
+      "finance",
+      "quote",
+      "market"
+    ],
+    "docs_url": "https://finance.yahoo.com/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "finance",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "rss-feed",
+    "name": "RSS Feed Reader",
+    "provider_id": "rss",
+    "description": "Read headlines from any public RSS or Atom feed and return the latest items.",
+    "capability": "GetRSSFeed",
+    "inputs": [
+      {
+        "name": "feed_url",
+        "concept": "Text",
+        "required": false,
+        "datatype": "string",
+        "description": "Public feed URL; defaults to BBC News."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "items",
+        "concept": "Text",
+        "datatype": "array"
+      }
+    ],
+    "keywords": [
+      "rss",
+      "news",
+      "feed",
+      "headlines",
+      "atom",
+      "bbc"
+    ],
+    "docs_url": "https://feeds.bbci.co.uk/news/rss.xml",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "news",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "dbpedia-summary",
+    "name": "DBpedia Summary",
+    "provider_id": "dbpedia",
+    "description": "Get an encyclopedic summary for a topic from DBpedia.",
+    "capability": "GetDBpediaSummary",
+    "inputs": [
+      {
+        "name": "title",
+        "concept": "Text",
+        "required": true,
+        "datatype": "string",
+        "description": "Topic or resource title."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "summary",
+        "concept": "Text",
+        "datatype": "object",
+        "fields": [
+          "title",
+          "abstract",
+          "url"
+        ]
+      }
+    ],
+    "keywords": [
+      "dbpedia",
+      "knowledge",
+      "encyclopedia",
+      "summary",
+      "reference"
+    ],
+    "docs_url": "https://dbpedia.org/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "knowledge",
+      "reference",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "iss-location",
+    "name": "ISS Orbit Tracker",
+    "provider_id": "iss-location",
+    "description": "Track the International Space Station's orbital position.",
+    "capability": "GetISSPosition",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "position",
+        "concept": "Text",
+        "datatype": "object",
+        "fields": [
+          "latitude",
+          "longitude",
+          "timestamp"
+        ]
+      }
+    ],
+    "keywords": [
+      "iss",
+      "space station",
+      "orbit",
+      "latitude",
+      "longitude",
+      "space"
+    ],
+    "docs_url": "http://open-notify.org/Open-Notify-API/ISS-Location-Now/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "science",
+      "space",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "open-meteo-air-quality",
+    "name": "Open-Meteo Air Quality",
+    "provider_id": "open-meteo-air",
+    "description": "Get current air quality including PM2.5, PM10, ozone and the European AQI.",
+    "capability": "GetAirQualityForecast",
+    "inputs": [
+      {
+        "name": "latitude",
+        "concept": "Number",
+        "required": true,
+        "datatype": "number",
+        "description": "Latitude in degrees."
+      },
+      {
+        "name": "longitude",
+        "concept": "Number",
+        "required": true,
+        "datatype": "number",
+        "description": "Longitude in degrees."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "air_quality",
+        "concept": "Text",
+        "datatype": "object",
+        "fields": [
+          "pm2_5",
+          "pm10",
+          "ozone",
+          "european_aqi"
+        ]
+      }
+    ],
+    "keywords": [
+      "air quality",
+      "pollution",
+      "pm2.5",
+      "ozone",
+      "aqi",
+      "environment"
+    ],
+    "docs_url": "https://open-meteo.com/en/docs/air-quality-api",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "weather",
+      "environment",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "open-meteo-marine",
+    "name": "Open-Meteo Marine",
+    "provider_id": "open-meteo-marine",
+    "description": "Get current wave height, direction and period for a coastal location.",
+    "capability": "GetMarineForecast",
+    "inputs": [
+      {
+        "name": "latitude",
+        "concept": "Number",
+        "required": true,
+        "datatype": "number",
+        "description": "Latitude in degrees."
+      },
+      {
+        "name": "longitude",
+        "concept": "Number",
+        "required": true,
+        "datatype": "number",
+        "description": "Longitude in degrees."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "marine",
+        "concept": "Text",
+        "datatype": "object",
+        "fields": [
+          "wave_height",
+          "wave_direction",
+          "wave_period"
+        ]
+      }
+    ],
+    "keywords": [
+      "marine",
+      "waves",
+      "ocean",
+      "surf",
+      "coast",
+      "weather"
+    ],
+    "docs_url": "https://open-meteo.com/en/docs/marine-weather-api",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "weather",
+      "environment",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "email-validate",
+    "name": "Email Validator",
+    "provider_id": "email-validate",
+    "description": "Check whether an email address is well formed and not from a disposable provider.",
+    "capability": "ValidateEmail",
+    "inputs": [
+      {
+        "name": "email",
+        "concept": "Text",
+        "required": true,
+        "datatype": "string",
+        "description": "Email address to check."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "validation",
+        "concept": "Text",
+        "datatype": "object",
+        "fields": [
+          "email",
+          "valid",
+          "disposable",
+          "reason"
+        ]
+      }
+    ],
+    "keywords": [
+      "email",
+      "validate",
+      "disposable",
+      "address",
+      "utility"
+    ],
+    "docs_url": "https://en.wikipedia.org/wiki/Email_address",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "utilities",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "password-tools",
+    "name": "Password Strength",
+    "provider_id": "password-tools",
+    "description": "Estimate password strength and return a SHA-256 hash. Runs locally without sending the password anywhere.",
+    "capability": "CheckPasswordStrength",
+    "inputs": [
+      {
+        "name": "password",
+        "concept": "Text",
+        "required": true,
+        "datatype": "string",
+        "description": "Password to evaluate."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "password",
+        "concept": "Text",
+        "datatype": "object",
+        "fields": [
+          "score",
+          "label",
+          "suggestions",
+          "sha256"
+        ]
+      }
+    ],
+    "keywords": [
+      "password",
+      "strength",
+      "hash",
+      "security",
+      "utility"
+    ],
+    "docs_url": "https://en.wikipedia.org/wiki/Password_strength",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "utilities",
+      "security",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "uuid-generate",
+    "name": "UUID Generator",
+    "provider_id": "uuid",
+    "description": "Generate one or more random version 4 UUIDs locally.",
+    "capability": "GenerateUUID",
+    "inputs": [
+      {
+        "name": "count",
+        "concept": "Number",
+        "required": false,
+        "datatype": "number",
+        "description": "How many UUIDs, 1 to 20."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "uuids",
+        "concept": "Text",
+        "datatype": "array"
+      }
+    ],
+    "keywords": [
+      "uuid",
+      "guid",
+      "random",
+      "identifier",
+      "utility"
+    ],
+    "docs_url": "https://en.wikipedia.org/wiki/Universally_unique_identifier",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "utilities",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "data-transform",
+    "name": "Data Transform",
+    "provider_id": "data-transform",
+    "description": "Parse CSV or JSON text into a table of rows and columns for inspection or export.",
+    "capability": "TransformData",
+    "inputs": [
+      {
+        "name": "data",
+        "concept": "Text",
+        "required": true,
+        "datatype": "string",
+        "description": "CSV or JSON text."
+      },
+      {
+        "name": "format",
+        "concept": "Text",
+        "required": false,
+        "datatype": "string",
+        "description": "json or csv; inferred when omitted."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "table",
+        "concept": "Text",
+        "datatype": "object",
+        "fields": [
+          "rows",
+          "columns",
+          "row_count",
+          "format"
+        ]
+      }
+    ],
+    "keywords": [
+      "csv",
+      "json",
+      "transform",
+      "parse",
+      "table",
+      "data"
+    ],
+    "docs_url": "https://en.wikipedia.org/wiki/Comma-separated_values",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "data",
+      "utilities",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "ipify-ip",
+    "name": "Public IP",
+    "provider_id": "ipify",
+    "description": "Get the public IP address of the server or user making the request.",
+    "capability": "GetPublicIP",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "ip",
+        "concept": "Text",
+        "datatype": "string"
+      }
+    ],
+    "keywords": [
+      "ip",
+      "address",
+      "public",
+      "network",
+      "utility"
+    ],
+    "docs_url": "https://www.ipify.org/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "utilities",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "zenquotes-random",
+    "name": "Random Quote",
+    "provider_id": "zenquotes",
+    "description": "Get a random inspirational quote with its author.",
+    "capability": "GetQuote",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "quote",
+        "concept": "Text",
+        "datatype": "object",
+        "fields": [
+          "text",
+          "author"
+        ]
+      }
+    ],
+    "keywords": [
+      "quote",
+      "inspiration",
+      "author",
+      "random",
+      "daily"
+    ],
+    "docs_url": "https://zenquotes.io/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "fun",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "launch-library-upcoming",
+    "name": "Upcoming Space Launches",
+    "provider_id": "launch-library",
+    "description": "List upcoming orbital launches with status, time and launch provider.",
+    "capability": "GetSpaceLaunches",
+    "inputs": [
+      {
+        "name": "limit",
+        "concept": "Number",
+        "required": false,
+        "datatype": "number",
+        "description": "How many launches, 1 to 20."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "launches",
+        "concept": "Text",
+        "datatype": "array"
+      }
+    ],
+    "keywords": [
+      "space",
+      "launch",
+      "rocket",
+      "orbit",
+      "upcoming",
+      "nasa",
+      "spacex"
+    ],
+    "docs_url": "https://thespacedevs.com/llapi",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "science",
+      "space",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "worldbank-indicator",
+    "name": "World Bank Indicator",
+    "provider_id": "worldbank",
+    "description": "Get recent values for a World Bank development indicator such as population.",
+    "capability": "GetCountryIndicator",
+    "inputs": [
+      {
+        "name": "country",
+        "concept": "CountryCode",
+        "required": true,
+        "datatype": "string",
+        "description": "ISO country code, for example PAK."
+      },
+      {
+        "name": "indicator",
+        "concept": "Text",
+        "required": false,
+        "datatype": "string",
+        "description": "World Bank indicator code."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "indicator_data",
+        "concept": "Text",
+        "datatype": "object",
+        "fields": [
+          "country",
+          "indicator",
+          "values"
+        ]
+      }
+    ],
+    "keywords": [
+      "world bank",
+      "development",
+      "population",
+      "gdp",
+      "indicator",
+      "country"
+    ],
+    "docs_url": "https://datahelpdesk.worldbank.org/knowledgebase/articles/898581-api-basic-call-structures",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "data",
+      "reference",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "dictionary-define",
+    "name": "Dictionary",
+    "provider_id": "dictionary",
+    "description": "Look up a word definition, part of speech and example sentence.",
+    "capability": "GetWordDefinition",
+    "inputs": [
+      {
+        "name": "word",
+        "concept": "Text",
+        "required": true,
+        "datatype": "string",
+        "description": "Word to define."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "entries",
+        "concept": "Text",
+        "datatype": "array"
+      }
+    ],
+    "keywords": [
+      "dictionary",
+      "definition",
+      "word",
+      "meaning",
+      "language"
+    ],
+    "docs_url": "https://dictionaryapi.dev/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "language",
+      "reference",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "coincap-asset",
+    "name": "CoinCap Asset",
+    "provider_id": "coincap",
+    "description": "Get a cryptocurrency price and 24 hour change from CoinCap.",
+    "capability": "GetCryptoPrice",
+    "inputs": [
+      {
+        "name": "asset",
+        "concept": "CryptoAsset",
+        "required": true,
+        "datatype": "string",
+        "description": "Asset id such as bitcoin or ethereum."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "asset",
+        "concept": "Text",
+        "datatype": "object",
+        "fields": [
+          "id",
+          "price_usd",
+          "change_24h"
+        ]
+      }
+    ],
+    "keywords": [
+      "crypto",
+      "bitcoin",
+      "ethereum",
+      "price",
+      "coincap",
+      "market"
+    ],
+    "docs_url": "https://docs.coincap.io/",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.85,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "licence": "unknown",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "finance",
+      "crypto",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "wttr-weather",
+    "name": "wttr.in Weather",
+    "provider_id": "wttr",
+    "description": "Current weather from wttr.in.",
+    "capability": "GetWeatherForecast",
+    "inputs": [
+      {
+        "concept": "LocationName",
+        "name": "city",
+        "datatype": "string",
+        "required": true,
+        "description": "City name."
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Temperature",
+        "name": "weather",
+        "datatype": "object",
+        "required": true,
+        "description": "weather",
+        "fields": [
+          "city",
+          "temp_c",
+          "condition",
+          "humidity"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "weather",
+      "wttr",
+      "city",
+      "forecast"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "weather",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "usgs-earthquakes",
+    "name": "USGS Earthquakes",
+    "provider_id": "usgs",
+    "description": "Recent earthquakes from USGS.",
+    "capability": "GetNaturalEvents",
+    "inputs": [
+      {
+        "concept": "Number",
+        "name": "min_magnitude",
+        "datatype": "number",
+        "required": false,
+        "description": "Minimum magnitude."
+      },
+      {
+        "concept": "Number",
+        "name": "limit",
+        "datatype": "number",
+        "required": false,
+        "description": "Max results."
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Text",
+        "name": "earthquakes",
+        "datatype": "array",
+        "required": true,
+        "description": "earthquakes",
+        "fields": [
+          "place",
+          "magnitude",
+          "time",
+          "url"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "earthquake",
+      "usgs",
+      "seismic"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "science",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "wikipedia-summary",
+    "name": "Wikipedia Summary",
+    "provider_id": "wikipedia",
+    "description": "Wikipedia article summary.",
+    "capability": "GetDBpediaSummary",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "title",
+        "datatype": "string",
+        "required": true,
+        "description": "Article title."
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Text",
+        "name": "article",
+        "datatype": "object",
+        "required": true,
+        "description": "article",
+        "fields": [
+          "title",
+          "extract",
+          "url"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "wikipedia",
+      "article",
+      "summary"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "knowledge",
+      "reference",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "crossref-works",
+    "name": "Crossref Works",
+    "provider_id": "crossref",
+    "description": "Academic works from Crossref.",
+    "capability": "SearchResearchPapers",
+    "inputs": [
+      {
+        "concept": "ResearchTopic",
+        "name": "query",
+        "datatype": "string",
+        "required": true,
+        "description": "Search query."
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Text",
+        "name": "works",
+        "datatype": "array",
+        "required": true,
+        "description": "works",
+        "fields": [
+          "title",
+          "author",
+          "year",
+          "doi",
+          "url"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "crossref",
+      "doi",
+      "paper",
+      "research"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "research",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "itunes-movies",
+    "name": "iTunes Movies",
+    "provider_id": "itunes",
+    "description": "Movie search via iTunes.",
+    "capability": "SearchMovies",
+    "inputs": [
+      {
+        "concept": "MovieTitle",
+        "name": "query",
+        "datatype": "string",
+        "required": true,
+        "description": "Movie title."
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Text",
+        "name": "movies",
+        "datatype": "array",
+        "required": true,
+        "description": "movies",
+        "fields": [
+          "title",
+          "artist",
+          "year",
+          "genre",
+          "preview_url"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "itunes",
+      "movie",
+      "film"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "media",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "joke-random",
+    "name": "Random Joke",
+    "provider_id": "joke",
+    "description": "Random joke from JokeAPI.",
+    "capability": "GetQuote",
+    "inputs": [],
+    "outputs": [
+      {
+        "concept": "Text",
+        "name": "setup",
+        "datatype": "string",
+        "required": true,
+        "description": "setup"
+      },
+      {
+        "concept": "Text",
+        "name": "punchline",
+        "datatype": "string",
+        "required": true,
+        "description": "punchline"
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "joke",
+      "fun",
+      "humor"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "fun",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "catfact-random",
+    "name": "Cat Fact",
+    "provider_id": "catfacts",
+    "description": "Random cat fact.",
+    "capability": "GetQuote",
+    "inputs": [],
+    "outputs": [
+      {
+        "concept": "Text",
+        "name": "fact",
+        "datatype": "string",
+        "required": true,
+        "description": "fact"
+      },
+      {
+        "concept": "Number",
+        "name": "length",
+        "datatype": "number",
+        "required": true,
+        "description": "length"
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "cat",
+      "fact",
+      "animal"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "fun",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "dogceo-image",
+    "name": "Random Dog Image",
+    "provider_id": "dogceo",
+    "description": "Random dog image.",
+    "capability": "GetQuote",
+    "inputs": [],
+    "outputs": [
+      {
+        "concept": "Text",
+        "name": "image_url",
+        "datatype": "string",
+        "required": true,
+        "description": "image_url"
+      },
+      {
+        "concept": "Text",
+        "name": "status",
+        "datatype": "string",
+        "required": true,
+        "description": "status"
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "dog",
+      "image",
+      "pet"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "fun",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "advice-slip",
+    "name": "Advice Slip",
+    "provider_id": "advice",
+    "description": "Random advice slip.",
+    "capability": "GetQuote",
+    "inputs": [],
+    "outputs": [
+      {
+        "concept": "Text",
+        "name": "advice",
+        "datatype": "string",
+        "required": true,
+        "description": "advice"
+      },
+      {
+        "concept": "Text",
+        "name": "id",
+        "datatype": "string",
+        "required": true,
+        "description": "id"
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "advice",
+      "tip"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "fun",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "bored-activity",
+    "name": "Bored Activity",
+    "provider_id": "bored",
+    "description": "Random activity suggestion.",
+    "capability": "GetQuote",
+    "inputs": [],
+    "outputs": [
+      {
+        "concept": "Text",
+        "name": "activity",
+        "datatype": "string",
+        "required": true,
+        "description": "activity"
+      },
+      {
+        "concept": "Text",
+        "name": "type",
+        "datatype": "string",
+        "required": true,
+        "description": "type"
+      },
+      {
+        "concept": "Number",
+        "name": "participants",
+        "datatype": "number",
+        "required": true,
+        "description": "participants"
+      },
+      {
+        "concept": "Number",
+        "name": "price",
+        "datatype": "number",
+        "required": true,
+        "description": "price"
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "bored",
+      "activity",
+      "idea"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "fun",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "trivia-question",
+    "name": "Trivia Question",
+    "provider_id": "trivia",
+    "description": "Trivia question from OpenTDB.",
+    "capability": "GetQuote",
+    "inputs": [],
+    "outputs": [
+      {
+        "concept": "Text",
+        "name": "question",
+        "datatype": "string",
+        "required": true,
+        "description": "question"
+      },
+      {
+        "concept": "Text",
+        "name": "answer",
+        "datatype": "string",
+        "required": true,
+        "description": "answer"
+      },
+      {
+        "concept": "Text",
+        "name": "category",
+        "datatype": "string",
+        "required": true,
+        "description": "category"
+      },
+      {
+        "concept": "Text",
+        "name": "difficulty",
+        "datatype": "string",
+        "required": true,
+        "description": "difficulty"
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "trivia",
+      "quiz",
+      "question"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "fun",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "numbers-trivia",
+    "name": "Number Trivia",
+    "provider_id": "numbers",
+    "description": "Number trivia from NumbersAPI.",
+    "capability": "GetQuote",
+    "inputs": [],
+    "outputs": [
+      {
+        "concept": "Text",
+        "name": "text",
+        "datatype": "string",
+        "required": true,
+        "description": "text"
+      },
+      {
+        "concept": "Text",
+        "name": "number",
+        "datatype": "string",
+        "required": true,
+        "description": "number"
+      },
+      {
+        "concept": "Text",
+        "name": "found",
+        "datatype": "string",
+        "required": true,
+        "description": "found"
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "number",
+      "trivia",
+      "math"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "fun",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "spacex-latest",
+    "name": "SpaceX Latest Launch",
+    "provider_id": "spacex",
+    "description": "Latest SpaceX launch.",
+    "capability": "GetSpaceLaunches",
+    "inputs": [],
+    "outputs": [
+      {
+        "concept": "Text",
+        "name": "launch",
+        "datatype": "object",
+        "required": true,
+        "description": "launch"
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "spacex",
+      "launch",
+      "space"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "science",
+      "space",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "pokeapi-pokemon",
+    "name": "PokeAPI Pokemon",
+    "provider_id": "pokeapi",
+    "description": "Pokemon lookup via PokeAPI.",
+    "capability": "GetWordDefinition",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "name",
+        "datatype": "string",
+        "required": true,
+        "description": "Pokemon name."
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Text",
+        "name": "pokemon",
+        "datatype": "object",
+        "required": true,
+        "description": "pokemon"
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "pokemon",
+      "pokeapi"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "fun",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "jikan-anime",
+    "name": "Jikan Anime Search",
+    "provider_id": "jikan",
+    "description": "Anime search via Jikan.",
+    "capability": "SearchTVShows",
+    "inputs": [
+      {
+        "concept": "ShowQuery",
+        "name": "query",
+        "datatype": "string",
+        "required": true,
+        "description": "Anime title."
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Text",
+        "name": "anime",
+        "datatype": "array",
+        "required": true,
+        "description": "anime"
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "anime",
+      "jikan",
+      "manga"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "media",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "nasa-apod",
+    "name": "NASA APOD",
+    "provider_id": "nasa-apod",
+    "description": "NASA Astronomy Picture of the Day.",
+    "capability": "GetQuote",
+    "inputs": [
+      {
+        "concept": "Text",
+        "name": "date",
+        "datatype": "string",
+        "required": false,
+        "description": "Date YYYY-MM-DD."
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "Text",
+        "name": "apod",
+        "datatype": "object",
+        "required": true,
+        "description": "apod"
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "nasa",
+      "apod",
+      "astronomy"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "MIT",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "science",
+      "backup-eligible"
+    ]
+  },
+  {
+    "id": "geonames-search",
+    "name": "GeoNames Search",
+    "provider_id": "geonames",
+    "description": "Place search via GeoNames.",
+    "capability": "SearchLocations",
+    "inputs": [
+      {
+        "concept": "LocationName",
+        "name": "query",
+        "datatype": "string",
+        "required": true,
+        "description": "Place query."
+      }
+    ],
+    "outputs": [
+      {
+        "concept": "LocationRecord",
+        "name": "places",
+        "datatype": "array",
+        "required": true,
+        "description": "places",
+        "fields": [
+          "name",
+          "country",
+          "lat",
+          "lng",
+          "population"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "text": "Offline fixture available.",
+        "label": "Supported",
+        "evidence": "Deterministic offline fixture."
+      }
+    ],
+    "keywords": [
+      "geonames",
+      "place",
+      "location",
+      "geography"
+    ],
+    "docs_url": "",
+    "price": 0.0,
+    "pricing_tier": "free",
+    "access_requirement": "keyless",
+    "rating_value": 0.8,
+    "rating_count": 10,
+    "doc_quality": 0.8,
+    "mapping_coverage": 1.0,
+    "latency_ms": null,
+    "freshness_days": null,
+    "licence": "CC-BY",
+    "is_executable": true,
+    "probe_eligible": true,
+    "execution": "live",
+    "tags": [
+      "api",
+      "geospatial",
+      "backup-eligible"
     ]
   }
 ]

@@ -1,0 +1,131 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: agent-bazaar
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agent-bazaar-config
+  namespace: agent-bazaar
+data:
+  AB_HOST: "0.0.0.0"
+  AB_PORT: "8000"
+  AB_OFFLINE_MODE: "false"
+  AB_RUNTIME_DIR: "/app/data/runtime"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: agent-bazaar-runtime
+  namespace: agent-bazaar
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent-bazaar
+  namespace: agent-bazaar
+  labels:
+    app: agent-bazaar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: agent-bazaar
+  template:
+    metadata:
+      labels:
+        app: agent-bazaar
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: app
+          image: agent-bazaar:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: agent-bazaar-config
+          volumeMounts:
+            - name: runtime
+              mountPath: /app/data/runtime
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - name: runtime
+          persistentVolumeClaim:
+            claimName: agent-bazaar-runtime
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent-bazaar
+  namespace: agent-bazaar
+  labels:
+    app: agent-bazaar
+spec:
+  selector:
+    app: agent-bazaar
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: agent-bazaar
+  namespace: agent-bazaar
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "20m"
+spec:
+  rules:
+    - host: agent-bazaar.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: agent-bazaar
+                port:
+                  number: 80

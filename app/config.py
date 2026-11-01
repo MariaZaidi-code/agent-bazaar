@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     llm_base_url: str = "https://openrouter.ai/api/v1"
     llm_model: str = "meta-llama/llama-3.3-70b-instruct:free"
     llm_timeout_seconds: float = 45.0
+    reasoning_mode: str = "hybrid"
 
     ranking_top_k: int = 8
     graph_expansion: int = 3
