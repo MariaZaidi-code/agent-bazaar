@@ -103,9 +103,7 @@ def test_extended_capabilities_are_curated(services: AppServices) -> None:
 
 
 @pytest.mark.parametrize("tool_id", sorted(OFFLINE_PARAMS))
-async def test_new_provider_offline_payloads_are_schema_valid(
-    services: AppServices, tool_id: str
-) -> None:
+async def test_new_provider_offline_payloads_are_schema_valid(services: AppServices, tool_id: str) -> None:
     provider = services.providers.by_tool(tool_id)
     assert provider is not None
 

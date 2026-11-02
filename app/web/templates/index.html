@@ -578,11 +578,12 @@
 
           <div class="documents-layout">
             <aside class="documents-sidebar" aria-label="Document library">
-              <section class="panel">
-                <div class="panel-head">
-                  <div><h2>Your documents</h2><p id="documents-count">Checking library…</p></div>
-                </div>
-                <div class="panel-body document-library">
+              <article class="window-card">
+                <header class="window-bar">
+                  <span class="window-route">Your documents</span>
+                  <span id="documents-count" class="muted small">Checking library…</span>
+                </header>
+                <div class="window-body document-library">
                   <form id="upload-form" class="upload-form">
                     <label class="dropzone compact" for="document-file">
                       <input id="document-file" type="file" accept=".txt,.md,.csv,.pdf,.docx" required>
@@ -598,11 +599,15 @@
                     <div class="loading-line"><span class="skeleton" style="width:120px;height:16px">&nbsp;</span>Loading documents�?�</div>
                   </div>
                 </div>
-              </section>
+              </article>
             </aside>
 
             <div class="documents-main">
-              <section class="panel document-detail-panel" role="status" aria-live="polite">
+              <article class="window-card document-detail-card" role="status" aria-live="polite">
+                <header class="window-bar document-detail-bar">
+                  <span class="window-route">Selected document</span>
+                  <button class="btn danger small" type="button" id="document-delete"><svg><use href="#i-x-circle"></use></svg>Remove</button>
+                </header>
                 <div id="document-empty" class="empty-panel document-empty">
                   <svg><use href="#i-file-text"></use></svg>
                   <strong>No document selected</strong>
@@ -610,34 +615,30 @@
                 </div>
                 <div id="document-detail" class="hidden">
                   <div class="document-detail-head">
-                    <div>
-                      <p class="eyebrow">Selected document</p>
-                      <h2 id="document-detail-name"></h2>
-                      <p id="document-detail-meta" class="small muted"></p>
-                    </div>
-                    <button class="btn danger small" type="button" id="document-delete"><svg><use href="#i-x-circle"></use></svg>Remove</button>
+                    <h2 id="document-detail-name"></h2>
+                    <p id="document-detail-meta" class="small muted"></p>
                   </div>
                   <div class="document-preview" id="document-preview" tabindex="0"></div>
                 </div>
-              </section>
+              </article>
 
-              <section class="panel">
-                <div class="panel-head">
-                  <div><h2>Ask this document</h2><p>Answers are extractive: the selected document is the only source.</p></div>
+              <article class="window-card">
+                <header class="window-bar">
+                  <span class="window-route">Ask this document</span>
                   <span class="badge neutral" id="document-ask-status">Ready</span>
-                </div>
-                <div class="panel-body">
+                </header>
+                <div class="window-body">
+                  <p class="small muted" style="margin:0 0 14px">Answers are extractive: the selected document is the only source.</p>
                   <form id="document-question-form" class="document-question">
                     <label for="document-question">Your question</label>
                     <textarea id="document-question" rows="2" placeholder="What is the main goal of the project?" required></textarea>
                     <div class="document-question-actions">
-                      <span class="small muted">The Client will cite the passage it used.</span>
                       <button class="btn primary" type="submit" id="document-ask"><svg><use href="#i-play"></use></svg>Ask document</button>
                     </div>
                   </form>
                   <div id="document-answer" class="document-answer hidden" role="status" aria-live="polite"></div>
                 </div>
-              </section>
+              </article>
             </div>
           </div>
 

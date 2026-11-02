@@ -111,9 +111,7 @@ def test_valid_listing_is_accepted_and_returns_typed_fields(tmp_path: Path) -> N
 def test_listing_with_unknown_concept_is_rejected(tmp_path: Path) -> None:
     adapter, store = _adapter(tmp_path)
     request = _listing()
-    request.inputs = [
-        ConceptSpec(concept="NoSuchConcept", name="zwibble_flux", datatype="string")
-    ]
+    request.inputs = [ConceptSpec(concept="NoSuchConcept", name="zwibble_flux", datatype="string")]
 
     result = adapter.submit_listing(request, correlation_id="corr-unknown")
 
@@ -135,9 +133,7 @@ def test_valid_correction_is_promoted_and_changes_the_graph(tmp_path: Path) -> N
     assert result.accepted is True
     assert result.violations == []
     assert result.correction_id.startswith("corr_")
-    assert store.concept_for_field(listing.tool_id, "output.temperature_2m") == str(
-        AB.FeelsLikeTemperature
-    )
+    assert store.concept_for_field(listing.tool_id, "output.temperature_2m") == str(AB.FeelsLikeTemperature)
 
 
 def test_correction_with_unknown_concept_is_rejected(tmp_path: Path) -> None:
@@ -191,6 +187,4 @@ def test_reset_clears_staged_items(tmp_path: Path) -> None:
     adapter.reset()
 
     assert adapter.staged() == {"corrections": [], "listings": []}
-    assert store.concept_for_field(listing.tool_id, "output.temperature_2m") == str(
-        AB.FeelsLikeTemperature
-    )
+    assert store.concept_for_field(listing.tool_id, "output.temperature_2m") == str(AB.FeelsLikeTemperature)

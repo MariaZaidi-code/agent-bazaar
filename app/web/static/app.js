@@ -630,6 +630,11 @@ function setActivePage() {
   $$(".page-view").forEach((view) => {
     view.classList.toggle("is-active", view.dataset.view === state.page);
   });
+  const heading = document.querySelector(".page-view.is-active h1, .page-view.is-active .page-heading h1");
+  if (heading) {
+    if (!heading.hasAttribute("tabindex")) heading.setAttribute("tabindex", "-1");
+    window.requestAnimationFrame(() => heading.focus({ preventScroll: true }));
+  }
 }
 
 function bindSidebar() {
@@ -2375,7 +2380,7 @@ function renderDocumentList() {
     .map(
       (item) => `<button class="document-row ${item.document_id === state.selectedDocument ? "is-selected" : ""}" type="button" data-document-id="${esc(item.document_id)}" aria-pressed="${item.document_id === state.selectedDocument}">
         <span class="document-row-icon">${icon("file-text")}</span>
-        <span class="document-row-copy"><strong>${esc(item.name)}</strong><small>${formatFileSize(item.size_bytes)} · ${formatNumber(item.text_chars, 0)} characters</small></span>
+        <span class="document-row-copy"><strong>${esc(item.name)}</strong><small>${formatFileSize(item.size_bytes)} · ${formatNumber(item.text_chars, 0)} characters · ${formatNumber(item.chunks, 0)} chunks</small>${(item.tags || []).length ? `<span class="document-row-tags">${(item.tags || []).map((tag) => `<span class="badge neutral">${esc(tag)}</span>`).join("")}</span>` : ""}</span>
         ${icon("chevron-right")}
       </button>`
     )
@@ -2590,7 +2595,7 @@ function renderDocumentAnswer(result) {
   container.innerHTML = `<div class="document-answer-head">
       <div>
         <span class="badge ${statusClass}">${icon(statusIcon)}${esc(titleCase(status))}</span>
-        <span class="small muted">${formatNumber(result.duration_ms || 0, 0)} ms · ${esc(payload.document_id || state.selectedDocument)}</span>
+        <span class="small muted">${formatNumber(result.duration_ms || 0, 0)} ms · ${formatNumber(state.documentDetail?.chunks, 0)} chunks · ${esc(payload.document_id || state.selectedDocument)}</span>
       </div>
       <a class="text-link" href="/dashboard?task=${encodeURIComponent(result.task_id)}">Open full trace ${icon("arrow-up-right")}</a>
     </div>
@@ -4095,6 +4100,10 @@ function showOnboarding() {
   renderOnboarding();
   overlay.classList.remove("hidden");
   document.body.style.overflow = "hidden";
+  window.requestAnimationFrame(() => {
+    const first = overlay.querySelector('button:not([disabled])');
+    first?.focus();
+  });
 }
 
 function hideOnboarding(store) {
@@ -4127,8 +4136,24 @@ function initOnboarding() {
     }
   });
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !$("#onboarding-overlay")?.classList.contains("hidden")) {
+    const overlay = $("#onboarding-overlay");
+    if (!overlay || overlay.classList.contains("hidden")) return;
+    if (event.key === "Escape") {
       hideOnboarding(true);
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const focusables = Array.from(overlay.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+      .filter((node) => !node.disabled && node.offsetParent !== null);
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
     }
   });
   try {
@@ -4182,4 +4207,222 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/sw.js").catch(() => undefined);
   });
+}
+
+// ============================================================================
+// Knowledge Center (Discovery) - Phase 3
+// ============================================================================
+
+const KNOWLEDGE_CENTER_SECTIONS = {
+  specs: {
+    label: "API Specifications",
+    icon: "code-bracket",
+    description: "Discovered and staged API specifications",
+  },
+  graph: {
+    label: "Knowledge Graph",
+    icon: "sitemap",
+    description: "Concepts, capabilities, and relationships",
+  },
+  evidence: {
+    label: "Evidence & Verification",
+    icon: "shield-check",
+    description: "Claims, probes, and verification results",
+  },
+  ingestion: {
+    label: "Research & Ingestion",
+    icon: "upload-cloud",
+    description: "Upload specs or trigger discovery",
+  },
+};
+
+async function loadDiscoveryData() {
+  state.stagedError = null;
+  try {
+    const [staged, verified, sources] = await Promise.all([
+      api("/api/discovery/staged").catch(() => ({ providers: [] })),
+      api("/api/discovery/verified").catch(() => ({ providers: [] })),
+      api("/api/discovery/sources").catch(() => ({ sources: [] })),
+    ]);
+    state.staged = staged.providers || [];
+    state.verifiedProviders = verified.providers || [];
+    state.discoverySources = sources.sources || [];
+  } catch (error) {
+    state.stagedError = error.message;
+    state.staged = [];
+    state.verifiedProviders = [];
+    state.discoverySources = [];
+  }
+}
+
+async function triggerDiscovery(sourceType = "apis-guru", limit = 20) {
+  state.stagedError = null;
+  try {
+    const result = await api(`/api/discovery/run?source=${encodeURIComponent(sourceType)}&limit=${limit}`, {
+      method: "POST",
+    });
+    toast(`Discovered ${result.discovered} new API specifications`, "good");
+    await loadDiscoveryData();
+    return result;
+  } catch (error) {
+    state.stagedError = error.message;
+    toast(`Discovery failed: ${error.message}`, "bad");
+    return null;
+  }
+}
+
+async function stageProviders(toolIds) {
+  state.stagedError = null;
+  try {
+    const result = await api("/api/discovery/stage", {
+      method: "POST",
+      body: JSON.stringify({ tool_ids: toolIds }),
+    });
+    toast(`Staged ${result.staged} providers for verification`, "good");
+    await loadDiscoveryData();
+    return result;
+  } catch (error) {
+    toast(`Staging failed: ${error.message}`, "bad");
+    return null;
+  }
+}
+
+async function verifyProviders(toolIds, force = false) {
+  state.stagedError = null;
+  try {
+    const result = await api("/api/discovery/verify", {
+      method: "POST",
+      body: JSON.stringify({ tool_ids: toolIds, force }),
+    });
+    toast(`Verified ${result.verified} providers`, "good");
+    await loadDiscoveryData();
+    return result;
+  } catch (error) {
+    toast(`Verification failed: ${error.message}`, "bad");
+    return null;
+  }
+}
+
+async function uploadSpec(file) {
+  state.stagedError = null;
+  const formData = new FormData();
+  formData.append("file", file);
+  
+  try {
+    const result = await api("/api/discovery/upload", {
+      method: "POST",
+      body: formData,
+    });
+    if (result.parsed) {
+      toast(`Uploaded and parsed ${result.uploaded} as ${result.tool_id}`, "good");
+    } else {
+      toast(`Uploaded ${result.uploaded}. Run discovery to parse.`, "");
+    }
+    await loadDiscoveryData();
+    return result;
+  } catch (error) {
+    toast(`Upload failed: ${error.message}`, "bad");
+    return null;
+  }
+}
+
+function renderDiscoverySources() {
+  const container = $("#discovery-sources");
+  if (!container) return;
+  
+  if (!state.discoverySources.length) {
+    container.innerHTML = `<p class="muted small">No discovery sources configured.</p>`;
+    return;
+  }
+  
+  container.innerHTML = state.discoverySources.map(source => {
+    const isFetchable = source.type === "apis-guru" || source.type === "openapi-url";
+    return `
+      <div class="source-card" data-source-type="${source.type}">
+        <div class="source-header">
+          <span class="source-icon">${icon(source.type === "apis-guru" ? "globe" : source.type === "local" ? "folder" : "link")}</span>
+          <div class="source-meta">
+            <strong>${source.name}</strong>
+            <span class="source-type">${source.type}</span>
+          </div>
+        </div>
+        <p class="source-description">${source.description || ""}</p>
+        ${source.specs_available !== undefined ? `<small class="source-count">${source.specs_available} specs available</small>` : ""}
+        <div class="source-actions">
+          ${isFetchable ? `<button class="btn small" data-action="discover">Discover APIs</button>` : ""}
+          ${source.type === "openapi-url" ? `<button class="btn small secondary" data-action="ingest-url">Ingest from URL</button>` : ""}
+          ${source.type === "local" ? `<button class="btn small secondary" data-action="upload">Upload Spec</button>` : ""}
+        </div>
+      </div>
+    `;
+  }).join("");
+  
+  // Attach event handlers
+  container.querySelectorAll("[data-action='discover']").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const card = e.target.closest(".source-card");
+      const sourceType = card?.dataset.sourceType || "apis-guru";
+      await triggerDiscovery(sourceType);
+    });
+  });
+  
+  container.querySelectorAll("[data-action='ingest-url']").forEach(btn => {
+    btn.addEventListener("click", () => {
+      showIngestUrlModal();
+    });
+  });
+  
+  container.querySelectorAll("[data-action='upload']").forEach(btn => {
+    btn.addEventListener("click", () => {
+      showUploadModal();
+    });
+  });
+}
+
+function renderStagedProviders() {
+  const container = $("#staged-providers");
+  if (!container) return;
+  
+  if (!state.staged.length) {
+    container.innerHTML = `<div class="empty-state">
+      <span class="empty-icon">${icon("box")}</span>
+      <p>No API specifications discovered yet.</p>
+      <p class="small muted">Use the sources below to discover new APIs.</p>
+    </div>`;
+    return;
+  }
+  
+  container.innerHTML = state.staged.map(provider => {
+    const isDuplicate = provider.duplicate_of !== undefined;
+    return `
+      <div class="provider-card ${isDuplicate ? "duplicate" : ""}" data-tool-id="${provider.tool_id}">
+        <div class="provider-header">
+          <span class="provider-state ${provider.state}">${provider.state}</span>
+          <div class="provider-meta">
+            <strong>${esc(provider.name)}</strong>
+            <span class="provider-id">${esc(provider.provider_id)}</span>
+          </div>
+          <div class="provider-actions">
+            ${provider.state === "discovered" ? `<button class="btn small" data-action="stage">Stage</button>` : ""}
+            ${provider.state === "staged" ? `<button class="btn small" data-action="verify">Verify</button>` : ""}
+            ${provider.state === "suspended" ? `<button class="btn small secondary" data-action="reactivate">Reactivate</button>` : ""}
+          </div>
+        </div>
+        <div class="provider-details">
+          <div class="detail-row">
+            <span class="detail-label">Capabilities:</span>
+            <span class="detail-value">${provider.capabilities?.join(", ") || "—"}</span>
+          </div>
+          ${provider.base_url ? `<div class="detail-row"><span class="detail-label">Base URL:</span><span class="detail-value code">${esc(provider.base_url)}</span></div>` : ""}
+          ${isDuplicate ? `<div class="detail-row duplicate-warning"><span class="detail-label">Duplicate of:</span><span class="detail-value">${esc(provider.duplicate_of)}</span></div>` : ""}
+          <div class="detail-row">
+            <span class="detail-label">Discovered:</span>
+            <span class="detail-value muted">${formatTime(provider.discovered_at * 1000)}</span>
+          </div>
+          ${provider.staged_at ? `<div class="detail-row"><span class="detail-label">Staged:</span><span class="detail-value muted">${formatTime(provider.staged_at * 1000)}</span></div>` : ""}
+          ${provider.verified_at ? `<div class="detail-row"><span class="detail-label">Verified:</span><span class="detail-value muted">${formatTime(provider.verified_at * 1000)}</span></div>` : ""}
+        </div>
+      </div>
+    `;
+  }).join("");
 }

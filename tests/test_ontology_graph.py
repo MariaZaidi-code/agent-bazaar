@@ -17,11 +17,7 @@ def test_ontology_links_and_units(services: AppServices) -> None:
 
 
 def test_all_seeded_tools_validate(services: AppServices) -> None:
-    violations = {
-        tool.id: issue
-        for tool in services.graph.all()
-        for issue in services.ontology.validate_tool(tool)
-    }
+    violations = {tool.id: issue for tool in services.graph.all() for issue in services.ontology.validate_tool(tool)}
     assert violations == {}
     assert all(not issues for issues in services.providers.validation.values())
 

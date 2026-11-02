@@ -26,11 +26,7 @@ async def run_configuration(name: str, flags: dict[str, bool]) -> dict[str, Any]
     for item in tasks:
         result = await services.client.run(item["task"])
         steps = result.plan.steps if result.plan else []
-        completed_tools = {
-            step.tool_id
-            for step in steps
-            if step.status.value in {"completed", "substituted"}
-        }
+        completed_tools = {step.tool_id for step in steps if step.status.value in {"completed", "substituted"}}
         missing = [tool for tool in item["expected"].values() if tool not in completed_tools]
         rows.append(
             {

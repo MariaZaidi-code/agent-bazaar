@@ -6,6 +6,8 @@ import re
 from datetime import date, timedelta
 
 from app.core.llm import LLMClient
+from typing import Any
+
 from app.knowledge.ontology import Ontology
 from app.schemas import SubGoal
 
@@ -82,9 +84,7 @@ CURRENCY_CODES = sorted(set(CURRENCY_WORDS.values()))
 WEATHER_WORDS = re.compile(r"\b(weather|temperature|forecast|rain|raining|hot|cold|climate)\b", re.I)
 HOLIDAY_WORDS = re.compile(r"\b(holiday|holidays|public holiday|national holiday)\b", re.I)
 COUNTRY_WORDS = re.compile(r"\b(population|capital|country|nation|facts?)\b", re.I)
-RESEARCH_WORDS = re.compile(
-    r"\b(paper|papers|research|arxiv|study|studies|literature|publications?)\b", re.I
-)
+RESEARCH_WORDS = re.compile(r"\b(paper|papers|research|arxiv|study|studies|literature|publications?)\b", re.I)
 DOCUMENT_WORDS = re.compile(r"\b(document|uploaded|file|pdf|docx|according to the)\b", re.I)
 SQL_WORDS = re.compile(
     r"\b(students?|enrol(?:l)?(?:ed|ment)?|courses?|gpa|university|database|sql|faculty|programs?)\b",
@@ -99,12 +99,8 @@ CRYPTO_WORDS = re.compile(
 TV_WORDS = re.compile(r"\b(tv|television)\b|\b(tv|television)\s+(show|shows|series)\b", re.I)
 BOOK_WORDS = re.compile(r"\b(books?|novels?)\b", re.I)
 TRANSLATE_WORDS = re.compile(r"\b(translate|translation|translated)\b", re.I)
-TIME_WORDS = re.compile(
-    r"\b(what time|current time|local time|time is it|time in|timezone|clock)\b", re.I
-)
-SUN_WORDS = re.compile(
-    r"\b(sunrise|sunset|solar noon|day length|daylight|golden hour)\b", re.I
-)
+TIME_WORDS = re.compile(r"\b(what time|current time|local time|time is it|time in|timezone|clock)\b", re.I)
+SUN_WORDS = re.compile(r"\b(sunrise|sunset|solar noon|day length|daylight|golden hour)\b", re.I)
 RECIPE_WORDS = re.compile(r"\b(recipes?|cook|cooking|bake|baking|dish)\b", re.I)
 SPORTS_WORDS = re.compile(
     r"\b(nba|nfl|mlb|nhl|epl|ipl|psl|premier league|cricket|scores?|scoreboard|"
@@ -208,16 +204,20 @@ class TaskPlanner:
         self.settings = settings if settings is not None else getattr(llm, "settings", None)
 
     async def decompose(
-        self, task: str, correlation_id: str = ""
+        self,
+        task: str,
+        correlation_id: str = "",
+        reasoning_mode: str | None = None,
     ) -> tuple[list[SubGoal], list[str]]:
         cleaned = " ".join(task.split())
         if not cleaned:
             raise ValueError("Task is empty")
+        mode = reasoning_mode or getattr(self.settings, "reasoning_mode", "hybrid")
         subgoals = self._deterministic(cleaned)
         warnings: list[str] = []
         if subgoals:
             return subgoals, warnings
-        if self.llm.enabled and self.settings.reasoning_mode in {"llm", "hybrid"}:
+        if self.llm.enabled and mode in {"llm", "hybrid"}:
             llm_subgoals = await self._llm_plan(cleaned)
             if llm_subgoals:
                 warnings.append("Plan produced by the optional LLM planner.")
@@ -229,6 +229,26 @@ class TaskPlanner:
             "TV shows, books, translation, current time, sunrise or sunset, recipes, "
             "sports scores, the sample university database, or an uploaded document."
         )
+
+    def validate_plan(self, plan: Any) -> list[str]:
+        warnings: list[str] = []
+        steps = getattr(plan, "steps", None)
+        if steps is None and isinstance(plan, list):
+            steps = plan
+        if not steps:
+            warnings.append("Plan has no steps.")
+            return warnings
+        ids = [getattr(step, "id", None) for step in steps]
+        if len(ids) != len(set(ids)):
+            warnings.append("Plan contains duplicate step ids.")
+        for step in steps:
+            step_id = getattr(step, "id", "?")
+            if not getattr(step, "tool_id", None):
+                warnings.append(f"Step {step_id} has no selected tool.")
+            capability = getattr(step, "capability", "")
+            if capability and capability not in self.ontology.capabilities:
+                warnings.append(f"Step {step_id} uses unknown capability {capability}.")
+        return warnings
 
     def _deterministic(self, task: str) -> list[SubGoal]:
         lowered = task.lower()
@@ -251,9 +271,7 @@ class TaskPlanner:
                 SubGoal(
                     id="g2",
                     capability="GetWeatherForecast",
-                    description=(
-                        f"Weather forecast and temperature for {weather_location} on {weather_date}."
-                    ),
+                    description=(f"Weather forecast and temperature for {weather_location} on {weather_date}."),
                     intent="weather forecast",
                     slots={"date": weather_date, "location": weather_location},
                     depends_on=[geocode_id],
@@ -402,9 +420,7 @@ class TaskPlanner:
                 SubGoal(
                     id=f"g{len(subgoals) + 1}",
                     capability="ConvertCurrency",
-                    description=(
-                        f"Convert {amount:g} {source} to {target} using the current exchange rate."
-                    ),
+                    description=(f"Convert {amount:g} {source} to {target} using the current exchange rate."),
                     intent="currency conversion",
                     slots={
                         "amount": amount,
@@ -740,8 +756,8 @@ class TaskPlanner:
         prompt = (
             f"Task: {task}\n\nAvailable capabilities:\n"
             f"{json.dumps(capabilities, indent=2)}\n\n"
-            "Return {\"subgoals\": [{\"capability\": str, \"description\": str, "
-            "\"intent\": str, \"slots\": {}, \"depends_on\": []}]}. "
+            'Return {"subgoals": [{"capability": str, "description": str, '
+            '"intent": str, "slots": {}, "depends_on": []}]}. '
             "Use ids g1, g2, ... in order. A dependent sub-goal lists earlier ids in "
             "depends_on. Slots must contain user-provided values only."
         )

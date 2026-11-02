@@ -11,6 +11,7 @@ from collections import Counter, defaultdict
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 from app.core.db import connect
 
@@ -121,9 +122,7 @@ def pdf_document(title: str, lines: list[str]) -> bytes:
     output.extend(b"0000000000 65535 f \n")
     for offset in offsets[1:]:
         output.extend(f"{offset:010d} 00000 n \n".encode())
-    output.extend(
-        f"trailer\n<< /Size {len(objects) + 1} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n".encode()
-    )
+    output.extend(f"trailer\n<< /Size {len(objects) + 1} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n".encode())
     return bytes(output)
 
 
@@ -154,6 +153,46 @@ def _wrap_pdf_line(value: str, width: int = 92) -> list[str]:
         length += len(word) + 1
     lines.append(" ".join(current) or " ")
     return lines
+
+
+def validate_webhook_url(url: str) -> None:
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        raise ValueError("Webhook URLs must start with http:// or https://.")
+    host = parsed.hostname
+    if not host:
+        raise ValueError("Webhook URL host required.")
+    import ipaddress
+    import socket
+
+    blocked_strings = {"169.254.169.254", "169.254.170.2", "::ffff:169.254.169.254"}
+    addresses: list[Any] = []
+    try:
+        addresses.append(ipaddress.ip_address(host))
+    except ValueError:
+        try:
+            infos = socket.getaddrinfo(host, None)
+        except socket.gaierror as exc:
+            raise ValueError("Webhook URL host could not be resolved.") from exc
+        for info in infos:
+            try:
+                addresses.append(ipaddress.ip_address(info[4][0]))
+            except ValueError:
+                continue
+        if not addresses:
+            raise ValueError("Webhook URL host could not be resolved.")
+    for ip in addresses:
+        if (
+            ip.is_private
+            or ip.is_loopback
+            or ip.is_link_local
+            or ip.is_reserved
+            or ip.is_multicast
+            or str(ip) in blocked_strings
+        ):
+            raise ValueError("Webhook URL points to a blocked address.")
+    if host.lower() in {"localhost", "localhost.localdomain"}:
+        raise ValueError("Webhook URL points to a blocked address.")
 
 
 class PlatformStore:
@@ -263,6 +302,7 @@ class PlatformStore:
                 workspace_id TEXT NOT NULL,
                 url TEXT NOT NULL,
                 event TEXT NOT NULL DEFAULT 'task.completed',
+                secret TEXT NOT NULL DEFAULT '',
                 created_at TEXT NOT NULL
             );
             CREATE TABLE IF NOT EXISTS scheduled_runs (
@@ -294,19 +334,20 @@ class PlatformStore:
             """
         )
         self._connection.commit()
+        try:
+            self._connection.execute("ALTER TABLE webhooks ADD COLUMN secret TEXT NOT NULL DEFAULT ''")
+            self._connection.commit()
+        except Exception:
+            pass
         self._ensure_demo()
         self._seed_flags()
 
     def _secret(self) -> bytes:
-        row = self._connection.execute(
-            "SELECT value FROM platform_meta WHERE key = 'secret'"
-        ).fetchone()
+        row = self._connection.execute("SELECT value FROM platform_meta WHERE key = 'secret'").fetchone()
         if row:
             return unb64(row["value"])
         value = secrets.token_bytes(32)
-        self._connection.execute(
-            "INSERT INTO platform_meta (key, value) VALUES ('secret', ?)", (b64(value),)
-        )
+        self._connection.execute("INSERT INTO platform_meta (key, value) VALUES ('secret', ?)", (b64(value),))
         self._connection.commit()
         return value
 
@@ -377,6 +418,10 @@ class PlatformStore:
                 )
             self._connection.commit()
 
+    @staticmethod
+    def validate_webhook_url(url: str) -> None:
+        validate_webhook_url(url)
+
     def user(self, user_id: str) -> dict[str, Any] | None:
         with self._lock:
             row = self._connection.execute(
@@ -436,11 +481,12 @@ class PlatformStore:
         if not row or not verify_password(password, row["password_hash"]):
             return None
         token = secrets.token_urlsafe(32)
+        hashed = hashlib.sha256(token.encode("utf-8")).hexdigest()
         now = utcnow()
         with self._lock:
             self._connection.execute(
                 "INSERT INTO sessions (token, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)",
-                (token, row["user_id"], now.isoformat(), (now + timedelta(days=SESSION_DAYS)).isoformat()),
+                (hashed, row["user_id"], now.isoformat(), (now + timedelta(days=SESSION_DAYS)).isoformat()),
             )
             self._connection.execute("DELETE FROM sessions WHERE expires_at < ?", (now.isoformat(),))
             self._connection.commit()
@@ -449,13 +495,15 @@ class PlatformStore:
     def logout(self, token: str | None) -> None:
         if not token:
             return
+        hashed = hashlib.sha256(token.encode("utf-8")).hexdigest()
         with self._lock:
-            self._connection.execute("DELETE FROM sessions WHERE token = ?", (token,))
+            self._connection.execute("DELETE FROM sessions WHERE token = ?", (hashed,))
             self._connection.commit()
 
     def session_user(self, token: str | None) -> dict[str, Any] | None:
         if not token:
             return None
+        hashed = hashlib.sha256(token.encode("utf-8")).hexdigest()
         with self._lock:
             row = self._connection.execute(
                 """
@@ -463,7 +511,7 @@ class PlatformStore:
                 FROM sessions s JOIN users u ON u.user_id = s.user_id
                 WHERE s.token = ?
                 """,
-                (token,),
+                (hashed,),
             ).fetchone()
         if not row or row["expires_at"] < utcnow().isoformat():
             return None
@@ -517,9 +565,7 @@ class PlatformStore:
 
     def preferred_workspace(self, user_id: str) -> str:
         with self._lock:
-            row = self._connection.execute(
-                "SELECT workspace_id FROM settings WHERE user_id = ?", (user_id,)
-            ).fetchone()
+            row = self._connection.execute("SELECT workspace_id FROM settings WHERE user_id = ?", (user_id,)).fetchone()
         workspace_id = str(row["workspace_id"]) if row else ""
         if workspace_id and self.member_role(user_id, workspace_id) != "viewer":
             return workspace_id
@@ -756,9 +802,7 @@ class PlatformStore:
             ).fetchall()
         return [dict(row) for row in rows]
 
-    def notify(
-        self, user_id: str, workspace_id: str, title: str, body: str, kind: str = "info"
-    ) -> None:
+    def notify(self, user_id: str, workspace_id: str, title: str, body: str, kind: str = "info") -> None:
         with self._lock:
             self._connection.execute(
                 """
@@ -812,41 +856,45 @@ class PlatformStore:
 
     def set_feature_flag(self, name: str, enabled: bool) -> dict[str, Any] | None:
         with self._lock:
-            self._connection.execute(
-                "UPDATE feature_flags SET enabled = ? WHERE name = ?", (int(enabled), name)
-            )
+            self._connection.execute("UPDATE feature_flags SET enabled = ? WHERE name = ?", (int(enabled), name))
             self._connection.commit()
             row = self._connection.execute(
                 "SELECT name, enabled, description FROM feature_flags WHERE name = ?", (name,)
             ).fetchone()
         return {**dict(row), "enabled": bool(row["enabled"])} if row else None
 
-    def webhooks(self, user_id: str, workspace_id: str) -> list[dict[str, Any]]:
+    def webhooks(self, user_id: str, workspace_id: str, include_secret: bool = False) -> list[dict[str, Any]]:
         with self._lock:
             rows = self._connection.execute(
                 """
-                SELECT webhook_id, url, event, created_at FROM webhooks
+                SELECT webhook_id, url, event, created_at, secret FROM webhooks
                 WHERE user_id = ? AND workspace_id = ? ORDER BY created_at DESC
                 """,
                 (user_id, workspace_id),
             ).fetchall()
-        return [dict(row) for row in rows]
+        result = [dict(row) for row in rows]
+        if not include_secret:
+            for item in result:
+                item.pop("secret", None)
+        return result
 
     def add_webhook(self, user_id: str, workspace_id: str, url: str, event: str) -> dict[str, Any]:
         if not url.startswith(("http://", "https://")):
             raise ValueError("Webhook URLs must start with http:// or https://.")
+        validate_webhook_url(url)
         webhook_id = f"hook_{secrets.token_hex(8)}"
+        secret = secrets.token_urlsafe(32)
         with self._lock:
             self._connection.execute(
                 """
-                INSERT INTO webhooks (webhook_id, user_id, workspace_id, url, event, created_at)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO webhooks (webhook_id, user_id, workspace_id, url, event, secret, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
-                (webhook_id, user_id, workspace_id, url, event, iso()),
+                (webhook_id, user_id, workspace_id, url, event, secret, iso()),
             )
             self._connection.commit()
         self.audit(user_id, workspace_id, "webhook.created", url)
-        return {"webhook_id": webhook_id, "url": url, "event": event}
+        return {"webhook_id": webhook_id, "url": url, "event": event, "secret": secret}
 
     def remove_webhook(self, user_id: str, workspace_id: str, webhook_id: str) -> bool:
         with self._lock:
@@ -1097,8 +1145,7 @@ def analytics_payload(rows: list[dict[str, Any]], providers: list[dict[str, Any]
         "by_day": [{"date": day, "tasks": by_day[day]} for day in days],
         "top_tools": [{"tool_id": tool, "tasks": count} for tool, count in tool_counts.most_common(8)],
         "top_capabilities": [
-            {"capability": capability, "tasks": count}
-            for capability, count in capability_counts.most_common(8)
+            {"capability": capability, "tasks": count} for capability, count in capability_counts.most_common(8)
         ],
         "providers": [
             {

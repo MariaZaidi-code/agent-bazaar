@@ -132,9 +132,7 @@ def test_loader_roundtrip_and_malformed_skip(tmp_path: Path) -> None:
     )
     written = write_normalized_spec(spec, tmp_path)
     assert written.exists()
-    (tmp_path / "wrapped.json").write_text(
-        json.dumps({"spec": spec.model_dump(mode="json")}), encoding="utf-8"
-    )
+    (tmp_path / "wrapped.json").write_text(json.dumps({"spec": spec.model_dump(mode="json")}), encoding="utf-8")
     (tmp_path / "broken.json").write_text("{not json", encoding="utf-8")
     loaded = load_normalized_specs(tmp_path)
     assert [item.tool_id for item in loaded] == ["sample-tool", "sample-tool"]

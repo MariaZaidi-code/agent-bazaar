@@ -83,9 +83,7 @@ class EspnScoresProvider(HTTPProvider):
     async def execute(self, params: dict[str, Any]) -> dict[str, Any]:
         league = str(params.get("league", "")).strip().lower()
         path = LEAGUE_PATHS.get(league, league if "/" in league else "soccer/eng.1")
-        payload = await self.get_json(
-            f"https://site.api.espn.com/apis/site/v2/sports/{path}/scoreboard"
-        )
+        payload = await self.get_json(f"https://site.api.espn.com/apis/site/v2/sports/{path}/scoreboard")
         scores = []
         for event in (payload.get("events") or [])[:5]:
             competitions = event.get("competitions") or [{}]

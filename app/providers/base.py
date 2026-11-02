@@ -176,10 +176,7 @@ class BaseProvider(ABC):
         index = TfidfIndex({self.tool_id: self.spec.search_text})
         score = index.search(question, top_k=1)
         relevance = score[0][1] if score else 0.0
-        return (
-            f"{self.spec.name} ({self.spec.capability}) is relevant at {relevance:.2f}. "
-            f"{self.spec.description}"
-        )
+        return f"{self.spec.name} ({self.spec.capability}) is relevant at {relevance:.2f}. {self.spec.description}"
 
     @abstractmethod
     async def execute(self, params: dict[str, Any]) -> dict[str, Any]:

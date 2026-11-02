@@ -49,9 +49,7 @@ class PokeAPIProvider(HTTPProvider):
         if not isinstance(payload, dict):
             raise ValueError("invalid pokemon response")
         types = [
-            (entry.get("type") or {}).get("name", "")
-            for entry in payload.get("types", [])
-            if isinstance(entry, dict)
+            (entry.get("type") or {}).get("name", "") for entry in payload.get("types", []) if isinstance(entry, dict)
         ]
         types = [t for t in types if t]
         sprites = payload.get("sprites") or {}
@@ -70,12 +68,15 @@ class PokeAPIProvider(HTTPProvider):
         name = str(params.get("name", "")).strip().lower()
         if not name:
             raise ValueError("name is required")
-        fixture = POKEMON_FIXTURES.get(name, {
-            "name": name,
-            "id": 0,
-            "types": ["unknown"],
-            "height": 0,
-            "weight": 0,
-            "sprite": "",
-        })
+        fixture = POKEMON_FIXTURES.get(
+            name,
+            {
+                "name": name,
+                "id": 0,
+                "types": ["unknown"],
+                "height": 0,
+                "weight": 0,
+                "sprite": "",
+            },
+        )
         return {"pokemon": dict(fixture)}

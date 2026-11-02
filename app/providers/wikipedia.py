@@ -12,9 +12,7 @@ class WikipediaProvider(HTTPProvider):
         if not title:
             raise ValueError("title is required")
         slug = quote(title.replace(" ", "_"), safe="")
-        payload = await self.get_json(
-            f"https://en.wikipedia.org/api/rest_v1/page/summary/{slug}"
-        )
+        payload = await self.get_json(f"https://en.wikipedia.org/api/rest_v1/page/summary/{slug}")
         if not isinstance(payload, dict):
             raise ValueError("invalid wikipedia response")
         page_title = payload.get("title") or title

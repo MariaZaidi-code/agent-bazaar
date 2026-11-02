@@ -77,10 +77,7 @@ class ToolKnowledgeGraph:
             if available_outputs:
                 outputs = [item.concept for item in tool.outputs if item.required]
                 if not all(
-                    any(
-                        self.ontology.check_link(source, None, target, None).valid
-                        for source in outputs
-                    )
+                    any(self.ontology.check_link(source, None, target, None).valid for source in outputs)
                     for target in available_outputs
                 ):
                     continue

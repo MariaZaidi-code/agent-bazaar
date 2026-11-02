@@ -92,15 +92,11 @@ PROMPTS: list[dict[str, Any]] = [
 
 PROMPT_TEMPLATES = {
     "plan_task": (
-        "Use the run_task tool to answer this request. "
-        "Explain which tools were chosen and why.\n\nTask: {task}"
+        "Use the run_task tool to answer this request. Explain which tools were chosen and why.\n\nTask: {task}"
     ),
-    "verify_provider": (
-        "Use the verify_tool tool for {tool_id}. Summarise the claim labels and any drift alerts."
-    ),
+    "verify_provider": ("Use the verify_tool tool for {tool_id}. Summarise the claim labels and any drift alerts."),
     "explain_trust": (
-        "Use list_providers, then explain the trust score for {tool_id} "
-        "in plain language with no formulas."
+        "Use list_providers, then explain the trust score for {tool_id} in plain language with no formulas."
     ),
 }
 
@@ -163,10 +159,7 @@ class AgentBazaarMCPServer:
             return self._tool_result(
                 {
                     "task_id": task_id,
-                    "events": [
-                        event.model_dump(mode="json")
-                        for event in self.services.traces.events(task_id)
-                    ],
+                    "events": [event.model_dump(mode="json") for event in self.services.traces.events(task_id)],
                     "result": result.model_dump(mode="json") if result is not None else None,
                 }
             )
@@ -239,9 +232,7 @@ class AgentBazaarMCPServer:
             elif method == "tools/list":
                 result = {"tools": TOOLS}
             elif method == "tools/call":
-                result = await self._call_tool(
-                    str(params.get("name", "")), params.get("arguments") or {}
-                )
+                result = await self._call_tool(str(params.get("name", "")), params.get("arguments") or {})
             elif method == "resources/list":
                 result = {
                     "resources": [
@@ -289,12 +280,8 @@ class AgentBazaarMCPServer:
                     tool_id=arguments.get("tool_id", ""),
                 )
                 result = {
-                    "description": next(
-                        (prompt["description"] for prompt in PROMPTS if prompt["name"] == name), ""
-                    ),
-                    "messages": [
-                        {"role": "user", "content": {"type": "text", "text": rendered}}
-                    ],
+                    "description": next((prompt["description"] for prompt in PROMPTS if prompt["name"] == name), ""),
+                    "messages": [{"role": "user", "content": {"type": "text", "text": rendered}}],
                 }
             else:
                 return {

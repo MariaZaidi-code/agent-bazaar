@@ -33,9 +33,7 @@ class FakeLLM:
         self.responses = responses or []
         self.calls = 0
 
-    def complete_text(
-        self, system: str, user: str, *, use_cache: bool = True, temperature: float | None = None
-    ) -> str:
+    def complete_text(self, system: str, user: str, *, use_cache: bool = True, temperature: float | None = None) -> str:
         return ""
 
     def complete_json(
@@ -87,21 +85,13 @@ def test_offline_seed_path_is_clean() -> None:
 def test_seed_collisions_are_dropped_without_a_repair_round(tmp_path) -> None:
     llm = FakeLLM(
         [
-            ProposalBatch(
-                concepts=[
-                    ConceptProposal(
-                        label="Thermal reading", data_type="float", aliases=["temp"]
-                    )
-                ]
-            ),
+            ProposalBatch(concepts=[ConceptProposal(label="Thermal reading", data_type="float", aliases=["temp"])]),
             ProposalBatch(concepts=[]),
         ]
     )
     log_path = tmp_path / "violations.jsonl"
 
-    layer = generate_domain_layer(
-        [_field("zwibble_flux")], llm, violation_log_path=log_path
-    )
+    layer = generate_domain_layer([_field("zwibble_flux")], llm, violation_log_path=log_path)
 
     assert llm.calls == 1
     assert layer.attempts == 0
@@ -126,19 +116,13 @@ def test_repair_loop_runs_when_validation_still_fails(tmp_path, monkeypatch) -> 
     monkeypatch.setattr(generator, "validate_graph", flaky_validate)
     llm = FakeLLM(
         [
-            ProposalBatch(
-                concepts=[ConceptProposal(label="Thermal reading", data_type="float")]
-            ),
-            ProposalBatch(
-                concepts=[ConceptProposal(label="Thermal reading", data_type="float")]
-            ),
+            ProposalBatch(concepts=[ConceptProposal(label="Thermal reading", data_type="float")]),
+            ProposalBatch(concepts=[ConceptProposal(label="Thermal reading", data_type="float")]),
         ]
     )
     log_path = tmp_path / "violations.jsonl"
 
-    layer = generate_domain_layer(
-        [_field("zwibble_flux")], llm, violation_log_path=log_path
-    )
+    layer = generate_domain_layer([_field("zwibble_flux")], llm, violation_log_path=log_path)
 
     assert layer.attempts >= 1
     assert layer.violations_found >= 1
@@ -263,9 +247,7 @@ def test_merge_never_leaves_duplicate_labels_or_aliases() -> None:
 def test_llm_error_on_every_batch_falls_back_to_seed() -> None:
     llm = FakeLLM([LLMError("provider unavailable")])
 
-    layer = generate_domain_layer(
-        [_field("zwibble_flux"), _field("quux_measure")], llm, batch_size=1
-    )
+    layer = generate_domain_layer([_field("zwibble_flux"), _field("quux_measure")], llm, batch_size=1)
 
     assert layer.source == "seed"
     assert layer.failed_batches >= 2

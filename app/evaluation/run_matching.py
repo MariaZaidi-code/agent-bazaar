@@ -78,9 +78,7 @@ async def evaluate() -> dict[str, Any]:
         "metrics": metrics,
         "per_capability": capabilities,
         "failures": [
-            row
-            for row in rows
-            if not row["hit_at_k"] or not row["selected_ok"] or row["task_status"] != "completed"
+            row for row in rows if not row["hit_at_k"] or not row["selected_ok"] or row["task_status"] != "completed"
         ],
         "rows": rows,
     }

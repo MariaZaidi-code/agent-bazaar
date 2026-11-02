@@ -49,12 +49,15 @@ class CoinGeckoProvider(HTTPProvider):
         coin = str(params.get("coin", "")).strip().lower()
         if not coin:
             raise ValueError("coin is required")
-        fixture = COINGECKO_FIXTURES.get(coin, {
-            "name": coin,
-            "price": 100.0,
-            "market_cap": 1_000_000_000.0,
-            "change_24h": 1.0,
-        })
+        fixture = COINGECKO_FIXTURES.get(
+            coin,
+            {
+                "name": coin,
+                "price": 100.0,
+                "market_cap": 1_000_000_000.0,
+                "change_24h": 1.0,
+            },
+        )
         return {
             "crypto": {
                 "name": fixture["name"],

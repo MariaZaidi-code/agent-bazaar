@@ -27,68 +27,68 @@ from app.services import AppServices
 TOOLS_FILE = Path(__file__).resolve().parents[1] / "app" / "data" / "tools.json"
 
 EXPECTED_PROFILES = {
-    'nominatim-geocode': ('free', 'keyless', 'ODbL'),
-    'open-meteo-forecast': ('free', 'keyless', 'CC-BY-4.0'),
-    'frankfurter-currency': ('free', 'keyless', 'CC0-1.0'),
-    'restcountries-facts': ('free', 'keyless', 'MPL-2.0'),
-    'nager-holidays': ('free', 'keyless', 'MIT'),
-    'arxiv-search': ('free', 'keyless', 'CC0-1.0'),
-    'university-sql': ('free', 'keyless', 'sample data'),
-    'document-qa': ('free', 'keyless', 'user documents'),
-    'mock-weather-fahrenheit': ('free', 'keyless', 'mock'),
-    'hackernews-search': ('free', 'keyless', 'MIT'),
-    'coingecko-price': ('free', 'keyless', 'CoinGecko API terms'),
-    'tvmaze-search': ('free', 'keyless', 'CC-BY-SA-4.0'),
-    'open-library-search': ('free', 'keyless', 'CC0-1.0'),
-    'google-books-search': ('free', 'keyless', 'Google Books API terms'),
-    'mymemory-translate': ('free', 'keyless', 'MyMemory terms'),
-    'worldtime-current': ('free', 'keyless', 'BSD-3-Clause'),
-    'sunrise-sunset-times': ('free', 'keyless', 'CC0-1.0'),
-    'themealdb-recipes': ('free', 'keyless', 'TheMealDB terms'),
-    'espn-scores': ('free', 'keyless', 'ESPN terms'),
-    'openalex-search': ('free', 'keyless', 'CC0'),
-    'semanticscholar-search': ('free', 'keyless', 'unknown'),
-    'github-search': ('free', 'keyless', 'unknown'),
-    'stackexchange-search': ('free', 'keyless', 'CC-BY-SA'),
-    'openfoodfacts-product': ('free', 'keyless', 'ODbL'),
-    'languagetool-check': ('free', 'keyless', 'LGPL'),
-    'qrcode-generate': ('free', 'keyless', 'unknown'),
-    'ipapi-lookup': ('free', 'keyless', 'unknown'),
-    'openelevation-lookup': ('free', 'keyless', 'MIT'),
-    'coindesk-bitcoin': ('free', 'keyless', 'unknown'),
-    'metals-spot': ('free', 'keyless', 'unknown'),
-    'reddit-hot': ('free', 'keyless', 'unknown'),
-    'openaq-locations': ('free', 'keyless', 'CC-BY'),
-    'pubchem-compound': ('free', 'keyless', 'public domain'),
-    'openfda-label': ('free', 'keyless', 'public domain'),
-    'nasa-eonet-events': ('free', 'keyless', 'unknown'),
-    'noaa-weather-alerts': ('free', 'keyless', 'unknown'),
-    'noaa-tides': ('free', 'keyless', 'unknown'),
-    'exchangerate-latest': ('free', 'keyless', 'unknown'),
-    'libretranslate-translate': ('free', 'keyless', 'unknown'),
-    'mastodon-public-posts': ('free', 'keyless', 'unknown'),
-    'thesportsdb-events': ('free', 'keyless', 'unknown'),
-    'upcitemdb-lookup': ('free', 'keyless', 'unknown'),
-    'isgd-shorten': ('free', 'keyless', 'unknown'),
-    'nasa-mars-photos': ('free', 'keyless', 'unknown'),
-    'wikidata-search': ('free', 'keyless', 'unknown'),
-    'wikivoyage-guide': ('free', 'keyless', 'unknown'),
-    'yahoo-finance-quote': ('free', 'keyless', 'unknown'),
-    'rss-feed': ('free', 'keyless', 'unknown'),
-    'dbpedia-summary': ('free', 'keyless', 'unknown'),
-    'iss-location': ('free', 'keyless', 'unknown'),
-    'open-meteo-air-quality': ('free', 'keyless', 'unknown'),
-    'open-meteo-marine': ('free', 'keyless', 'unknown'),
-    'email-validate': ('free', 'keyless', 'unknown'),
-    'password-tools': ('free', 'keyless', 'unknown'),
-    'uuid-generate': ('free', 'keyless', 'unknown'),
-    'data-transform': ('free', 'keyless', 'unknown'),
-    'ipify-ip': ('free', 'keyless', 'unknown'),
-    'zenquotes-random': ('free', 'keyless', 'unknown'),
-    'launch-library-upcoming': ('free', 'keyless', 'unknown'),
-    'worldbank-indicator': ('free', 'keyless', 'unknown'),
-    'dictionary-define': ('free', 'keyless', 'unknown'),
-    'coincap-asset': ('free', 'keyless', 'unknown'),
+    "nominatim-geocode": ("free", "keyless", "ODbL"),
+    "open-meteo-forecast": ("free", "keyless", "CC-BY-4.0"),
+    "frankfurter-currency": ("free", "keyless", "CC0-1.0"),
+    "restcountries-facts": ("free", "keyless", "MPL-2.0"),
+    "nager-holidays": ("free", "keyless", "MIT"),
+    "arxiv-search": ("free", "keyless", "CC0-1.0"),
+    "university-sql": ("free", "keyless", "sample data"),
+    "document-qa": ("free", "keyless", "user documents"),
+    "mock-weather-fahrenheit": ("free", "keyless", "mock"),
+    "hackernews-search": ("free", "keyless", "MIT"),
+    "coingecko-price": ("free", "keyless", "CoinGecko API terms"),
+    "tvmaze-search": ("free", "keyless", "CC-BY-SA-4.0"),
+    "open-library-search": ("free", "keyless", "CC0-1.0"),
+    "google-books-search": ("free", "keyless", "Google Books API terms"),
+    "mymemory-translate": ("free", "keyless", "MyMemory terms"),
+    "worldtime-current": ("free", "keyless", "BSD-3-Clause"),
+    "sunrise-sunset-times": ("free", "keyless", "CC0-1.0"),
+    "themealdb-recipes": ("free", "keyless", "TheMealDB terms"),
+    "espn-scores": ("free", "keyless", "ESPN terms"),
+    "openalex-search": ("free", "keyless", "CC0"),
+    "semanticscholar-search": ("free", "keyless", "unknown"),
+    "github-search": ("free", "keyless", "unknown"),
+    "stackexchange-search": ("free", "keyless", "CC-BY-SA"),
+    "openfoodfacts-product": ("free", "keyless", "ODbL"),
+    "languagetool-check": ("free", "keyless", "LGPL"),
+    "qrcode-generate": ("free", "keyless", "unknown"),
+    "ipapi-lookup": ("free", "keyless", "unknown"),
+    "openelevation-lookup": ("free", "keyless", "MIT"),
+    "coindesk-bitcoin": ("free", "keyless", "unknown"),
+    "metals-spot": ("free", "keyless", "unknown"),
+    "reddit-hot": ("free", "keyless", "unknown"),
+    "openaq-locations": ("free", "keyless", "CC-BY"),
+    "pubchem-compound": ("free", "keyless", "public domain"),
+    "openfda-label": ("free", "keyless", "public domain"),
+    "nasa-eonet-events": ("free", "keyless", "unknown"),
+    "noaa-weather-alerts": ("free", "keyless", "unknown"),
+    "noaa-tides": ("free", "keyless", "unknown"),
+    "exchangerate-latest": ("free", "keyless", "unknown"),
+    "libretranslate-translate": ("free", "keyless", "unknown"),
+    "mastodon-public-posts": ("free", "keyless", "unknown"),
+    "thesportsdb-events": ("free", "keyless", "unknown"),
+    "upcitemdb-lookup": ("free", "keyless", "unknown"),
+    "isgd-shorten": ("free", "keyless", "unknown"),
+    "nasa-mars-photos": ("free", "keyless", "unknown"),
+    "wikidata-search": ("free", "keyless", "unknown"),
+    "wikivoyage-guide": ("free", "keyless", "unknown"),
+    "yahoo-finance-quote": ("free", "keyless", "unknown"),
+    "rss-feed": ("free", "keyless", "unknown"),
+    "dbpedia-summary": ("free", "keyless", "unknown"),
+    "iss-location": ("free", "keyless", "unknown"),
+    "open-meteo-air-quality": ("free", "keyless", "unknown"),
+    "open-meteo-marine": ("free", "keyless", "unknown"),
+    "email-validate": ("free", "keyless", "unknown"),
+    "password-tools": ("free", "keyless", "unknown"),
+    "uuid-generate": ("free", "keyless", "unknown"),
+    "data-transform": ("free", "keyless", "unknown"),
+    "ipify-ip": ("free", "keyless", "unknown"),
+    "zenquotes-random": ("free", "keyless", "unknown"),
+    "launch-library-upcoming": ("free", "keyless", "unknown"),
+    "worldbank-indicator": ("free", "keyless", "unknown"),
+    "dictionary-define": ("free", "keyless", "unknown"),
+    "coincap-asset": ("free", "keyless", "unknown"),
 }
 
 SUBGOAL = SubGoal(
@@ -173,15 +173,34 @@ def test_settings_expose_the_free_first_policy(monkeypatch: pytest.MonkeyPatch) 
     assert overridden.min_rating_count == 5
 
 
+def _executable_catalogue() -> list[dict]:
+    """Only tools that have passed catalogue validation are executable."""
+    return [entry for entry in catalogue() if entry.get("is_executable")]
+
+
 def test_catalogue_tools_stay_free_keyless_and_executable() -> None:
     entries = {entry["id"]: entry for entry in catalogue()}
+    executable = {entry["id"]: entry for entry in _executable_catalogue()}
 
-    assert set(EXPECTED_PROFILES) == set(entries)
+    # Every confirmed catalogue tool is free, keyless and executable.
+    for tool_id, entry in executable.items():
+        assert entry["pricing_tier"] == "free", tool_id
+        assert entry["access_requirement"] == "keyless", tool_id
+        assert entry["is_executable"] is True, tool_id
+
+    # The expected profiles are all present with their exact profile values.
     for tool_id, (tier, access, licence) in EXPECTED_PROFILES.items():
-        entry = entries[tool_id]
-        assert (entry["pricing_tier"], entry["access_requirement"]) == (tier, access)
-        assert entry["licence"] == licence
-        assert entry["is_executable"] is True
+        entry = executable[tool_id]
+        assert (entry["pricing_tier"], entry["access_requirement"]) == (tier, access), tool_id
+        assert entry["licence"] == licence, tool_id
+        assert entry["is_executable"] is True, tool_id
+
+    # No discovered-but-unvalidated entries leak into the executable catalogue.
+    for entry in catalogue():
+        if entry.get("catalogue_status") == "pending_discovery":
+            assert entry["is_executable"] is False, entry["id"]
+            assert entry["pricing_tier"] in {"unknown", "free"}
+            assert entry["access_requirement"] in {"unknown", "keyless"}
 
 
 def test_free_tool_outranks_a_paid_tool_with_a_better_score(services: AppServices) -> None:
@@ -220,24 +239,16 @@ def test_key_required_tool_is_not_executable_and_is_not_selected(
 
 
 async def test_key_required_tool_is_never_executed(services: AppServices) -> None:
-    services.graph.add(
-        make_tool("keyed-weather", access_requirement="api_key")
-    )
+    services.graph.add(make_tool("keyed-weather", access_requirement="api_key"))
     services.retriever.rebuild()
 
     result = await services.client.run("What is the temperature in Lahore tomorrow?")
 
     assert result.status == "completed"
     assert result.plan is not None
-    weather_step = next(
-        step for step in result.plan.steps if step.capability == "GetWeatherForecast"
-    )
+    weather_step = next(step for step in result.plan.steps if step.capability == "GetWeatherForecast")
     assert weather_step.tool_id == "open-meteo-forecast"
-    group = next(
-        group
-        for group in result.candidate_lists
-        if group.capability == "GetWeatherForecast"
-    )
+    group = next(group for group in result.candidate_lists if group.capability == "GetWeatherForecast")
     keyed = next(item for item in group.candidates if item.tool.id == "keyed-weather")
     assert any("not executable" in reason for reason in keyed.reasons)
 
@@ -245,33 +256,23 @@ async def test_key_required_tool_is_never_executed(services: AppServices) -> Non
 async def test_paid_tool_is_kept_in_the_shortlist_but_never_executed(
     services: AppServices,
 ) -> None:
-    services.graph.add(
-        make_tool("paid-weather", pricing_tier="paid", access_requirement="paid_key")
-    )
+    services.graph.add(make_tool("paid-weather", pricing_tier="paid", access_requirement="paid_key"))
     services.retriever.rebuild()
 
     result = await services.client.run("What is the temperature in Lahore tomorrow?")
 
     assert result.status == "completed"
     assert result.plan is not None
-    weather_step = next(
-        step for step in result.plan.steps if step.capability == "GetWeatherForecast"
-    )
+    weather_step = next(step for step in result.plan.steps if step.capability == "GetWeatherForecast")
     assert weather_step.tool_id == "open-meteo-forecast"
-    group = next(
-        group
-        for group in result.candidate_lists
-        if group.capability == "GetWeatherForecast"
-    )
+    group = next(group for group in result.candidate_lists if group.capability == "GetWeatherForecast")
     paid = next(item for item in group.candidates if item.tool.id == "paid-weather")
     assert any("not executable" in reason for reason in paid.reasons)
     assert paid.tool.pricing_tier == "paid"
 
 
 def test_demoted_provider_and_open_breaker_score_zero(services: AppServices) -> None:
-    demoted = make_candidate(
-        make_tool("demoted-tool"), relevance=1.0, trust=0.9, demoted=True
-    )
+    demoted = make_candidate(make_tool("demoted-tool"), relevance=1.0, trust=0.9, demoted=True)
     blocked = make_candidate(
         make_tool("blocked-tool"),
         relevance=1.0,
@@ -303,18 +304,13 @@ def test_contradicted_claim_penalty_applies(services: AppServices) -> None:
         scores["clean-tool"] * services.settings.contradicted_penalty,
         rel=1e-6,
     )
-    assert any(
-        "contradicted claim penalty applied" in reason
-        for reason in contradicted.reasons
-    )
+    assert any("contradicted claim penalty applied" in reason for reason in contradicted.reasons)
 
 
 async def test_policy_reasons_are_recorded_in_the_trace(services: AppServices) -> None:
     result = await services.client.run("What is the temperature in Lahore tomorrow?")
 
-    shortlist = next(
-        event for event in result.trace if event.event_type == "graphrag_shortlist"
-    )
+    shortlist = next(event for event in result.trace if event.event_type == "graphrag_shortlist")
     assert shortlist.data["policy"]["pricing_policy"] == "prefer_free"
     assert shortlist.data["free_first_compliance"] is True
     assert shortlist.data["policy"]["tier_order"] == [
@@ -328,11 +324,7 @@ async def test_policy_reasons_are_recorded_in_the_trace(services: AppServices) -
         if event.event_type != "graphrag_shortlist":
             continue
         entry = next(
-            (
-                item
-                for item in event.data["ranked"]
-                if item["tool_id"] == "open-meteo-forecast"
-            ),
+            (item for item in event.data["ranked"] if item["tool_id"] == "open-meteo-forecast"),
             None,
         )
         if entry is not None:

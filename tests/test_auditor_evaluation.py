@@ -14,7 +14,16 @@ def test_seeded_dataset_shape() -> None:
     assert claims["counts"] == {"Verified": 74, "Supported": 16, "Contradicted": 18, "Unsupported": 17}
     assert len(drift["scenarios"]) == 45
     behaviors = {scenario["behavior"] for scenario in drift["scenarios"]}
-    assert {"rename_field", "remove_field", "type_change", "unit_change", "garbage_200", "outage", "flapping", "dishonest"} <= behaviors
+    assert {
+        "rename_field",
+        "remove_field",
+        "type_change",
+        "unit_change",
+        "garbage_200",
+        "outage",
+        "flapping",
+        "dishonest",
+    } <= behaviors
 
 
 def test_full_evaluation_meets_controlled_targets(tmp_path: Path) -> None:

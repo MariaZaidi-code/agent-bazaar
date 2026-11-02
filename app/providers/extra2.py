@@ -72,9 +72,7 @@ class WikivoyageProvider(HTTPProvider):
         place = str(params.get("place", "")).strip()
         if not place:
             raise ValueError("place is required")
-        payload = await self.get_json(
-            f"https://en.wikivoyage.org/api/rest_v1/page/summary/{quote(place, safe='')}"
-        )
+        payload = await self.get_json(f"https://en.wikivoyage.org/api/rest_v1/page/summary/{quote(place, safe='')}")
         if not isinstance(payload, dict):
             raise ValueError("invalid Wikivoyage response")
         return {
@@ -179,9 +177,7 @@ class DbpediaProvider(HTTPProvider):
         title = str(params.get("title", "")).strip()
         if not title:
             raise ValueError("title is required")
-        payload = await self.get_json(
-            f"https://dbpedia.org/data/{quote(title.replace(' ', '_'), safe='')}.json"
-        )
+        payload = await self.get_json(f"https://dbpedia.org/data/{quote(title.replace(' ', '_'), safe='')}.json")
         if not isinstance(payload, dict) or not payload:
             raise ValueError("invalid DBpedia response")
         resource_url = next(iter(payload))
@@ -252,9 +248,7 @@ class OpenMeteoAirProvider(HTTPProvider):
         }
 
     async def offline(self, params: dict[str, Any]) -> dict[str, Any]:
-        return {
-            "air_quality": {"pm2_5": 8.5, "pm10": 15.0, "ozone": 42.0, "european_aqi": 22}
-        }
+        return {"air_quality": {"pm2_5": 8.5, "pm10": 15.0, "ozone": 42.0, "european_aqi": 22}}
 
 
 class OpenMeteoMarineProvider(HTTPProvider):
@@ -467,15 +461,12 @@ class WorldBankProvider(HTTPProvider):
             raise ValueError("country is required")
         indicator = str(params.get("indicator", "SP.POP.TOTL")).strip() or "SP.POP.TOTL"
         payload = await self.get_json(
-            f"https://api.worldbank.org/v2/country/{quote(country, safe='')}/indicator/"
-            f"{quote(indicator, safe='')}",
+            f"https://api.worldbank.org/v2/country/{quote(country, safe='')}/indicator/{quote(indicator, safe='')}",
             params={"format": "json", "per_page": 5},
         )
         rows = payload[1] if isinstance(payload, list) and len(payload) > 1 else []
         values = [
-            {"year": row.get("date", ""), "value": row.get("value")}
-            for row in rows or []
-            if isinstance(row, dict)
+            {"year": row.get("date", ""), "value": row.get("value")} for row in rows or [] if isinstance(row, dict)
         ]
         return {
             "indicator_data": {
@@ -500,9 +491,7 @@ class DictionaryProvider(HTTPProvider):
         word = str(params.get("word", "")).strip()
         if not word:
             raise ValueError("word is required")
-        payload = await self.get_json(
-            f"https://api.dictionaryapi.dev/api/v2/entries/en/{quote(word, safe='')}"
-        )
+        payload = await self.get_json(f"https://api.dictionaryapi.dev/api/v2/entries/en/{quote(word, safe='')}")
         entries = []
         for item in payload if isinstance(payload, list) else []:
             if not isinstance(item, dict):

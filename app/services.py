@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -9,7 +11,7 @@ from app.agents.mapper_stub import MapperStub
 from app.agents.planner import TaskPlanner
 from app.baselines.b1 import B1ToolCalling
 from app.baselines.b2 import B2RagOnly
-from app.config import Settings
+from app.config import BASE_DIR, Settings
 from app.core.cache import Cache
 from app.core.circuit_breaker import CircuitBreakerRegistry
 from app.core.jobs import JobManager
@@ -28,6 +30,7 @@ from app.knowledge.retrieval import GraphRAGRetriever
 from app.mcp.registry import MCPServerRegistry
 from app.platform import PlatformStore
 from app.providers.registry import ProviderRegistry
+from app.discovery.staging import StagingRegistry
 
 
 @dataclass
@@ -54,27 +57,111 @@ class AppServices:
     mcp: MCPServerRegistry | None = None
     webhooks: WebhookRegistry = field(default_factory=WebhookRegistry)
     jobs: JobManager = field(default_factory=JobManager)
+    discovery: StagingRegistry | None = None
+
+    def _integrate_discovered_providers(self) -> int:
+        """Register verified discovery providers into the ProviderRegistry.
+
+        This connects the discovery pipeline to the executable provider registry.
+        Only VERIFIED providers are registered for execution.
+        """
+        if not self.discovery:
+            return 0
+
+        registered = 0
+        for provider_def in self.discovery.verified():
+            try:
+                # Check if already registered
+                if self.providers.get(provider_def.tool_id):
+                    continue
+
+                # Create a GenericProvider for this verified definition
+                from app.discovery.runtime import GenericProvider
+
+                generic_provider = GenericProvider(
+                    provider_def,
+                    self.settings,
+                    self.cache,
+                )
+
+                # Register with the graph and validation
+                self.providers.register(generic_provider)
+                registered += 1
+            except Exception as e:
+                logging.warning("Failed to integrate provider %s: %s", provider_def.tool_id, e)
+
+        if registered:
+            logging.info("Integrated %d verified discovery providers", registered)
+
+        return registered
 
     async def start_mcp(self) -> None:
-        if not self.settings.mcp_servers or self.mcp is None:
+        if self.mcp is None:
             return
-        for entry in self.settings.mcp_servers:
-            parts = entry.split("|")
-            name = parts[0].strip()
-            command = parts[1].strip().split() if len(parts) > 1 else []
-            if not command:
-                continue
-            self.mcp.register(name, command)
+        entries = []
+        yaml_path = None
         try:
-            await self.mcp.start_all()
+            yaml_path = self.settings.base_dir if hasattr(self.settings, "base_dir") else None
         except Exception:
-            return
+            yaml_path = None
+        from pathlib import Path
+
+        candidate = self.settings.mcp_servers_file
+        if not candidate.is_absolute():
+            candidate = Path(__file__).resolve().parent.parent / "config" / "mcp_servers.yaml"
+        if candidate.exists():
+            try:
+                import yaml
+
+                data = yaml.safe_load(candidate.read_text(encoding="utf-8")) or {}
+                servers = data.get("servers", data if isinstance(data, list) else [])
+                for s in servers:
+                    entries.append(s)
+            except Exception:
+                entries = []
+        if not entries and self.settings.mcp_servers:
+            for entry in self.settings.mcp_servers:
+                parts = entry.split("|")
+                name = parts[0].strip()
+                command = parts[1].strip().split() if len(parts) > 1 else []
+                entries.append({"name": name, "command": command})
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            name = str(entry.get("name", "")).strip()
+            if not name:
+                continue
+            url = entry.get("url")
+            command = entry.get("command")
+            if isinstance(command, str):
+                command = command.split()
+            env = entry.get("env") or {}
+            scopes = entry.get("scopes") or entry.get("allowed_tools")
+            if not url and not command:
+                continue
+            try:
+                self.mcp.register(name, command=command, env=env, url=url, scopes=scopes)
+            except Exception:
+                continue
+        # per-client startup
+        for name in list(self.mcp.clients.keys()):
+            client = self.mcp.clients[name]
+            try:
+                await client.start()
+            except Exception:
+                continue
         from app.mcp.adapter import MCPToolProvider, mcp_tool_to_spec
 
-        tools = await self.mcp.discover_tools()
+        try:
+            tools = await self.mcp.discover_tools()
+        except Exception:
+            tools = []
         for tool in tools:
             server = tool.get("_server", "")
-            spec = mcp_tool_to_spec(server, tool)
+            try:
+                spec = mcp_tool_to_spec(server, tool)
+            except Exception:
+                continue
             try:
                 self.graph.add(spec)
             except Exception:
@@ -91,9 +178,7 @@ class AppServices:
 
     def export_graph(self) -> bool:
         trust = {item["provider_id"]: item for item in self.trust.all()}
-        return self.graph.export_turtle(
-            self.settings.runtime_dir / "knowledge_graph.ttl", trust=trust
-        )
+        return self.graph.export_turtle(self.settings.runtime_dir / "knowledge_graph.ttl", trust=trust)
 
     def export_graph_jsonld(self) -> bool:
         trust = {item["provider_id"]: item for item in self.trust.all()}
@@ -122,11 +207,7 @@ class AppServices:
                     "contradictions": trust.get("contradictions", 0),
                     "calls": trust.get("calls", 0),
                     "probes": trust.get("probes", 0),
-                    "failure_mode": (
-                        "offline"
-                        if (self.settings.offline_mode or provider.offline_forced)
-                        else "live"
-                    ),
+                    "failure_mode": ("offline" if (self.settings.offline_mode or provider.offline_forced) else "live"),
                     "fail_next": provider.fail_next,
                 }
             )
@@ -217,7 +298,14 @@ def build_services(settings: Settings | None = None) -> AppServices:
     )
     b1 = B1ToolCalling(resolved, graph, providers, planner, llm)
     b2 = B2RagOnly(resolved, graph, providers, planner, llm)
+    from app.discovery.staging import StagingRegistry as _StagingRegistry
+
     mcp_registry = MCPServerRegistry()
+    discovery_registry = _StagingRegistry(
+        staging_dir=resolved.runtime_dir / "discovery" / "staging",
+        specs_dir=BASE_DIR / "data" / "specs",
+        overrides_path=BASE_DIR / "data" / "overrides" / "pricing.yaml",
+    )
     services = AppServices(
         settings=resolved,
         cache=cache,
@@ -239,7 +327,14 @@ def build_services(settings: Settings | None = None) -> AppServices:
         platform=platform,
         knowledge=knowledge,
         mcp=mcp_registry,
+        discovery=discovery_registry,
     )
+
     services.export_graph()
     services.export_graph_jsonld()
+
+    # Integrate any verified discovery providers
+    if services.discovery:
+        services._integrate_discovered_providers()
+
     return services

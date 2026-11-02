@@ -49,11 +49,7 @@ STOP_WORDS = {
 
 
 def tokenize(text: str) -> list[str]:
-    return [
-        token
-        for token in TOKEN_RE.findall(text.lower())
-        if token not in STOP_WORDS and len(token) > 1
-    ]
+    return [token for token in TOKEN_RE.findall(text.lower()) if token not in STOP_WORDS and len(token) > 1]
 
 
 class TfidfIndex:
@@ -102,19 +98,13 @@ class TfidfIndex:
 
     def search(self, query: str, top_k: int = 8) -> list[tuple[str, float]]:
         query_vector = self.vectorize_query(query)
-        scores = [
-            (doc_id, self.cosine(query_vector, vector))
-            for doc_id, vector in self.vectors.items()
-        ]
+        scores = [(doc_id, self.cosine(query_vector, vector)) for doc_id, vector in self.vectors.items()]
         scores.sort(key=lambda item: (-item[1], item[0]))
         return scores[:top_k]
 
     def rank(self, query: str, doc_ids: list[str]) -> list[tuple[str, float]]:
         query_vector = self.vectorize_query(query)
-        scores = [
-            (doc_id, self.cosine(query_vector, self.vectors.get(doc_id, {})))
-            for doc_id in doc_ids
-        ]
+        scores = [(doc_id, self.cosine(query_vector, self.vectors.get(doc_id, {}))) for doc_id in doc_ids]
         scores.sort(key=lambda item: (-item[1], item[0]))
         return scores
 
@@ -143,11 +133,7 @@ class GraphRAGRetriever:
         expand: bool = True,
     ) -> list[tuple[ToolSpec, float, list[str]]]:
         limit = top_k or self.top_k
-        allowed = {
-            tool.id
-            for tool in self.graph.all()
-            if capability is None or tool.capability == capability
-        }
+        allowed = {tool.id for tool in self.graph.all() if capability is None or tool.capability == capability}
         if not allowed:
             return []
         ranked = [(doc_id, score) for doc_id, score in self.index.search(query, 50) if doc_id in allowed]

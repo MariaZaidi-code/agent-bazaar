@@ -175,9 +175,7 @@ def explain(facts: CandidateFacts, policy: RankingPolicy) -> list[str]:
     return reasons
 
 
-def rank_candidates(
-    candidates: list[CandidateFacts], policy: RankingPolicy | None = None
-) -> list[RankedCandidate]:
+def rank_candidates(candidates: list[CandidateFacts], policy: RankingPolicy | None = None) -> list[RankedCandidate]:
     """Rank candidates free-first and return them with their reasons."""
     policy = policy or RankingPolicy()
     ranked: list[RankedCandidate] = []
@@ -209,9 +207,7 @@ def rank_candidates(
     return ranked
 
 
-def free_first_compliance(
-    candidates: list[CandidateFacts], policy: RankingPolicy | None = None
-) -> bool:
+def free_first_compliance(candidates: list[CandidateFacts], policy: RankingPolicy | None = None) -> bool:
     """True when the top ranked candidate is free whenever a free candidate exists."""
     policy = policy or RankingPolicy()
     if policy.pricing_policy != "prefer_free":

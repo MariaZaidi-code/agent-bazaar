@@ -11,9 +11,7 @@ DRIFT = json.loads((DATA_DIR / "drift_scenarios.json").read_text(encoding="utf-8
 LABELS = {"Verified", "Supported", "Contradicted", "Unsupported"}
 
 
-@pytest.mark.parametrize(
-    "item", CLAIMS["items"], ids=[item["id"] for item in CLAIMS["items"]]
-)
+@pytest.mark.parametrize("item", CLAIMS["items"], ids=[item["id"] for item in CLAIMS["items"]])
 def test_every_labelled_claim_is_complete(item: dict) -> None:
     assert item["tool_id"]
     assert item["claim"]["text"].strip()
@@ -22,9 +20,7 @@ def test_every_labelled_claim_is_complete(item: dict) -> None:
     assert item["mock_behavior"]
 
 
-@pytest.mark.parametrize(
-    "scenario", DRIFT["scenarios"], ids=[item["id"] for item in DRIFT["scenarios"]]
-)
+@pytest.mark.parametrize("scenario", DRIFT["scenarios"], ids=[item["id"] for item in DRIFT["scenarios"]])
 def test_every_drift_scenario_is_complete(scenario: dict) -> None:
     assert scenario["tool_id"]
     assert scenario["behavior"]

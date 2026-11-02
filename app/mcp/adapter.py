@@ -20,11 +20,20 @@ def mcp_tool_to_spec(server: str, tool: dict[str, Any]) -> ToolSpec:
         )
     if not inputs:
         inputs = [ConceptSpec(concept="Text", name="query", required=False)]
-    outputs = [ConceptSpec(concept="Text", name="result")]
+    out_schema = tool.get("outputSchema") or {}
+    out_props = out_schema.get("properties") or {}
+    out_required = set(out_schema.get("required") or [])
+    outputs = []
+    for key, spec in out_props.items():
+        outputs.append(
+            ConceptSpec(concept="Text", name=key, required=key in out_required, description=spec.get("description", ""))
+        )
+    if not outputs:
+        outputs = [ConceptSpec(concept="Text", name="result")]
     return ToolSpec(
         id=f"mcp-{server}-{name}",
         name=f"{name} (MCP:{server})",
-        provider_id=f"mcp-{server}",
+        provider_id=f"mcp-{server}-{name}",
         description=description or f"MCP tool {name}",
         capability=f"MCP_{name}",
         inputs=inputs,

@@ -33,11 +33,7 @@ def _json_metadata(path: Path) -> dict[str, Any]:
         return {}
     if not isinstance(payload, dict):
         return {}
-    return {
-        key: payload[key]
-        for key in ("schema_version", "version", "name", "counts")
-        if key in payload
-    }
+    return {key: payload[key] for key in ("schema_version", "version", "name", "counts") if key in payload}
 
 
 def build_version_manifest(settings: Settings, ontology_concepts: int, graph_tools: int) -> dict[str, Any]:

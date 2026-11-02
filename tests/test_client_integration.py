@@ -5,9 +5,7 @@ from app.services import AppServices
 
 
 async def test_weather_currency_chain(services: AppServices) -> None:
-    result = await services.client.run(
-        "What is the temperature in Lahore tomorrow, and what is 200 USD in PKR?"
-    )
+    result = await services.client.run("What is the temperature in Lahore tomorrow, and what is 200 USD in PKR?")
     assert result.status == "completed"
     assert result.plan is not None
     capabilities = [step.capability for step in result.plan.steps]
@@ -22,9 +20,7 @@ async def test_weather_currency_chain(services: AppServices) -> None:
 
 
 async def test_sql_and_holiday_tasks(services: AppServices) -> None:
-    sql_result = await services.client.run(
-        "How many students are enrolled in the BS Artificial Intelligence program?"
-    )
+    sql_result = await services.client.run("How many students are enrolled in the BS Artificial Intelligence program?")
     assert sql_result.status == "completed"
     assert "students = 8" in sql_result.answer
 
@@ -34,9 +30,7 @@ async def test_sql_and_holiday_tasks(services: AppServices) -> None:
 
 
 async def test_document_task_uses_seeded_brief(services: AppServices) -> None:
-    result = await services.client.run(
-        "According to the uploaded document, what is the main goal of the project?"
-    )
+    result = await services.client.run("According to the uploaded document, what is the main goal of the project?")
     assert result.status == "completed"
     assert "self-healing" in result.answer
     assert "agent_bazaar_project_brief.txt" in result.answer

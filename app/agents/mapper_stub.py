@@ -30,9 +30,7 @@ class MapperStub:
         self.corrections: list[dict[str, Any]] = []
         self.listings: list[dict[str, Any]] = []
 
-    def submit_listing(
-        self, request: ListingIngestRequest, correlation_id: str
-    ) -> MapResultMessage:
+    def submit_listing(self, request: ListingIngestRequest, correlation_id: str) -> MapResultMessage:
         tool_id = f"listing_{uuid4().hex[:10]}"
         spec = ToolSpec(
             id=tool_id,
@@ -42,10 +40,7 @@ class MapperStub:
             capability=request.capability,
             inputs=request.inputs,
             outputs=request.outputs,
-            claims=[
-                ClaimSpec(text=claim.text, evidence=claim.evidence)
-                for claim in request.claims
-            ],
+            claims=[ClaimSpec(text=claim.text, evidence=claim.evidence) for claim in request.claims],
             docs_url=request.docs_url,
             execution="fixture",
         )
@@ -74,9 +69,7 @@ class MapperStub:
             staged=accepted,
         )
 
-    def submit_correction(
-        self, request: CorrectionRequest, correlation_id: str
-    ) -> CorrectionResult:
+    def submit_correction(self, request: CorrectionRequest, correlation_id: str) -> CorrectionResult:
         violations: list[str] = []
         if not self.ontology.exists(request.original_concept):
             violations.append(f"Unknown original concept {request.original_concept}")

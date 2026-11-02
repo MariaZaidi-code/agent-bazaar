@@ -34,9 +34,7 @@ from agent_bazaar.ingestion.models import EndpointInfo, FieldInfo, NormalizedSpe
 from agent_bazaar.messages.schema import FieldMapping, MapResult, new_message
 from agent_bazaar.protocols import MapperService
 
-EVAL_TARGETS = {
-    f"field_{index}": f"http://example.org/ontology#Concept{index}" for index in range(10)
-}
+EVAL_TARGETS = {f"field_{index}": f"http://example.org/ontology#Concept{index}" for index in range(10)}
 
 
 class FakeMapper:

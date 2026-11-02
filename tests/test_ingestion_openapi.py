@@ -68,10 +68,7 @@ def test_json_spec_extracts_endpoints_fields_and_metadata() -> None:
     assert fields["input.get:/v1/forecast.parameters.X-API-Key"].type == "string"
     assert fields["input.get:/v1/forecast.parameters.X-API-Key"].required is False
     assert fields["output.get:/v1/forecast.body.temperature_2m"].type == "float"
-    assert (
-        fields["output.get:/v1/forecast.body.temperature_2m"].description
-        == "Air temperature at two metres."
-    )
+    assert fields["output.get:/v1/forecast.body.temperature_2m"].description == "Air temperature at two metres."
     assert fields["output.get:/v1/forecast.body.humidity"].type == "integer"
     assert fields["output.get:/v1/forecast.body.daily"].type == "array"
     assert fields["output.get:/v1/forecast.body.daily[].temperature_min"].type == "float"
@@ -91,9 +88,7 @@ def test_yaml_spec_matches_json_field_paths() -> None:
     assert yaml_spec.title == json_spec.title
     assert yaml_spec.version == json_spec.version
     assert yaml_spec.base_url == json_spec.base_url
-    assert {field.path for field in yaml_spec.fields} == {
-        field.path for field in json_spec.fields
-    }
+    assert {field.path for field in yaml_spec.fields} == {field.path for field in json_spec.fields}
     assert [(endpoint.path, endpoint.method) for endpoint in yaml_spec.endpoints] == [
         (endpoint.path, endpoint.method) for endpoint in json_spec.endpoints
     ]

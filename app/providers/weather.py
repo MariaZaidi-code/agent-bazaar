@@ -88,15 +88,9 @@ class MockWeatherFahrenheitProvider(WeatherProvider):
     @staticmethod
     def _convert(payload: dict[str, Any]) -> dict[str, Any]:
         forecast = dict(payload["forecast"])
-        forecast["temperature"] = MockWeatherFahrenheitProvider._to_fahrenheit(
-            float(forecast["temperature"])
-        )
-        forecast["temp_max"] = MockWeatherFahrenheitProvider._to_fahrenheit(
-            float(forecast["temp_max"])
-        )
-        forecast["temp_min"] = MockWeatherFahrenheitProvider._to_fahrenheit(
-            float(forecast["temp_min"])
-        )
+        forecast["temperature"] = MockWeatherFahrenheitProvider._to_fahrenheit(float(forecast["temperature"]))
+        forecast["temp_max"] = MockWeatherFahrenheitProvider._to_fahrenheit(float(forecast["temp_max"]))
+        forecast["temp_min"] = MockWeatherFahrenheitProvider._to_fahrenheit(float(forecast["temp_min"]))
         forecast["unit"] = "F"
         return {"forecast": forecast}
 

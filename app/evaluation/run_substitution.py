@@ -60,11 +60,7 @@ async def evaluate() -> dict[str, Any]:
         "recovery_accuracy": ratio(sum(1 for row in rows if row["outcome_correct"]), len(rows)),
         "substitute_accuracy": ratio(sum(1 for row in rows if row["substitute_used"]), len(rows)),
         "unexpected_recovery_rate": ratio(
-            sum(
-                1
-                for row in rows
-                if row["actual_status"] == "completed" and not row["expected_recovered"]
-            ),
+            sum(1 for row in rows if row["actual_status"] == "completed" and not row["expected_recovered"]),
             len(rows),
         ),
         "trace_coverage": ratio(sum(1 for row in rows if row["trace_has_substitution"]), len(rows)),

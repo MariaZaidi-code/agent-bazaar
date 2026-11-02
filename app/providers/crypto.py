@@ -68,9 +68,7 @@ class CoinGeckoProvider(HTTPProvider):
             raise ValueError(f"CoinGecko has no {currency} price for {asset}")
         timestamp = row.get("last_updated_at")
         last_updated = (
-            datetime.fromtimestamp(float(timestamp), UTC).isoformat()
-            if timestamp
-            else datetime.now(UTC).isoformat()
+            datetime.fromtimestamp(float(timestamp), UTC).isoformat() if timestamp else datetime.now(UTC).isoformat()
         )
         return {
             "price": {

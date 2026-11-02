@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import time
 from collections.abc import Sequence
@@ -138,7 +139,13 @@ class ClientAgent:
             require_known_licence=self.settings.require_known_licence,
         )
 
-    async def run(self, task: str, document_id: str | None = None) -> TaskResult:
+    async def run(
+        self,
+        task: str,
+        document_id: str | None = None,
+        reasoning_mode: str | None = None,
+        approved: bool = False,
+    ) -> TaskResult:
         task_id = new_id("task")
         started = time.perf_counter()
         self._trace(
@@ -149,7 +156,14 @@ class ClientAgent:
             {"task": task, "mode": self._mode(), "document_id": document_id},
         )
         try:
-            result = await self._run(task_id, task, started, document_id=document_id)
+            result = await self._run(
+                task_id,
+                task,
+                started,
+                document_id=document_id,
+                reasoning_mode=reasoning_mode,
+                approved=approved,
+            )
         except Exception as exc:
             self._trace(
                 task_id,
@@ -158,6 +172,7 @@ class ClientAgent:
                 f"Task failed: {exc}",
                 {"error": str(exc)},
             )
+            document_context: list[dict[str, Any]] = []
             result = TaskResult(
                 task_id=task_id,
                 task=task,
@@ -166,7 +181,7 @@ class ClientAgent:
                 answer=f"I could not complete the task: {exc}",
                 duration_ms=round((time.perf_counter() - started) * 1000, 2),
                 mode=self._mode(),
-                document_context=document_chunks,
+                document_context=document_context,
             )
         result.trace = self.traces.events(task_id)
         result.duration_ms = round((time.perf_counter() - started) * 1000, 2)
@@ -179,6 +194,8 @@ class ClientAgent:
         task: str,
         started: float,
         document_id: str | None = None,
+        reasoning_mode: str | None = None,
+        approved: bool = False,
     ) -> TaskResult:
         metrics = TaskMetrics()
         document_chunks: list[dict[str, Any]] = []
@@ -219,7 +236,9 @@ class ClientAgent:
             )
 
         plan_started = time.perf_counter()
-        subgoals, warnings = await self.planner.decompose(task, correlation_id=task_id)
+        subgoals, warnings = await self.planner.decompose(
+            task, correlation_id=task_id, reasoning_mode=reasoning_mode
+        )
         if document_id:
             for subgoal in subgoals:
                 if subgoal.capability == "AnswerFromDocument":
@@ -236,9 +255,7 @@ class ClientAgent:
 
         candidate_lists: list[CandidateList] = []
         for subgoal in subgoals:
-            candidate_list = await self._candidates(
-                task_id, task, subgoal, subgoals, metrics
-            )
+            candidate_list = await self._candidates(task_id, task, subgoal, subgoals, metrics)
             candidate_lists.append(candidate_list)
         self._trace(
             task_id,
@@ -290,6 +307,8 @@ class ClientAgent:
             )
             return result
 
+        critic_warnings = self._critic_check(plan)
+        warnings.extend(critic_warnings)
         execution_started = time.perf_counter()
         step_failures = await self._execute_plan(
             task_id,
@@ -299,14 +318,11 @@ class ClientAgent:
             plan,
             metrics,
             warnings,
+            approved=approved,
         )
         metrics.execution_ms = round((time.perf_counter() - execution_started) * 1000, 2)
 
-        completed = [
-            step
-            for step in plan.steps
-            if step.status in {StepStatus.completed, StepStatus.substituted}
-        ]
+        completed = [step for step in plan.steps if step.status in {StepStatus.completed, StepStatus.substituted}]
         if not step_failures:
             status = TaskStatus.completed
         elif completed:
@@ -362,9 +378,7 @@ class ClientAgent:
         metrics: TaskMetrics,
     ) -> CandidateList:
         retrieval_started = time.perf_counter()
-        query = " ".join(
-            [subgoal.description, *[str(value) for value in subgoal.slots.values()]]
-        )
+        query = " ".join([subgoal.description, *[str(value) for value in subgoal.slots.values()]])
         retrieved = self.retriever.search(
             query,
             top_k=self.settings.ranking_top_k,
@@ -414,15 +428,11 @@ class ClientAgent:
                 ),
                 task_id,
             )
-            verification = await self.auditor.verify(
-                task_id, subgoal.id, candidates, correlation_id=task_id
-            )
+            verification = await self.auditor.verify(task_id, subgoal.id, candidates, correlation_id=task_id)
             await self._publish(verification, task_id)
             metrics.verification_ms += (time.perf_counter() - verify_started) * 1000
             for candidate in candidates:
-                candidate.claim_label = verification.overall.get(
-                    candidate.tool.id, ClaimLabel.unsupported
-                )
+                candidate.claim_label = verification.overall.get(candidate.tool.id, ClaimLabel.unsupported)
             for alert_id in verification.drift_alerts:
                 self._trace(
                     task_id,
@@ -438,9 +448,7 @@ class ClientAgent:
                 "Claim labels returned for the candidate list.",
                 {
                     "subgoal_id": subgoal.id,
-                    "overall": {
-                        key: value.value for key, value in verification.overall.items()
-                    },
+                    "overall": {key: value.value for key, value in verification.overall.items()},
                 },
             )
         else:
@@ -456,11 +464,7 @@ class ClientAgent:
 
         for candidate in candidates:
             provider_id = candidate.tool.provider_id
-            trust_state = (
-                self.trust.get(provider_id)
-                if self.settings.use_trust
-                else {"score": 0.5, "demoted": False}
-            )
+            trust_state = self.trust.get(provider_id) if self.settings.use_trust else {"score": 0.5, "demoted": False}
             candidate.trust = round(float(trust_state["score"]), 4)
             candidate.demoted = bool(trust_state.get("demoted", False))
             key = self.breakers.link_key("client", provider_id)
@@ -485,8 +489,7 @@ class ClientAgent:
             task_id,
             "graphrag_shortlist",
             "client",
-            f"Retrieved {len(retrieved)} candidate(s) for {subgoal.capability}; "
-            f"{len(candidates)} survived the filter.",
+            f"Retrieved {len(retrieved)} candidate(s) for {subgoal.capability}; {len(candidates)} survived the filter.",
             {
                 "subgoal_id": subgoal.id,
                 "query": query,
@@ -495,9 +498,7 @@ class ClientAgent:
                     for tool, relevance, reasons in retrieved
                 ],
                 "filtered": filtered,
-                "free_first_compliance": ranking_policy.free_first_compliance(
-                    facts, policy
-                ),
+                "free_first_compliance": ranking_policy.free_first_compliance(facts, policy),
                 "policy": {
                     "pricing_policy": policy.pricing_policy,
                     "tier_order": list(policy.tier_order),
@@ -573,9 +574,7 @@ class ClientAgent:
         subgoals: list[SubGoal],
     ) -> list[CandidateFacts]:
         """Collect the stored facts the ranking policy weighs for the candidates."""
-        return [
-            self._candidate_facts(candidate, subgoal, subgoals) for candidate in candidates
-        ]
+        return [self._candidate_facts(candidate, subgoal, subgoals) for candidate in candidates]
 
     def _apply_policy(
         self,
@@ -635,10 +634,7 @@ class ClientAgent:
             freshness_days=tool.freshness_days,
             claim_label=candidate.claim_label.value.lower(),
             demoted=bool(candidate.demoted) and self.settings.use_trust,
-            breaker_open=(
-                self.settings.use_circuit_breaker
-                and candidate.breaker_state == BreakerStatus.open
-            ),
+            breaker_open=(self.settings.use_circuit_breaker and candidate.breaker_state == BreakerStatus.open),
             licence=tool.licence,
         )
 
@@ -655,9 +651,7 @@ class ClientAgent:
             if executable and reason.startswith("not executable:"):
                 continue
             reasons.append(reason)
-        if not executable and not any(
-            reason.startswith("not executable:") for reason in reasons
-        ):
+        if not executable and not any(reason.startswith("not executable:") for reason in reasons):
             reasons.append(self._not_executable_reason(candidate.tool))
         if (
             self.settings.use_auditor
@@ -683,10 +677,7 @@ class ClientAgent:
             if item.name in subgoal.slots:
                 satisfied += 1
                 continue
-            if any(
-                self.ontology.check_link(concept, None, item.concept, None).valid
-                for concept in available
-            ):
+            if any(self.ontology.check_link(concept, None, item.concept, None).valid for concept in available):
                 satisfied += 1
         return round(satisfied / len(required), 6)
 
@@ -729,11 +720,7 @@ class ClientAgent:
         policy = self.ranking_policy()
         for subgoal in ordered:
             candidates = candidates_by_subgoal.get(subgoal.id, [])
-            eligible = [
-                item
-                for item in candidates
-                if item.eligible and self._executable(item.tool, policy)
-            ]
+            eligible = [item for item in candidates if item.eligible and self._executable(item.tool, policy)]
             if not eligible:
                 reason = (
                     f"No eligible tool for {subgoal.capability}. "
@@ -768,47 +755,40 @@ class ClientAgent:
                 for item in candidates
                 if not self._executable(item.tool, policy)
             ]
+            passing: list[tuple[Candidate, dict[str, str], list[LinkCheck]]] = []
             for candidate in eligible:
-                dependency_steps = [
-                    steps_by_subgoal[dep]
-                    for dep in subgoal.depends_on
-                    if dep in steps_by_subgoal
-                ]
-                bindings, binding_errors = self._build_bindings(
-                    candidate.tool, subgoal, dependency_steps
-                )
+                dependency_steps = [steps_by_subgoal[dep] for dep in subgoal.depends_on if dep in steps_by_subgoal]
+                bindings, binding_errors = self._build_bindings(candidate.tool, subgoal, dependency_steps)
                 checks = (
-                    self._link_checks(candidate.tool, subgoal, dependency_steps)
-                    if self.settings.use_ontology
-                    else []
+                    self._link_checks(candidate.tool, subgoal, dependency_steps) if self.settings.use_ontology else []
                 )
                 check_errors = [check.reason for check in checks if not check.valid]
                 if not binding_errors and not check_errors:
-                    selected = candidate
-                    selected_bindings = bindings
-                    selected_checks = checks
-                    break
-                rejected.append(
-                    {
-                        "tool_id": candidate.tool.id,
-                        "binding_errors": binding_errors,
-                        "link_errors": check_errors,
-                    }
-                )
+                    passing.append((candidate, bindings, checks))
+                else:
+                    rejected.append(
+                        {
+                            "tool_id": candidate.tool.id,
+                            "binding_errors": binding_errors,
+                            "link_errors": check_errors,
+                        }
+                    )
+            if passing:
+                chosen = self._consensus_vote([item[0] for item in passing])
+                for candidate, bindings, checks in passing:
+                    if chosen is not None and candidate is chosen:
+                        selected = candidate
+                        selected_bindings = bindings
+                        selected_checks = checks
+                        break
+                if selected is None:
+                    selected, selected_bindings, selected_checks = passing[0]
             if selected is None:
                 first = eligible[0]
-                dependency_steps = [
-                    steps_by_subgoal[dep]
-                    for dep in subgoal.depends_on
-                    if dep in steps_by_subgoal
-                ]
-                bindings, binding_errors = self._build_bindings(
-                    first.tool, subgoal, dependency_steps
-                )
+                dependency_steps = [steps_by_subgoal[dep] for dep in subgoal.depends_on if dep in steps_by_subgoal]
+                bindings, binding_errors = self._build_bindings(first.tool, subgoal, dependency_steps)
                 checks = self._link_checks(first.tool, subgoal, dependency_steps)
-                reason = (
-                    f"No candidate for {subgoal.capability} passed type/unit and input checks."
-                )
+                reason = f"No candidate for {subgoal.capability} passed type/unit and input checks."
                 errors.append(reason)
                 step = PlanStep(
                     id=subgoal.id,
@@ -859,89 +839,162 @@ class ClientAgent:
         plan: ExecutionPlan,
         metrics: TaskMetrics,
         warnings: list[str],
+        approved: bool = False,
     ) -> list[str]:
+        if self.settings.require_approval and not approved:
+            for step in plan.steps:
+                step.status = StepStatus.skipped
+                step.error = "Skipped pending human approval."
+            warnings.append("Execution skipped pending human approval.")
+            return []
+
         outputs: dict[str, dict[str, Any]] = {}
         failures: list[str] = []
         stopped = False
-        for step in plan.steps:
+
+        steps_by_id = {step.id: step for step in plan.steps}
+        pending = list(plan.steps)
+        levels: list[list[PlanStep]] = []
+        completed_ids: set[str] = set()
+        while pending:
+            level = [
+                step
+                for step in pending
+                if all(
+                    dep in completed_ids or dep not in steps_by_id
+                    for dep in subgoal_map[step.subgoal_id].depends_on
+                )
+            ]
+            if not level:
+                level = list(pending)
+            for step in level:
+                pending.remove(step)
+                completed_ids.add(step.id)
+            levels.append(level)
+
+        for level in levels:
             if stopped:
-                step.status = StepStatus.skipped
-                step.error = "Skipped because an earlier step failed."
+                for step in level:
+                    step.status = StepStatus.skipped
+                    step.error = "Skipped because an earlier step failed."
                 continue
-            subgoal = subgoal_map[step.subgoal_id]
-            if not step.tool_id:
-                step.status = StepStatus.failed
-                step.error = "No eligible tool was selected."
-                failures.append(step.error)
-                stopped = True
-                continue
-            try:
-                params = self._resolve_bindings(
-                    step.input_bindings, subgoal, outputs
-                )
-            except Exception as exc:
-                step.status = StepStatus.failed
-                step.error = f"Could not bind inputs: {exc}"
-                failures.append(step.error)
-                stopped = True
-                continue
-            step.params = params
-            self._trace(
-                task_id,
-                "step_started",
-                "client",
-                f"Calling {step.tool_name} for {step.capability}.",
-                {
-                    "step_id": step.id,
-                    "tool_id": step.tool_id,
-                    "params": params,
-                    "input_bindings": step.input_bindings,
-                },
+            results = await asyncio.gather(
+                *[
+                    self._execute_step(
+                        task_id,
+                        task,
+                        step,
+                        subgoals,
+                        subgoal_map,
+                        plan,
+                        outputs,
+                        metrics,
+                        warnings,
+                    )
+                    for step in level
+                ],
+                return_exceptions=True,
             )
-            response, call_error = await self._call_tool(
-                task_id, step, params
-            )
-            if response is not None and response.status == "success" and response.schema_valid:
-                await self._finish_success(
-                    task_id, step, response, outputs, metrics, warnings
-                )
-                continue
-            reason = call_error or (response.error if response else "unknown call failure")
-            if response is not None and response.status == "success" and not response.schema_valid:
-                reason = "schema invalid: " + "; ".join(response.schema_errors)
-            await self._record_outcome(
-                task_id, step, response, call_attempted=response is not None
-            )
-            self._trace(
-                task_id,
-                "step_failed",
-                "provider",
-                f"{step.tool_name} failed: {reason}",
-                {
-                    "step_id": step.id,
-                    "tool_id": step.tool_id,
-                    "reason": reason,
-                    "source": response.source if response else "breaker",
-                },
-            )
-            recovered = await self._recover(
-                task_id,
-                step,
-                subgoal,
-                subgoals,
-                plan,
-                outputs,
-                metrics,
-                warnings,
-                reason,
-            )
-            if recovered:
-                continue
-            step.status = StepStatus.failed
-            step.error = reason
-            failures.append(f"{step.capability}: {reason}")
-            stopped = True
+            for step, result in zip(level, results):
+                if isinstance(result, Exception):
+                    step.status = StepStatus.failed
+                    step.error = str(result)
+                    failures.append(f"{step.capability}: {result}")
+                    stopped = True
+                elif result:
+                    failures.append(str(result))
+                    stopped = True
         return failures
+
+    async def _execute_step(
+        self,
+        task_id: str,
+        task: str,
+        step: PlanStep,
+        subgoals: list[SubGoal],
+        subgoal_map: dict[str, SubGoal],
+        plan: ExecutionPlan,
+        outputs: dict[str, dict[str, Any]],
+        metrics: TaskMetrics,
+        warnings: list[str],
+    ) -> str | None:
+        subgoal = subgoal_map[step.subgoal_id]
+        if not step.tool_id:
+            step.status = StepStatus.failed
+            step.error = "No eligible tool was selected."
+            return step.error
+        try:
+            params = self._resolve_bindings(step.input_bindings, subgoal, outputs)
+        except Exception as exc:
+            step.status = StepStatus.failed
+            step.error = f"Could not bind inputs: {exc}"
+            return step.error
+        step.params = params
+        self._trace(
+            task_id,
+            "step_started",
+            "client",
+            f"Calling {step.tool_name} for {step.capability}.",
+            {
+                "step_id": step.id,
+                "tool_id": step.tool_id,
+                "params": params,
+                "input_bindings": step.input_bindings,
+            },
+        )
+        response, call_error = await self._call_tool(task_id, step, params)
+        if response is not None and response.status == "success" and response.schema_valid:
+            await self._finish_success(task_id, step, response, outputs, metrics, warnings)
+            return None
+        reason = call_error or (response.error if response else "unknown call failure")
+        if response is not None and response.status == "success" and not response.schema_valid:
+            reason = "schema invalid: " + "; ".join(response.schema_errors)
+        await self._record_outcome(task_id, step, response, call_attempted=response is not None)
+        self._trace(
+            task_id,
+            "step_failed",
+            "provider",
+            f"{step.tool_name} failed: {reason}",
+            {
+                "step_id": step.id,
+                "tool_id": step.tool_id,
+                "reason": reason,
+                "source": response.source if response else "breaker",
+            },
+        )
+        recovered = await self._recover(
+            task_id,
+            step,
+            subgoal,
+            subgoals,
+            plan,
+            outputs,
+            metrics,
+            warnings,
+            reason,
+        )
+        if recovered:
+            return None
+        step.status = StepStatus.failed
+        step.error = reason
+        return f"{step.capability}: {reason}"
+
+    def _consensus_vote(self, candidates: Sequence[Candidate] | list[Candidate]) -> Candidate | None:
+        if not candidates:
+            return None
+        return max(
+            candidates,
+            key=lambda item: (float(getattr(item, "trust", 0.0)), float(getattr(item, "score", 0.0))),
+        )
+
+    def consensus_vote(self, candidates):
+        return self._consensus_vote(candidates)
+
+    def _critic_check(self, plan: ExecutionPlan) -> list[str]:
+        warnings = list(self.planner.validate_plan(plan))
+        if not getattr(plan, "steps", None):
+            warnings.append("Critic: plan has no steps.")
+        return warnings
 
     async def _call_tool(
         self,
@@ -1002,11 +1055,7 @@ class ClientAgent:
         step.latency_ms = response.latency_ms
         step.cached = response.cached
         step.source = response.source
-        step.status = (
-            StepStatus.substituted
-            if step.substituted_from
-            else StepStatus.completed
-        )
+        step.status = StepStatus.substituted if step.substituted_from else StepStatus.completed
         step.error = None
         outputs[step.id] = response.data
         if response.warning:
@@ -1053,11 +1102,7 @@ class ClientAgent:
             return
         provider_id = provider.provider_id
         key = self.breakers.link_key("client", provider_id)
-        success = bool(
-            response
-            and response.status == "success"
-            and response.schema_valid
-        )
+        success = bool(response and response.status == "success" and response.schema_valid)
         if self.settings.use_circuit_breaker:
             if success:
                 self.breakers.record_success(key, "call returned a schema-valid result")
@@ -1154,16 +1199,18 @@ class ClientAgent:
                 continue
             if self.settings.use_auditor and ClaimLabel.contradicted in tool.claim_labels():
                 continue
-            trust_state = self.trust.get(tool.provider_id) if self.settings.use_trust else {
-                "score": 0.5,
-                "demoted": False,
-            }
+            trust_state = (
+                self.trust.get(tool.provider_id)
+                if self.settings.use_trust
+                else {
+                    "score": 0.5,
+                    "demoted": False,
+                }
+            )
             if self.settings.use_trust and trust_state.get("demoted"):
                 continue
             if self.settings.use_circuit_breaker:
-                state = self.breakers.state(
-                    self.breakers.link_key("client", tool.provider_id)
-                )
+                state = self.breakers.state(self.breakers.link_key("client", tool.provider_id))
                 if state == BreakerStatus.open:
                     continue
             score = self._substitution_score(tool, available, None, trust_state)
@@ -1184,11 +1231,7 @@ class ClientAgent:
         dependency_steps = self._dependency_steps(plan, subgoal)
         for _, tool in evaluated:
             bindings, binding_errors = self._build_bindings(tool, subgoal, dependency_steps)
-            checks = (
-                self._link_checks(tool, subgoal, dependency_steps)
-                if self.settings.use_ontology
-                else []
-            )
+            checks = self._link_checks(tool, subgoal, dependency_steps) if self.settings.use_ontology else []
             check_errors = [check.reason for check in checks if not check.valid]
             if binding_errors or check_errors:
                 self._trace(
@@ -1249,12 +1292,8 @@ class ClientAgent:
             )
             response, call_error = await self._call_tool(task_id, step, params)
             if response is not None and response.status == "success" and response.schema_valid:
-                await self._finish_success(
-                    task_id, step, response, outputs, metrics, warnings
-                )
-                metrics.substitution_ms += (
-                    time.perf_counter() - substitution_started
-                ) * 1000
+                await self._finish_success(task_id, step, response, outputs, metrics, warnings)
+                metrics.substitution_ms += (time.perf_counter() - substitution_started) * 1000
                 self._trace(
                     task_id,
                     "substitution_succeeded",
@@ -1263,12 +1302,8 @@ class ClientAgent:
                     {"step_id": step.id, "tool_id": tool.id},
                 )
                 return True
-            failure_reason = call_error or (
-                response.error if response else "substitute call failed"
-            )
-            await self._record_outcome(
-                task_id, step, response, call_attempted=response is not None
-            )
+            failure_reason = call_error or (response.error if response else "substitute call failed")
+            await self._record_outcome(task_id, step, response, call_attempted=response is not None)
             self._trace(
                 task_id,
                 "substitute_failed",
@@ -1282,11 +1317,7 @@ class ClientAgent:
     @staticmethod
     def _dependency_steps(plan: ExecutionPlan, subgoal: SubGoal) -> list[PlanStep]:
         by_id = {step.id: step for step in plan.steps}
-        return [
-            by_id[dep_id]
-            for dep_id in subgoal.depends_on
-            if dep_id in by_id
-        ]
+        return [by_id[dep_id] for dep_id in subgoal.depends_on if dep_id in by_id]
 
     def _substitution_score(
         self,
@@ -1321,18 +1352,12 @@ class ClientAgent:
         rating = max(0.0, min(1.0, float(rating)))
         return round(input_score * 0.45 + output_score * 0.25 + trust * 0.2 + rating * 0.1, 6)
 
-    def _available_concepts(
-        self, subgoal: SubGoal, subgoals: list[SubGoal]
-    ) -> list[str]:
+    def _available_concepts(self, subgoal: SubGoal, subgoals: list[SubGoal]) -> list[str]:
         concepts: list[str] = []
         for key in subgoal.slots:
             if key == "question":
                 capability = subgoal.capability
-                concepts.append(
-                    "DocumentQuestion"
-                    if capability == "AnswerFromDocument"
-                    else "NaturalLanguageQuery"
-                )
+                concepts.append("DocumentQuestion" if capability == "AnswerFromDocument" else "NaturalLanguageQuery")
             elif key in SLOT_CONCEPTS:
                 concepts.append(SLOT_CONCEPTS[key])
         subgoal_map = {item.id: item for item in subgoals}
@@ -1344,23 +1369,15 @@ class ClientAgent:
             concepts.extend(capability.get("outputs", []))
         return list(dict.fromkeys(concepts))
 
-    def _ontology_filter_reason(
-        self, tool: ToolSpec, subgoal: SubGoal, available: list[str]
-    ) -> str | None:
+    def _ontology_filter_reason(self, tool: ToolSpec, subgoal: SubGoal, available: list[str]) -> str | None:
         for item in tool.inputs:
             if not item.required:
                 continue
             if item.name in subgoal.slots:
                 continue
-            if any(
-                self.ontology.check_link(concept, None, item.concept, None).valid
-                for concept in available
-            ):
+            if any(self.ontology.check_link(concept, None, item.concept, None).valid for concept in available):
                 continue
-            return (
-                f"input {item.name} ({item.concept}) cannot be supplied by the task "
-                f"or upstream outputs"
-            )
+            return f"input {item.name} ({item.concept}) cannot be supplied by the task or upstream outputs"
         return None
 
     def _build_bindings(
@@ -1386,23 +1403,17 @@ class ClientAgent:
                         found = True
                         break
                     if item.name in output.fields:
-                        bindings[item.name] = (
-                            f"${step.id}.{output.name}.{item.name}"
-                        )
+                        bindings[item.name] = f"${step.id}.{output.name}.{item.name}"
                         found = True
                         break
-                    if self.ontology.check_link(
-                        output.concept, output.unit, item.concept, item.unit
-                    ).valid:
+                    if self.ontology.check_link(output.concept, output.unit, item.concept, item.unit).valid:
                         bindings[item.name] = f"${step.id}.{output.name}"
                         found = True
                         break
                 if found:
                     break
             if not found and item.required:
-                errors.append(
-                    f"required input {item.name} ({item.concept}) has no value source"
-                )
+                errors.append(f"required input {item.name} ({item.concept}) has no value source")
         return bindings, errors
 
     def _link_checks(
@@ -1526,22 +1537,12 @@ class ClientAgent:
         answer: str,
     ) -> tuple[list[str], dict[str, Any]]:
         warnings: list[str] = []
-        completed = [
-            step
-            for step in plan.steps
-            if step.status in {StepStatus.completed, StepStatus.substituted}
-        ]
+        completed = [step for step in plan.steps if step.status in {StepStatus.completed, StepStatus.substituted}]
         checks = {
             "completed_steps": len(completed),
             "answer_present": bool(answer.strip()),
-            "empty_outputs": [
-                step.tool_id
-                for step in completed
-                if not step.output
-            ],
-            "fixture_sources": [
-                step.tool_id for step in completed if step.source == "fixture"
-            ],
+            "empty_outputs": [step.tool_id for step in completed if not step.output],
+            "fixture_sources": [step.tool_id for step in completed if step.source == "fixture"],
         }
         if not completed:
             warnings.append("Self-review: no tool returned a result, so the answer is a failure summary.")
@@ -1549,22 +1550,15 @@ class ClientAgent:
             warnings.append("Self-review: the answer was empty after execution.")
         if checks["empty_outputs"]:
             warnings.append(
-                "Self-review: these tools returned no usable output: "
-                + ", ".join(checks["empty_outputs"])
-                + "."
+                "Self-review: these tools returned no usable output: " + ", ".join(checks["empty_outputs"]) + "."
             )
-        if (
-            completed
-            and not self.settings.offline_mode
-            and all(step.source == "fixture" for step in completed)
-        ):
+        if completed and not self.settings.offline_mode and all(step.source == "fixture" for step in completed):
             warnings.append("Self-review: every tool result came from an offline fixture.")
         if status == TaskStatus.failed and completed:
             warnings.append("Self-review: the task is marked failed although some steps completed.")
         if self.planner.llm.enabled and self.settings.reasoning_mode in {"llm", "hybrid"}:
             summary = "\n".join(
-                f"- {step.tool_id} ({step.capability}): {json.dumps(step.output or {})[:400]}"
-                for step in completed
+                f"- {step.tool_id} ({step.capability}): {json.dumps(step.output or {})[:400]}" for step in completed
             )
             prompt = (
                 f"Task: {task}\n\nAnswer:\n{answer}\n\nTool results:\n{summary}\n\n"
@@ -1574,8 +1568,7 @@ class ClientAgent:
             review = await self.planner.llm.complete(
                 prompt,
                 system=(
-                    "You are a careful reviewer. Check that the answer only uses the "
-                    "provided tool results. Be brief."
+                    "You are a careful reviewer. Check that the answer only uses the provided tool results. Be brief."
                 ),
                 max_tokens=160,
             )
@@ -1627,17 +1620,11 @@ class ClientAgent:
                 )
             elif capability == "GetPublicHolidays" and "holidays" in output:
                 holidays = output["holidays"]
-                preview = "; ".join(
-                    f"{item.get('date')} {item.get('name')}" for item in holidays[:5]
-                )
-                parts.append(
-                    f"{len(holidays)} public holidays found. {preview}."
-                )
+                preview = "; ".join(f"{item.get('date')} {item.get('name')}" for item in holidays[:5])
+                parts.append(f"{len(holidays)} public holidays found. {preview}.")
             elif capability == "SearchResearchPapers" and "papers" in output:
                 papers = output["papers"]
-                preview = "; ".join(
-                    f"{item.get('title')} ({item.get('url')})" for item in papers[:3]
-                )
+                preview = "; ".join(f"{item.get('title')} ({item.get('url')})" for item in papers[:3])
                 parts.append(f"Top research results: {preview}.")
             elif capability == "QueryStructuredData" and "table" in output:
                 table = output["table"]
@@ -1646,13 +1633,9 @@ class ClientAgent:
                     key, value = next(iter(rows[0].items()))
                     parts.append(f"The database returned {key} = {value}.")
                 else:
-                    preview = "; ".join(
-                        ", ".join(f"{key}={value}" for key, value in row.items())
-                        for row in rows[:5]
-                    )
+                    preview = "; ".join(", ".join(f"{key}={value}" for key, value in row.items()) for row in rows[:5])
                     parts.append(
-                        f"The read-only SQL query returned {table.get('row_count', len(rows))} "
-                        f"row(s): {preview}."
+                        f"The read-only SQL query returned {table.get('row_count', len(rows))} row(s): {preview}."
                     )
                 parts.append(f"Executed SQL: {table.get('sql', '')}")
             elif capability == "AnswerFromDocument" and "answer" in output:
@@ -1662,9 +1645,7 @@ class ClientAgent:
                 parts.append(f"{payload.get('answer')} (Source: {citation}.)")
             elif capability == "SearchNews" and "articles" in output:
                 articles = output["articles"]
-                preview = "; ".join(
-                    f"{item.get('title')} ({item.get('source')})" for item in articles[:3]
-                )
+                preview = "; ".join(f"{item.get('title')} ({item.get('source')})" for item in articles[:3])
                 parts.append(f"Latest news: {preview}.")
             elif capability == "GetCryptoPrice" and "price" in output:
                 price = output["price"]
@@ -1677,8 +1658,7 @@ class ClientAgent:
             elif capability == "SearchTVShows" and "shows" in output:
                 shows = output["shows"]
                 preview = "; ".join(
-                    f"{item.get('name')} ({item.get('premiered') or 'n/a'}, "
-                    f"rating {item.get('rating') or 'n/a'})"
+                    f"{item.get('name')} ({item.get('premiered') or 'n/a'}, rating {item.get('rating') or 'n/a'})"
                     for item in shows[:3]
                 )
                 parts.append(f"TV shows found: {preview}.")
@@ -1713,8 +1693,7 @@ class ClientAgent:
             elif capability == "SearchRecipes" and "meals" in output:
                 meals = output["meals"]
                 preview = "; ".join(
-                    f"{item.get('name')} ({item.get('category')}, {item.get('area')})"
-                    for item in meals[:3]
+                    f"{item.get('name')} ({item.get('category')}, {item.get('area')})" for item in meals[:3]
                 )
                 ingredients = (meals[0].get("ingredients") or []) if meals else []
                 parts.append(
@@ -1748,9 +1727,7 @@ class ClientAgent:
         if self.settings.offline_mode:
             return "offline"
         if plan is not None:
-            sources = {
-                step.source for step in plan.steps if step.source and step.status != StepStatus.skipped
-            }
+            sources = {step.source for step in plan.steps if step.source and step.status != StepStatus.skipped}
             if "fixture" in sources:
                 return "live-with-fixture-fallback"
         return "live"

@@ -57,9 +57,7 @@ class RdfToolGraph:
         self.local_graph = local_graph
         self.ontology = ontology
         self._added: dict[str, ToolSpec] = {}
-        self._policy = RankingPolicy(
-            require_known_licence=Settings().require_known_licence
-        )
+        self._policy = RankingPolicy(require_known_licence=Settings().require_known_licence)
 
     def add(self, tool: ToolSpec) -> None:
         """Keep a tool that is not part of the RDF graph reachable."""
@@ -138,10 +136,7 @@ class RdfToolGraph:
                 continue
             if available_outputs:
                 outputs = [canonical_concept(item.concept) for item in tool.outputs if item.required]
-                if not all(
-                    any(self._is_subtype(source, target) for source in outputs)
-                    for target in available_outputs
-                ):
+                if not all(any(self._is_subtype(source, target) for source in outputs) for target in available_outputs):
                     continue
             candidates.append(tool)
         return candidates

@@ -23,10 +23,7 @@ async def test_catalog_candidates_use_the_real_auditor(services: AppServices) ->
     assert result.overall["open-meteo-forecast"] is ClaimLabel.verified
     assert result.overall["frankfurter-currency"] is ClaimLabel.supported
     assert result.labels["open-meteo-forecast"]
-    assert any(
-        item.label is ClaimLabel.verified
-        for item in result.labels["open-meteo-forecast"]
-    )
+    assert any(item.label is ClaimLabel.verified for item in result.labels["open-meteo-forecast"])
     assert all(item.tool_id == "open-meteo-forecast" for item in result.labels["open-meteo-forecast"])
 
 

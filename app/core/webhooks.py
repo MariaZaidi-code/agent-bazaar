@@ -66,11 +66,7 @@ class WebhookRegistry:
 
     def dispatch(self, event: str, payload: dict[str, Any]) -> list[dict[str, Any]]:
         with self._lock:
-            targets = [
-                subscription
-                for subscription in self._subscriptions.values()
-                if event in subscription.events
-            ]
+            targets = [subscription for subscription in self._subscriptions.values() if event in subscription.events]
         body = json.dumps({"event": event, "payload": payload}, default=str).encode("utf-8")
         results = []
         for subscription in targets:

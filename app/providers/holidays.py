@@ -45,9 +45,7 @@ class HolidaysProvider(HTTPProvider):
         year = int(params.get("year", date.today().year))
         if len(country_code) != 2:
             raise ValueError("country_code must be two letters")
-        payload = await self.get_json(
-            f"https://date.nager.at/api/v3/PublicHolidays/{year}/{country_code}"
-        )
+        payload = await self.get_json(f"https://date.nager.at/api/v3/PublicHolidays/{year}/{country_code}")
         holidays = [
             {
                 "date": item.get("date", ""),

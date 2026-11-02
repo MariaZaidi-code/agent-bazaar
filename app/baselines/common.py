@@ -288,9 +288,7 @@ class TfidfBaseline(BaselineRunner):
         return documents
 
     async def _retrieval_rank(self, subgoal: SubGoal) -> list[ToolSpec]:
-        query = " ".join(
-            [subgoal.description, *[str(value) for value in subgoal.slots.values()]]
-        )
+        query = " ".join([subgoal.description, *[str(value) for value in subgoal.slots.values()]])
         index = TfidfIndex(self._documents())
         ranked = index.search(query, top_k=len(self.graph.all()))
         tools = []

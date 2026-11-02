@@ -53,12 +53,8 @@ def evaluate() -> dict[str, Any]:
     passed = sum(1 for row in rows if row["passed"])
     metrics = {
         "pass_rate": ratio(passed, len(rows)),
-        "demotion_accuracy": ratio(
-            sum(1 for row in rows if row["checks"]["demotion"]), len(rows)
-        ),
-        "replay_consistency": ratio(
-            sum(1 for row in rows if row["checks"]["replay_matches"]), len(rows)
-        ),
+        "demotion_accuracy": ratio(sum(1 for row in rows if row["checks"]["demotion"]), len(rows)),
+        "replay_consistency": ratio(sum(1 for row in rows if row["checks"]["replay_matches"]), len(rows)),
     }
     return {
         "suite": "trust",

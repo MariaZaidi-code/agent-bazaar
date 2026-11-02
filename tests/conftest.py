@@ -29,5 +29,7 @@ def services(settings: Settings) -> AppServices:
 
 @pytest.fixture
 def api(settings: Settings) -> Iterator[TestClient]:
-    with TestClient(create_app(settings)) as client:
+    app = create_app(settings)
+    app.state.services = build_services(settings)
+    with TestClient(app) as client:
         yield client

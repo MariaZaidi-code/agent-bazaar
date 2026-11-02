@@ -175,8 +175,7 @@ class AuditorBridge:
             if is_new:
                 self.trust.record_contradiction(
                     item.provider_id,
-                    reason=f"Auditor {item.severity} drift on {tool_id}: "
-                    + "; ".join(item.reasons),
+                    reason=f"Auditor {item.severity} drift on {tool_id}: " + "; ".join(item.reasons),
                     source="auditor",
                 )
         return converted
@@ -222,12 +221,8 @@ class AuditorBridge:
         candidates: list[Candidate],
         correlation_id: str,
     ) -> VerifyResultMessage:
-        catalog_candidates = [
-            candidate for candidate in candidates if candidate.tool.id in TOOL_ALIASES
-        ]
-        fallback_candidates = [
-            candidate for candidate in candidates if candidate.tool.id not in TOOL_ALIASES
-        ]
+        catalog_candidates = [candidate for candidate in candidates if candidate.tool.id in TOOL_ALIASES]
+        fallback_candidates = [candidate for candidate in candidates if candidate.tool.id not in TOOL_ALIASES]
         result = VerifyResultMessage(
             sender="auditor",
             recipient="client",
@@ -235,17 +230,13 @@ class AuditorBridge:
             task_id=task_id,
         )
         if catalog_candidates:
-            catalog_results = await asyncio.to_thread(
-                self._verify_catalog, catalog_candidates, correlation_id
-            )
+            catalog_results = await asyncio.to_thread(self._verify_catalog, catalog_candidates, correlation_id)
             for tool_id, (labels, overall, alerts) in catalog_results.items():
                 result.labels[tool_id] = labels
                 result.overall[tool_id] = overall
                 result.drift_alerts.extend(alert.alert_id for alert in alerts)
         if fallback_candidates:
-            fallback = await self._fallback.verify(
-                task_id, subgoal_id, fallback_candidates, correlation_id
-            )
+            fallback = await self._fallback.verify(task_id, subgoal_id, fallback_candidates, correlation_id)
             result.labels.update(fallback.labels)
             result.overall.update(fallback.overall)
             result.drift_alerts.extend(fallback.drift_alerts)
@@ -303,10 +294,7 @@ class AuditorBridge:
         return list(combined.values())
 
     def snapshot(self) -> list[dict[str, Any]]:
-        return [
-            alert.model_dump(mode="json")
-            for alert in self.alerts()
-        ]
+        return [alert.model_dump(mode="json") for alert in self.alerts()]
 
     def reset(self) -> None:
         self._fallback.reset()
@@ -325,11 +313,7 @@ class AuditorBridge:
             {
                 "app_tool_id": app_id,
                 "catalog_tool_id": catalog_id,
-                "provider_id": (
-                    self.graph.get(app_id).provider_id
-                    if self.graph.get(app_id) is not None
-                    else ""
-                ),
+                "provider_id": (self.graph.get(app_id).provider_id if self.graph.get(app_id) is not None else ""),
             }
             for app_id, catalog_id in TOOL_ALIASES.items()
         ]
@@ -378,9 +362,7 @@ class AuditorBridge:
             }
             for assessment in result.assessments
         ]
-        payload["app_overall"] = self._overall(
-            [assessment.label.value for assessment in result.assessments]
-        ).value
+        payload["app_overall"] = self._overall([assessment.label.value for assessment in result.assessments]).value
         payload["alerts"] = [alert.model_dump(mode="json") for alert in alerts]
         return payload
 
@@ -424,7 +406,5 @@ class AuditorBridge:
             "catalog_tools": len(self.auditor.catalog),
             "mapped_tools": len(TOOL_ALIASES),
             "alerts": len(self.alerts()),
-            "trust_observations": sum(
-                entry.observations for entry in self.auditor.trust_ledger.tools.values()
-            ),
+            "trust_observations": sum(entry.observations for entry in self.auditor.trust_ledger.tools.values()),
         }

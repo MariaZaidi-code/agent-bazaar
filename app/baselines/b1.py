@@ -12,13 +12,10 @@ class B1ToolCalling(TfidfBaseline):
         ranked = await self._retrieval_rank(subgoal)
         if not self.llm.enabled or not ranked:
             return ranked
-        tool_text = "\n".join(
-            f"- {tool.id}: {tool.name}. {tool.description}"
-            for tool in ranked
-        )
+        tool_text = "\n".join(f"- {tool.id}: {tool.name}. {tool.description}" for tool in ranked)
         prompt = (
             f"Sub-goal: {subgoal.description}\n\nAvailable tools:\n{tool_text}\n\n"
-            "Choose the single best tool. Return JSON {\"tool_id\": \"...\"}."
+            'Choose the single best tool. Return JSON {"tool_id": "..."}.'
         )
         result = await self.llm.complete(prompt, json_mode=True, max_tokens=200)
         if not result.ok:

@@ -68,12 +68,10 @@ def _params(entry: dict) -> dict:
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "entry",
-    [entry for entry in _catalogue() if entry["id"] not in SKIP],
-    ids=[entry["id"] for entry in _catalogue() if entry["id"] not in SKIP],
+    [entry for entry in _catalogue() if entry["id"] not in SKIP and entry.get("is_executable")],
+    ids=[entry["id"] for entry in _catalogue() if entry["id"] not in SKIP and entry.get("is_executable")],
 )
-async def test_every_catalogue_tool_has_a_valid_offline_fixture(
-    services: AppServices, entry: dict
-) -> None:
+async def test_every_catalogue_tool_has_a_valid_offline_fixture(services: AppServices, entry: dict) -> None:
     provider = services.providers.by_tool(entry["id"])
     assert provider is not None, entry["id"]
 

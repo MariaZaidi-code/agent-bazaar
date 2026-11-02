@@ -42,9 +42,7 @@ def weather_tool(
         inputs=inputs
         if inputs is not None
         else [ConceptSpec(concept="Coordinates", name="coordinates", unit="degrees")],
-        outputs=outputs
-        if outputs is not None
-        else [ConceptSpec(concept="Temperature", name="temperature", unit="C")],
+        outputs=outputs if outputs is not None else [ConceptSpec(concept="Temperature", name="temperature", unit="C")],
     )
 
 
@@ -247,6 +245,8 @@ def test_the_seeded_app_tools_validate_against_the_bridge(ontology: KnowledgeOnt
     raw = json.loads(TOOLS_PATH.read_text(encoding="utf-8"))
 
     for item in raw:
+        if item.get("catalogue_status") == "pending_discovery":
+            continue
         tool = ToolSpec(
             id=item["id"],
             name=item["name"],

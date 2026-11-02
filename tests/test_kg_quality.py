@@ -158,18 +158,14 @@ def test_record_without_listing_facts_keeps_no_offering() -> None:
 def test_executable_tools_lists_only_free_keyless_tools() -> None:
     store = build_store()
     store.write_tool(tool_record("free-tool"))
-    store.write_tool(
-        tool_record("paid-tool", pricing_tier="paid", access_requirement="paid_key", licence="Commercial")
-    )
+    store.write_tool(tool_record("paid-tool", pricing_tier="paid", access_requirement="paid_key", licence="Commercial"))
     store.write_tool(tool_record("free-without-licence", licence=""))
 
     assert [tool.tool_id for tool in store.executable_tools()] == [
         "free-tool",
         "free-without-licence",
     ]
-    assert [
-        tool.tool_id for tool in store.executable_tools(require_known_licence=True)
-    ] == ["free-tool"]
+    assert [tool.tool_id for tool in store.executable_tools(require_known_licence=True)] == ["free-tool"]
 
     paid = store.tools_by_pricing_tier("paid")
     assert [tool.tool_id for tool in paid] == ["paid-tool"]
@@ -220,9 +216,7 @@ def test_write_tool_rejects_an_invalid_offering() -> None:
 def test_candidate_facts_returns_profiles_for_requested_tools() -> None:
     store = build_store()
     store.write_tool(tool_record("free-tool"))
-    store.write_tool(
-        tool_record("paid-tool", pricing_tier="paid", access_requirement="paid_key", licence="Commercial")
-    )
+    store.write_tool(tool_record("paid-tool", pricing_tier="paid", access_requirement="paid_key", licence="Commercial"))
 
     facts = store.candidate_facts(["free-tool", "paid-tool"])
     assert set(facts) == {"free-tool", "paid-tool"}

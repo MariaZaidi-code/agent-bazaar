@@ -93,16 +93,10 @@ class Ontology:
         concept_ok = self.is_subtype(source_concept, target_concept)
         units_ok, conversion = self.units_compatible(source_unit, target_unit)
         if not concept_ok:
-            reason = (
-                f"Concept mismatch: {source_concept} is not a {target_concept} "
-                f"and cannot feed this input."
-            )
+            reason = f"Concept mismatch: {source_concept} is not a {target_concept} and cannot feed this input."
             return OntologyCheck(False, False, units_ok, reason)
         if not units_ok:
-            reason = (
-                f"Unit mismatch: {source_unit or 'unitless'} cannot be converted to "
-                f"{target_unit or 'unitless'}."
-            )
+            reason = f"Unit mismatch: {source_unit or 'unitless'} cannot be converted to {target_unit or 'unitless'}."
             return OntologyCheck(False, True, False, reason)
         if conversion:
             reason = (
@@ -130,14 +124,10 @@ class Ontology:
                     violations.append(f"{tool.id}: {direction} has an untyped field")
                     continue
                 if concept.concept not in self.concepts:
-                    violations.append(
-                        f"{tool.id}: {direction} concept {concept.concept} is unknown"
-                    )
+                    violations.append(f"{tool.id}: {direction} concept {concept.concept} is unknown")
                 if concept.unit is not None:
                     if concept.unit not in self.units:
-                        violations.append(
-                            f"{tool.id}: {direction} unit {concept.unit} is unknown"
-                        )
+                        violations.append(f"{tool.id}: {direction} unit {concept.unit} is unknown")
                     else:
                         dimension = self.unit_dimension(concept.unit)
                         expected = self._expected_dimension(concept.concept)
@@ -173,9 +163,7 @@ class Ontology:
         for capability, data in self.capabilities.items():
             for concept in data.get("inputs", []) + data.get("outputs", []):
                 if concept not in self.concepts:
-                    violations.append(
-                        f"Capability {capability} references unknown concept {concept}"
-                    )
+                    violations.append(f"Capability {capability} references unknown concept {concept}")
         return violations
 
     def concept_payload(self, concept: str) -> dict[str, Any]:

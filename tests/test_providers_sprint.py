@@ -76,7 +76,7 @@ def _catalogue() -> list[dict]:
 
 
 def test_catalogue_reaches_sixty_free_keyless_executable_tools() -> None:
-    entries = _catalogue()
+    entries = [e for e in _catalogue() if e.get("is_executable")]
 
     assert len(entries) >= 60
     for entry in entries:
@@ -98,9 +98,7 @@ def test_new_providers_are_registered(services: AppServices) -> None:
     [(tool_id, params) for tool_id, (_, params) in SPRINT_PROVIDERS.items()],
     ids=list(SPRINT_PROVIDERS),
 )
-async def test_new_providers_return_valid_offline_payloads(
-    services: AppServices, tool_id: str, params: dict
-) -> None:
+async def test_new_providers_return_valid_offline_payloads(services: AppServices, tool_id: str, params: dict) -> None:
     provider = services.providers.by_tool(tool_id)
     assert provider is not None
     response = await provider.call(params)
@@ -143,10 +141,7 @@ async def test_local_utility_providers_are_deterministic(services: AppServices) 
 
 def test_all_provider_tools_validate_against_the_ontology(services: AppServices) -> None:
     violations = {
-        tool.id: issues
-        for tool in services.graph.all()
-        for issues in services.ontology.validate_tool(tool)
-        if issues
+        tool.id: issues for tool in services.graph.all() for issues in services.ontology.validate_tool(tool) if issues
     }
 
     assert violations == {}

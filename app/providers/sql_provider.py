@@ -171,8 +171,7 @@ class UniversitySQLProvider(BaseProvider):
         if re.search(r"(average|avg|mean)\s+(gpa|grade)", lowered):
             if program:
                 return (
-                    "SELECT ROUND(AVG(gpa), 2) AS average_gpa, COUNT(*) AS students "
-                    "FROM students WHERE program = ?",
+                    "SELECT ROUND(AVG(gpa), 2) AS average_gpa, COUNT(*) AS students FROM students WHERE program = ?",
                     [program],
                 )
             return (
@@ -184,8 +183,7 @@ class UniversitySQLProvider(BaseProvider):
             limit = max(1, min(20, int(top_match.group(1))))
             if program:
                 return (
-                    "SELECT name, program, gpa FROM students WHERE program = ? "
-                    "ORDER BY gpa DESC LIMIT ?",
+                    "SELECT name, program, gpa FROM students WHERE program = ? ORDER BY gpa DESC LIMIT ?",
                     [program, limit],
                 )
             return (
@@ -218,8 +216,7 @@ class UniversitySQLProvider(BaseProvider):
                     [program],
                 )
             return (
-                "SELECT program, COUNT(*) AS students FROM students "
-                "GROUP BY program ORDER BY students DESC",
+                "SELECT program, COUNT(*) AS students FROM students GROUP BY program ORDER BY students DESC",
                 [],
             )
         if program:

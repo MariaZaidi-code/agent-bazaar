@@ -27,9 +27,7 @@ class HackerNewsProvider(HTTPProvider):
             raise ValueError("invalid top stories response")
         stories = []
         for sid in ids[:limit]:
-            item = await self.get_json(
-                f"https://hacker-news.firebaseio.com/v0/item/{sid}.json"
-            )
+            item = await self.get_json(f"https://hacker-news.firebaseio.com/v0/item/{sid}.json")
             if not isinstance(item, dict):
                 continue
             stories.append(

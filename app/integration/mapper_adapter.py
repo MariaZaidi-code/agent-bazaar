@@ -91,9 +91,7 @@ class KnowledgeMapper:
         promoted = False
         if not violations:
             snapshot = self.store.graph
-            result = self.mapper.map_spec(spec, tool_id=tool_id).model_copy(
-                update={"correlation_id": correlation_id}
-            )
+            result = self.mapper.map_spec(spec, tool_id=tool_id).model_copy(update={"correlation_id": correlation_id})
             violations.extend(self._validate_result(result, declared))
             if not violations:
                 try:
@@ -240,9 +238,7 @@ class KnowledgeMapper:
                 if self._is_external_field(mapping.field_path, declared):
                     continue
                 reason = f": {mapping.reason}" if mapping.reason else ""
-                violations.append(
-                    f"field {mapping.field_path} could not be mapped to a known concept{reason}"
-                )
+                violations.append(f"field {mapping.field_path} could not be mapped to a known concept{reason}")
                 continue
             info = self._concept_info(mapping.concept)
             if info is None:
@@ -260,8 +256,7 @@ class KnowledgeMapper:
                 continue
             if info.unit_family and family_of(unit) != info.unit_family:
                 violations.append(
-                    f"unit {mapping.unit} does not match the unit family "
-                    f"{info.unit_family} of concept {info.label}"
+                    f"unit {mapping.unit} does not match the unit family {info.unit_family} of concept {info.label}"
                 )
         for field in result.unmapped:
             if field.field_path in mapped:
@@ -285,20 +280,14 @@ class KnowledgeMapper:
         result: MapResult,
     ) -> dict[str, list[ConceptSpec]]:
         """Collect the declared fields whose concept is external to the knowledge layer."""
-        mapped = {
-            mapping.field_path
-            for mapping in result.mappings
-            if _status_value(mapping.status) != "unmapped"
-        }
+        mapped = {mapping.field_path for mapping in result.mappings if _status_value(mapping.status) != "unmapped"}
         collected: dict[str, list[ConceptSpec]] = {"input": [], "output": []}
         for path, concept in declared.items():
             if path in mapped or not self._is_external_field(path, declared):
                 continue
             direction = "input" if path.startswith("input.") else "output"
             collected[direction].append(concept)
-        return {
-            direction: to_canonical_specs(concepts) for direction, concepts in collected.items()
-        }
+        return {direction: to_canonical_specs(concepts) for direction, concepts in collected.items()}
 
     def _build_spec(
         self,

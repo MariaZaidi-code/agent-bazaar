@@ -1,19 +1,23 @@
 from __future__ import annotations
 
 import csv
+import hashlib
+import hmac
+import hmac as _hmac
 import io
 import json
+import secrets
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import httpx
 from fastapi import BackgroundTasks, FastAPI, File, HTTPException, Query, Request, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from starlette.concurrency import run_in_threadpool
 
 from app import __version__
@@ -28,6 +32,7 @@ from app.platform import (
     analytics_payload,
     pdf_document,
     task_summary,
+    validate_webhook_url,
 )
 from app.schemas import (
     CorrectionRequest,
@@ -39,6 +44,7 @@ from app.schemas import (
 )
 from app.services import AppServices, build_services
 from app.discovery import CURATED_APIS, sync_discovered
+from app.discovery.api import register_discovery_routes
 from app.providers.generic import DISCOVERED_CONFIG, GenericHttpProvider
 
 WEB_DIR = Path(__file__).resolve().parent / "web"
@@ -49,8 +55,7 @@ ASSET_VERSION = str(
             (
                 path.stat().st_mtime
                 for path in (
-                    STATIC_DIR / name
-                    for name in ("styles.css", "premium.css", "platform.css", "app.js", "platform.js")
+                    STATIC_DIR / name for name in ("styles.css", "premium.css", "platform.css", "app.js", "platform.js")
                 )
                 if path.exists()
             ),
@@ -64,6 +69,7 @@ templates = Jinja2Templates(directory=str(WEB_DIR / "templates"))
 class TaskInput(BaseModel):
     task: str = Field(min_length=3, max_length=1500)
     document_id: str | None = Field(default=None, min_length=1, max_length=80)
+    reasoning_mode: Literal["none", "llm", "hybrid"] | None = None
 
 
 class FailNextInput(BaseModel):
@@ -115,6 +121,13 @@ class WebhookInput(BaseModel):
     url: str = Field(min_length=8, max_length=500)
     event: str = Field(default="task.completed", max_length=80)
 
+    @field_validator("url")
+    @classmethod
+    def validate_url(cls, value: str) -> str:
+        if not value.startswith(("http://", "https://")):
+            raise ValueError("url must be http(s)")
+        return value
+
 
 class ScheduleInput(BaseModel):
     task: str = Field(min_length=3, max_length=1500)
@@ -152,6 +165,7 @@ class DiscoveryAddInput(BaseModel):
     params: list[str] = Field(default_factory=list)
     capability: str = Field(default="GenericLookup", max_length=80)
 
+
 def _export_task(result: TaskResult, fmt: str) -> tuple[bytes, str, str]:
     data = result.model_dump(mode="json")
     stem = f"agent-bazaar-{result.task_id}"
@@ -170,9 +184,7 @@ def _export_task(result: TaskResult, fmt: str) -> tuple[bytes, str, str]:
         ]
         if result.plan:
             for index, step in enumerate(result.plan.steps, start=1):
-                lines.append(
-                    f"{index}. {step.tool_name} ({step.capability}) - {step.status}"
-                )
+                lines.append(f"{index}. {step.tool_name} ({step.capability}) - {step.status}")
                 if step.error:
                     lines.append(f"   Error: {step.error}")
         else:
@@ -243,9 +255,7 @@ def _export_task(result: TaskResult, fmt: str) -> tuple[bytes, str, str]:
             lines.append("| # | Tool | Capability | Status |")
             lines.append("| --- | --- | --- | --- |")
             for index, step in enumerate(result.plan.steps, start=1):
-                lines.append(
-                    f"| {index} | {step.tool_name} | {step.capability} | {step.status} |"
-                )
+                lines.append(f"| {index} | {step.tool_name} | {step.capability} | {step.status} |")
         else:
             lines.append("_No plan was recorded._")
         if result.warnings:
@@ -260,13 +270,26 @@ def _export_task(result: TaskResult, fmt: str) -> tuple[bytes, str, str]:
     return payload, "application/json", f"{stem}.json"
 
 
+import hashlib
+import hmac as _hmac
+
+
 async def _deliver_webhooks(hooks: list[dict[str, Any]], event: str, payload: dict[str, Any]) -> None:
+    body = {"event": event, "data": payload}
+    raw = json.dumps(body).encode("utf-8")
     async with httpx.AsyncClient(timeout=5.0) as client:
         for hook in hooks:
             if str(hook.get("event") or "task.completed") not in {event, "*"}:
                 continue
+            headers = {}
+            secret = str(hook.get("secret") or "")
+            if secret:
+                sig = _hmac.new(secret.encode("utf-8"), raw, hashlib.sha256).hexdigest()
+                headers["X-Agent-Bazaar-Signature"] = sig
             try:
-                await client.post(str(hook["url"]), json={"event": event, "data": payload})
+                await client.post(
+                    str(hook["url"]), content=raw, headers={"Content-Type": "application/json", **headers}
+                )
             except httpx.HTTPError:
                 continue
 
@@ -276,13 +299,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def lifespan(application: FastAPI):
         services = build_services(settings)
         application.state.services = services
+        application.state.settings = services.settings
         try:
             await services.start_mcp()
         except Exception:
             pass
-        application.state.rate_limiter = RateLimiter(
-            services.settings.rate_limit_per_minute
-        )
+        # Register discovery API routes with access to staging registry
+        register_discovery_routes(application, services.discovery)
+        application.state.rate_limiter = RateLimiter(services.settings.rate_limit_per_minute)
         yield
 
     application = FastAPI(
@@ -296,11 +320,27 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     application.mount("/static", StaticFiles(directory=str(WEB_DIR / "static")), name="static")
     application.state.metrics = RequestMetrics()
+    application.state.settings = settings
+
+    # Register discovery API routes (injected after lifespan for access to services)
+    # Routes are registered in the lifespan after services are built
 
     @application.middleware("http")
     async def platform_guard(request: Request, call_next):
         started = time.perf_counter()
-        if request.url.path.startswith("/api/") and request.method in {"POST", "PUT", "PATCH", "DELETE"}:
+        # CSRF validation for mutating API requests
+        _settings = getattr(request.app.state, "settings", None)
+        csrf_enabled = getattr(_settings, "csrf_enabled", True)
+        if (
+            csrf_enabled
+            and request.url.path.startswith("/api/")
+            and request.method in {"POST", "PUT", "PATCH", "DELETE"}
+            and request.url.path not in {"/api/auth/login", "/api/auth/register"}
+        ):
+            csrf_cookie = request.cookies.get("csrf_token")
+            csrf_header = request.headers.get("X-CSRF-Token")
+            if csrf_cookie and csrf_header and not hmac.compare_digest(csrf_cookie, csrf_header):
+                return JSONResponse(status_code=403, content={"detail": "CSRF token mismatch"})
             limiter = getattr(request.app.state, "rate_limiter", None)
             if limiter is not None:
                 host = request.client.host if request.client else "local"
@@ -315,6 +355,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                         headers={"Retry-After": str(retry_after)},
                     )
         response = await call_next(request)
+        # issue CSRF cookie if missing
+        if "csrf_token" not in request.cookies:
+            token = secrets.token_urlsafe(32)
+            response.set_cookie("csrf_token", token, samesite="lax", path="/", secure=request.url.scheme == "https")
         metrics = getattr(request.app.state, "metrics", None)
         if metrics is not None:
             metrics.record(
@@ -326,10 +370,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
         response.headers.setdefault("X-Frame-Options", "DENY")
+        if getattr(_settings, "session_cookie_secure", True):
+            response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
         response.headers.setdefault(
             "Content-Security-Policy",
-            "default-src 'self'; script-src 'self' 'unsafe-inline'; "
-            "style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; "
+            "default-src 'self'; script-src 'self'; "
+            "style-src 'self'; img-src 'self' data: https:; "
             "font-src 'self' data:; connect-src 'self'; worker-src 'self'; "
             "manifest-src 'self'; frame-ancestors 'none'; "
             "base-uri 'self'; form-action 'self'",
@@ -348,9 +394,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             user = state.platform.user(DEMO_USER_ID)
         if user is None:
             raise HTTPException(status_code=500, detail="Demo workspace is unavailable")
-        workspace_id = request.cookies.get(WORKSPACE_COOKIE) or state.platform.preferred_workspace(
-            str(user["user_id"])
-        )
+        workspace_id = request.cookies.get(WORKSPACE_COOKIE) or state.platform.preferred_workspace(str(user["user_id"]))
         if state.platform.member_role(str(user["user_id"]), workspace_id) == "viewer":
             workspace_id = state.platform.preferred_workspace(str(user["user_id"]))
         return user, workspace_id, authenticated
@@ -359,16 +403,24 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if state.platform.member_role(str(user["user_id"]), workspace_id) != "admin":
             raise HTTPException(status_code=403, detail="Only workspace admins can do that.")
 
-    def attach_session(response: Response, state: AppServices, token: str) -> None:
+    def attach_session(response: Response, state: AppServices, token: str, request: Request) -> None:
         response.set_cookie(
             SESSION_COOKIE,
             token,
             max_age=SESSION_DAYS * 24 * 60 * 60,
             httponly=True,
             samesite="lax",
-            secure=state.settings.session_cookie_secure,
+            secure=state.settings.session_cookie_secure and request.url.scheme == "https",
             path="/",
         )
+        if "csrf_token" not in request.cookies:
+            response.set_cookie(
+                "csrf_token",
+                secrets.token_urlsafe(32),
+                samesite="lax",
+                path="/",
+                secure=state.settings.session_cookie_secure and request.url.scheme == "https",
+            )
 
     def render_page(request: Request, page: str, title: str, active: str | None = None) -> HTMLResponse:
         user, workspace_id, authenticated = session_context(request)
@@ -497,16 +549,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def auth_register(payload: AuthInput, request: Request, response: Response) -> dict[str, Any]:
         state = services(request)
         try:
-            state.platform.create_user(
-                payload.email, payload.password, payload.display_name, payload.workspace_name
-            )
+            state.platform.create_user(payload.email, payload.password, payload.display_name, payload.workspace_name)
         except ValueError as exc:
             raise HTTPException(status_code=409, detail=str(exc)) from exc
         login_token = state.platform.login(payload.email, payload.password)
         if login_token is None:
             raise HTTPException(status_code=400, detail="Account created, but sign-in failed")
         token, signed_in = login_token
-        attach_session(response, state, token)
+        attach_session(response, state, token, request)
         workspace_id = state.platform.preferred_workspace(str(signed_in["user_id"]))
         response.set_cookie(
             WORKSPACE_COOKIE, workspace_id, max_age=SESSION_DAYS * 24 * 60 * 60, samesite="lax", path="/"
@@ -523,7 +573,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if login_token is None:
             raise HTTPException(status_code=401, detail="That email and password do not match")
         token, user = login_token
-        attach_session(response, state, token)
+        attach_session(response, state, token, request)
         workspace_id = state.platform.preferred_workspace(str(user["user_id"]))
         response.set_cookie(
             WORKSPACE_COOKIE, workspace_id, max_age=SESSION_DAYS * 24 * 60 * 60, samesite="lax", path="/"
@@ -552,9 +602,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return services(request).platform.settings(str(user["user_id"]))
 
     @application.put("/api/platform/settings")
-    async def update_platform_settings(
-        payload: SettingsInput, request: Request, response: Response
-    ) -> dict[str, Any]:
+    async def update_platform_settings(payload: SettingsInput, request: Request, response: Response) -> dict[str, Any]:
         user, workspace_id, _ = session_context(request)
         state = services(request)
         values = payload.model_dump(exclude_none=True)
@@ -617,9 +665,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         )
 
     @application.put("/api/favorites/{tool_id}")
-    async def update_favorite(
-        tool_id: str, payload: FavoriteTagsInput, request: Request
-    ) -> dict[str, Any]:
+    async def update_favorite(tool_id: str, payload: FavoriteTagsInput, request: Request) -> dict[str, Any]:
         user, workspace_id, _ = session_context(request)
         return services(request).platform.save_favorite(
             str(user["user_id"]), workspace_id, tool_id, payload.note, payload.tags
@@ -711,11 +757,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @application.get("/api/audit")
     async def audit_log(request: Request, limit: int = Query(default=50, ge=1, le=200)) -> dict[str, Any]:
         user, workspace_id, _ = session_context(request)
-        return {
-            "entries": services(request).platform.audit_log(
-                str(user["user_id"]), workspace_id, limit
-            )
-        }
+        return {"entries": services(request).platform.audit_log(str(user["user_id"]), workspace_id, limit)}
 
     @application.get("/api/analytics")
     async def analytics(request: Request) -> dict[str, Any]:
@@ -738,9 +780,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         flag = state.platform.set_feature_flag(name, payload.enabled)
         if flag is None:
             raise HTTPException(status_code=404, detail="Feature flag not found")
-        state.platform.audit(
-            str(user["user_id"]), workspace_id, "flag.updated", f"{name}={payload.enabled}"
-        )
+        state.platform.audit(str(user["user_id"]), workspace_id, "flag.updated", f"{name}={payload.enabled}")
         return flag
 
     @application.get("/api/admin/overrides")
@@ -772,6 +812,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def create_webhook(payload: WebhookInput, request: Request) -> dict[str, Any]:
         user, workspace_id, _ = session_context(request)
         try:
+            services(request).platform.validate_webhook_url(payload.url)
             return services(request).platform.add_webhook(
                 str(user["user_id"]), workspace_id, payload.url, payload.event
             )
@@ -804,9 +845,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @application.delete("/api/schedules/{schedule_id}")
     async def delete_schedule(schedule_id: str, request: Request) -> dict[str, Any]:
         user, workspace_id, _ = session_context(request)
-        removed = services(request).platform.remove_scheduled_run(
-            str(user["user_id"]), workspace_id, schedule_id
-        )
+        removed = services(request).platform.remove_scheduled_run(str(user["user_id"]), workspace_id, schedule_id)
         if not removed:
             raise HTTPException(status_code=404, detail="Schedule not found")
         return {"deleted": True, "schedule_id": schedule_id}
@@ -877,9 +916,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return Response(
             content=body,
             media_type="application/json",
-            headers={
-                "Content-Disposition": f'attachment; filename="agent-bazaar-{workspace_id}.json"'
-            },
+            headers={"Content-Disposition": f'attachment; filename="agent-bazaar-{workspace_id}.json"'},
         )
 
     @application.post("/api/workspace/import")
@@ -934,9 +971,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             lines.append(f'agent_bazaar_responses_total{{status="{key}"}} {value}')
         for provider in state.providers.all():
             score = state.trust.get(provider.provider_id).get("score", 0.0)
-            lines.append(
-                f'agent_bazaar_trust_score{{provider="{provider.provider_id}"}} {float(score):.4f}'
-            )
+            lines.append(f'agent_bazaar_trust_score{{provider="{provider.provider_id}"}} {float(score):.4f}')
         return Response("\n".join(lines) + "\n", media_type="text/plain; version=0.0.4")
 
     @application.get("/api/ontology")
@@ -944,13 +979,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         state = services(request)
         return {
             "summary": state.ontology.summary(),
-            "concepts": [
-                state.ontology.concept_payload(name)
-                for name in sorted(state.ontology.concepts)
-            ],
-            "units": [
-                state.ontology.unit_payload(name) for name in sorted(state.ontology.units)
-            ],
+            "concepts": [state.ontology.concept_payload(name) for name in sorted(state.ontology.concepts)],
+            "units": [state.ontology.unit_payload(name) for name in sorted(state.ontology.units)],
             "capabilities": state.ontology.capabilities,
         }
 
@@ -985,9 +1015,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             data = tool.model_dump(mode="json")
             data["trust"] = trust_rows.get(tool.provider_id, {}).get("score", 0.5)
             data["demoted"] = trust_rows.get(tool.provider_id, {}).get("demoted", False)
-            data["breaker"] = state.breakers.state(
-                state.breakers.link_key("client", tool.provider_id)
-            ).value
+            data["breaker"] = state.breakers.state(state.breakers.link_key("client", tool.provider_id)).value
             data["validation"] = state.providers.validation.get(tool.id, [])
             data["auditor_tool_id"] = state.auditor.catalog_tool_id(tool.id) or ""
             payload.append(data)
@@ -1052,14 +1080,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return {"added": tool_id, "tool_id": tool_id}
 
     @application.post("/api/tasks", response_model=TaskResult)
-    async def run_task(
-        payload: TaskInput, request: Request, background_tasks: BackgroundTasks
-    ) -> TaskResult:
+    async def run_task(payload: TaskInput, request: Request, background_tasks: BackgroundTasks) -> TaskResult:
         state = services(request)
         if payload.document_id and state.providers.document_store.get(payload.document_id) is None:
             raise HTTPException(status_code=404, detail="Document not found")
         user, workspace_id, _ = session_context(request)
-        result = await state.client.run(payload.task, document_id=payload.document_id)
+        result = await state.client.run(
+            payload.task,
+            document_id=payload.document_id,
+            reasoning_mode=payload.reasoning_mode,
+        )
         state.platform.audit(str(user["user_id"]), workspace_id, "task.completed", result.task_id)
         if state.platform.settings(str(user["user_id"])).get("notifications", True):
             state.platform.notify(
@@ -1069,7 +1099,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 f"{result.task[:100]} - {result.status}",
                 "success" if result.status == "completed" else "warning",
             )
-        hooks = state.platform.webhooks(str(user["user_id"]), workspace_id)
+        hooks = state.platform.webhooks(str(user["user_id"]), workspace_id, include_secret=True)
         if hooks:
             background_tasks.add_task(
                 _deliver_webhooks,
@@ -1131,9 +1161,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return {"token": token, "url": f"{base}/share/{token}"}
 
     @application.get("/api/tasks/{task_id}/export")
-    async def export_task(
-        task_id: str, request: Request, format: str = Query(default="json")
-    ) -> Response:
+    async def export_task(task_id: str, request: Request, format: str = Query(default="json")) -> Response:
         state = services(request)
         result = state.traces.get_result(task_id)
         if result is None:
@@ -1230,8 +1258,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "tool_id": tool_id,
             "times": times,
             "message": (
-                "The next call will fail. Run the weather/currency demo task to see "
-                "circuit-breaker substitution."
+                "The next call will fail. Run the weather/currency demo task to see circuit-breaker substitution."
             ),
         }
 
@@ -1275,9 +1302,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if len(data) > 10 * 1024 * 1024:
             raise HTTPException(status_code=413, detail="Document exceeds the 10 MB limit")
         try:
-            info = state.providers.document_store.add_document(
-                file.filename or "uploaded.txt", data
-            )
+            info = state.providers.document_store.add_document(file.filename or "uploaded.txt", data)
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
         return {"document": info.model_dump(mode="json"), "documents": state.providers.document_store.list()}
@@ -1317,9 +1342,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return {"deleted": True, "document_id": document_id}
 
     @application.put("/api/documents/{document_id}/tags")
-    async def set_document_tags(
-        document_id: str, payload: DocumentTagsInput, request: Request
-    ) -> dict[str, Any]:
+    async def set_document_tags(document_id: str, payload: DocumentTagsInput, request: Request) -> dict[str, Any]:
         store = services(request).providers.document_store
         if not store.set_tags(document_id, payload.tags):
             raise HTTPException(status_code=404, detail="Document not found")

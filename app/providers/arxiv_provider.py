@@ -30,10 +30,7 @@ class ArxivProvider(HTTPProvider):
             summary = " ".join((entry.findtext("a:summary", "", ATOM) or "").split())
             published = entry.findtext("a:published", "", ATOM)
             link = entry.findtext("a:id", "", ATOM)
-            authors = [
-                author.findtext("a:name", "", ATOM)
-                for author in entry.findall("a:author", ATOM)
-            ]
+            authors = [author.findtext("a:name", "", ATOM) for author in entry.findall("a:author", ATOM)]
             papers.append(
                 {
                     "title": title,

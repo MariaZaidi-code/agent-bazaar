@@ -10,7 +10,10 @@ def test_fifteen_keyless_probe_definitions() -> None:
     definitions = build_probe_definitions()
     assert len(definitions) == 15
     assert all(definition.endpoint.startswith("https://") for definition in definitions.values())
-    assert all("API_KEY" not in definition.endpoint and "api_key" not in definition.params for definition in definitions.values())
+    assert all(
+        "API_KEY" not in definition.endpoint and "api_key" not in definition.params
+        for definition in definitions.values()
+    )
 
 
 def test_open_meteo_fixture_validates() -> None:

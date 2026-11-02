@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     llm_model: str = "meta-llama/llama-3.3-70b-instruct:free"
     llm_timeout_seconds: float = 45.0
     reasoning_mode: str = "hybrid"
-
+    require_approval: bool = False
     ranking_top_k: int = 8
     graph_expansion: int = 3
     relevance_weight: float = 1.0
@@ -47,9 +47,7 @@ class Settings(BaseSettings):
     exclude_contradicted: bool = False
 
     pricing_policy: str = "prefer_free"
-    tier_order: list[str] = Field(
-        default_factory=lambda: ["free", "freemium", "paid", "unknown"]
-    )
+    tier_order: list[str] = Field(default_factory=lambda: ["free", "freemium", "paid", "unknown"])
     doc_quality_weight: float = 0.4
     mapping_coverage_weight: float = 0.3
     chain_fit_weight: float = 0.3
@@ -87,7 +85,8 @@ class Settings(BaseSettings):
     use_circuit_breaker: bool = True
 
     rate_limit_per_minute: int = 180
-    session_cookie_secure: bool = False
+    session_cookie_secure: bool = True
+    csrf_enabled: bool = True
     share_base_url: str = ""
 
     @field_validator("data_dir", "runtime_dir", mode="after")
@@ -139,6 +138,9 @@ class Settings(BaseSettings):
     def ontology_file(self) -> Path:
         return self.data_dir / "ontology.json"
 
+    @property
+    def mcp_servers_file(self) -> Path:
+        return BASE_DIR / "config" / "mcp_servers.yaml"
     def ensure_dirs(self) -> None:
         for path in (self.runtime_dir, self.uploads_dir):
             path.mkdir(parents=True, exist_ok=True)

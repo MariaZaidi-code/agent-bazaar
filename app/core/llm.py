@@ -91,9 +91,7 @@ class LLMClient:
             "X-Title": "Agent Bazaar",
         }
         try:
-            async with httpx.AsyncClient(
-                timeout=self.settings.llm_timeout_seconds
-            ) as client:
+            async with httpx.AsyncClient(timeout=self.settings.llm_timeout_seconds) as client:
                 response = await client.post(
                     f"{self.base_url}/chat/completions",
                     headers=headers,
@@ -103,9 +101,7 @@ class LLMClient:
                 data = response.json()
             text = data["choices"][0]["message"]["content"] or ""
             usage = data.get("usage") or {}
-            tokens = int(usage.get("prompt_tokens", 0)) + int(
-                usage.get("completion_tokens", 0)
-            )
+            tokens = int(usage.get("prompt_tokens", 0)) + int(usage.get("completion_tokens", 0))
             self.cache.set(key, {"text": text, "tokens": tokens}, source="llm")
             return LLMResult(text=text, tokens=tokens)
         except (httpx.HTTPError, KeyError, ValueError, TypeError) as exc:

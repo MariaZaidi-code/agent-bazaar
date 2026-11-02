@@ -62,9 +62,7 @@ class KnowledgeOntology:
         for name in self._infos:
             self._ancestor_names.update(self._rdf_ancestors(name))
         self._external_names: set[str] = set(EXTERNAL_CONCEPTS)
-        self._class_names: set[str] = {
-            _local_name(node) for node in store.graph.subjects(None, OWL.Class)
-        }
+        self._class_names: set[str] = {_local_name(node) for node in store.graph.subjects(None, OWL.Class)}
         self.version = f"knowledge+{local.version}" if local is not None else "knowledge"
         self.concepts = self._concept_view()
         self.units = self._unit_view()
@@ -166,16 +164,10 @@ class KnowledgeOntology:
         concept_ok = self.is_subtype(source_concept, target_concept)
         units_ok, conversion = self.units_compatible(source_unit, target_unit)
         if not concept_ok:
-            reason = (
-                f"Concept mismatch: {source} is not a {target} "
-                f"and cannot feed this input."
-            )
+            reason = f"Concept mismatch: {source} is not a {target} and cannot feed this input."
             return OntologyCheck(False, False, units_ok, reason)
         if not units_ok:
-            reason = (
-                f"Unit mismatch: {source_unit or 'unitless'} cannot be converted to "
-                f"{target_unit or 'unitless'}."
-            )
+            reason = f"Unit mismatch: {source_unit or 'unitless'} cannot be converted to {target_unit or 'unitless'}."
             return OntologyCheck(False, True, False, reason)
         if conversion:
             reason = (
@@ -213,8 +205,7 @@ class KnowledgeOntology:
                         expected = self._expected_family(name)
                         if expected and family and expected != family:
                             violations.append(
-                                f"{tool.id}: {name} has unit {concept.unit} "
-                                f"of dimension {family}, expected {expected}"
+                                f"{tool.id}: {name} has unit {concept.unit} of dimension {family}, expected {expected}"
                             )
                 marker = f"{direction}:{concept.name or name}:{concept.unit}"
                 if marker in names:

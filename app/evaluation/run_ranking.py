@@ -166,13 +166,9 @@ def ndcg_at_10(ranked_ids: Sequence[str], expected_ids: Sequence[str], k: int = 
     if not expected_ids:
         return 0.0
     gains = {tool_id: len(expected_ids) - position for position, tool_id in enumerate(expected_ids)}
-    dcg = sum(
-        gains.get(tool_id, 0) / log2(position + 1)
-        for position, tool_id in enumerate(ranked_ids[:k], start=1)
-    )
+    dcg = sum(gains.get(tool_id, 0) / log2(position + 1) for position, tool_id in enumerate(ranked_ids[:k], start=1))
     ideal = sum(
-        (len(expected_ids) - position + 1) / log2(position + 1)
-        for position in range(1, min(k, len(expected_ids)) + 1)
+        (len(expected_ids) - position + 1) / log2(position + 1) for position in range(1, min(k, len(expected_ids)) + 1)
     )
     return round(dcg / ideal, 4) if ideal else 0.0
 
@@ -210,10 +206,7 @@ def evaluate_task(task: dict[str, Any], policy: RankingPolicy) -> TaskOutcome:
         ndcg_at_10=ndcg_at_10(ranked_ids, expected_order),
         free_first=bool(has_free and top is not None and top.tier == "free"),
         executable_top=bool(top is not None and top.executable),
-        tier_separation=all(
-            earlier <= later
-            for earlier, later in zip(tier_ranks, tier_ranks[1:], strict=False)
-        ),
+        tier_separation=all(earlier <= later for earlier, later in zip(tier_ranks, tier_ranks[1:], strict=False)),
     )
 
 
@@ -340,9 +333,7 @@ def evaluate(dataset: Path = DEFAULT_DATASET) -> dict[str, Any]:
             "contradicted_penalty": policy.contradicted_penalty,
         },
         "metrics": full["metrics"],
-        "metric_table": [
-            {"configuration": name, **result["metrics"]} for name, result in ablations.items()
-        ],
+        "metric_table": [{"configuration": name, **result["metrics"]} for name, result in ablations.items()],
         "ablations": ablations,
         "per_capability": per_capability(outcomes),
         "failures": [
@@ -359,10 +350,7 @@ def print_tables(payload: dict[str, Any]) -> None:
     print(
         markdown_table(
             ["configuration", *METRIC_KEYS],
-            [
-                [row["configuration"], *(f"{row[key]:.4f}" for key in METRIC_KEYS)]
-                for row in payload["metric_table"]
-            ],
+            [[row["configuration"], *(f"{row[key]:.4f}" for key in METRIC_KEYS)] for row in payload["metric_table"]],
         )
     )
     print()

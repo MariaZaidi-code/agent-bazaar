@@ -58,9 +58,7 @@ class DocumentStore:
             ("chunk_count", "INTEGER NOT NULL DEFAULT 0"),
         ):
             try:
-                self._connection.execute(
-                    f"ALTER TABLE documents ADD COLUMN {column} {definition}"
-                )
+                self._connection.execute(f"ALTER TABLE documents ADD COLUMN {column} {definition}")
                 self._connection.commit()
             except sqlite3.OperationalError:
                 pass
@@ -128,7 +126,11 @@ class DocumentStore:
             if current:
                 chunks.append(current.strip())
         if not chunks:
-            chunks = [text[i : i + max_chars].strip() for i in range(0, len(text), max_chars) if text[i : i + max_chars].strip()]
+            chunks = [
+                text[i : i + max_chars].strip()
+                for i in range(0, len(text), max_chars)
+                if text[i : i + max_chars].strip()
+            ]
         return chunks or [text[:max_chars]]
 
     def add_document(self, name: str, data: bytes) -> DocumentInfo:
@@ -149,8 +151,7 @@ class DocumentStore:
                 INSERT INTO documents
                     (document_id, name, path, size_bytes, text, tags, version, chunk_count, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """
-                ,
+                """,
                 (
                     document_id,
                     name,
@@ -168,8 +169,7 @@ class DocumentStore:
                     """
                     INSERT INTO document_chunks (chunk_id, document_id, chunk_index, text)
                     VALUES (?, ?, ?, ?)
-                    """
-                    ,
+                    """,
                     (f"{document_id}_{index}", document_id, index, chunk),
                 )
             self._connection.commit()
@@ -216,9 +216,7 @@ class DocumentStore:
 
     def get(self, document_id: str) -> dict[str, Any] | None:
         with self._lock:
-            row = self._connection.execute(
-                "SELECT * FROM documents WHERE document_id = ?", (document_id,)
-            ).fetchone()
+            row = self._connection.execute("SELECT * FROM documents WHERE document_id = ?", (document_id,)).fetchone()
         if row is None:
             return None
         item = dict(row)
@@ -229,9 +227,7 @@ class DocumentStore:
 
     def latest(self) -> dict[str, Any] | None:
         with self._lock:
-            row = self._connection.execute(
-                "SELECT * FROM documents ORDER BY created_at DESC LIMIT 1"
-            ).fetchone()
+            row = self._connection.execute("SELECT * FROM documents ORDER BY created_at DESC LIMIT 1").fetchone()
         return dict(row) if row else None
 
     def get_chunks(self, document_id: str) -> list[dict[str, Any]]:
@@ -240,8 +236,7 @@ class DocumentStore:
                 """
                 SELECT chunk_id, document_id, chunk_index, text
                 FROM document_chunks WHERE document_id = ? ORDER BY chunk_index
-                """
-                ,
+                """,
                 (document_id,),
             ).fetchall()
         return [dict(row) for row in rows]
@@ -256,8 +251,7 @@ class DocumentStore:
             self._connection.execute(
                 """
                 UPDATE documents SET tags = ?, version = version + 1 WHERE document_id = ?
-                """
-                ,
+                """,
                 (json.dumps(tags), document_id),
             )
             self._connection.commit()
@@ -273,14 +267,14 @@ class DocumentStore:
             ).fetchall()
         if not rows:
             return []
-        documents = {
-            f"{row['document_id']}:{row['chunk_index']}": row["text"] for row in rows
-        }
+        documents = {f"{row['document_id']}:{row['chunk_index']}": row["text"] for row in rows}
         index = TfidfIndex(documents)
         ranked = index.search(query, top_k=top_k)
         meta = {f"{row['document_id']}:{row['chunk_index']}": row for row in rows}
         results = []
         for key, score in ranked:
+            if float(score) <= 0.0:
+                continue
             row = meta[key]
             results.append(
                 {
@@ -301,12 +295,8 @@ class DocumentStore:
             ).fetchone()
             if row is None:
                 return False
-            self._connection.execute(
-                "DELETE FROM document_chunks WHERE document_id = ?", (document_id,)
-            )
-            self._connection.execute(
-                "DELETE FROM documents WHERE document_id = ?", (document_id,)
-            )
+            self._connection.execute("DELETE FROM document_chunks WHERE document_id = ?", (document_id,))
+            self._connection.execute("DELETE FROM documents WHERE document_id = ?", (document_id,))
             self._connection.commit()
         path = Path(row["path"])
         try:
@@ -348,11 +338,7 @@ class DocumentQAProvider(BaseProvider):
         if not question:
             raise ValueError("question is required")
         document_id = str(params.get("document_id", "") or "")
-        document = (
-            self.document_store.get(document_id)
-            if document_id
-            else self.document_store.latest()
-        )
+        document = self.document_store.get(document_id) if document_id else self.document_store.latest()
         if document is None:
             raise ValueError("upload a document before asking a document question")
         chunks = self._chunks(document["text"])
@@ -371,10 +357,7 @@ class DocumentQAProvider(BaseProvider):
                     best_score = weighted
         if not best or best_score <= 0.0:
             best = chunks[0]
-            answer = (
-                "The document does not directly answer that question. "
-                f"The closest passage is: {best}"
-            )
+            answer = f"The document does not directly answer that question. The closest passage is: {best}"
         else:
             answer = best
         citations = [

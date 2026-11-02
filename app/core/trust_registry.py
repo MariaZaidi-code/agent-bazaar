@@ -93,9 +93,7 @@ class TrustRegistry:
         )
 
     def _row(self, provider_id: str) -> dict[str, Any] | None:
-        row = self._connection.execute(
-            "SELECT * FROM trust_state WHERE provider_id = ?", (provider_id,)
-        ).fetchone()
+        row = self._connection.execute("SELECT * FROM trust_state WHERE provider_id = ?", (provider_id,)).fetchone()
         return dict(row) if row else None
 
     def _ensure_capability(self, provider_id: str, capability: str) -> None:
@@ -151,7 +149,6 @@ class TrustRegistry:
             "demoted": demoted,
             "updated_at": row["updated_at"],
         }
-
 
     def _update_capability_row(
         self,
@@ -221,9 +218,7 @@ class TrustRegistry:
         source: str = "execution",
         capability: str | None = None,
     ) -> dict[str, Any]:
-        applied_weight = float(
-            self.signal_weights.get(signal, 1.0) if weight is None else weight
-        )
+        applied_weight = float(self.signal_weights.get(signal, 1.0) if weight is None else weight)
         with self._lock:
             self._ensure(provider_id)
             row = self._row(provider_id)
@@ -237,22 +232,16 @@ class TrustRegistry:
                 failures += applied_weight
             probes = int(row["probes"]) + (1 if signal == "probe" else 0)
             calls = int(row["calls"]) + (1 if signal == "call" else 0)
-            schema_pass = int(row["schema_pass"]) + (
-                1 if signal == "schema" and success else 0
-            )
+            schema_pass = int(row["schema_pass"]) + (1 if signal == "schema" and success else 0)
             ratings_sum = float(row["ratings_sum"])
             ratings_count = int(row["ratings_count"])
             if signal == "rating":
                 ratings_sum += applied_weight if success else 0.0
                 ratings_count += 1
-            contradictions = int(row["contradictions"]) + (
-                1 if signal == "contradiction" else 0
-            )
+            contradictions = int(row["contradictions"]) + (1 if signal == "contradiction" else 0)
             score = (successes + 1.0) / (successes + failures + 2.0)
             evidence = successes + failures
-            demoted = int(
-                evidence >= self.min_evidence and score < self.demotion_threshold
-            )
+            demoted = int(evidence >= self.min_evidence and score < self.demotion_threshold)
             now = datetime.now(UTC).isoformat()
             self._connection.execute(
                 """
@@ -380,9 +369,7 @@ class TrustRegistry:
 
     def all(self) -> list[dict[str, Any]]:
         with self._lock:
-            rows = self._connection.execute(
-                "SELECT * FROM trust_state ORDER BY provider_id"
-            ).fetchall()
+            rows = self._connection.execute("SELECT * FROM trust_state ORDER BY provider_id").fetchall()
         return [self._state(dict(row)) for row in rows]
 
     def history(self, provider_id: str, limit: int = 100) -> list[dict[str, Any]]:

@@ -21,9 +21,7 @@ async def run_normal_tasks(runner: str) -> dict[str, Any]:
             result = await services.client.run(item["task"])
             steps = result.plan.steps if result.plan else []
             completed = {
-                step.capability: step.tool_id
-                for step in steps
-                if step.status.value in {"completed", "substituted"}
+                step.capability: step.tool_id for step in steps if step.status.value in {"completed", "substituted"}
             }
             status = result.status.value
             duration = result.duration_ms
@@ -62,9 +60,7 @@ async def run_normal_tasks(runner: str) -> dict[str, Any]:
     return {
         "runner": runner,
         "tasks": len(tasks),
-        "chain_success_rate": ratio(
-            sum(1 for row in rows if row["status"] == "completed"), len(rows)
-        ),
+        "chain_success_rate": ratio(sum(1 for row in rows if row["status"] == "completed"), len(rows)),
         "expected_tool_selection_accuracy": ratio(expected_found, expected_total),
         "answer_rate": ratio(sum(1 for row in rows if row["answer_chars"] > 0), len(rows)),
         "avg_latency_ms": mean(row["duration_ms"] for row in rows),
@@ -80,9 +76,7 @@ async def run_fault_case(runner: str) -> dict[str, Any]:
         steps = result.plan.steps if result.plan else []
         weather = next((step for step in steps if step.capability == "GetWeatherForecast"), None)
         recovered = bool(
-            result.status.value == "completed"
-            and weather
-            and weather.tool_id == "open-meteo-forecast-backup"
+            result.status.value == "completed" and weather and weather.tool_id == "open-meteo-forecast-backup"
         )
         status = result.status.value
         selected = weather.tool_id if weather else None
@@ -92,11 +86,7 @@ async def run_fault_case(runner: str) -> dict[str, Any]:
         result = await baseline.run(FAILURE_TASK)
         status = result.status
         selected = next(
-            (
-                step.tool_id
-                for step in result.steps
-                if step.capability == "GetWeatherForecast"
-            ),
+            (step.tool_id for step in result.steps if step.capability == "GetWeatherForecast"),
             None,
         )
         recovered = status == "completed"
@@ -127,9 +117,7 @@ async def evaluate() -> dict[str, Any]:
     metrics = {
         "full_chain_success_rate": full["chain_success_rate"],
         "best_baseline_chain_success_rate": best_baseline["chain_success_rate"],
-        "chain_success_delta": round(
-            full["chain_success_rate"] - best_baseline["chain_success_rate"], 4
-        ),
+        "chain_success_delta": round(full["chain_success_rate"] - best_baseline["chain_success_rate"], 4),
         "full_fault_recovery": full["fault_recovery"],
         "baseline_fault_recovery": mean(row["fault_recovery"] for row in rows if row["runner"] != "full"),
     }

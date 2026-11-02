@@ -34,9 +34,7 @@ def _offset_label(hours: float) -> str:
 class WorldTimeProvider(HTTPProvider):
     async def execute(self, params: dict[str, Any]) -> dict[str, Any]:
         timezone = str(params.get("timezone", "")).strip() or "Etc/UTC"
-        payload = await self.get_json(
-            f"https://worldtimeapi.org/api/timezone/{quote(timezone, safe='/')}"
-        )
+        payload = await self.get_json(f"https://worldtimeapi.org/api/timezone/{quote(timezone, safe='/')}")
         if not payload or "datetime" not in payload:
             raise ValueError(f"WorldTimeAPI returned no time for {timezone}")
         return {
@@ -57,9 +55,7 @@ class WorldTimeProvider(HTTPProvider):
         except (ZoneInfoNotFoundError, ValueError):
             hours = OFFSETS.get(timezone, 0.0)
             utc_offset = _offset_label(hours)
-            local = (datetime.now(UTC) + timedelta(hours=hours)).replace(
-                tzinfo=fixed_timezone(timedelta(hours=hours))
-            )
+            local = (datetime.now(UTC) + timedelta(hours=hours)).replace(tzinfo=fixed_timezone(timedelta(hours=hours)))
         return {
             "time": {
                 "datetime": local.isoformat(),

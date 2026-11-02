@@ -5,12 +5,42 @@ from typing import Any
 from app.providers.http_base import HTTPProvider
 
 USGS_FIXTURES = [
-    {"place": "10 km N of Ridgecrest, CA", "magnitude": 6.4, "time": 1700000000000, "url": "https://earthquake.usgs.gov/earthquakes/eventpage/eq1"},
-    {"place": "5 km SW of Searles Valley, CA", "magnitude": 5.4, "time": 1699999000000, "url": "https://earthquake.usgs.gov/earthquakes/eventpage/eq2"},
-    {"place": "20 km E of Little Lake, CA", "magnitude": 4.8, "time": 1699998000000, "url": "https://earthquake.usgs.gov/earthquakes/eventpage/eq3"},
-    {"place": "Near the coast of Oregon", "magnitude": 4.2, "time": 1699997000000, "url": "https://earthquake.usgs.gov/earthquakes/eventpage/eq4"},
-    {"place": "Southern Alaska", "magnitude": 5.9, "time": 1699996000000, "url": "https://earthquake.usgs.gov/earthquakes/eventpage/eq5"},
-    {"place": "Puerto Rico region", "magnitude": 3.7, "time": 1699995000000, "url": "https://earthquake.usgs.gov/earthquakes/eventpage/eq6"},
+    {
+        "place": "10 km N of Ridgecrest, CA",
+        "magnitude": 6.4,
+        "time": 1700000000000,
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/eq1",
+    },
+    {
+        "place": "5 km SW of Searles Valley, CA",
+        "magnitude": 5.4,
+        "time": 1699999000000,
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/eq2",
+    },
+    {
+        "place": "20 km E of Little Lake, CA",
+        "magnitude": 4.8,
+        "time": 1699998000000,
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/eq3",
+    },
+    {
+        "place": "Near the coast of Oregon",
+        "magnitude": 4.2,
+        "time": 1699997000000,
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/eq4",
+    },
+    {
+        "place": "Southern Alaska",
+        "magnitude": 5.9,
+        "time": 1699996000000,
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/eq5",
+    },
+    {
+        "place": "Puerto Rico region",
+        "magnitude": 3.7,
+        "time": 1699995000000,
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/eq6",
+    },
 ]
 
 
@@ -55,9 +85,7 @@ class UsgsProvider(HTTPProvider):
     async def offline(self, params: dict[str, Any]) -> dict[str, Any]:
         min_magnitude = self._parse_min_magnitude(params.get("min_magnitude", 4.5))
         limit = self._parse_limit(params.get("limit", 5))
-        earthquakes = [
-            dict(item) for item in USGS_FIXTURES if float(item["magnitude"]) >= min_magnitude
-        ][:limit]
+        earthquakes = [dict(item) for item in USGS_FIXTURES if float(item["magnitude"]) >= min_magnitude][:limit]
         return {"earthquakes": earthquakes}
 
     @staticmethod

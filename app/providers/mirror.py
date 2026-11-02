@@ -53,7 +53,5 @@ class MirrorProvider(BaseProvider):
     async def offline(self, params: dict[str, Any]) -> dict[str, Any]:
         return await self.primary.offline(params)
 
-    async def call(
-        self, params: dict[str, Any], correlation_id: str = ""
-    ) -> ProviderResponse:
+    async def call(self, params: dict[str, Any], correlation_id: str = "") -> ProviderResponse:
         return await super().call(params, correlation_id=correlation_id)

@@ -113,9 +113,7 @@ def paid_api_key_document() -> dict:
             "version": "2.0.0",
             "description": "Paid plan with a subscription of 49 usd per month. An API key is required.",
         },
-        "components": {
-            "securitySchemes": {"ApiKeyAuth": {"type": "apiKey", "in": "header", "name": "X-API-Key"}}
-        },
+        "components": {"securitySchemes": {"ApiKeyAuth": {"type": "apiKey", "in": "header", "name": "X-API-Key"}}},
         "security": [{"ApiKeyAuth": []}],
         "paths": {
             "/v2/forecast": {
