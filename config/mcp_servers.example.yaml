@@ -1,0 +1,8 @@
+servers:
+  - name: example
+    command: ["python", "-m", "mcp_server"]
+    env: {}
+    scopes: null
+#  - name: remote
+#    url: http://localhost:8000/sse
+#    scopes: ["tool_one"]

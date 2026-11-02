@@ -111,10 +111,24 @@ class ProviderRegistry:
     def _load(self) -> None:
         records = json.loads(self.settings.tools_file.read_text(encoding="utf-8"))
         for record in records:
+            if record.get("catalogue_status") == "pending_discovery":
+                continue
             spec = ToolSpec.model_validate(record)
             provider = self._factory(spec)
             self.register(provider)
             if "backup-eligible" in spec.tags:
+                mirror_spec = make_mirror_spec(spec)
+                mirror = MirrorProvider(provider, mirror_spec)
+                self.register(mirror)
+            elif spec.execution == "fixture" and record.get("is_executable") is True:
+                mirror_spec = make_mirror_spec(spec)
+                mirror = MirrorProvider(provider, mirror_spec)
+                self.register(mirror)
+            elif record.get("is_executable") is True and spec.execution in ("fixture", "live", "mock"):
+                mirror_spec = make_mirror_spec(spec)
+                mirror = MirrorProvider(provider, mirror_spec)
+                self.register(mirror)
+            elif spec.provider_id:
                 mirror_spec = make_mirror_spec(spec)
                 mirror = MirrorProvider(provider, mirror_spec)
                 self.register(mirror)
