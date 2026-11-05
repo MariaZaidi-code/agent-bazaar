@@ -1,8 +1,11 @@
 ﻿from __future__ import annotations
 
 import base64
+import ctypes
+import ctypes.wintypes
 import hashlib
 import json
+import os
 import secrets
 import sqlite3
 import threading
@@ -13,6 +16,34 @@ from typing import Any
 from cryptography.fernet import Fernet
 
 from app.core.db import connect
+
+
+class _DataBlob(ctypes.Structure):
+    _fields_ = [("cbData", ctypes.wintypes.DWORD), ("pbData", ctypes.POINTER(ctypes.c_byte))]
+
+
+def _dpapi_protect(data: bytes) -> bytes:
+    blob_in = _DataBlob(len(data), ctypes.cast(ctypes.create_string_buffer(data), ctypes.POINTER(ctypes.c_byte)))
+    blob_out = _DataBlob()
+    if not ctypes.windll.crypt32.CryptProtectData(
+        ctypes.byref(blob_in), None, None, None, None, 0, ctypes.byref(blob_out)
+    ):
+        raise OSError("CryptProtectData failed")
+    result = ctypes.string_at(blob_out.pbData, blob_out.cbData)
+    ctypes.windll.kernel32.LocalFree(blob_out.pbData)
+    return result
+
+
+def _dpapi_unprotect(data: bytes) -> bytes:
+    blob_in = _DataBlob(len(data), ctypes.cast(ctypes.create_string_buffer(data), ctypes.POINTER(ctypes.c_byte)))
+    blob_out = _DataBlob()
+    if not ctypes.windll.crypt32.CryptUnprotectData(
+        ctypes.byref(blob_in), None, None, None, None, 0, ctypes.byref(blob_out)
+    ):
+        raise OSError("CryptUnprotectData failed")
+    result = ctypes.string_at(blob_out.pbData, blob_out.cbData)
+    ctypes.windll.kernel32.LocalFree(blob_out.pbData)
+    return result
 
 
 class AuthManager:
@@ -80,9 +111,18 @@ class AuthManager:
             """
         )
         self._connection.commit()
-        key_material = (secret or "agent-bazaar-dev-key").encode("utf-8")
-        digest = hashlib.sha256(key_material).digest()
-        self._fernet = Fernet(base64.urlsafe_b64encode(digest))
+        master_key_path = self.db_path.parent / "master.key"
+        try:
+            if os.name == "nt" and master_key_path.exists():
+                master = _dpapi_unprotect(master_key_path.read_bytes())
+            elif os.name == "nt":
+                master = os.urandom(32)
+                master_key_path.write_bytes(_dpapi_protect(master))
+            else:
+                master = hashlib.sha256((secret or "agent-bazaar-dev-key").encode("utf-8")).digest()
+        except Exception:
+            master = hashlib.sha256((secret or "agent-bazaar-dev-key").encode("utf-8")).digest()
+        self._fernet = Fernet(base64.urlsafe_b64encode(master))
 
     def _hash_password(self, password: str, salt: str) -> str:
         return hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt.encode("utf-8"), 100_000).hex()
