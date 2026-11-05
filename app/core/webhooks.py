@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 import builtins
+import hashlib
+import hmac
+import ipaddress
 import json
+import socket
 import threading
 import urllib.error
 import urllib.request
@@ -39,10 +43,28 @@ class WebhookRegistry:
         self._lock = threading.Lock()
         self._subscriptions: dict[str, WebhookSubscription] = {}
 
+    @staticmethod
+    def _safe_url(url: str) -> bool:
+        parsed = urlparse(url)
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+            return False
+        host = parsed.hostname or ""
+        try:
+            addresses = {info[4][0] for info in socket.getaddrinfo(host, None)}
+        except socket.gaierror:
+            return True
+        for address in addresses:
+            ip = ipaddress.ip_address(address)
+            if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved:
+                return False
+        return True
+
     def register(self, url: str, events: builtins.list[str] | None = None, secret: str = "") -> dict[str, Any]:
         parsed = urlparse(url)
         if parsed.scheme not in {"http", "https"} or not parsed.netloc:
             raise ValueError("webhook URL must be an absolute http(s) URL")
+        if not self._safe_url(url):
+            raise ValueError("webhook URL must not target a private or loopback address")
         selected = [str(event).strip() for event in (events or ["task.completed"]) if str(event).strip()]
         if not selected:
             raise ValueError("at least one webhook event is required")
@@ -76,6 +98,9 @@ class WebhookRegistry:
         results = []
         for subscription in targets:
             headers = {"Content-Type": "application/json", "X-Agent-Bazaar-Event": event}
+            if subscription.secret:
+                signature = hmac.new(subscription.secret.encode("utf-8"), body, hashlib.sha256).hexdigest()
+                headers["X-Agent-Bazaar-Signature"] = f"sha256={signature}"
             if subscription.secret:
                 headers["X-Agent-Bazaar-Secret"] = subscription.secret
             request = urllib.request.Request(

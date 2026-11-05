@@ -10,6 +10,7 @@ from app.agents.planner import TaskPlanner
 from app.baselines.b1 import B1ToolCalling
 from app.baselines.b2 import B2RagOnly
 from app.config import Settings
+from app.core.auth import AuthManager
 from app.core.cache import Cache
 from app.core.circuit_breaker import CircuitBreakerRegistry
 from app.core.jobs import JobManager
@@ -49,6 +50,7 @@ class AppServices:
     b1: B1ToolCalling
     b2: B2RagOnly
     knowledge: KnowledgeLayer | None = None
+    auth: AuthManager | None = None
     mcp: McpManager | None = None
     webhooks: WebhookRegistry = field(default_factory=WebhookRegistry)
     jobs: JobManager = field(default_factory=JobManager)
@@ -152,6 +154,7 @@ def build_services(settings: Settings | None = None) -> AppServices:
     )
     llm = LLMClient(resolved, cache)
     providers = ProviderRegistry(resolved, cache, graph)
+    auth = AuthManager(resolved.auth_db, secret=resolved.secret_key)
     mcp = McpManager(resolved)
     retriever = GraphRAGRetriever(
         graph,
@@ -230,6 +233,7 @@ def build_services(settings: Settings | None = None) -> AppServices:
         b2=b2,
         knowledge=knowledge,
         mcp=mcp,
+        auth=auth,
     )
     services.export_graph()
     services.export_graph_jsonld()

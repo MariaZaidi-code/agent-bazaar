@@ -486,6 +486,165 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         except Exception as exc:
             return {"jsonrpc": "2.0", "id": rpc_id, "error": {"code": -32000, "message": str(exc)}}
 
+    @application.post("/api/auth/signup")
+    async def auth_signup(payload: dict[str, Any], request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.auth is not None
+        user = state.auth.signup(str(payload.get("email", "")), str(payload.get("password", "")))
+        state.auth.audit(user["id"], "signup", {"email": user["email"]})
+        return {"user": user}
+
+    @application.post("/api/auth/login")
+    async def auth_login(payload: dict[str, Any], request: Request, response: Response) -> dict[str, Any]:
+        state = services(request)
+        assert state.auth is not None
+        token, csrf_token = state.auth.login(str(payload.get("email", "")), str(payload.get("password", "")))
+        response.set_cookie(
+            "ab_session",
+            token,
+            httponly=True,
+            samesite="lax",
+            secure=request.url.scheme == "https",
+            max_age=14 * 24 * 3600,
+        )
+        response.set_cookie(
+            "ab_csrf",
+            csrf_token,
+            httponly=False,
+            samesite="lax",
+            secure=request.url.scheme == "https",
+            max_age=14 * 24 * 3600,
+        )
+        user = state.auth.user_from_session(token)
+        return {"user": user, "csrf_token": csrf_token}
+
+    @application.post("/api/auth/logout")
+    async def auth_logout(request: Request, response: Response) -> dict[str, Any]:
+        state = services(request)
+        assert state.auth is not None
+        state.auth.logout(request.cookies.get("ab_session"))
+        response.delete_cookie("ab_session")
+        response.delete_cookie("ab_csrf")
+        return {"logged_out": True}
+
+    @application.get("/api/auth/me")
+    async def auth_me(request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.auth is not None
+        user = state.auth.user_from_session(request.cookies.get("ab_session"))
+        return {"user": user}
+
+    @application.get("/api/auth/settings")
+    async def auth_settings_get(request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.auth is not None
+        user = state.auth.user_from_session(request.cookies.get("ab_session"))
+        if user is None:
+            raise HTTPException(status_code=401, detail="authentication required")
+        return {"settings": state.auth.settings(user["id"])}
+
+    @application.put("/api/auth/settings")
+    async def auth_settings_put(payload: dict[str, Any], request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.auth is not None
+        user = state.auth.user_from_session(request.cookies.get("ab_session"))
+        if user is None:
+            raise HTTPException(status_code=401, detail="authentication required")
+        return {"settings": state.auth.update_settings(user["id"], payload)}
+
+    @application.post("/api/favorites")
+    async def favorites_create(payload: dict[str, Any], request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.auth is not None
+        user = state.auth.user_from_session(request.cookies.get("ab_session"))
+        if user is None:
+            raise HTTPException(status_code=401, detail="authentication required")
+        favorite = state.auth.add_favorite(
+            user["id"],
+            str(payload.get("tool_id", "")),
+            str(payload.get("note", "")),
+            payload.get("tags") or [],
+        )
+        return {"favorite": favorite}
+
+    @application.get("/api/favorites")
+    async def favorites_list(request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.auth is not None
+        user = state.auth.user_from_session(request.cookies.get("ab_session"))
+        if user is None:
+            raise HTTPException(status_code=401, detail="authentication required")
+        return {"favorites": state.auth.favorites(user["id"])}
+
+    @application.post("/api/tasks/{task_id}/save")
+    async def save_task(task_id: str, payload: dict[str, Any], request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.auth is not None
+        user = state.auth.user_from_session(request.cookies.get("ab_session"))
+        if user is None:
+            raise HTTPException(status_code=401, detail="authentication required")
+        return {"saved_task": state.auth.save_task(user["id"], task_id, str(payload.get("note", "")))}
+
+    @application.get("/api/tasks/saved")
+    async def saved_tasks(request: Request, q: str = "") -> dict[str, Any]:
+        state = services(request)
+        assert state.auth is not None
+        user = state.auth.user_from_session(request.cookies.get("ab_session"))
+        if user is None:
+            raise HTTPException(status_code=401, detail="authentication required")
+        return {"saved_tasks": state.auth.saved_tasks(user["id"], q)}
+
+    @application.post("/api/workflows")
+    async def workflows_create(payload: dict[str, Any], request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.auth is not None
+        user = state.auth.user_from_session(request.cookies.get("ab_session"))
+        if user is None:
+            raise HTTPException(status_code=401, detail="authentication required")
+        workflow = state.auth.add_workflow(
+            user["id"], str(payload.get("name", "")), payload.get("steps") or []
+        )
+        return {"workflow": workflow}
+
+    @application.get("/api/workflows")
+    async def workflows_list(request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.auth is not None
+        user = state.auth.user_from_session(request.cookies.get("ab_session"))
+        if user is None:
+            raise HTTPException(status_code=401, detail="authentication required")
+        return {"workflows": state.auth.workflows(user["id"])}
+
+    @application.post("/api/auth/api-keys")
+    async def api_keys_create(payload: dict[str, Any], request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.auth is not None
+        user = state.auth.user_from_session(request.cookies.get("ab_session"))
+        if user is None:
+            raise HTTPException(status_code=401, detail="authentication required")
+        api_key = state.auth.store_api_key(
+            user["id"], str(payload.get("name", "")), str(payload.get("value", ""))
+        )
+        return {"api_key": api_key}
+
+    @application.get("/api/auth/api-keys")
+    async def api_keys_list(request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.auth is not None
+        user = state.auth.user_from_session(request.cookies.get("ab_session"))
+        if user is None:
+            raise HTTPException(status_code=401, detail="authentication required")
+        return {"api_keys": state.auth.api_keys(user["id"])}
+
+    @application.get("/api/audit-log")
+    async def audit_log(request: Request, limit: int = 100) -> dict[str, Any]:
+        state = services(request)
+        assert state.auth is not None
+        user = state.auth.user_from_session(request.cookies.get("ab_session"))
+        if user is None:
+            raise HTTPException(status_code=401, detail="authentication required")
+        return {"events": state.auth.audit_log(user["id"], limit)}
+
     @application.get("/api/tools")
     async def tools(request: Request) -> dict[str, Any]:
         state = services(request)

@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     rate_limit_enabled: bool = True
     rate_limit_requests: int = 120
     rate_limit_window_seconds: float = 60.0
+    secret_key: str = "agent-bazaar-dev-secret"
 
     knowledge_backend: str = "auto"
     knowledge_graph_file: Path = BASE_DIR / "data" / "out" / "graph.ttl"
@@ -112,6 +113,10 @@ class Settings(BaseSettings):
     @property
     def documents_db(self) -> Path:
         return self.runtime_dir / "documents.db"
+
+    @property
+    def auth_db(self) -> Path:
+        return self.runtime_dir / "auth.db"
 
     @property
     def sample_sql_db(self) -> Path:
