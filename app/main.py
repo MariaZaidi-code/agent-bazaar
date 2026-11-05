@@ -747,6 +747,36 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         assert state.scheduled_runs is not None
         return await state.scheduled_runs.run_now(run_id, state)
 
+    @application.get("/api/admin/export")
+    async def admin_export(request: Request) -> dict[str, Any]:
+        state = services(request)
+        return {
+            "exported_at": datetime.now(UTC).isoformat(),
+            "tasks": state.traces.list_results(limit=1000),
+            "providers": state.providers.status(),
+            "tools": [tool.model_dump(mode="json") for tool in state.graph.all()],
+            "trust": state.trust.all(),
+            "scheduled_runs": state.scheduled_runs.list() if state.scheduled_runs else [],
+            "webhooks": state.webhooks.list(),
+            "mode": "offline" if state.settings.offline_mode else "live",
+        }
+
+    @application.post("/api/admin/import")
+    async def admin_import(payload: dict[str, Any], request: Request) -> dict[str, Any]:
+        state = services(request)
+        imported = 0
+        for run in payload.get("scheduled_runs", []) if isinstance(payload.get("scheduled_runs"), list) else []:
+            if not isinstance(run, dict) or not run.get("task"):
+                continue
+            if state.scheduled_runs is not None:
+                state.scheduled_runs.create(
+                    str(run["task"]),
+                    int(run.get("interval_seconds", 3600)),
+                    bool(run.get("enabled", True)),
+                )
+                imported += 1
+        return {"imported_scheduled_runs": imported}
+
     @application.get("/api/tools")
     async def tools(request: Request) -> dict[str, Any]:
         state = services(request)
