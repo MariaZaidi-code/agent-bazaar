@@ -38,6 +38,7 @@ templates = Jinja2Templates(directory=str(WEB_DIR / "templates"))
 
 class TaskInput(BaseModel):
     task: str = Field(min_length=3, max_length=1500)
+    reasoning_mode: str = Field(default="hybrid", pattern="^(none|llm|hybrid)$")
     document_id: str | None = Field(default=None, min_length=1, max_length=80)
 
 
@@ -707,7 +708,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         state = services(request)
         if payload.document_id and state.providers.document_store.get(payload.document_id) is None:
             raise HTTPException(status_code=404, detail="Document not found")
-        result = await state.client.run(payload.task, document_id=payload.document_id)
+        result = await state.client.run(
+            payload.task,
+            document_id=payload.document_id,
+            reasoning_mode=payload.reasoning_mode,
+        )
         background_tasks.add_task(
             state.webhooks.dispatch,
             "task.completed",

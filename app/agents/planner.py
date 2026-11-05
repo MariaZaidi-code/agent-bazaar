@@ -207,7 +207,7 @@ class TaskPlanner:
         self.llm = llm
 
     async def decompose(
-        self, task: str, correlation_id: str = ""
+        self, task: str, correlation_id: str = "", use_llm: bool = True
     ) -> tuple[list[SubGoal], list[str]]:
         cleaned = " ".join(task.split())
         if not cleaned:
@@ -216,7 +216,7 @@ class TaskPlanner:
         warnings: list[str] = []
         if subgoals:
             return subgoals, warnings
-        if self.llm.enabled:
+        if use_llm and self.llm.enabled:
             llm_subgoals = await self._llm_plan(cleaned)
             if llm_subgoals:
                 warnings.append("Plan produced by the optional LLM planner.")

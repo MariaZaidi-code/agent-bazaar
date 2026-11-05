@@ -137,7 +137,7 @@ class ClientAgent:
             require_known_licence=self.settings.require_known_licence,
         )
 
-    async def run(self, task: str, document_id: str | None = None) -> TaskResult:
+    async def run(self, task: str, document_id: str | None = None, reasoning_mode: str = "hybrid") -> TaskResult:
         task_id = new_id("task")
         started = time.perf_counter()
         self._trace(
@@ -145,10 +145,10 @@ class ClientAgent:
             "task_started",
             "client",
             "Task received by the Client agent.",
-            {"task": task, "mode": self._mode(), "document_id": document_id},
+            {"task": task, "mode": self._mode(), "document_id": document_id, "reasoning_mode": reasoning_mode},
         )
         try:
-            result = await self._run(task_id, task, started, document_id=document_id)
+            result = await self._run(task_id, task, started, document_id=document_id, reasoning_mode=reasoning_mode)
         except Exception as exc:
             self._trace(
                 task_id,
@@ -165,6 +165,7 @@ class ClientAgent:
                 answer=f"I could not complete the task: {exc}",
                 duration_ms=round((time.perf_counter() - started) * 1000, 2),
                 mode=self._mode(),
+                reasoning_mode=reasoning_mode,
             )
         result.trace = self.traces.events(task_id)
         result.duration_ms = round((time.perf_counter() - started) * 1000, 2)
@@ -177,6 +178,7 @@ class ClientAgent:
         task: str,
         started: float,
         document_id: str | None = None,
+        reasoning_mode: str = "hybrid",
     ) -> TaskResult:
         metrics = TaskMetrics()
         await self._publish(
@@ -262,6 +264,7 @@ class ClientAgent:
                 warnings=warnings,
                 answer="I could not build a valid chain. " + " ".join(composition_errors),
                 mode=self._mode(),
+                reasoning_mode=reasoning_mode,
                 metrics=metrics,
                 error="; ".join(composition_errors),
             )
@@ -308,6 +311,7 @@ class ClientAgent:
             plan=plan,
             warnings=self._dedupe(warnings),
             mode=self._mode(plan),
+            reasoning_mode=reasoning_mode,
             metrics=metrics,
             error="; ".join(step_failures) if step_failures else None,
         )

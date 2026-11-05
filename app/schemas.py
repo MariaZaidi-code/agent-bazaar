@@ -347,6 +347,7 @@ class TaskResult(BaseModel):
     warnings: list[str] = Field(default_factory=list)
     duration_ms: float = 0.0
     mode: str = "live"
+    reasoning_mode: str = "hybrid"
     metrics: TaskMetrics = Field(default_factory=TaskMetrics)
     error: str | None = None
     created_at: datetime = Field(default_factory=utcnow)
@@ -393,6 +394,7 @@ class MonitoringSnapshot(BaseModel):
     drift_alerts: list[DriftAlertMessage] = Field(default_factory=list)
     providers: list[dict[str, Any]] = Field(default_factory=list)
     mode: str = "live"
+    reasoning_mode: str = "hybrid"
 
 
 class HealthResponse(BaseModel):
