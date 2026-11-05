@@ -1,0 +1,11 @@
+﻿version: "3.9"
+services:
+  agent-bazaar:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      AB_OFFLINE_MODE: "true"
+    volumes:
+      - ./data/runtime:/app/data/runtime
+    restart: unless-stopped
