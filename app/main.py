@@ -67,9 +67,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def lifespan(application: FastAPI):
         application.state.services = build_services(resolved_settings)
         application.state.started_at = time.time()
+        if application.state.services.scheduler is not None:
+            application.state.services.scheduler.start()
         try:
             yield
         finally:
+            if application.state.services.scheduler is not None:
+                application.state.services.scheduler.stop()
             application.state.services.shutdown()
 
     application = FastAPI(

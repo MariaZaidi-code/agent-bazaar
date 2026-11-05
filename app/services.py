@@ -16,6 +16,7 @@ from app.core.circuit_breaker import CircuitBreakerRegistry
 from app.core.jobs import JobManager
 from app.core.llm import LLMClient
 from app.core.message_bus import MessageBus
+from app.core.scheduler import BackgroundScheduler
 from app.core.tracing import TraceStore
 from app.core.trust_registry import TrustRegistry
 from app.core.webhooks import WebhookRegistry
@@ -51,6 +52,7 @@ class AppServices:
     b2: B2RagOnly
     knowledge: KnowledgeLayer | None = None
     auth: AuthManager | None = None
+    scheduler: BackgroundScheduler | None = None
     mcp: McpManager | None = None
     webhooks: WebhookRegistry = field(default_factory=WebhookRegistry)
     jobs: JobManager = field(default_factory=JobManager)
@@ -154,6 +156,7 @@ def build_services(settings: Settings | None = None) -> AppServices:
     )
     llm = LLMClient(resolved, cache)
     providers = ProviderRegistry(resolved, cache, graph)
+    scheduler = BackgroundScheduler(resolved.scheduler_interval_seconds)
     auth = AuthManager(resolved.auth_db, secret=resolved.secret_key)
     mcp = McpManager(resolved)
     retriever = GraphRAGRetriever(
@@ -234,6 +237,7 @@ def build_services(settings: Settings | None = None) -> AppServices:
         knowledge=knowledge,
         mcp=mcp,
         auth=auth,
+        scheduler=scheduler,
     )
     services.export_graph()
     services.export_graph_jsonld()
