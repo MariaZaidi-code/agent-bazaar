@@ -51,3 +51,57 @@ export function pick(obj, keys) {
     return result;
   }, {});
 }
+
+export function average(values) {
+  if (!values || !values.length) return 0;
+  return values.reduce((sum, value) => sum + Number(value || 0), 0) / values.length;
+}
+
+export function groupBy(items, key) {
+  return (items || []).reduce((groups, item) => {
+    const groupKey = typeof key === "function" ? key(item) : item?.[key];
+    groups[groupKey] = groups[groupKey] || [];
+    groups[groupKey].push(item);
+    return groups;
+  }, {});
+}
+
+export function sortBy(items, key, direction = "asc") {
+  const factor = direction === "desc" ? -1 : 1;
+  return [...(items || [])].sort((a, b) => {
+    const left = typeof key === "function" ? key(a) : a?.[key];
+    const right = typeof key === "function" ? key(b) : b?.[key];
+    return left > right ? factor : left < right ? -factor : 0;
+  });
+}
+
+export function isEmptyObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value) && Object.keys(value).length === 0;
+}
+
+export function formatDuration(milliseconds) {
+  if (!Number.isFinite(milliseconds)) return "0 ms";
+  if (milliseconds < 1000) return `${Math.round(milliseconds)} ms`;
+  return `${(milliseconds / 1000).toFixed(2)} s`;
+}
+
+export function capitalize(value) {
+  const text = String(value ?? "");
+  return text ? text.charAt(0).toUpperCase() + text.slice(1) : text;
+}
+
+export function omit(obj, keys) {
+  const omitted = new Set(keys || []);
+  return Object.keys(obj || {}).reduce((result, key) => {
+    if (!omitted.has(key)) result[key] = obj[key];
+    return result;
+  }, {});
+}
+
+export function chunk(items, size) {
+  const result = [];
+  for (let index = 0; index < (items || []).length; index += size) {
+    result.push((items || []).slice(index, index + size));
+  }
+  return result;
+}
