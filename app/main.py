@@ -675,7 +675,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @application.get("/api/admin/overrides")
     async def admin_overrides(request: Request) -> dict[str, Any]:
         state = services(request)
-        path = state.settings.data_dir / "overrides" / "pricing.yaml"
+        path = BASE_DIR / "data" / "overrides" / "pricing.yaml"
         if not path.exists():
             return {"overrides": {}}
         import yaml
@@ -686,7 +686,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @application.post("/api/admin/overrides/{tool_id}/review")
     async def admin_review_override(tool_id: str, payload: dict[str, Any], request: Request) -> dict[str, Any]:
         state = services(request)
-        path = state.settings.data_dir / "overrides" / "pricing.yaml"
+        path = BASE_DIR / "data" / "overrides" / "pricing.yaml"
         if not path.exists():
             raise HTTPException(status_code=404, detail="override file not found")
         import yaml
