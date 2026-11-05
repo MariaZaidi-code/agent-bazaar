@@ -221,7 +221,7 @@
                 <strong>Ready for a request</strong>
                 <p>Run a sample or ask your own question. The verified answer and typed evidence will appear here.</p>
               </div>
-              <div id="answer-content" class="answer-content hidden">
+              <div id="answer-content" class="answer-content hidden" aria-live="polite" aria-atomic="true" data-a11y-enhanced="true">
                 <div class="answer-callout">
                   <span class="answer-icon"><svg><use href="#i-check-circle"></use></svg></span>
                   <div><span class="answer-label">Verified response</span><p id="answer-text"></p></div>
@@ -931,5 +931,19 @@ AB_LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free</pre>
   </script>
   <script src="/static/app.js?v={{ asset_version }}" defer></script>
 <script>if ("serviceWorker" in navigator) { navigator.serviceWorker.register("/static/sw.js").catch(() => {}); }</script>
+<script>
+  (function () {
+    const main = document.getElementById("console-content");
+    if (main) {
+      window.addEventListener("hashchange", () => main.focus());
+      window.addEventListener("popstate", () => main.focus());
+    }
+    const observer = new MutationObserver(() => {
+      const toast = document.getElementById("toast");
+      if (toast && !toast.classList.contains("hidden")) toast.setAttribute("role", "status");
+    });
+    if (document.body) observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ["class"] });
+  })();
+</script>
 </body>
 </html>
