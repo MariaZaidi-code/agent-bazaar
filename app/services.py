@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from app.agents.agent_registry import AgentRegistry, AgentSpec
 from app.agents.auditor_bridge import AuditorBridge
 from app.agents.client import ClientAgent
 from app.agents.mapper_stub import MapperStub
@@ -52,6 +53,7 @@ class AppServices:
     b2: B2RagOnly
     knowledge: KnowledgeLayer | None = None
     auth: AuthManager | None = None
+    agents: AgentRegistry | None = None
     scheduler: BackgroundScheduler | None = None
     mcp: McpManager | None = None
     webhooks: WebhookRegistry = field(default_factory=WebhookRegistry)
@@ -239,6 +241,68 @@ def build_services(settings: Settings | None = None) -> AppServices:
         auth=auth,
         scheduler=scheduler,
     )
+    agent_registry = AgentRegistry()
+    agent_registry.register(
+        AgentSpec(
+            "planner",
+            "plan",
+            "Decompose a task into sub-goals",
+            lambda payload, services=services: {"decompose": services.planner.decompose.__name__},
+        )
+    )
+    agent_registry.register(
+        AgentSpec(
+            "retriever",
+            "retrieve",
+            "Retrieve candidate tools",
+            lambda payload, services=services: {"tools": len(services.graph.all())},
+        )
+    )
+    agent_registry.register(
+        AgentSpec(
+            "verifier",
+            "verify",
+            "Verify tool claims",
+            lambda payload, services=services: {"auditor": services.auditor.status()},
+        )
+    )
+    agent_registry.register(
+        AgentSpec(
+            "executor",
+            "execute",
+            "Execute provider calls",
+            lambda payload, services=services: {"providers": len(services.providers.all())},
+        )
+    )
+    agent_registry.register(
+        AgentSpec(
+            "synthesizer",
+            "synthesize",
+            "Synthesize final answers",
+            lambda payload, services=services: {"ok": True},
+        )
+    )
+    agent_registry.register(
+        AgentSpec("repair", "repair", "Repair failed tool chains", lambda payload, services=services: {"ok": True})
+    )
+    agent_registry.register(
+        AgentSpec(
+            "trust",
+            "trust",
+            "Update trust scores",
+            lambda payload, services=services: {"trust": len(services.trust.all())},
+        )
+    )
+    agent_registry.register(
+        AgentSpec(
+            "drift",
+            "drift",
+            "Detect schema drift",
+            lambda payload, services=services: {"alerts": len(services.auditor.snapshot())},
+        )
+    )
+    services.agents = agent_registry
+
     services.export_graph()
     services.export_graph_jsonld()
     return services

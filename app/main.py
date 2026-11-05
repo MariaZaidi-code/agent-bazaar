@@ -707,6 +707,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def provider_select(capability: str, request: Request) -> dict[str, Any]:
         return services(request).providers.select_provider(capability)
 
+    @application.get("/api/agents")
+    async def agents(request: Request) -> dict[str, Any]:
+        state = services(request)
+        return {"agents": state.agents.agents()}
+
+    @application.post("/api/agents/{name}/run")
+    async def run_agent(name: str, payload: dict[str, Any], request: Request) -> dict[str, Any]:
+        return services(request).agents.run(name, payload)
+
     @application.get("/api/tools")
     async def tools(request: Request) -> dict[str, Any]:
         state = services(request)
