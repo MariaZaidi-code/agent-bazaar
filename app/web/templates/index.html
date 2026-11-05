@@ -945,5 +945,6 @@ AB_LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free</pre>
     if (document.body) observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ["class"] });
   })();
 </script>
+<script>window.addEventListener("error", (event) => { const toast = document.getElementById("toast"); if (toast) { toast.textContent = "An unexpected error occurred."; toast.classList.remove("hidden"); } }); window.addEventListener("unhandledrejection", () => { const toast = document.getElementById("toast"); if (toast) { toast.textContent = "An unexpected error occurred."; toast.classList.remove("hidden"); } });</script>
 </body>
 </html>
