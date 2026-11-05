@@ -5859,3 +5859,16 @@ button, a, [role="button"] {
   white-space: nowrap;
   border: 0;
 }
+[data-theme="high-contrast"] {
+  --bg: #000000;
+  --panel: #000000;
+  --text: #ffffff;
+  --muted: #f2f2f2;
+  --border: #ffffff;
+  --accent: #ffff00;
+}
+[data-theme="high-contrast"] .badge,
+[data-theme="high-contrast"] button,
+[data-theme="high-contrast"] a {
+  border: 2px solid #ffffff;
+}

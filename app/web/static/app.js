@@ -338,17 +338,18 @@ function delay(milliseconds) {
 }
 
 function currentTheme() {
-  return document.documentElement.dataset.theme === "light" ? "light" : "dark";
+  const theme = document.documentElement.dataset.theme;
+  return theme === "light" || theme === "high-contrast" ? theme : "dark";
 }
 
 function applyTheme(theme) {
-  const normalized = theme === "light" ? "light" : "dark";
+  const normalized = theme === "light" || theme === "high-contrast" ? theme : "dark";
   document.documentElement.dataset.theme = normalized;
   try {
     localStorage.setItem("agent-bazaar-theme", normalized);
   } catch {}
   const meta = $("#theme-color-meta");
-  if (meta) meta.setAttribute("content", normalized === "light" ? "#f5f3ee" : "#101113");
+  if (meta) meta.setAttribute("content", normalized === "light" ? "#f5f3ee" : normalized === "high-contrast" ? "#000000" : "#101113");
   $$("[data-set-theme]").forEach((button) => {
     const active = button.dataset.setTheme === normalized;
     button.classList.toggle("active", active);
@@ -356,13 +357,14 @@ function applyTheme(theme) {
   });
   const toggle = $("#toolbar-theme");
   if (toggle) {
-    toggle.innerHTML = icon(normalized === "dark" ? "sun" : "moon");
-    toggle.setAttribute("title", normalized === "dark" ? "Switch to light theme" : "Switch to dark theme");
+    toggle.innerHTML = icon(normalized === "dark" ? "sun" : normalized === "light" ? "moon" : "shield");
+    toggle.setAttribute("title", normalized === "dark" ? "Switch to light theme" : normalized === "light" ? "Switch to high-contrast theme" : "Switch to dark theme");
   }
 }
 
 function toggleTheme() {
-  applyTheme(currentTheme() === "dark" ? "light" : "dark");
+  const theme = currentTheme();
+  applyTheme(theme === "dark" ? "light" : theme === "light" ? "high-contrast" : "dark");
 }
 
 function openModal(id) {
