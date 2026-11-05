@@ -15,6 +15,7 @@
   </script>
   <link rel="stylesheet" href="/static/styles.css?v={{ asset_version }}">
   <link rel="stylesheet" href="/static/premium.css?v={{ asset_version }}">
+  <link rel="manifest" href="/static/manifest.webmanifest">
 </head>
 <body data-page="{{ page }}">
   <a class="skip-link" href="#console-content">Skip to content</a>
@@ -929,5 +930,6 @@ AB_LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free</pre>
     window.__VERSION__ = "{{ version }}";
   </script>
   <script src="/static/app.js?v={{ asset_version }}" defer></script>
+<script>if ("serviceWorker" in navigator) { navigator.serviceWorker.register("/static/sw.js").catch(() => {}); }</script>
 </body>
 </html>
