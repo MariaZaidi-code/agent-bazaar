@@ -31,6 +31,9 @@ class BaseProvider(ABC):
         self.cache = cache
         self.fail_next = 0
         self.offline_forced = False
+        self._call_count = 0
+        self._error_count = 0
+        self._latency_total_ms = 0.0
 
     @property
     def provider_id(self) -> str:
@@ -49,6 +52,21 @@ class BaseProvider(ABC):
     def set_offline(self, value: bool) -> None:
         self.offline_forced = value
 
+    def health(self) -> dict[str, Any]:
+        calls = self._call_count
+        errors = self._error_count
+        uptime = 1.0 if calls == 0 else max(0.0, (calls - errors) / calls)
+        avg_latency = 0.0 if calls == 0 else self._latency_total_ms / calls
+        health_score = round(uptime * 100.0 * (1.0 if avg_latency < 1000 else 0.8), 2)
+        return {
+            "calls": calls,
+            "errors": errors,
+            "error_rate": round(errors / calls, 4) if calls else 0.0,
+            "uptime": round(uptime, 4),
+            "avg_latency_ms": round(avg_latency, 2),
+            "health_score": health_score,
+        }
+
     def status(self) -> dict[str, Any]:
         return {
             "provider_id": self.provider_id,
@@ -58,9 +76,18 @@ class BaseProvider(ABC):
             "fail_next": self.fail_next,
             "probe_eligible": self.spec.probe_eligible,
             "execution": self.spec.execution,
+            "health": self.health(),
         }
 
-    async def call(
+    async def call(self, params: dict[str, Any], correlation_id: str = "") -> ProviderResponse:
+        response = await self._call(params, correlation_id=correlation_id)
+        self._call_count += 1
+        if response.status != "success":
+            self._error_count += 1
+        self._latency_total_ms += response.latency_ms
+        return response
+
+    async def _call(
         self,
         params: dict[str, Any],
         correlation_id: str = "",
