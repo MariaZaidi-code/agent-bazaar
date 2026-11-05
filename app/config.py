@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     rate_limit_requests: int = 120
     rate_limit_window_seconds: float = 60.0
     secret_key: str = "agent-bazaar-dev-secret"
+    otel_enabled: bool = False
+    sentry_dsn: str = ""
     scheduler_interval_seconds: float = 300.0
 
     knowledge_backend: str = "auto"

@@ -78,6 +78,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 application.state.services.scheduler.stop()
             application.state.services.shutdown()
 
+    if resolved_settings.sentry_dsn:
+        try:
+            import sentry_sdk
+
+            sentry_sdk.init(dsn=resolved_settings.sentry_dsn, traces_sample_rate=0.1)
+        except Exception:
+            pass
+    if resolved_settings.otel_enabled:
+        try:
+            from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
+        except Exception:
+            pass
     application = FastAPI(
         title="Agent Bazaar",
         version=__version__,
@@ -87,6 +100,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         openapi_url="/api/openapi.json",
         lifespan=lifespan,
     )
+
+    if resolved_settings.otel_enabled:
+        try:
+            from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
+            FastAPIInstrumentor.instrument_app(application)
+        except Exception:
+            pass
     application.mount("/static", StaticFiles(directory=str(WEB_DIR / "static")), name="static")
 
     @application.middleware("http")
