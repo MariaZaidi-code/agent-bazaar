@@ -1,0 +1,17 @@
+﻿{
+  "name": "Agent Bazaar",
+  "short_name": "AgentBazaar",
+  "description": "Ontology- and knowledge-graph-driven agent marketplace",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#101113",
+  "theme_color": "#101113",
+  "icons": [
+    {
+      "src": "/static/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

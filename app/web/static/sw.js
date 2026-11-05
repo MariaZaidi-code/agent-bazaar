@@ -1,0 +1,1 @@
+﻿const CACHE_NAME='agent-bazaar-v1';self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(['/','/dashboard'])).catch(()=>{}));});self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request).catch(()=>caches.match('/dashboard'))));});
