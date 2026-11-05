@@ -364,6 +364,46 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "ontology_file": str(state.settings.knowledge_ontology_file),
         }
 
+    @application.get("/api/providers")
+    async def providers(request: Request) -> dict[str, Any]:
+        state = services(request)
+        return {"providers": state.providers.status()}
+
+    @application.get("/api/providers/health")
+    async def provider_health(request: Request) -> dict[str, Any]:
+        state = services(request)
+        trust_rows = {item["provider_id"]: item for item in state.trust.all()}
+        health = []
+        for provider in state.providers.status():
+            trust = trust_rows.get(provider["provider_id"], {})
+            score = float(trust.get("score", 0.5))
+            health.append(
+                {
+                    **provider,
+                    "trust_score": score,
+                    "health_score": round(score * 100, 2),
+                    "demoted": bool(trust.get("demoted", False)),
+                    "calls": int(trust.get("calls", 0)),
+                    "probes": int(trust.get("probes", 0)),
+                }
+            )
+        return {"providers": health}
+
+    @application.get("/api/admin/analytics")
+    async def admin_analytics(request: Request, limit: int = Query(default=10, ge=1, le=100)) -> dict[str, Any]:
+        state = services(request)
+        recent = state.traces.list_results(limit=limit)
+        return {
+            "provider_count": len(state.providers.all()),
+            "tool_count": len(state.graph.all()),
+            "concept_count": len(state.ontology.concepts) if hasattr(state.ontology, "concepts") else 0,
+            "webhook_count": len(state.webhooks.list()),
+            "job_count": len(state.jobs.list(limit=100)),
+            "recent_tasks": recent,
+            "trust": state.trust.all(),
+            "mode": "offline" if state.settings.offline_mode else "live",
+        }
+
     @application.get("/api/tools")
     async def tools(request: Request) -> dict[str, Any]:
         state = services(request)
