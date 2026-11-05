@@ -703,6 +703,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             state.auth.audit(None, "review_override", {"tool_id": tool_id, "reviewer": tools[tool_id]["reviewer"]})
         return {"tool_id": tool_id, "override": tools[tool_id]}
 
+    @application.get("/api/providers/select")
+    async def provider_select(capability: str, request: Request) -> dict[str, Any]:
+        return services(request).providers.select_provider(capability)
+
     @application.get("/api/tools")
     async def tools(request: Request) -> dict[str, Any]:
         state = services(request)

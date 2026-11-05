@@ -115,6 +115,7 @@ class ProviderRegistry:
                 claim.model_dump(mode="json") for claim in provider.spec.claims
             ]
             payload["validation"] = self.validation.get(provider.tool_id, [])
+            payload["deprecation_warning"] = "deprecated" in provider.spec.tags
             entries.append(payload)
         return entries
 
@@ -131,6 +132,42 @@ class ProviderRegistry:
             return False
         provider.set_offline(value)
         return True
+
+    def mirror_for(self, provider_id: str) -> BaseProvider | None:
+        provider = self.get(provider_id)
+        if provider is None:
+            return None
+        for candidate in self.providers.values():
+            if (
+                candidate.provider_id != provider_id
+                and candidate.spec.id == provider.spec.id
+                and "backup-eligible" in candidate.spec.tags
+            ):
+                return candidate
+        return None
+
+    def select_provider(self, capability: str, available_inputs: list[str] | None = None) -> dict[str, Any]:
+        candidates = [provider for provider in self.all() if provider.spec.capability == capability]
+        if not candidates:
+            return {"selected": None, "alternatives": [], "reason": "no provider for capability"}
+        available_inputs = available_inputs or []
+        ranked = sorted(
+            candidates,
+            key=lambda provider: (
+                provider.health()["health_score"],
+                provider.spec.pricing_tier == "free",
+            ),
+            reverse=True,
+        )
+        selected = ranked[0]
+        alternatives = [provider.provider_id for provider in ranked[1:]]
+        return {
+            "selected": selected.provider_id,
+            "tool_id": selected.tool_id,
+            "health": selected.health(),
+            "deprecation_warning": "deprecated" in selected.spec.tags,
+            "alternatives": alternatives,
+        }
 
     def reset_demo(self) -> None:
         for provider in self.providers.values():
