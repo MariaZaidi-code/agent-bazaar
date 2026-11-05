@@ -674,7 +674,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @application.get("/api/admin/overrides")
     async def admin_overrides(request: Request) -> dict[str, Any]:
-        state = services(request)
+        services(request)
         path = BASE_DIR / "data" / "overrides" / "pricing.yaml"
         if not path.exists():
             return {"overrides": {}}
@@ -715,6 +715,37 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @application.post("/api/agents/{name}/run")
     async def run_agent(name: str, payload: dict[str, Any], request: Request) -> dict[str, Any]:
         return services(request).agents.run(name, payload)
+
+    @application.get("/api/scheduled-runs")
+    async def scheduled_runs_list(request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.scheduled_runs is not None
+        return {"scheduled_runs": state.scheduled_runs.list()}
+
+    @application.post("/api/scheduled-runs")
+    async def scheduled_runs_create(payload: dict[str, Any], request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.scheduled_runs is not None
+        scheduled_run = state.scheduled_runs.create(
+            str(payload.get("task", "")),
+            int(payload.get("interval_seconds", 3600)),
+            bool(payload.get("enabled", True)),
+        )
+        return {"scheduled_run": scheduled_run}
+
+    @application.delete("/api/scheduled-runs/{run_id}")
+    async def scheduled_runs_delete(run_id: str, request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.scheduled_runs is not None
+        if not state.scheduled_runs.delete(run_id):
+            raise HTTPException(status_code=404, detail="scheduled run not found")
+        return {"deleted": True, "id": run_id}
+
+    @application.post("/api/scheduled-runs/{run_id}/run")
+    async def scheduled_runs_run(run_id: str, request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.scheduled_runs is not None
+        return await state.scheduled_runs.run_now(run_id, state)
 
     @application.get("/api/tools")
     async def tools(request: Request) -> dict[str, Any]:

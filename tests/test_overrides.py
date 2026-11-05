@@ -1,6 +1,5 @@
 ﻿from __future__ import annotations
 
-import shutil
 from pathlib import Path
 
 import yaml
@@ -14,7 +13,10 @@ def test_override_review(tmp_path) -> None:
     override_path = Path("data/overrides/pricing.yaml")
     backup = override_path.read_text(encoding="utf-8")
     try:
-        override_path.write_text("tools:\n  open-meteo-forecast:\n    pricing_tier: free\n    reviewer: \"\"\n", encoding="utf-8")
+        override_path.write_text(
+            "tools:\n  open-meteo-forecast:\n    pricing_tier: free\n    reviewer: \"\"\n",
+            encoding="utf-8",
+        )
         settings = Settings(offline_mode=True, runtime_dir=tmp_path / "runtime", rate_limit_enabled=False)
         with TestClient(create_app(settings)) as api:
             listed = api.get("/api/admin/overrides").json()["overrides"]

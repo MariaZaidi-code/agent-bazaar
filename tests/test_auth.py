@@ -29,7 +29,8 @@ def test_auth_flow_and_user_data(tmp_path) -> None:
         assert api.post(f"/api/tasks/{task_id}/save", json={"note": "saved"}).status_code == 200
         assert api.get("/api/tasks/saved").json()["saved_tasks"]
 
-        assert api.post("/api/workflows", json={"name": "wf", "steps": [{"tool": "open-meteo-forecast"}]}).status_code == 200
+        workflow_response = api.post("/api/workflows", json={"name": "wf", "steps": [{"tool": "open-meteo-forecast"}]})
+        assert workflow_response.status_code == 200
         assert api.get("/api/workflows").json()["workflows"]
 
         assert api.post("/api/auth/api-keys", json={"name": "openai", "value": "secret"}).status_code == 200

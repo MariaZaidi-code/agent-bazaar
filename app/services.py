@@ -17,6 +17,7 @@ from app.core.circuit_breaker import CircuitBreakerRegistry
 from app.core.jobs import JobManager
 from app.core.llm import LLMClient
 from app.core.message_bus import MessageBus
+from app.core.scheduled_runs import ScheduledRunManager
 from app.core.scheduler import BackgroundScheduler
 from app.core.tracing import TraceStore
 from app.core.trust_registry import TrustRegistry
@@ -53,6 +54,7 @@ class AppServices:
     b2: B2RagOnly
     knowledge: KnowledgeLayer | None = None
     auth: AuthManager | None = None
+    scheduled_runs: ScheduledRunManager | None = None
     agents: AgentRegistry | None = None
     scheduler: BackgroundScheduler | None = None
     mcp: McpManager | None = None
@@ -158,7 +160,16 @@ def build_services(settings: Settings | None = None) -> AppServices:
     )
     llm = LLMClient(resolved, cache)
     providers = ProviderRegistry(resolved, cache, graph)
+    scheduled_runs = ScheduledRunManager(resolved.runtime_dir / 'scheduled_runs.db')
     scheduler = BackgroundScheduler(resolved.scheduler_interval_seconds)
+    scheduled_run_state = {"services": None}
+    def _run_scheduled() -> None:
+        if scheduled_run_state["services"] is not None:
+            import asyncio
+
+            asyncio.run(scheduled_runs.execute_due(scheduled_run_state["services"]))
+
+    scheduler.register(_run_scheduled)
     auth = AuthManager(resolved.auth_db, secret=resolved.secret_key)
     mcp = McpManager(resolved)
     retriever = GraphRAGRetriever(
@@ -240,6 +251,7 @@ def build_services(settings: Settings | None = None) -> AppServices:
         mcp=mcp,
         auth=auth,
         scheduler=scheduler,
+        scheduled_runs=scheduled_runs,
     )
     agent_registry = AgentRegistry()
     agent_registry.register(
@@ -302,6 +314,7 @@ def build_services(settings: Settings | None = None) -> AppServices:
         )
     )
     services.agents = agent_registry
+    scheduled_run_state["services"] = services
 
     services.export_graph()
     services.export_graph_jsonld()
