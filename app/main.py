@@ -4,6 +4,7 @@ import json
 import logging
 import time
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -648,6 +649,37 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if user is None:
             raise HTTPException(status_code=401, detail="authentication required")
         return {"events": state.auth.audit_log(user["id"], limit)}
+
+    @application.get("/api/admin/overrides")
+    async def admin_overrides(request: Request) -> dict[str, Any]:
+        state = services(request)
+        path = state.settings.data_dir / "overrides" / "pricing.yaml"
+        if not path.exists():
+            return {"overrides": {}}
+        import yaml
+
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        return {"overrides": data.get("tools", {}), "path": str(path)}
+
+    @application.post("/api/admin/overrides/{tool_id}/review")
+    async def admin_review_override(tool_id: str, payload: dict[str, Any], request: Request) -> dict[str, Any]:
+        state = services(request)
+        path = state.settings.data_dir / "overrides" / "pricing.yaml"
+        if not path.exists():
+            raise HTTPException(status_code=404, detail="override file not found")
+        import yaml
+
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        tools = data.setdefault("tools", {})
+        if tool_id not in tools or not isinstance(tools[tool_id], dict):
+            raise HTTPException(status_code=404, detail="override not found")
+        tools[tool_id]["reviewer"] = str(payload.get("reviewer", "")).strip()
+        tools[tool_id]["checked_at"] = str(payload.get("checked_at", datetime.now(UTC).date().isoformat()))
+        tools[tool_id]["note"] = str(payload.get("note", tools[tool_id].get("note", "")))
+        path.write_text(yaml.safe_dump(data, sort_keys=False, allow_unicode=True), encoding="utf-8")
+        if state.auth is not None:
+            state.auth.audit(None, "review_override", {"tool_id": tool_id, "reviewer": tools[tool_id]["reviewer"]})
+        return {"tool_id": tool_id, "override": tools[tool_id]}
 
     @application.get("/api/tools")
     async def tools(request: Request) -> dict[str, Any]:
