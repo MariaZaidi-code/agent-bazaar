@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "Agent Bazaar",
   "short_name": "AgentBazaar",
   "description": "Ontology- and knowledge-graph-driven agent marketplace",
@@ -12,6 +12,38 @@
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ask a question",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/static/icon.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Marketplace",
+      "url": "/marketplace",
+      "icons": [
+        {
+          "src": "/static/icon.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Monitor",
+      "url": "/monitor",
+      "icons": [
+        {
+          "src": "/static/icon.svg",
+          "sizes": "any"
+        }
+      ]
     }
   ]
 }
