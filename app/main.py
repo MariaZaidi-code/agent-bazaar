@@ -145,6 +145,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         request_metrics.record(request.method, path, response.status_code, duration_ms)
         response.headers["X-Correlation-ID"] = correlation_id
         response.headers["X-Response-Time-Ms"] = f"{duration_ms:.3f}"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+        if request.url.scheme == "https":
+            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'"
+        )
         request_logger.info(
             json.dumps(
                 {
