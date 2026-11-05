@@ -404,6 +404,88 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "mode": "offline" if state.settings.offline_mode else "live",
         }
 
+    @application.get("/api/mcp/servers")
+    async def mcp_servers(request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.mcp is not None
+        return {"servers": state.mcp.servers()}
+
+    @application.post("/api/mcp/discover/{server_id}")
+    async def mcp_discover(server_id: str, request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.mcp is not None
+        return {"server_id": server_id, "tools": state.mcp.discover(server_id)}
+
+    @application.get("/api/mcp/tools")
+    async def mcp_tools(request: Request, server_id: str | None = None) -> dict[str, Any]:
+        state = services(request)
+        assert state.mcp is not None
+        return {"tools": state.mcp.tools(server_id)}
+
+    @application.post("/api/mcp/call")
+    async def mcp_call(payload: dict[str, Any], request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.mcp is not None
+        return await state.mcp.call(
+            str(payload.get("server_id", "local")),
+            str(payload.get("tool", "")),
+            payload.get("arguments") or {},
+        )
+
+    @application.get("/api/mcp/resources")
+    async def mcp_resources(request: Request, server_id: str = "local") -> dict[str, Any]:
+        state = services(request)
+        assert state.mcp is not None
+        return {"server_id": server_id, "resources": state.mcp.resources(server_id)}
+
+    @application.get("/api/mcp/resources/{name}")
+    async def mcp_read_resource(name: str, request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.mcp is not None
+        return state.mcp.read_resource(name, state)
+
+    @application.get("/api/mcp/prompts")
+    async def mcp_prompts(request: Request, server_id: str = "local") -> dict[str, Any]:
+        state = services(request)
+        assert state.mcp is not None
+        return {"server_id": server_id, "prompts": state.mcp.prompts(server_id)}
+
+    @application.get("/api/mcp/audit")
+    async def mcp_audit(request: Request, limit: int = 100) -> dict[str, Any]:
+        state = services(request)
+        assert state.mcp is not None
+        return {"events": state.mcp.audit_log(limit)}
+
+    @application.post("/mcp")
+    async def mcp_jsonrpc(payload: dict[str, Any], request: Request) -> dict[str, Any]:
+        state = services(request)
+        assert state.mcp is not None
+        method = payload.get("method")
+        params = payload.get("params") or {}
+        rpc_id = payload.get("id")
+        try:
+            if method == "tools/list":
+                result = {"tools": state.mcp.tools(params.get("server_id"))}
+            elif method == "tools/call":
+                result = await state.mcp.call(
+                    str(params.get("server_id", "local")),
+                    str(params.get("name", "")),
+                    params.get("arguments") or {},
+                )
+            elif method == "resources/list":
+                result = {"resources": state.mcp.resources(str(params.get("server_id", "local")))}
+            elif method == "resources/read":
+                result = state.mcp.read_resource(str(params.get("name", "")), state)
+            elif method == "prompts/list":
+                result = {"prompts": state.mcp.prompts(str(params.get("server_id", "local")))}
+            elif method == "prompts/get":
+                result = {"name": params.get("name"), "description": "Agent Bazaar prompt template"}
+            else:
+                raise ValueError(f"Unknown MCP method: {method}")
+            return {"jsonrpc": "2.0", "id": rpc_id, "result": result}
+        except Exception as exc:
+            return {"jsonrpc": "2.0", "id": rpc_id, "error": {"code": -32000, "message": str(exc)}}
+
     @application.get("/api/tools")
     async def tools(request: Request) -> dict[str, Any]:
         state = services(request)

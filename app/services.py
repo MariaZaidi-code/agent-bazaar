@@ -25,6 +25,7 @@ from app.integration.runtime import KnowledgeLayer, build_knowledge_layer
 from app.knowledge.graph import ToolKnowledgeGraph
 from app.knowledge.ontology import Ontology
 from app.knowledge.retrieval import GraphRAGRetriever
+from app.mcp.manager import McpManager
 from app.providers.registry import ProviderRegistry
 
 
@@ -48,6 +49,7 @@ class AppServices:
     b1: B1ToolCalling
     b2: B2RagOnly
     knowledge: KnowledgeLayer | None = None
+    mcp: McpManager | None = None
     webhooks: WebhookRegistry = field(default_factory=WebhookRegistry)
     jobs: JobManager = field(default_factory=JobManager)
 
@@ -150,6 +152,7 @@ def build_services(settings: Settings | None = None) -> AppServices:
     )
     llm = LLMClient(resolved, cache)
     providers = ProviderRegistry(resolved, cache, graph)
+    mcp = McpManager(resolved)
     retriever = GraphRAGRetriever(
         graph,
         top_k=resolved.ranking_top_k,
@@ -179,6 +182,34 @@ def build_services(settings: Settings | None = None) -> AppServices:
     )
     b1 = B1ToolCalling(resolved, graph, providers, planner, llm)
     b2 = B2RagOnly(resolved, graph, providers, planner, llm)
+    local_tools = []
+    for provider in providers.all():
+        async def _handler(arguments: dict[str, Any], provider=provider) -> dict[str, Any]:
+            response = await provider.call(arguments or {}, correlation_id="mcp")
+            return {
+                "status": response.status,
+                "data": response.data,
+                "latency_ms": response.latency_ms,
+                "cached": response.cached,
+                "source": response.source,
+            }
+
+        def handler(arguments: dict[str, Any], provider=provider) -> dict[str, Any]:
+            import asyncio
+
+            return asyncio.run(_handler(arguments, provider=provider))
+
+        local_tools.append(
+            __import__("app.mcp.manager", fromlist=["McpTool"]).McpTool(
+                server_id="local",
+                name=provider.tool_id,
+                description=provider.spec.description,
+                input_schema={"type": "object", "properties": {}},
+                handler=handler,
+            )
+        )
+    mcp.register_local_tools(local_tools)
+
     services = AppServices(
         settings=resolved,
         cache=cache,
@@ -198,6 +229,7 @@ def build_services(settings: Settings | None = None) -> AppServices:
         b1=b1,
         b2=b2,
         knowledge=knowledge,
+        mcp=mcp,
     )
     services.export_graph()
     services.export_graph_jsonld()
