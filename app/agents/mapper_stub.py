@@ -127,6 +127,28 @@ class MapperStub:
         self.corrections.clear()
         self.listings.clear()
 
+    def get_mapper_prompt(self, tool_spec: Any) -> str:
+        """Generate a prompt for the LLM Mapper based on tool spec."""
+        inputs_desc = ', '.join([f'{item.name}: {item.concept}' for item in tool_spec.inputs])
+        outputs_desc = ', '.join([f'{item.name}: {item.concept}' for item in tool_spec.outputs])
+        return f'''Map the following tool to ontology concepts:
+
+Tool: {{tool_spec.name}}
+Capability: {{tool_spec.capability}}
+Description: {{tool_spec.description}}
+Inputs: {inputs_desc}
+Outputs: {outputs_desc}
+
+Map each input and output to the most appropriate ontology concept.
+Return JSON with mappings for each input and output field.'''
+        return prompt
+
+    def tune_prompt(self, feedback: dict[str, Any]) -> None:
+        """Store prompt tuning feedback for future improvements."""
+        if not hasattr(self, '_prompt_feedback'):
+            self._prompt_feedback = []
+        self._prompt_feedback.append(feedback)
+
 
 def concept_from_payload(payload: dict[str, Any]) -> ConceptSpec:
     return ConceptSpec.model_validate(payload)
