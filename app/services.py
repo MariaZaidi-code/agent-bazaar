@@ -172,6 +172,7 @@ def build_services(settings: Settings | None = None) -> AppServices:
             asyncio.run(scheduled_runs.execute_due(scheduled_run_state["services"]))
 
     scheduler.register(_run_scheduled)
+    llm_judge = LLMJudgement(llm) if llm.enabled else None
     auth = AuthManager(resolved.auth_db, secret=resolved.secret_key)
     mcp = McpManager(resolved)
     retriever = GraphRAGRetriever(
