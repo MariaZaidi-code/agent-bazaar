@@ -73,6 +73,7 @@ class AuditorBridge:
         *,
         live: bool = False,
         persist: bool = True,
+        llm_judge: LLMJudgement | None = None,
     ) -> None:
         self.graph = graph
         self.trust = trust
@@ -86,7 +87,11 @@ class AuditorBridge:
             live=live,
             drift_mode="full",
         ).prepare()
-        self.auditor = CatalogAuditor(settings=auditor_settings, persist=persist)
+        self.auditor = CatalogAuditor(
+            settings=auditor_settings,
+            persist=persist,
+            judge=llm_judge,
+        )
         self.mocks = MockRegistry(
             self.auditor.harness,
             catalog=self.auditor.catalog,

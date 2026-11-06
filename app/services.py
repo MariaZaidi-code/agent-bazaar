@@ -16,6 +16,7 @@ from app.core.cache import Cache
 from app.core.circuit_breaker import CircuitBreakerRegistry
 from app.core.jobs import JobManager
 from app.core.llm import LLMClient
+from src.agent_bazaar_auditor.llm_judge import LLMJudgement
 from app.core.message_bus import MessageBus
 from app.core.scheduled_runs import ScheduledRunManager
 from app.core.scheduler import BackgroundScheduler
@@ -59,6 +60,7 @@ class AppServices:
     scheduler: BackgroundScheduler | None = None
     mcp: McpManager | None = None
     webhooks: WebhookRegistry = field(default_factory=WebhookRegistry)
+    llm_judge: LLMJudgement | None = None
     jobs: JobManager = field(default_factory=JobManager)
 
     def export_graph(self) -> bool:
@@ -239,6 +241,7 @@ def build_services(settings: Settings | None = None) -> AppServices:
         graph=graph,
         retriever=retriever,
         llm=llm,
+        llm_judge=llm_judge,
         providers=providers,
         auditor=auditor,
         mapper=mapper,
