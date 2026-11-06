@@ -1,0 +1,3272 @@
+[
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CountryCallingCode",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_CountryCode"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_MovieTitle",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Movie"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_TVSeasonNumber",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_TVSeason"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_NutritionGrade",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ProductRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_tvmaze-search",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "TVMaze Show Search"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_SearchTVShows"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ShowQuery"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_TVShow"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Searches television shows without an API key."
+      },
+      {
+        "@value": "Returns genres, premiere dates and ratings."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_tvmaze"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Humidity",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_DocumentReference",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_POICategory",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LocationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_PostalCode",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ResearchPaper",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_mock-weather-fahrenheit",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Mock Weather Adversary"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_GetWeatherForecast"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Coordinates"
+      },
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_DateTimeISO"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Temperature"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Returns temperature in Celsius."
+      },
+      {
+        "@value": "No API key is required."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_mock-weather-fahrenheit"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_GameStatus",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_EventRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_OsmRelationId",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_PlaceId"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_PersonRole",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_PersonRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_open-library-search",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Open Library Book Search"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_SearchBooks"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_BookQuery"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Book"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Searches Open Library without an API key."
+      },
+      {
+        "@value": "Returns titles, authors and first publication years."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_open-library"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Translation",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_SportsLeague",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Claim",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_nominatim-geocode",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "OpenStreetMap Nominatim Geocoder"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_GeocodeLocation"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LocationName"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Coordinates"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Resolves place names without an API key."
+      },
+      {
+        "@value": "Returns coordinates in WGS84 degrees."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_nominatim"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_mymemory-translate",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "MyMemory Translation"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_TranslateText"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Text"
+      },
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LanguageCode"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Translation"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Translates short text without an API key."
+      },
+      {
+        "@value": "Returns the detected language pair and match score."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_mymemory"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_EventQuery",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Event"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_MovieReleaseYear",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Movie"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_LocationType",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LocationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Address",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CountryPopulation",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Population"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_TVNetwork",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Organization"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Currency",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Podcast",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Media"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_RouteDuration",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Duration"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_NewsArticle",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_EventStatus",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_EventRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_themealdb-recipes",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "TheMealDB Recipe Search"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_SearchRecipes"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_RecipeQuery"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Recipe"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Searches recipes without an API key."
+      },
+      {
+        "@value": "Returns ingredients, instructions and a meal image."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_themealdb"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_TVShow",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CountryDrivingSide",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Country"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ProductName",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ProductRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_LocationRecord",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Location"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Percentage",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_SportsTeam",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Organization"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_OrganizationFoundedYear",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_OrganizationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Identifier",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_WikidataId",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Identifier"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_sunrise-sunset-times",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Sunrise-Sunset Solar Times"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_GetSunTimes"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Coordinates"
+      },
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_DateTimeISO"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_SunTimes"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Returns solar times without an API key."
+      },
+      {
+        "@value": "Reports day length in seconds."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_sunrise-sunset"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Location",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Holiday",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_StreetAddress",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Address"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Url",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_HolidayDate",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ISODate"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_LanguageCode",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_MoneyAmount",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Number"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_coingecko-price",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "CoinGecko Crypto Price"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_GetCryptoPrice"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_CryptoAsset"
+      },
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_CurrencyCode"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_CryptoPrice"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Returns crypto prices without an API key."
+      },
+      {
+        "@value": "Supports fiat quote currencies such as USD and EUR."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_coingecko"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CountryCode",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_SunriseTime",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_DewPoint",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_OsmTags",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LocationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_MediaImageUrl",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Url"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Forecast",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_District",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LocationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Athlete",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_PersonRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_WeatherCode",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_MovieRating",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Rating"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_TimezoneOffset",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Timezone"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Duration",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Author",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_PersonRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_TVSeason",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Media"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_PlaceName",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Latitude",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ElevationResolution",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Elevation"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_MovieRuntime",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Movie"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CompanyIndustry",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_OrganizationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ProductQuery",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Product"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_FlagUrl",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Url"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_EventName",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_EventRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Population",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ProductQuantity",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ProductRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_PodcastQuery",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Media"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_SportsSeason",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_EventRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_PointOfInterest",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LocationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_BoundingBox",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LocationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ProductRecord",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Product"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_AreaSize",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Number",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_restcountries-facts",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "REST Countries Fact Service"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_GetCountryFacts"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_CountryName"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Country"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Returns population and capital without an API key."
+      },
+      {
+        "@value": "Returns ISO country codes."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_rest-countries"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_BaseCurrency",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Recipe",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_document-qa",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Uploaded Document Question Answering"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_AnswerFromDocument"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_DocumentQuestion"
+      },
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_DocumentReference"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_AnswerFromDocument"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Answers from the uploaded document with citations."
+      },
+      {
+        "@value": "Does not send document text to a paid service."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_document-service"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_restcountries-facts-backup",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "REST Countries Fact Service (Backup Mirror)"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_GetCountryFacts"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_CountryName"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Country"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Returns population and capital without an API key."
+      },
+      {
+        "@value": "Returns ISO country codes."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_rest-countries-backup"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_PhoneNumber",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Precipitation",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_LocationName",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_TimezoneName",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_EventOrganizer",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Organization"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_MusicAlbum",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Media"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Movie",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Media"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_TabularAnswer",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Money",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_OsmWayId",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_PlaceId"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Coordinates",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Count",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_EventStartDate",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_EventRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Distance",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_SunTimes",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_QuoteCurrency",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_arxiv-search-backup",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "arXiv Research Search (Backup Mirror)"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_SearchResearchPapers"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ResearchTopic"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ResearchPaper"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Searches arXiv metadata without an API key."
+      },
+      {
+        "@value": "Returns titles, summaries and links."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_arxiv-backup"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_OrganizationName",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_OrganizationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_OrganizationCountry",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_CountryName"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_NutritionScore",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ProductRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_WeatherCondition",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_OrganizationUrl",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Url"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Region",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_nager-holidays",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Nager.Date Public Holidays"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_GetPublicHolidays"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_CountryCode"
+      },
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Number"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Holiday"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Returns public holidays by country and year."
+      },
+      {
+        "@value": "No API key is required."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_nager-date"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Rating",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_EventVenue",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Location"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Entity",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Position",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Event",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ProductCategory",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ProductRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_OsmPlaceRank",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LocationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Provider",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_TVEpisodeTitle",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_TVEpisode"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CurrentTime",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_StreamUrl",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Url"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_RecipeQuery",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_DateTimeISO",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CountrySubregion",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Region"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_OrganizationRecord",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Organization"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Temperature",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Director",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_PersonRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ProductImageUrl",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Url"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CityName",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LocationName"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_LocationConfidence",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LocationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_TVEpisodeNumber",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_TVEpisode"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_worldtime-current",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "WorldTimeAPI Current Time"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_GetCurrentTime"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_TimezoneName"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_CurrentTime"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Returns the current time without an API key."
+      },
+      {
+        "@value": "Reports the IANA timezone and UTC offset."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_worldtimeapi"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_OrganizationQuery",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Organization"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Person",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_MusicTrack",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Media"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Language",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_PlaceId",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Identifier"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_google-books-search",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Google Books Search"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_SearchBooks"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_BookQuery"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Book"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Searches Google Books without a user-supplied API key."
+      },
+      {
+        "@value": "Returns titles, authors and publication dates."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_google-books"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_EventRecord",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Event"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Capability",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_TVEpisode",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Media"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_HolidayName",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Name"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_OrganizationType",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_OrganizationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CountryBorders",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Country"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_NearbyPlace",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LocationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_WindDirection",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ExchangeRate",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Elevation",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_frankfurter-currency",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Frankfurter Currency Converter"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_ConvertCurrency"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_MoneyAmount"
+      },
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_CurrencyCode"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Money"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Converts an amount between supported currencies without an API key."
+      },
+      {
+        "@value": "The output states the effective rate and date."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_frankfurter"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CountryArea",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_AreaSize"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_PodcastEpisode",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Podcast"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_PersonBirthDate",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_PersonRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Rank",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Concept",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Mass",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_open-meteo-forecast",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Open-Meteo Weather Forecast"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_GetWeatherForecast"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Coordinates"
+      },
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_DateTimeISO"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Temperature"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Returns temperatures in Celsius."
+      },
+      {
+        "@value": "No API key is required."
+      },
+      {
+        "@value": "Provides a daily forecast for the requested location."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_open-meteo"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_PersonQuery",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Person"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Text",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ProductCurrency",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_CurrencyCode"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Evidence",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_EventCategory",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_EventRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_OrganizationLogoUrl",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Url"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_espn-scores",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "ESPN Scoreboard"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_GetSportsScores"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_SportsLeague"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_SportsScore"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Returns sports scores without an API key."
+      },
+      {
+        "@value": "Reports home and away teams with game status."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_espn"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_AnswerFromDocument",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_nominatim-geocode-backup",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "OpenStreetMap Nominatim Geocoder (Backup Mirror)"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_GeocodeLocation"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LocationName"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Coordinates"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Resolves place names without an API key."
+      },
+      {
+        "@value": "Returns coordinates in WGS84 degrees."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_nominatim-backup"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_PersonImageUrl",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Url"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Book",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_OsmNodeId",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_PlaceId"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Service",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CountryCurrency",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_CurrencyCode"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ISODate",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_City",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_MovieGenre",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Media"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CloudCover",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Longitude",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Neighborhood",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LocationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_DocumentQuestion",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_university-sql",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "University Read-only SQL Provider"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_QueryStructuredData"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_NaturalLanguageQuery"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_TabularAnswer"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Uses a read-only connection to the local sample database."
+      },
+      {
+        "@value": "Rejects writes and non-allow-listed tables."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_university-db"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ProductBrand",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ProductRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Actor",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_PersonRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Speed",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_NaturalLanguageQuery",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_WindSpeed",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Media",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_nager-holidays-backup",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Nager.Date Public Holidays (Backup Mirror)"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_GetPublicHolidays"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_CountryCode"
+      },
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Number"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Holiday"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Returns public holidays by country and year."
+      },
+      {
+        "@value": "No API key is required."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_nager-date-backup"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_PersonBio",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_PersonRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Description",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Product",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CryptoPrice",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_AdministrativeArea",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LocationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ProductPrice",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ProductRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_FeelsLikeTemperature",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Temperature"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_DateTime",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ISODate"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_UVIndex",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CryptoAsset",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Pressure",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_PersonRecord",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Person"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_SportsScore",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_BooleanFlag",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Visibility",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_EventUrl",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Url"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_PersonName",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_PersonRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Allergens",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ProductRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_arxiv-search",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "arXiv Research Search"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_SearchResearchPapers"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ResearchTopic"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ResearchPaper"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Searches arXiv metadata without an API key."
+      },
+      {
+        "@value": "Returns titles, summaries and links."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_arxiv"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_BookQuery",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Email",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CountryLanguages",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Country"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Ingredients",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ProductRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_open-meteo-forecast-backup",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Open-Meteo Weather Forecast (Backup Mirror)"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_GetWeatherForecast"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Coordinates"
+      },
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_DateTimeISO"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Temperature"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Returns temperatures in Celsius."
+      },
+      {
+        "@value": "No API key is required."
+      },
+      {
+        "@value": "Provides a daily forecast for the requested location."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_open-meteo-backup"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Capital",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ResearchTopic",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_hackernews-search",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Hacker News Story Search"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_SearchNews"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_NewsTopic"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_NewsArticle"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Searches Hacker News stories without an API key."
+      },
+      {
+        "@value": "Returns story titles, links and publication timestamps."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_hackernews"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_MusicQuery",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Media"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Organization",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_EventEndDate",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_EventRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Route",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LocationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ServingSize",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_ProductRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ShowQuery",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_PersonNationality",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_PersonRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CurrencyCode",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_NewsTopic",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_ProductCode",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Identifier"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CountryName",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_LocationName"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_CompanyEmployeeCount",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_OrganizationRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_WeatherAlert",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_EventRecord"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Name",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Timezone",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_Country",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Entity"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_RouteDistance",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Distance"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Tool_frankfurter-currency-backup",
+    "@type": [
+      "https://agentbazaar.local/ontology#Service"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Frankfurter Currency Converter (Backup Mirror)"
+      }
+    ],
+    "https://agentbazaar.local/ontology#capability": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Capability_ConvertCurrency"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasInput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_MoneyAmount"
+      },
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_CurrencyCode"
+      }
+    ],
+    "https://agentbazaar.local/ontology#hasOutput": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Money"
+      }
+    ],
+    "https://agentbazaar.local/ontology#makesClaim": [
+      {
+        "@value": "Converts an amount between supported currencies without an API key."
+      },
+      {
+        "@value": "The output states the effective rate and date."
+      }
+    ],
+    "https://agentbazaar.local/ontology#provider": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Provider_frankfurter-backup"
+      }
+    ]
+  },
+  {
+    "@id": "https://agentbazaar.local/ontology#Concept_SunsetTime",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://agentbazaar.local/ontology#Concept_Concept"
+      }
+    ]
+  }
+]

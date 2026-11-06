@@ -1,0 +1,858 @@
+@prefix ab: <https://agentbazaar.local/ontology#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ab:Concept_Actor a owl:Class ;
+    rdfs:subClassOf ab:Concept_PersonRecord .
+
+ab:Concept_AdministrativeArea a owl:Class ;
+    rdfs:subClassOf ab:Concept_LocationRecord .
+
+ab:Concept_Allergens a owl:Class ;
+    rdfs:subClassOf ab:Concept_ProductRecord .
+
+ab:Concept_Athlete a owl:Class ;
+    rdfs:subClassOf ab:Concept_PersonRecord .
+
+ab:Concept_Author a owl:Class ;
+    rdfs:subClassOf ab:Concept_PersonRecord .
+
+ab:Concept_BaseCurrency a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_BooleanFlag a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_BoundingBox a owl:Class ;
+    rdfs:subClassOf ab:Concept_LocationRecord .
+
+ab:Concept_Capability a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Capital a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_City a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_CityName a owl:Class ;
+    rdfs:subClassOf ab:Concept_LocationName .
+
+ab:Concept_Claim a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_CloudCover a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_CompanyEmployeeCount a owl:Class ;
+    rdfs:subClassOf ab:Concept_OrganizationRecord .
+
+ab:Concept_CompanyIndustry a owl:Class ;
+    rdfs:subClassOf ab:Concept_OrganizationRecord .
+
+ab:Concept_Count a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_CountryArea a owl:Class ;
+    rdfs:subClassOf ab:Concept_AreaSize .
+
+ab:Concept_CountryBorders a owl:Class ;
+    rdfs:subClassOf ab:Concept_Country .
+
+ab:Concept_CountryCallingCode a owl:Class ;
+    rdfs:subClassOf ab:Concept_CountryCode .
+
+ab:Concept_CountryCurrency a owl:Class ;
+    rdfs:subClassOf ab:Concept_CurrencyCode .
+
+ab:Concept_CountryDrivingSide a owl:Class ;
+    rdfs:subClassOf ab:Concept_Country .
+
+ab:Concept_CountryLanguages a owl:Class ;
+    rdfs:subClassOf ab:Concept_Country .
+
+ab:Concept_CountryPopulation a owl:Class ;
+    rdfs:subClassOf ab:Concept_Population .
+
+ab:Concept_CountrySubregion a owl:Class ;
+    rdfs:subClassOf ab:Concept_Region .
+
+ab:Concept_Currency a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_DateTime a owl:Class ;
+    rdfs:subClassOf ab:Concept_ISODate .
+
+ab:Concept_Description a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_DewPoint a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_Director a owl:Class ;
+    rdfs:subClassOf ab:Concept_PersonRecord .
+
+ab:Concept_District a owl:Class ;
+    rdfs:subClassOf ab:Concept_LocationRecord .
+
+ab:Concept_ElevationResolution a owl:Class ;
+    rdfs:subClassOf ab:Concept_Elevation .
+
+ab:Concept_Email a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_EventCategory a owl:Class ;
+    rdfs:subClassOf ab:Concept_EventRecord .
+
+ab:Concept_EventEndDate a owl:Class ;
+    rdfs:subClassOf ab:Concept_EventRecord .
+
+ab:Concept_EventName a owl:Class ;
+    rdfs:subClassOf ab:Concept_EventRecord .
+
+ab:Concept_EventOrganizer a owl:Class ;
+    rdfs:subClassOf ab:Concept_Organization .
+
+ab:Concept_EventQuery a owl:Class ;
+    rdfs:subClassOf ab:Concept_Event .
+
+ab:Concept_EventStartDate a owl:Class ;
+    rdfs:subClassOf ab:Concept_EventRecord .
+
+ab:Concept_EventStatus a owl:Class ;
+    rdfs:subClassOf ab:Concept_EventRecord .
+
+ab:Concept_EventUrl a owl:Class ;
+    rdfs:subClassOf ab:Concept_Url .
+
+ab:Concept_EventVenue a owl:Class ;
+    rdfs:subClassOf ab:Concept_Location .
+
+ab:Concept_Evidence a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_ExchangeRate a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_FeelsLikeTemperature a owl:Class ;
+    rdfs:subClassOf ab:Concept_Temperature .
+
+ab:Concept_FlagUrl a owl:Class ;
+    rdfs:subClassOf ab:Concept_Url .
+
+ab:Concept_Forecast a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_GameStatus a owl:Class ;
+    rdfs:subClassOf ab:Concept_EventRecord .
+
+ab:Concept_HolidayDate a owl:Class ;
+    rdfs:subClassOf ab:Concept_ISODate .
+
+ab:Concept_HolidayName a owl:Class ;
+    rdfs:subClassOf ab:Concept_Name .
+
+ab:Concept_Humidity a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_Ingredients a owl:Class ;
+    rdfs:subClassOf ab:Concept_ProductRecord .
+
+ab:Concept_Language a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_Latitude a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_LocationConfidence a owl:Class ;
+    rdfs:subClassOf ab:Concept_LocationRecord .
+
+ab:Concept_LocationType a owl:Class ;
+    rdfs:subClassOf ab:Concept_LocationRecord .
+
+ab:Concept_Longitude a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_Mass a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_MediaImageUrl a owl:Class ;
+    rdfs:subClassOf ab:Concept_Url .
+
+ab:Concept_MovieGenre a owl:Class ;
+    rdfs:subClassOf ab:Concept_Media .
+
+ab:Concept_MovieRating a owl:Class ;
+    rdfs:subClassOf ab:Concept_Rating .
+
+ab:Concept_MovieReleaseYear a owl:Class ;
+    rdfs:subClassOf ab:Concept_Movie .
+
+ab:Concept_MovieRuntime a owl:Class ;
+    rdfs:subClassOf ab:Concept_Movie .
+
+ab:Concept_MovieTitle a owl:Class ;
+    rdfs:subClassOf ab:Concept_Movie .
+
+ab:Concept_MusicAlbum a owl:Class ;
+    rdfs:subClassOf ab:Concept_Media .
+
+ab:Concept_MusicQuery a owl:Class ;
+    rdfs:subClassOf ab:Concept_Media .
+
+ab:Concept_MusicTrack a owl:Class ;
+    rdfs:subClassOf ab:Concept_Media .
+
+ab:Concept_NearbyPlace a owl:Class ;
+    rdfs:subClassOf ab:Concept_LocationRecord .
+
+ab:Concept_Neighborhood a owl:Class ;
+    rdfs:subClassOf ab:Concept_LocationRecord .
+
+ab:Concept_NutritionGrade a owl:Class ;
+    rdfs:subClassOf ab:Concept_ProductRecord .
+
+ab:Concept_NutritionScore a owl:Class ;
+    rdfs:subClassOf ab:Concept_ProductRecord .
+
+ab:Concept_OrganizationCountry a owl:Class ;
+    rdfs:subClassOf ab:Concept_CountryName .
+
+ab:Concept_OrganizationFoundedYear a owl:Class ;
+    rdfs:subClassOf ab:Concept_OrganizationRecord .
+
+ab:Concept_OrganizationLogoUrl a owl:Class ;
+    rdfs:subClassOf ab:Concept_Url .
+
+ab:Concept_OrganizationName a owl:Class ;
+    rdfs:subClassOf ab:Concept_OrganizationRecord .
+
+ab:Concept_OrganizationQuery a owl:Class ;
+    rdfs:subClassOf ab:Concept_Organization .
+
+ab:Concept_OrganizationType a owl:Class ;
+    rdfs:subClassOf ab:Concept_OrganizationRecord .
+
+ab:Concept_OrganizationUrl a owl:Class ;
+    rdfs:subClassOf ab:Concept_Url .
+
+ab:Concept_OsmNodeId a owl:Class ;
+    rdfs:subClassOf ab:Concept_PlaceId .
+
+ab:Concept_OsmPlaceRank a owl:Class ;
+    rdfs:subClassOf ab:Concept_LocationRecord .
+
+ab:Concept_OsmRelationId a owl:Class ;
+    rdfs:subClassOf ab:Concept_PlaceId .
+
+ab:Concept_OsmTags a owl:Class ;
+    rdfs:subClassOf ab:Concept_LocationRecord .
+
+ab:Concept_OsmWayId a owl:Class ;
+    rdfs:subClassOf ab:Concept_PlaceId .
+
+ab:Concept_POICategory a owl:Class ;
+    rdfs:subClassOf ab:Concept_LocationRecord .
+
+ab:Concept_Percentage a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_PersonBio a owl:Class ;
+    rdfs:subClassOf ab:Concept_PersonRecord .
+
+ab:Concept_PersonBirthDate a owl:Class ;
+    rdfs:subClassOf ab:Concept_PersonRecord .
+
+ab:Concept_PersonImageUrl a owl:Class ;
+    rdfs:subClassOf ab:Concept_Url .
+
+ab:Concept_PersonName a owl:Class ;
+    rdfs:subClassOf ab:Concept_PersonRecord .
+
+ab:Concept_PersonNationality a owl:Class ;
+    rdfs:subClassOf ab:Concept_PersonRecord .
+
+ab:Concept_PersonQuery a owl:Class ;
+    rdfs:subClassOf ab:Concept_Person .
+
+ab:Concept_PersonRole a owl:Class ;
+    rdfs:subClassOf ab:Concept_PersonRecord .
+
+ab:Concept_PhoneNumber a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_PlaceName a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_PodcastEpisode a owl:Class ;
+    rdfs:subClassOf ab:Concept_Podcast .
+
+ab:Concept_PodcastQuery a owl:Class ;
+    rdfs:subClassOf ab:Concept_Media .
+
+ab:Concept_PointOfInterest a owl:Class ;
+    rdfs:subClassOf ab:Concept_LocationRecord .
+
+ab:Concept_Position a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_PostalCode a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_Precipitation a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_Pressure a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_ProductBrand a owl:Class ;
+    rdfs:subClassOf ab:Concept_ProductRecord .
+
+ab:Concept_ProductCategory a owl:Class ;
+    rdfs:subClassOf ab:Concept_ProductRecord .
+
+ab:Concept_ProductCode a owl:Class ;
+    rdfs:subClassOf ab:Concept_Identifier .
+
+ab:Concept_ProductCurrency a owl:Class ;
+    rdfs:subClassOf ab:Concept_CurrencyCode .
+
+ab:Concept_ProductImageUrl a owl:Class ;
+    rdfs:subClassOf ab:Concept_Url .
+
+ab:Concept_ProductName a owl:Class ;
+    rdfs:subClassOf ab:Concept_ProductRecord .
+
+ab:Concept_ProductPrice a owl:Class ;
+    rdfs:subClassOf ab:Concept_ProductRecord .
+
+ab:Concept_ProductQuantity a owl:Class ;
+    rdfs:subClassOf ab:Concept_ProductRecord .
+
+ab:Concept_ProductQuery a owl:Class ;
+    rdfs:subClassOf ab:Concept_Product .
+
+ab:Concept_Provider a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_QuoteCurrency a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_Rank a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_Route a owl:Class ;
+    rdfs:subClassOf ab:Concept_LocationRecord .
+
+ab:Concept_RouteDistance a owl:Class ;
+    rdfs:subClassOf ab:Concept_Distance .
+
+ab:Concept_RouteDuration a owl:Class ;
+    rdfs:subClassOf ab:Concept_Duration .
+
+ab:Concept_Service a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_ServingSize a owl:Class ;
+    rdfs:subClassOf ab:Concept_ProductRecord .
+
+ab:Concept_Speed a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_SportsSeason a owl:Class ;
+    rdfs:subClassOf ab:Concept_EventRecord .
+
+ab:Concept_SportsTeam a owl:Class ;
+    rdfs:subClassOf ab:Concept_Organization .
+
+ab:Concept_StreamUrl a owl:Class ;
+    rdfs:subClassOf ab:Concept_Url .
+
+ab:Concept_StreetAddress a owl:Class ;
+    rdfs:subClassOf ab:Concept_Address .
+
+ab:Concept_SunriseTime a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_SunsetTime a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_TVEpisodeNumber a owl:Class ;
+    rdfs:subClassOf ab:Concept_TVEpisode .
+
+ab:Concept_TVEpisodeTitle a owl:Class ;
+    rdfs:subClassOf ab:Concept_TVEpisode .
+
+ab:Concept_TVNetwork a owl:Class ;
+    rdfs:subClassOf ab:Concept_Organization .
+
+ab:Concept_TVSeasonNumber a owl:Class ;
+    rdfs:subClassOf ab:Concept_TVSeason .
+
+ab:Concept_TimezoneOffset a owl:Class ;
+    rdfs:subClassOf ab:Concept_Timezone .
+
+ab:Concept_UVIndex a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_Visibility a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_WeatherAlert a owl:Class ;
+    rdfs:subClassOf ab:Concept_EventRecord .
+
+ab:Concept_WeatherCode a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_WeatherCondition a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_WikidataId a owl:Class ;
+    rdfs:subClassOf ab:Concept_Identifier .
+
+ab:Concept_WindDirection a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_WindSpeed a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Tool_arxiv-search a ab:Service ;
+    rdfs:label "arXiv Research Search" ;
+    ab:capability ab:Capability_SearchResearchPapers ;
+    ab:hasInput ab:Concept_ResearchTopic ;
+    ab:hasOutput ab:Concept_ResearchPaper ;
+    ab:makesClaim "Returns titles, summaries and links.",
+        "Searches arXiv metadata without an API key." ;
+    ab:provider ab:Provider_arxiv .
+
+ab:Tool_arxiv-search-backup a ab:Service ;
+    rdfs:label "arXiv Research Search (Backup Mirror)" ;
+    ab:capability ab:Capability_SearchResearchPapers ;
+    ab:hasInput ab:Concept_ResearchTopic ;
+    ab:hasOutput ab:Concept_ResearchPaper ;
+    ab:makesClaim "Returns titles, summaries and links.",
+        "Searches arXiv metadata without an API key." ;
+    ab:provider ab:Provider_arxiv-backup .
+
+ab:Tool_coingecko-price a ab:Service ;
+    rdfs:label "CoinGecko Crypto Price" ;
+    ab:capability ab:Capability_GetCryptoPrice ;
+    ab:hasInput ab:Concept_CryptoAsset,
+        ab:Concept_CurrencyCode ;
+    ab:hasOutput ab:Concept_CryptoPrice ;
+    ab:makesClaim "Returns crypto prices without an API key.",
+        "Supports fiat quote currencies such as USD and EUR." ;
+    ab:provider ab:Provider_coingecko .
+
+ab:Tool_document-qa a ab:Service ;
+    rdfs:label "Uploaded Document Question Answering" ;
+    ab:capability ab:Capability_AnswerFromDocument ;
+    ab:hasInput ab:Concept_DocumentQuestion,
+        ab:Concept_DocumentReference ;
+    ab:hasOutput ab:Concept_AnswerFromDocument ;
+    ab:makesClaim "Answers from the uploaded document with citations.",
+        "Does not send document text to a paid service." ;
+    ab:provider ab:Provider_document-service .
+
+ab:Tool_espn-scores a ab:Service ;
+    rdfs:label "ESPN Scoreboard" ;
+    ab:capability ab:Capability_GetSportsScores ;
+    ab:hasInput ab:Concept_SportsLeague ;
+    ab:hasOutput ab:Concept_SportsScore ;
+    ab:makesClaim "Reports home and away teams with game status.",
+        "Returns sports scores without an API key." ;
+    ab:provider ab:Provider_espn .
+
+ab:Tool_frankfurter-currency a ab:Service ;
+    rdfs:label "Frankfurter Currency Converter" ;
+    ab:capability ab:Capability_ConvertCurrency ;
+    ab:hasInput ab:Concept_CurrencyCode,
+        ab:Concept_MoneyAmount ;
+    ab:hasOutput ab:Concept_Money ;
+    ab:makesClaim "Converts an amount between supported currencies without an API key.",
+        "The output states the effective rate and date." ;
+    ab:provider ab:Provider_frankfurter .
+
+ab:Tool_frankfurter-currency-backup a ab:Service ;
+    rdfs:label "Frankfurter Currency Converter (Backup Mirror)" ;
+    ab:capability ab:Capability_ConvertCurrency ;
+    ab:hasInput ab:Concept_CurrencyCode,
+        ab:Concept_MoneyAmount ;
+    ab:hasOutput ab:Concept_Money ;
+    ab:makesClaim "Converts an amount between supported currencies without an API key.",
+        "The output states the effective rate and date." ;
+    ab:provider ab:Provider_frankfurter-backup .
+
+ab:Tool_google-books-search a ab:Service ;
+    rdfs:label "Google Books Search" ;
+    ab:capability ab:Capability_SearchBooks ;
+    ab:hasInput ab:Concept_BookQuery ;
+    ab:hasOutput ab:Concept_Book ;
+    ab:makesClaim "Returns titles, authors and publication dates.",
+        "Searches Google Books without a user-supplied API key." ;
+    ab:provider ab:Provider_google-books .
+
+ab:Tool_hackernews-search a ab:Service ;
+    rdfs:label "Hacker News Story Search" ;
+    ab:capability ab:Capability_SearchNews ;
+    ab:hasInput ab:Concept_NewsTopic ;
+    ab:hasOutput ab:Concept_NewsArticle ;
+    ab:makesClaim "Returns story titles, links and publication timestamps.",
+        "Searches Hacker News stories without an API key." ;
+    ab:provider ab:Provider_hackernews .
+
+ab:Tool_mock-weather-fahrenheit a ab:Service ;
+    rdfs:label "Mock Weather Adversary" ;
+    ab:capability ab:Capability_GetWeatherForecast ;
+    ab:hasInput ab:Concept_Coordinates,
+        ab:Concept_DateTimeISO ;
+    ab:hasOutput ab:Concept_Temperature ;
+    ab:makesClaim "No API key is required.",
+        "Returns temperature in Celsius." ;
+    ab:provider ab:Provider_mock-weather-fahrenheit .
+
+ab:Tool_mymemory-translate a ab:Service ;
+    rdfs:label "MyMemory Translation" ;
+    ab:capability ab:Capability_TranslateText ;
+    ab:hasInput ab:Concept_LanguageCode,
+        ab:Concept_Text ;
+    ab:hasOutput ab:Concept_Translation ;
+    ab:makesClaim "Returns the detected language pair and match score.",
+        "Translates short text without an API key." ;
+    ab:provider ab:Provider_mymemory .
+
+ab:Tool_nager-holidays a ab:Service ;
+    rdfs:label "Nager.Date Public Holidays" ;
+    ab:capability ab:Capability_GetPublicHolidays ;
+    ab:hasInput ab:Concept_CountryCode,
+        ab:Concept_Number ;
+    ab:hasOutput ab:Concept_Holiday ;
+    ab:makesClaim "No API key is required.",
+        "Returns public holidays by country and year." ;
+    ab:provider ab:Provider_nager-date .
+
+ab:Tool_nager-holidays-backup a ab:Service ;
+    rdfs:label "Nager.Date Public Holidays (Backup Mirror)" ;
+    ab:capability ab:Capability_GetPublicHolidays ;
+    ab:hasInput ab:Concept_CountryCode,
+        ab:Concept_Number ;
+    ab:hasOutput ab:Concept_Holiday ;
+    ab:makesClaim "No API key is required.",
+        "Returns public holidays by country and year." ;
+    ab:provider ab:Provider_nager-date-backup .
+
+ab:Tool_nominatim-geocode a ab:Service ;
+    rdfs:label "OpenStreetMap Nominatim Geocoder" ;
+    ab:capability ab:Capability_GeocodeLocation ;
+    ab:hasInput ab:Concept_LocationName ;
+    ab:hasOutput ab:Concept_Coordinates ;
+    ab:makesClaim "Resolves place names without an API key.",
+        "Returns coordinates in WGS84 degrees." ;
+    ab:provider ab:Provider_nominatim .
+
+ab:Tool_nominatim-geocode-backup a ab:Service ;
+    rdfs:label "OpenStreetMap Nominatim Geocoder (Backup Mirror)" ;
+    ab:capability ab:Capability_GeocodeLocation ;
+    ab:hasInput ab:Concept_LocationName ;
+    ab:hasOutput ab:Concept_Coordinates ;
+    ab:makesClaim "Resolves place names without an API key.",
+        "Returns coordinates in WGS84 degrees." ;
+    ab:provider ab:Provider_nominatim-backup .
+
+ab:Tool_open-library-search a ab:Service ;
+    rdfs:label "Open Library Book Search" ;
+    ab:capability ab:Capability_SearchBooks ;
+    ab:hasInput ab:Concept_BookQuery ;
+    ab:hasOutput ab:Concept_Book ;
+    ab:makesClaim "Returns titles, authors and first publication years.",
+        "Searches Open Library without an API key." ;
+    ab:provider ab:Provider_open-library .
+
+ab:Tool_open-meteo-forecast a ab:Service ;
+    rdfs:label "Open-Meteo Weather Forecast" ;
+    ab:capability ab:Capability_GetWeatherForecast ;
+    ab:hasInput ab:Concept_Coordinates,
+        ab:Concept_DateTimeISO ;
+    ab:hasOutput ab:Concept_Temperature ;
+    ab:makesClaim "No API key is required.",
+        "Provides a daily forecast for the requested location.",
+        "Returns temperatures in Celsius." ;
+    ab:provider ab:Provider_open-meteo .
+
+ab:Tool_open-meteo-forecast-backup a ab:Service ;
+    rdfs:label "Open-Meteo Weather Forecast (Backup Mirror)" ;
+    ab:capability ab:Capability_GetWeatherForecast ;
+    ab:hasInput ab:Concept_Coordinates,
+        ab:Concept_DateTimeISO ;
+    ab:hasOutput ab:Concept_Temperature ;
+    ab:makesClaim "No API key is required.",
+        "Provides a daily forecast for the requested location.",
+        "Returns temperatures in Celsius." ;
+    ab:provider ab:Provider_open-meteo-backup .
+
+ab:Tool_restcountries-facts a ab:Service ;
+    rdfs:label "REST Countries Fact Service" ;
+    ab:capability ab:Capability_GetCountryFacts ;
+    ab:hasInput ab:Concept_CountryName ;
+    ab:hasOutput ab:Concept_Country ;
+    ab:makesClaim "Returns ISO country codes.",
+        "Returns population and capital without an API key." ;
+    ab:provider ab:Provider_rest-countries .
+
+ab:Tool_restcountries-facts-backup a ab:Service ;
+    rdfs:label "REST Countries Fact Service (Backup Mirror)" ;
+    ab:capability ab:Capability_GetCountryFacts ;
+    ab:hasInput ab:Concept_CountryName ;
+    ab:hasOutput ab:Concept_Country ;
+    ab:makesClaim "Returns ISO country codes.",
+        "Returns population and capital without an API key." ;
+    ab:provider ab:Provider_rest-countries-backup .
+
+ab:Tool_sunrise-sunset-times a ab:Service ;
+    rdfs:label "Sunrise-Sunset Solar Times" ;
+    ab:capability ab:Capability_GetSunTimes ;
+    ab:hasInput ab:Concept_Coordinates,
+        ab:Concept_DateTimeISO ;
+    ab:hasOutput ab:Concept_SunTimes ;
+    ab:makesClaim "Reports day length in seconds.",
+        "Returns solar times without an API key." ;
+    ab:provider ab:Provider_sunrise-sunset .
+
+ab:Tool_themealdb-recipes a ab:Service ;
+    rdfs:label "TheMealDB Recipe Search" ;
+    ab:capability ab:Capability_SearchRecipes ;
+    ab:hasInput ab:Concept_RecipeQuery ;
+    ab:hasOutput ab:Concept_Recipe ;
+    ab:makesClaim "Returns ingredients, instructions and a meal image.",
+        "Searches recipes without an API key." ;
+    ab:provider ab:Provider_themealdb .
+
+ab:Tool_tvmaze-search a ab:Service ;
+    rdfs:label "TVMaze Show Search" ;
+    ab:capability ab:Capability_SearchTVShows ;
+    ab:hasInput ab:Concept_ShowQuery ;
+    ab:hasOutput ab:Concept_TVShow ;
+    ab:makesClaim "Returns genres, premiere dates and ratings.",
+        "Searches television shows without an API key." ;
+    ab:provider ab:Provider_tvmaze .
+
+ab:Tool_university-sql a ab:Service ;
+    rdfs:label "University Read-only SQL Provider" ;
+    ab:capability ab:Capability_QueryStructuredData ;
+    ab:hasInput ab:Concept_NaturalLanguageQuery ;
+    ab:hasOutput ab:Concept_TabularAnswer ;
+    ab:makesClaim "Rejects writes and non-allow-listed tables.",
+        "Uses a read-only connection to the local sample database." ;
+    ab:provider ab:Provider_university-db .
+
+ab:Tool_worldtime-current a ab:Service ;
+    rdfs:label "WorldTimeAPI Current Time" ;
+    ab:capability ab:Capability_GetCurrentTime ;
+    ab:hasInput ab:Concept_TimezoneName ;
+    ab:hasOutput ab:Concept_CurrentTime ;
+    ab:makesClaim "Reports the IANA timezone and UTC offset.",
+        "Returns the current time without an API key." ;
+    ab:provider ab:Provider_worldtimeapi .
+
+ab:Concept_Address a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_AnswerFromDocument a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_AreaSize a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_CryptoAsset a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_CryptoPrice a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_CurrentTime a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Distance a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_DocumentQuestion a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_DocumentReference a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Duration a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_Elevation a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_LanguageCode a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Name a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_NaturalLanguageQuery a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_NewsArticle a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_NewsTopic a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Podcast a owl:Class ;
+    rdfs:subClassOf ab:Concept_Media .
+
+ab:Concept_Population a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_Rating a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_Recipe a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_RecipeQuery a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Region a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_ShowQuery a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_SportsLeague a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_SportsScore a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_SunTimes a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_TVSeason a owl:Class ;
+    rdfs:subClassOf ab:Concept_Media .
+
+ab:Concept_TVShow a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_TabularAnswer a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Text a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Timezone a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_TimezoneName a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Translation a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Book a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_BookQuery a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Event a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Holiday a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_ISODate a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_Location a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Money a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_MoneyAmount a owl:Class ;
+    rdfs:subClassOf ab:Concept_Number .
+
+ab:Concept_Person a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Product a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_ResearchPaper a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_ResearchTopic a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_TVEpisode a owl:Class ;
+    rdfs:subClassOf ab:Concept_Media .
+
+ab:Concept_CountryCode a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_CountryName a owl:Class ;
+    rdfs:subClassOf ab:Concept_LocationName .
+
+ab:Concept_Identifier a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_Movie a owl:Class ;
+    rdfs:subClassOf ab:Concept_Media .
+
+ab:Concept_Number a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_PlaceId a owl:Class ;
+    rdfs:subClassOf ab:Concept_Identifier .
+
+ab:Concept_DateTimeISO a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_LocationName a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Temperature a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Country a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_CurrencyCode a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_Organization a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_OrganizationRecord a owl:Class ;
+    rdfs:subClassOf ab:Concept_Organization .
+
+ab:Concept_Coordinates a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_EventRecord a owl:Class ;
+    rdfs:subClassOf ab:Concept_Event .
+
+ab:Concept_Url a owl:Class ;
+    rdfs:subClassOf ab:Concept_Concept .
+
+ab:Concept_Media a owl:Class ;
+    rdfs:subClassOf ab:Concept_Entity .
+
+ab:Concept_PersonRecord a owl:Class ;
+    rdfs:subClassOf ab:Concept_Person .
+
+ab:Concept_ProductRecord a owl:Class ;
+    rdfs:subClassOf ab:Concept_Product .
+
+ab:Concept_LocationRecord a owl:Class ;
+    rdfs:subClassOf ab:Concept_Location .
+
+ab:Concept_Entity a owl:Class .
+
+ab:Concept_Concept a owl:Class .
+
