@@ -1,11 +1,22 @@
-﻿version: "3.9"
+﻿version: "3.8"
+
 services:
   agent-bazaar:
     build: .
     ports:
       - "8000:8000"
     environment:
-      AB_OFFLINE_MODE: "true"
+      - AB_OFFLINE_MODE=true
+      - AB_RATE_LIMIT_ENABLED=true
+      - AB_RATE_LIMIT_REQUESTS=120
+      - AB_RATE_LIMIT_WINDOW_SECONDS=60
     volumes:
-      - ./data/runtime:/app/data/runtime
+      - ./data:/app/data
+      - ./outputs:/app/outputs
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
