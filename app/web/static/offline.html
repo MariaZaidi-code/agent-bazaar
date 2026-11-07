@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101113">
+  <title>Offline | Agent Bazaar</title>
+  <link rel="stylesheet" href="/static/offline.css">
+  <script src="/static/offline.js" defer></script>
+</head>
+<body>
+  <main class="offline-shell">
+    <div class="offline-card" role="status" aria-live="polite">
+      <span class="offline-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" fill="currentColor"/></svg>
+      </span>
+      <h1>You are offline</h1>
+      <p>Agent Bazaar needs a connection to reach tools and refresh evidence. Your saved settings are still on this device.</p>
+      <div class="offline-actions">
+        <button class="offline-button" type="button" id="offline-retry">Try again</button>
+        <a class="offline-link" href="/dashboard">Go to dashboard</a>
+      </div>
+      <small id="offline-status">Waiting for a connection.</small>
+    </div>
+  </main>
+</body>
+</html>

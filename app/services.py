@@ -23,7 +23,7 @@ from app.integration.runtime import KnowledgeLayer, build_knowledge_layer
 from app.knowledge.graph import ToolKnowledgeGraph
 from app.knowledge.ontology import Ontology
 from app.knowledge.retrieval import GraphRAGRetriever
-from app.platform import PlatformStore
+from app.platform import PlatformStore, analytics_payload
 from app.providers.registry import ProviderRegistry
 
 
@@ -57,9 +57,17 @@ class AppServices:
 
     def monitoring(self) -> dict[str, Any]:
         trust_rows = {item["provider_id"]: item for item in self.trust.all()}
+        tool_providers = {tool.id: tool.provider_id for tool in self.graph.all()}
+        health = {
+            row["provider_id"]: row
+            for row in analytics_payload(
+                self.traces.result_rows(limit=2000), self.trust.all(), tool_providers
+            )["providers"]
+        }
         providers = []
         for provider in self.providers.all():
             trust = trust_rows.get(provider.provider_id, {})
+            stats = health.get(provider.provider_id, {})
             providers.append(
                 {
                     "provider_id": provider.provider_id,
@@ -72,6 +80,10 @@ class AppServices:
                     "contradictions": trust.get("contradictions", 0),
                     "calls": trust.get("calls", 0),
                     "probes": trust.get("probes", 0),
+                    "uptime": stats.get("uptime", 1.0),
+                    "error_rate": stats.get("error_rate", 0.0),
+                    "latency_p50_ms": stats.get("latency_p50_ms", 0.0),
+                    "latency_p95_ms": stats.get("latency_p95_ms", 0.0),
                     "failure_mode": (
                         "offline"
                         if (self.settings.offline_mode or provider.offline_forced)
@@ -122,7 +134,17 @@ def build_services(settings: Settings | None = None) -> AppServices:
         mapper = knowledge.mapper if knowledge is not None else local_mapper
     cache = Cache(resolved.cache_db, ttl_seconds=resolved.cache_ttl_seconds)
     traces = TraceStore(resolved.traces_db)
-    platform = PlatformStore(resolved.platform_db)
+    platform = PlatformStore(
+        resolved.platform_db,
+        smtp={
+            "host": resolved.smtp_host,
+            "port": resolved.smtp_port,
+            "user": resolved.smtp_user,
+            "password": resolved.smtp_password,
+            "from": resolved.smtp_from,
+            "starttls": resolved.smtp_starttls,
+        },
+    )
     trust = TrustRegistry(
         resolved.trust_db,
         signal_weights=resolved.trust_signal_weights,

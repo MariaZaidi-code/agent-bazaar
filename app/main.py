@@ -1,15 +1,16 @@
 from __future__ import annotations
 
+import asyncio
 import csv
 import io
 import json
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from pathlib import Path
 from typing import Any
 
 import httpx
 from fastapi import BackgroundTasks, FastAPI, File, HTTPException, Query, Request, UploadFile
-from fastapi.responses import HTMLResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
@@ -26,6 +27,7 @@ from app.platform import (
     analytics_payload,
     pdf_document,
     task_summary,
+    tool_preview_svg,
 )
 from app.schemas import (
     CorrectionRequest,
@@ -94,6 +96,7 @@ class SettingsInput(BaseModel):
     theme: str | None = None
     offline_mode: bool | None = None
     notifications: bool | None = None
+    email_notifications: bool | None = None
     high_contrast: bool | None = None
     workspace_id: str | None = None
 
@@ -255,6 +258,54 @@ async def _deliver_webhooks(hooks: list[dict[str, Any]], event: str, payload: di
                 continue
 
 
+async def _run_due_schedules(application: FastAPI, limit: int = 5) -> list[dict[str, Any]]:
+    state: AppServices = application.state.services
+    results: list[dict[str, Any]] = []
+    for schedule in state.platform.due_schedules()[:limit]:
+        try:
+            result = await state.client.run(str(schedule["task"]))
+        except Exception:
+            continue
+        state.platform.mark_schedule_ran(str(schedule["schedule_id"]), str(schedule["cadence"]))
+        user_id = str(schedule.get("user_id") or "")
+        workspace_id = str(schedule.get("workspace_id") or "")
+        if user_id and state.platform.settings(user_id).get("notifications", True):
+            state.platform.notify(
+                user_id,
+                workspace_id,
+                "Scheduled task finished",
+                f"{str(schedule['task'])[:90]} finished with status {result.status}.",
+                "schedule",
+            )
+        hooks = state.platform.webhooks(user_id, workspace_id) if user_id else []
+        if hooks:
+            await _deliver_webhooks(
+                hooks,
+                "schedule.completed" if result.status == "completed" else "schedule.failed",
+                {
+                    "schedule_id": schedule["schedule_id"],
+                    "task_id": result.task_id,
+                    "task": schedule["task"],
+                    "status": result.status,
+                },
+            )
+        results.append({"schedule_id": schedule["schedule_id"], "task_id": result.task_id})
+    return results
+
+
+async def _scheduler_loop(application: FastAPI) -> None:
+    interval = max(5, int(application.state.services.settings.schedule_poll_seconds))
+    try:
+        while True:
+            await asyncio.sleep(interval)
+            try:
+                await _run_due_schedules(application)
+            except Exception:
+                continue
+    except asyncio.CancelledError:
+        return
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(application: FastAPI):
@@ -262,7 +313,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         application.state.rate_limiter = RateLimiter(
             application.state.services.settings.rate_limit_per_minute
         )
+        scheduler_task = None
+        if application.state.services.settings.scheduler_enabled:
+            scheduler_task = asyncio.create_task(_scheduler_loop(application))
         yield
+        if scheduler_task is not None:
+            scheduler_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await scheduler_task
 
     application = FastAPI(
         title="Agent Bazaar",
@@ -274,6 +332,25 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         lifespan=lifespan,
     )
     application.mount("/static", StaticFiles(directory=str(WEB_DIR / "static")), name="static")
+
+    @application.get("/manifest.webmanifest")
+    async def web_manifest() -> FileResponse:
+        return FileResponse(
+            STATIC_DIR / "manifest.webmanifest",
+            media_type="application/manifest+json",
+        )
+
+    @application.get("/sw.js")
+    async def service_worker() -> FileResponse:
+        return FileResponse(
+            STATIC_DIR / "sw.js",
+            media_type="application/javascript",
+            headers={"Service-Worker-Allowed": "/", "Cache-Control": "no-cache"},
+        )
+
+    @application.get("/offline")
+    async def offline_page() -> FileResponse:
+        return FileResponse(STATIC_DIR / "offline.html", media_type="text/html")
 
     @application.middleware("http")
     async def platform_guard(request: Request, call_next):
@@ -667,7 +744,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def analytics(request: Request) -> dict[str, Any]:
         state = services(request)
         rows = state.traces.result_rows(limit=2000)
-        return analytics_payload(rows, state.trust.all())
+        tool_providers = {tool.id: tool.provider_id for tool in state.graph.all()}
+        return analytics_payload(rows, state.trust.all(), tool_providers)
 
     @application.get("/api/admin/flags")
     async def admin_flags(request: Request) -> dict[str, Any]:
@@ -760,21 +838,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @application.post("/api/schedules/run-due")
     async def run_due_schedules(request: Request) -> dict[str, Any]:
         user, workspace_id, _ = session_context(request)
-        state = services(request)
-        require_admin(user, workspace_id, state)
-        results = []
-        for schedule in state.platform.due_schedules()[:5]:
-            result = await state.client.run(str(schedule["task"]))
-            state.platform.mark_schedule_ran(str(schedule["schedule_id"]), str(schedule["cadence"]))
-            state.platform.notify(
-                str(user["user_id"]),
-                workspace_id,
-                "Scheduled task finished",
-                f"{schedule['task'][:90]} finished with status {result.status}.",
-                "schedule",
-            )
-            results.append({"schedule_id": schedule["schedule_id"], "task_id": result.task_id})
-        return {"ran": results}
+        require_admin(user, workspace_id, services(request))
+        return {"ran": await _run_due_schedules(request.app)}
 
     @application.get("/api/cache")
     async def cache_status(request: Request) -> dict[str, Any]:
@@ -900,6 +965,25 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             data["auditor_tool_id"] = state.auditor.catalog_tool_id(tool.id) or ""
             payload.append(data)
         return {"tools": payload, "count": len(payload)}
+
+    @application.get("/api/tools/{tool_id}/preview.svg")
+    async def tool_preview(tool_id: str, request: Request) -> Response:
+        state = services(request)
+        tool = state.graph.get(tool_id)
+        if tool is None:
+            raise HTTPException(status_code=404, detail="Tool not found")
+        trust = state.trust.get(tool.provider_id)
+        return Response(
+            tool_preview_svg(
+                tool.name,
+                tool.capability,
+                tool.provider_id,
+                float(trust.get("score", 0.5)),
+                "paused" if trust.get("demoted") else "healthy",
+            ),
+            media_type="image/svg+xml",
+            headers={"Cache-Control": "public, max-age=3600"},
+        )
 
     @application.post("/api/tasks", response_model=TaskResult)
     async def run_task(
@@ -1086,7 +1170,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         }
 
     @application.post("/api/demo/drift/{tool_id}")
-    async def demo_drift(tool_id: str, request: Request) -> dict[str, Any]:
+    async def demo_drift(
+        tool_id: str, request: Request, background_tasks: BackgroundTasks
+    ) -> dict[str, Any]:
         state = services(request)
         alert = state.auditor.inject_drift(
             tool_id, reason="Injected drift: response no longer matches the mapped schema."
@@ -1098,6 +1184,20 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             state.breakers.trip(
                 state.breakers.link_key("client", provider.provider_id),
                 f"drift alert {alert.alert_id}",
+            )
+        user, workspace_id, _ = session_context(request)
+        hooks = state.platform.webhooks(str(user["user_id"]), workspace_id)
+        if hooks:
+            background_tasks.add_task(
+                _deliver_webhooks,
+                hooks,
+                "drift.alert",
+                {
+                    "alert_id": alert.alert_id,
+                    "tool_id": tool_id,
+                    "provider_id": getattr(provider, "provider_id", ""),
+                    "reason": "; ".join(getattr(alert, "reasons", []) or []),
+                },
             )
         return {"status": "drift_injected", "alert": alert.model_dump(mode="json")}
 

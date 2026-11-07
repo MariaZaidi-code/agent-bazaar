@@ -81,8 +81,14 @@ Auditor and monitoring:
   asking cited document questions inline, exploring the Trust Center's Auditor evidence and
   trust replay, using a keyboard command palette, staging corrections, saving tasks, tools
   and workflows, sharing and exporting answers, and injecting demo failures.
+- **Installable PWA** with a manifest, 192/512 and maskable icons, shortcuts, screenshots,
+  an install prompt in Settings, and a service worker that precaches the shell and serves a
+  friendly `/offline` page.
+- **Frontend quality gates** with 14 Vitest utility tests, Playwright visual-regression
+  snapshots on system Chrome, a static bundle-size budget and Lighthouse audit coverage
+  (100 accessibility and 100 SEO on the dashboard).
 - **Evaluation suite** with 50 matching tasks, 15 chain tasks, B1/B2 baseline comparison, 7 substitution cases, 6 trust scenarios, a seven-configuration ablation and a 48-task free-first ranking suite.
-- **261 automated tests** across the merged application, knowledge-layer, Auditor and bridge suites, including 43 integration tests for the application/knowledge-layer bridge, plus Ruff checks and GitHub Actions CI.
+- **267 automated tests** across the merged application, knowledge-layer, Auditor and bridge suites (264 pass and 3 skip by default), including 43 integration tests for the application/knowledge-layer bridge, plus Ruff checks and GitHub Actions CI.
 
 ### Auditor and Monitoring
 
@@ -129,7 +135,7 @@ python -m pytest
 
 `python -m pytest` runs the whole merged suite: the 130 knowledge-layer tests, the 50
 application tests, the 43 integration tests, the 32 Auditor tests, the 6 Auditor bridge
-tests and the platform tests, 264 in total.
+tests and the platform tests, 267 in total. The default run is 264 passed and 3 skipped: two seed-corpus checks and one browser visual test that runs with RUN_VISUAL=1.
 
 This uses the committed 8-spec seed corpus and the deterministic hashing
 embedder. No API key is needed. To fetch the full corpus and use the embedding
@@ -404,8 +410,8 @@ whole application from the knowledge layer, and `local` never loads it.
 `GET /api/knowledge` reports the RDF layer that is loaded: the graph counts, the number
 of concepts, the tools and the paths of the graph and ontology artifacts.
 
-`python -m pytest` runs 261 tests across the knowledge layer, application, integration,
-Auditor and bridge suites. All 261 pass on the current checkout. The app-side adapter
+`python -m pytest` runs 267 tests across the knowledge layer, application, integration,
+Auditor and bridge suites. The default run is 264 passed and 3 skipped on the current checkout. The app-side adapter
 boundaries and the method-level contracts are documented in
 [docs/integration.md](docs/integration.md).
 
@@ -516,10 +522,15 @@ yet.
 ```powershell
 .\.venv\Scripts\python.exe -m pytest
 .\.venv\Scripts\ruff.exe check app src tests run.py
+.\.venv\Scripts\python.exe scripts\check_bundle_budget.py
+& "C:\Program Files\nodejs\npm.cmd" test
+$env:RUN_VISUAL="1"; .\.venv\Scripts\python.exe -m pytest tests/test_visual.py
 ```
 
-The merged suite holds 261 tests: 130 knowledge-layer tests, 50 application tests, 43
-integration tests, 32 Auditor tests and 6 Auditor bridge tests. The application tests cover trust updates and replay, breaker
+The merged suite holds 267 tests: 130 knowledge-layer tests, 50 application tests, 43
+integration tests, 32 Auditor tests and 6 Auditor bridge tests. Lighthouse and frontend
+quality results are recorded in
+[docs/lighthouse-report.md](docs/lighthouse-report.md). The application tests cover trust updates and replay, breaker
 transitions, ontology links, graph substitutes, all example chains, SQL, document QA,
 injected failure substitution, breaker routing, mapper corrections, baselines, the
 ranking policy and the HTTP API. The knowledge-layer tests cover the ontology generator, the RDF store and

@@ -36,11 +36,17 @@ def test_account_workspace_and_settings(api: TestClient) -> None:
 
     updated = api.put(
         "/api/platform/settings",
-        json={"theme": "light", "high_contrast": True, "notifications": False},
+        json={
+            "theme": "light",
+            "high_contrast": True,
+            "notifications": False,
+            "email_notifications": True,
+        },
     )
     assert updated.status_code == 200
     assert updated.json()["settings"]["theme"] == "light"
     assert updated.json()["settings"]["high_contrast"] is True
+    assert updated.json()["settings"]["email_notifications"] is True
 
     signed_out = api.post("/api/auth/logout")
     assert signed_out.status_code == 200
@@ -139,6 +145,8 @@ def test_notifications_credentials_and_admin(api: TestClient) -> None:
     analytics = api.get("/api/analytics").json()
     assert analytics["totals"]["tasks"] >= 1
     assert analytics["top_tools"]
+    assert "latency_p95_ms" in analytics["totals"]
+    assert all("uptime" in provider and "latency_p95_ms" in provider for provider in analytics["providers"])
     assert api.get("/api/audit").json()["entries"]
     assert api.get("/api/cache").status_code == 200
     assert api.delete("/api/cache").status_code == 200
@@ -152,3 +160,37 @@ def test_notifications_credentials_and_admin(api: TestClient) -> None:
     )
     assert imported.status_code == 200
     assert imported.json()["imported"]["favorites"] == 1
+
+
+def test_pwa_routes_and_tool_previews(api: TestClient) -> None:
+    manifest = api.get("/manifest.webmanifest")
+    assert manifest.status_code == 200
+    data = manifest.json()
+    assert data["name"] == "Agent Bazaar"
+    assert len(data["icons"]) == 4
+    assert len(data["shortcuts"]) == 4
+    assert data["screenshots"]
+
+    worker = api.get("/sw.js")
+    assert worker.status_code == 200
+    assert worker.headers["service-worker-allowed"] == "/"
+    assert "CACHE_VERSION" in worker.text
+
+    offline = api.get("/offline")
+    assert offline.status_code == 200
+    assert "You are offline" in offline.text
+
+    icon = api.get("/static/pwa/icon-192.png")
+    assert icon.status_code == 200
+    assert icon.headers["content-type"].startswith("image/png")
+
+    tool_id = api.get("/api/tools").json()["tools"][0]["id"]
+    preview = api.get(f"/api/tools/{tool_id}/preview.svg")
+    assert preview.status_code == 200
+    assert preview.headers["content-type"].startswith("image/svg+xml")
+    assert "<svg" in preview.text
+    assert api.get("/api/tools/not-a-tool/preview.svg").status_code == 404
+
+    due = api.post("/api/schedules/run-due")
+    assert due.status_code == 200
+    assert due.json()["ran"] == []

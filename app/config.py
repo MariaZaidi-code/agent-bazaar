@@ -81,6 +81,16 @@ class Settings(BaseSettings):
     session_cookie_secure: bool = False
     share_base_url: str = ""
 
+    scheduler_enabled: bool = True
+    schedule_poll_seconds: int = 60
+
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from: str = ""
+    smtp_starttls: bool = True
+
     @field_validator("data_dir", "runtime_dir", mode="after")
     @classmethod
     def resolve_path(cls, value: Path) -> Path:

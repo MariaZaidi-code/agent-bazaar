@@ -28,8 +28,31 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements-dev.txt
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install frontend tooling
+        run: npm ci
+
       - name: Lint
         run: ruff check app src tests run.py
+
+      - name: Test frontend utilities
+        run: npm test
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check app/web/static/utils.js
+          node --check app/web/static/app.js
+          node --check app/web/static/platform.js
+          node --check app/web/static/sw.js
+          node --check app/web/static/offline.js
+
+      - name: Check bundle budget
+        run: python scripts/check_bundle_budget.py
 
       - name: Test
         run: python -m pytest

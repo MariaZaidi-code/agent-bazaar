@@ -522,3 +522,37 @@ h3 { font-size: 17px; line-height: 1.3; }
   .app-shell, .main-shell, .console-content { display: block; margin: 0; padding: 0; }
   body { background: #fff; color: #000; }
 }
+
+.tool-shot {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 0 12px;
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  background: #121316;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.detail-shot {
+  margin: 4px 0 16px;
+}
+
+.settings-install {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.settings-install p {
+  flex: 1 1 220px;
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  .tool-shot {
+    border-radius: 8px;
+  }
+}

@@ -164,6 +164,43 @@ Show `reports/summary.json` and `reports/matching.json`. Mention that the report
 
 Click **Reset demo** in the monitor header. This clears trust, breakers, drift alerts, mapper staging, provider failure overrides and cache.
 
+## 11. Ask-anything experience and saved work
+
+Open <http://127.0.0.1:8000/dashboard>. Point out:
+
+- One search box, four starter prompts and the recent-task list.
+- Plain-language navigation: Home, Find tools, System health, Your files, Why trust, Usage, Help, Documentation.
+- **How this answer was calculated** under any result.
+- Save a result, star a tool, replay a workflow and export as JSON, CSV, Markdown or PDF.
+- Search `/settings` to show theme, high-contrast mode, notifications, workspaces, encrypted keys and workspace import/export.
+- Admin users can open `/analytics` and `/admin` for usage, provider health, flags, overrides, webhooks and schedules.
+
+## 12. Help, trust and documents
+
+- `/help` shows quickstart, FAQ, API reference, troubleshooting and the in-app changelog.
+- `/library` is the Trust Center: plain verdicts, X of Y checks passed and a replayable timeline.
+- `/documents` accepts drag-and-drop, shows upload progress and cited answers, and asks for confirmation before deleting.
+- `/monitor` uses plain statuses: Healthy, Degraded, Recovering; the provider panel shows uptime, error rate and p95 latency.
+
+## 13. Install as an app
+
+The interface is a PWA:
+
+1. Open `/settings` and choose **Install Agent Bazaar** (or use the browser install control).
+2. Launch it from the home screen or desktop.
+3. Disable the network and reload; `/offline` explains the state and offers retry.
+4. The manifest provides 192/512 icons, maskable icons, shortcuts and screenshots.
+
+## 14. Frontend quality checks
+
+```powershell
+& "C:\Program Files\nodejs\npm.cmd" test
+$env:RUN_VISUAL="1"; .\.venv\Scripts\python.exe -m pytest tests/test_visual.py
+.\.venv\Scripts\python.exe scripts\check_bundle_budget.py
+```
+
+The Vitest suite covers shared utilities. Playwright visual regression snapshots compare against `tests/visual/baselines` using system Chrome (set `UPDATE_VISUAL=1` to refresh baselines). The bundle budget guards the static CSS/JS payload.
+
 ## Troubleshooting
 
 | Symptom | Fix |

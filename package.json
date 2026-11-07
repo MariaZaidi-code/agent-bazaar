@@ -1,0 +1,14 @@
+{
+  "name": "agent-bazaar-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Frontend utilities, unit tests and browser visual regression for Agent Bazaar.",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "budget": "python scripts/check_bundle_budget.py"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
+}

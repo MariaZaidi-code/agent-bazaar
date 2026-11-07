@@ -9,12 +9,19 @@ const platformState = {
   tourStep: 0,
   confirmAction: null,
   uploadTimer: null,
+  installPrompt: null,
 };
 
 const platformQuery = (selector, root = document) => root.querySelector(selector);
 
 function platformEsc(value) {
-  return typeof esc === "function" ? esc(value) : String(value ?? "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
+  if (typeof esc === "function") return esc(value);
+  if (window.ABUtils) return window.ABUtils.escapeHtml(value);
+  return String(value ?? "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
+}
+
+function platformFormatPercent(value) {
+  return window.ABUtils ? window.ABUtils.formatPercent(value) : `${Math.round(Number(value || 0) * 100)}%`;
 }
 
 function platformInitial(value) {
@@ -89,6 +96,8 @@ function platformApplySavedSettings(settings) {
   if (contrast) contrast.checked = Boolean(settings.high_contrast) || document.documentElement.dataset.contrast === "on";
   const notifications = document.getElementById("settings-notifications");
   if (notifications) notifications.checked = settings.notifications !== false;
+  const emailNotifications = document.getElementById("settings-email-notifications");
+  if (emailNotifications) emailNotifications.checked = Boolean(settings.email_notifications);
 }
 
 function platformSetContrast(enabled, persist = true) {
@@ -694,6 +703,7 @@ function platformBindSettings() {
     const theme = document.getElementById("settings-theme")?.value || "dark";
     const highContrast = Boolean(document.getElementById("settings-contrast")?.checked);
     const notifications = Boolean(document.getElementById("settings-notifications")?.checked);
+    const emailNotifications = Boolean(document.getElementById("settings-email-notifications")?.checked);
     try {
       const resolved = platformResolveTheme(theme);
       applyTheme(resolved);
@@ -705,7 +715,7 @@ function platformBindSettings() {
       await api("/api/platform/settings", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ theme, high_contrast: highContrast, notifications }),
+        body: JSON.stringify({ theme, high_contrast: highContrast, notifications, email_notifications: emailNotifications }),
       });
       toast("Display settings saved.", "ok");
     } catch (error) {
@@ -858,19 +868,20 @@ async function platformRenderAnalytics() {
     if (metrics) {
       metrics.innerHTML =
         platformMetric("Tasks", totals.tasks ?? 0, "Recorded in this workspace") +
-        platformMetric("Success rate", `${Math.round(Number(totals.success_rate || 0) * 100)}%`, `${totals.completed || 0} completed`) +
+        platformMetric("Success rate", platformFormatPercent(totals.success_rate), `${totals.completed || 0} completed`) +
         platformMetric("Average time", `${Math.round(Number(totals.average_latency_ms || 0))} ms`, "Across recorded tasks") +
         platformMetric("Needs attention", totals.failed ?? 0, "Partial or failed tasks");
     }
     const days = payload.by_day || [];
     if (chart) {
       const max = Math.max(1, ...days.map((day) => Number(day.tasks || 0)));
+      const summary = days.map((day) => `${day.date}: ${day.tasks} task${day.tasks === 1 ? "" : "s"}`).join(". ");
       chart.innerHTML = days.length
-        ? `<div class="chart-bars">${days
+        ? `<div class="chart-bars" role="img" aria-label="Tasks per day. ${platformEsc(summary)}">${days
             .map(
-              (day) => `<div class="chart-bar"><span style="height:${Math.max(6, Math.round((Number(day.tasks || 0) / max) * 120))}px" title="${platformEsc(day.date)}: ${day.tasks} tasks"></span><small>${platformEsc(day.date.slice(5))}</small></div>`
+              (day) => `<div class="chart-bar" aria-hidden="true"><span style="height:${Math.max(6, Math.round((Number(day.tasks || 0) / max) * 120))}px" title="${platformEsc(day.date)}: ${day.tasks} tasks"></span><small>${platformEsc(day.date.slice(5))}</small></div>`
             )
-            .join("")}</div>`
+            .join("")}</div><table class="sr-only"><caption>Tasks per day</caption><thead><tr><th>Date</th><th>Tasks</th></tr></thead><tbody>${days.map((day) => `<tr><td>${platformEsc(day.date)}</td><td>${day.tasks}</td></tr>`).join("")}</tbody></table>`
         : `<div class="empty-panel compact"><strong>No activity yet</strong><p>Run a task to start the chart.</p></div>`;
     }
     const listMarkup = (rows, labelKey, valueKey) =>
@@ -1258,6 +1269,45 @@ function platformRunFromQuery() {
   }
 }
 
+function platformBindPwa() {
+  const button = document.getElementById("install-app");
+  const ready = document.getElementById("install-ready");
+  const hint = document.getElementById("install-hint");
+  const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+  if (standalone) {
+    button?.classList.add("hidden");
+    ready?.classList.remove("hidden");
+    if (hint) hint.textContent = "Agent Bazaar is installed on this device.";
+  }
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    platformState.installPrompt = event;
+    if (button && !standalone) button.hidden = false;
+  });
+  button?.addEventListener("click", async () => {
+    const prompt = platformState.installPrompt;
+    if (!prompt) {
+      toast("Use your browser menu and choose Install app.", "info");
+      return;
+    }
+    prompt.prompt();
+    const choice = await prompt.userChoice.catch(() => ({ outcome: "dismissed" }));
+    if (choice.outcome === "accepted") {
+      ready?.classList.remove("hidden");
+      button.hidden = true;
+      if (hint) hint.textContent = "Agent Bazaar is installed on this device.";
+    }
+    platformState.installPrompt = null;
+  });
+  window.addEventListener("appinstalled", () => {
+    ready?.classList.remove("hidden");
+    if (button) button.hidden = true;
+  });
+  if ("serviceWorker" in navigator && window.location.protocol.startsWith("http")) {
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  }
+}
+
 function platformBindGlobal() {
   platformBindTheme();
   platformBindWorkspace();
@@ -1273,6 +1323,7 @@ function platformBindGlobal() {
   platformBindDocuments();
   platformBindTour();
   platformBindSwipe();
+  platformBindPwa();
   document.addEventListener("platform:notifications", platformOpenNotifications);
   document.getElementById("mark-notifications-read")?.addEventListener("click", platformMarkNotificationsRead);
 }

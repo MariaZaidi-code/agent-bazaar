@@ -396,15 +396,25 @@ controls and audit logging without changing the existing task or provider contra
 - Analytics: `GET /api/analytics`
 - Admin: `GET/PUT /api/admin/flags/{name}`, `GET/PUT /api/admin/overrides`, `GET/POST/DELETE /api/webhooks`, `GET/POST/DELETE /api/schedules`, `POST /api/schedules/run-due`, `GET/DELETE /api/cache`
 - Workspace data: `GET /api/workspace/export`, `POST /api/workspace/import`
+- Tool previews: `GET /api/tools/{tool_id}/preview.svg`
+- PWA: `GET /manifest.webmanifest`, `GET /sw.js`, `GET /offline`
 - Pages: `/help`, `/settings`, `/analytics`, `/admin`, `/share/{token}`
 
 The middleware in `app/main.py` applies a per-IP rate limit (default 180 requests per
 minute) to state-changing API calls and returns a friendly 429 response with
 `Retry-After`.
 
-The browser layer is split into `app/web/static/app.js` for the existing experience and
-`app/web/static/platform.js` for the platform features. Both load from the same
-`ASSET_VERSION` cache key.
+A background scheduler polls `due_schedules()` every `AB_SCHEDULE_POLL_SECONDS` (default
+60) and runs due tasks with notifications and webhook delivery. Set
+`AB_SCHEDULER_ENABLED=false` to disable it. Email notifications are best-effort and only
+attempted when `AB_SMTP_HOST` is configured and the user enables "Also email me" in
+Settings. SMTP connection details are read from `AB_SMTP_HOST`, `AB_SMTP_PORT`,
+`AB_SMTP_USER`, `AB_SMTP_PASSWORD`, `AB_SMTP_FROM` and `AB_SMTP_STARTTLS`.
+
+The browser layer is split into `app/web/static/app.js` for the existing experience,
+`app/web/static/platform.js` for the platform features and `app/web/static/utils.js` for
+shared utilities. All load from the same `ASSET_VERSION` cache key. The service worker
+(`sw.js`) precaches the shell and falls back to `/offline` for failed navigations.
 
 ## What remains intentionally stubbed
 

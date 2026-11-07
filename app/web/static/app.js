@@ -1625,9 +1625,10 @@ function toolCard(tool) {
   const mapping = auditorMapping(tool.id);
   const schema = `${(tool.inputs || []).map((input) => input.concept).join(" + ") || "No inputs"} → ${(tool.outputs || []).map((output) => output.concept).join(" + ") || "No outputs"}`;
   const priceLabel = tool.price ? `$${formatNumber(tool.price, 2)}` : titleCase(tool.pricing_tier || "unknown");
-  return `<article class="window-card tool-card ${esc(breaker)}" data-tool-id="${esc(tool.id)}" tabindex="0" role="button" aria-label="Inspect ${esc(tool.name)}">
+  return `<article class="window-card tool-card ${esc(breaker)}" data-tool-id="${esc(tool.id)}" tabindex="0" aria-label="Inspect ${esc(tool.name)}" aria-haspopup="dialog">
     <div class="mini-window-bar"><span>service / ${esc(tool.provider_id)}</span><span><i></i><i></i><i></i></span></div>
     <div class="window-body">
+      <img class="tool-shot" src="/api/tools/${encodeURIComponent(tool.id)}/preview.svg" alt="Preview card for ${esc(tool.name)}" loading="lazy" decoding="async" width="640" height="360">
       <div class="tool-card-heading">
         <span class="tool-icon">${icon(capabilityIcon(tool.capability))}</span>
         <span class="tool-title"><strong>${esc(tool.name)}</strong><small>${esc(tool.capability)}</small></span>
@@ -1903,6 +1904,7 @@ function openToolModal(toolId) {
       <span class="tool-icon">${icon(capabilityIcon(tool.capability))}</span>
       <div><h2 id="tool-modal-title">${esc(tool.name)}</h2><p>${esc(tool.provider_id)} · ${esc(tool.capability)} · ${esc(tool.execution)}</p></div>
     </div>
+    <img class="tool-shot detail-shot" src="/api/tools/${encodeURIComponent(tool.id)}/preview.svg" alt="Preview card for ${esc(tool.name)}" loading="lazy" decoding="async" width="640" height="360">
     <div class="detail-grid">
       <div class="detail-block"><span>Live trust</span><strong>${formatTrust(tool.trust)}</strong><small>${provider?.calls || 0} calls · ${provider?.probes || 0} probes · ${provider?.contradictions || 0} contradictions</small></div>
       <div class="detail-block"><span>Circuit breaker</span><strong>${titleCase(breaker)}</strong><small>${provider?.failure_mode ? `failure mode: ${esc(provider.failure_mode)}` : "link-level isolation"}</small></div>
@@ -2683,7 +2685,11 @@ function renderMonitorMetrics() {
   const trust = observed.length
     ? observed.reduce((total, provider) => total + Number(provider.trust || 0), 0) / observed.length
     : null;
+  const halfOpen = breakers.some((breaker) => breaker.state === "half-open");
+  const recovering = halfOpen || state.monitorActivity.some((event) => event.kind === "substitution");
+  const verdict = open ? "Degraded" : recovering ? "Recovering" : "Healthy";
   container.innerHTML = `
+    <div class="metric-card">${icon(open ? "alert" : "check-circle")}<strong class="${open ? "alert" : ""}">${verdict}</strong><label>Overall health</label><small>${open ? `${open} circuit${open === 1 ? "" : "s"} need attention` : recovering ? "Recovery in progress" : "No open circuits or incidents"}</small></div>
     <div class="metric-card">${icon("box")}<strong>${providers.length}</strong><label>Registered providers</label><small>${new Set(state.tools.map((tool) => tool.capability)).size} capabilities · ${esc(monitoring.mode || "sandbox")}</small></div>
     <div class="metric-card">${icon("shield")}<strong class="${open ? "alert" : ""}">${open}</strong><label>Open circuits</label><small>${breakers.length} links monitored</small></div>
     <div class="metric-card">${icon("alert")}<strong class="${alerts.length ? "alert" : ""}">${alerts.length}</strong><label>Drift alerts</label><small>Auditor ${esc(monitoring.auditor?.mode || "unknown")} · ${Number(monitoring.auditor?.mapped_tools || 0)}/${Number(monitoring.auditor?.catalog_tools || 0)} mapped</small></div>
@@ -2857,8 +2863,11 @@ function renderMonitorTrust() {
     .map((provider) => {
       const observations = Number(provider.calls || 0) + Number(provider.probes || 0);
       const score = Number(provider.trust || 0.5);
+      const health = observations
+        ? ` · up ${Math.round(Number(provider.uptime ?? 1) * 100)}% · errors ${Math.round(Number(provider.error_rate || 0) * 100)}% · p95 ${Math.round(Number(provider.latency_p95_ms || 0))} ms`
+        : "";
       return `<div class="monitor-trust-row">
-        <span class="monitor-trust-name"><strong>${esc(provider.tool_name)}</strong><small>${esc(provider.provider_id)} · ${observations ? `${observations} observation${observations === 1 ? "" : "s"}` : "prior only"}</small></span>
+        <span class="monitor-trust-name"><strong>${esc(provider.tool_name)}</strong><small>${esc(provider.provider_id)} · ${observations ? `${observations} observation${observations === 1 ? "" : "s"}` : "prior only"}${health}</small></span>
         ${scoreTrack(score, provider.demoted ? "open" : observations ? "closed" : "")}
         <span>${observations ? formatTrust(score) : "—"}</span>
       </div>`;
@@ -3958,7 +3967,8 @@ async function bootstrap() {
   } catch (error) {
     const main = document.getElementById("console-content");
     if (main) {
-      main.innerHTML = `<div class="empty-panel" role="alert"><svg><use href="#i-alert"></use></svg><strong>Something went wrong</strong><p>${esc(error?.message || "The page could not be loaded.")}</p><button class="btn primary" type="button" onclick="window.location.reload()">Refresh page</button></div>`;
+      main.innerHTML = `<div class="empty-panel" role="alert"><svg><use href="#i-alert"></use></svg><strong>Something went wrong</strong><p>${esc(error?.message || "The page could not be loaded.")}</p><button class="btn primary" type="button" data-error-refresh>Refresh page</button></div>`;
+      main.querySelector("[data-error-refresh]")?.addEventListener("click", () => window.location.reload());
     }
   }
 }

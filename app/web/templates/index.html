@@ -8,6 +8,8 @@
   <meta name="description" content="Agent Bazaar finds trusted tools, runs them, and shows the evidence. Ask anything in plain language.">
   <title>{{ page_title }} | Agent Bazaar</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232649c8'/%3E%3Cpath d='M9 9h5v5H9zM18 9h5v5h-5zM9 18h5v5H9zM18 18h5v5h-5z' fill='%23fff'/%3E%3C/svg%3E">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/static/pwa/apple-touch-icon.png">
   <script>
     try {
       const saved = localStorage.getItem("agent-bazaar-theme");
@@ -418,7 +420,7 @@
             <div class="window-body scoring-body">
               <span class="scoring-icon"><svg><use href="#i-activity"></use></svg></span>
               <div>
-                <h3>Trust is earned, not declared. <span class="mono">(s+1)/(s+f+2)</span></h3>
+                <h2>Trust is earned, not declared. <span class="mono">(s+1)/(s+f+2)</span></h2>
                 <p>Beta distribution posterior mean · s = successful probes · f = failed probes · Prior Beta(1,1). Auditor claims and circuit breakers are evaluated separately.</p>
               </div>
               <a class="text-link" href="/docs#trust">Scoring docs <svg><use href="#i-arrow-up-right"></use></svg></a>
@@ -929,6 +931,8 @@
                 <li><span class="badge verified">New</span><div><strong>Saved tasks and workflows</strong><small>Save an answer with a note, or replay a task in one click.</small></div></li>
                 <li><span class="badge neutral">Improved</span><div><strong>Plain-language labels</strong><small>Menus and status messages now describe outcomes, not internals.</small></div></li>
                 <li><span class="badge neutral">Improved</span><div><strong>Keyboard and mobile</strong><small>Larger controls, swipe navigation and visible focus throughout.</small></div></li>
+                <li><span class="badge verified">New</span><div><strong>Install as an app</strong><small>Add Agent Bazaar to your home screen or desktop; it opens even when the connection drops.</small></div></li>
+                <li><span class="badge neutral">Improved</span><div><strong>Health at a glance</strong><small>System health now says Healthy, Degraded or Recovering, with uptime and response times.</small></div></li>
               </ul>
             </article>
           </div>
@@ -957,8 +961,17 @@
                 <label>Theme<select id="settings-theme"><option value="dark">Dark</option><option value="light">Light</option><option value="system">Use device setting</option></select></label>
                 <label class="check-row"><input type="checkbox" id="settings-contrast"> High-contrast colors</label>
                 <label class="check-row"><input type="checkbox" id="settings-notifications"> Show a notification when a task finishes</label>
+                <label class="check-row"><input type="checkbox" id="settings-email-notifications"> Also email me when a task finishes</label>
                 <button class="btn primary" type="submit">Save display settings</button>
               </form>
+            </article>
+            <article class="panel">
+              <div class="panel-head"><div><h2>Install app</h2><p>Use Agent Bazaar from your home screen or desktop.</p></div></div>
+              <div class="panel-body settings-install">
+                <p class="small muted" id="install-hint">Install keeps the app one tap away and lets it open when you are offline.</p>
+                <button class="btn secondary" type="button" id="install-app" hidden>Install Agent Bazaar</button>
+                <span class="badge verified hidden" id="install-ready">Installed</span>
+              </div>
             </article>
             <article class="panel">
               <div class="panel-head"><div><h2>Workspace</h2><p>Separate work for different teams or clients.</p></div></div>
@@ -1233,6 +1246,7 @@ AB_LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free</pre>
     window.__PAGE__ = "{{ page }}";
     window.__VERSION__ = "{{ version }}";
   </script>
+  <script src="/static/utils.js?v={{ asset_version }}" defer></script>
   <script src="/static/app.js?v={{ asset_version }}" defer></script>
   <script src="/static/platform.js?v={{ asset_version }}" defer></script>
 </body>

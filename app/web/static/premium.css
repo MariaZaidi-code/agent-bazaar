@@ -2426,12 +2426,14 @@ kbd,
   height: 15px;
 }
 
+.scoring-body h2,
 .scoring-body h3 {
   margin: 0;
   font-size: 12px;
   font-weight: 600;
 }
 
+.scoring-body h2 .mono,
 .scoring-body h3 .mono {
   color: var(--faint);
   font-size: 10px;
@@ -5702,7 +5704,26 @@ button.mapping-list-row:focus-visible {
   }
 
   .palette {
-    padding: 8vh 12px 12px;
+    align-items: stretch;
+    padding: 0;
+  }
+
+  .palette-panel {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .palette-results {
+    max-height: none;
+    flex: 1 1 auto;
+  }
+
+  .palette-foot {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
   }
 
   .protocol-message {

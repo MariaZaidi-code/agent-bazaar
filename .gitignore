@@ -53,3 +53,10 @@ Thumbs.db
 *.swp
 .vscode/
 .idea/
+
+# Frontend tooling
+node_modules/
+tests/js/.vitest/
+playwright-report/
+test-results/
+tests/visual/actual/

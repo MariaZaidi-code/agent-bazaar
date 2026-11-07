@@ -47,6 +47,7 @@ pythonpath = ["src", "."]
 asyncio_mode = "auto"
 addopts = "-q"
 filterwarnings = ["ignore::DeprecationWarning"]
+markers = ["visual: browser visual regression snapshots (set RUN_VISUAL=1)"]
 
 [tool.ruff]
 line-length = 120

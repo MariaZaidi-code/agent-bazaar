@@ -5,10 +5,12 @@ import hashlib
 import hmac
 import json
 import secrets
+import smtplib
 import threading
 import time
 from collections import Counter, defaultdict
 from datetime import UTC, datetime, timedelta
+from email.message import EmailMessage
 from pathlib import Path
 from typing import Any
 
@@ -156,9 +158,94 @@ def _wrap_pdf_line(value: str, width: int = 92) -> list[str]:
     return lines
 
 
+def tool_preview_svg(
+    name: str,
+    capability: str,
+    provider_id: str,
+    trust: float,
+    status: str = "healthy",
+) -> str:
+    from html import escape
+
+    safe_name = escape(name)
+    safe_capability = escape(capability)
+    safe_provider = escape(provider_id)
+    safe_status = escape(status)
+    bar = max(4, min(100, round(float(trust) * 100)))
+    sans = "ui-sans-serif,system-ui,sans-serif"
+    return (
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" '
+        f'role="img" aria-label="Preview of {safe_name}">\n'
+        "  <defs>\n"
+        '    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">\n'
+        '      <stop offset="0" stop-color="#1d47c4"/>'
+        '<stop offset="1" stop-color="#121a33"/>\n'
+        "    </linearGradient>\n"
+        "  </defs>\n"
+        '  <rect width="640" height="360" rx="18" fill="#121316"/>\n'
+        '  <rect x="0" y="0" width="640" height="44" rx="18" fill="#1b1d22"/>\n'
+        '  <rect x="0" y="26" width="640" height="18" fill="#1b1d22"/>\n'
+        '  <circle cx="24" cy="22" r="5" fill="#ff6159"/>'
+        '<circle cx="42" cy="22" r="5" fill="#ffbd2e"/>'
+        '<circle cx="60" cy="22" r="5" fill="#28c840"/>\n'
+        '  <text x="320" y="27" text-anchor="middle" fill="#8b909a" '
+        'font-family="ui-monospace,monospace" font-size="12">'
+        f"service / {safe_provider}</text>\n"
+        '  <rect x="24" y="64" width="592" height="196" rx="14" fill="url(#g)"/>\n'
+        '  <g fill="#ffffff" opacity="0.95">\n'
+        '    <rect x="48" y="88" width="26" height="26" rx="6"/>'
+        '<rect x="86" y="88" width="26" height="26" rx="6"/>\n'
+        '    <rect x="48" y="126" width="26" height="26" rx="6"/>'
+        '<rect x="86" y="126" width="26" height="26" rx="6"/>\n'
+        "  </g>\n"
+        f'  <text x="132" y="112" fill="#ffffff" font-family="{sans}" '
+        f'font-size="26" font-weight="700">{safe_name}</text>\n'
+        f'  <text x="132" y="140" fill="#c9d6ff" font-family="{sans}" '
+        f'font-size="14">{safe_capability}</text>\n'
+        '  <rect x="132" y="160" width="420" height="10" rx="5" '
+        'fill="#ffffff" opacity="0.22"/>\n'
+        f'  <rect x="132" y="160" width="{round(4.2 * bar)}" height="10" '
+        'rx="5" fill="#7cf5b1"/>\n'
+        f'  <text x="132" y="196" fill="#e8ecff" font-family="{sans}" '
+        f'font-size="13">Trust {round(float(trust) * 100)}% · {safe_status}</text>\n'
+        f'  <text x="132" y="222" fill="#aeb9d6" font-family="{sans}" '
+        'font-size="12">Inputs, checks and example calls are shown in the '
+        "tool page.</text>\n"
+        f'  <text x="24" y="304" fill="#8b909a" font-family="{sans}" '
+        'font-size="13">Agent Bazaar preview</text>\n'
+        f'  <text x="24" y="330" fill="#5f6673" font-family="{sans}" '
+        'font-size="12">Illustrative preview generated from catalogue metadata.</text>\n'
+        "</svg>"
+    )
+
+
+def _send_email(config: dict[str, Any], recipient: str, subject: str, body: str) -> bool:
+    host = str(config.get("host") or "")
+    if not host:
+        return False
+    message = EmailMessage()
+    message["Subject"] = f"Agent Bazaar: {subject}"
+    message["From"] = str(config.get("from") or config.get("user") or "notifications@agent-bazaar.local")
+    message["To"] = recipient
+    message.set_content(body)
+    try:
+        with smtplib.SMTP(host, int(config.get("port") or 587), timeout=5) as server:
+            if config.get("starttls", True):
+                server.starttls()
+            username = str(config.get("user") or "")
+            password = str(config.get("password") or "")
+            if username and password:
+                server.login(username, password)
+            server.send_message(message)
+    except (OSError, smtplib.SMTPException):
+        return False
+    return True
+
+
 class PlatformStore:
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, smtp: dict[str, Any] | None = None) -> None:
         self.path = path
+        self.smtp = smtp or {}
         self._lock = threading.RLock()
         self._connection = connect(path)
         self._connection.executescript(
@@ -230,6 +317,7 @@ class PlatformStore:
                 theme TEXT NOT NULL DEFAULT 'dark',
                 offline_mode INTEGER NOT NULL DEFAULT 1,
                 notifications INTEGER NOT NULL DEFAULT 1,
+                email_notifications INTEGER NOT NULL DEFAULT 0,
                 high_contrast INTEGER NOT NULL DEFAULT 0,
                 workspace_id TEXT NOT NULL DEFAULT 'ws_demo',
                 updated_at TEXT NOT NULL
@@ -294,6 +382,15 @@ class PlatformStore:
             """
         )
         self._connection.commit()
+        columns = {
+            str(row["name"])
+            for row in self._connection.execute("PRAGMA table_info(settings)").fetchall()
+        }
+        if "email_notifications" not in columns:
+            self._connection.execute(
+                "ALTER TABLE settings ADD COLUMN email_notifications INTEGER NOT NULL DEFAULT 0"
+            )
+            self._connection.commit()
         self._ensure_demo()
         self._seed_flags()
 
@@ -548,6 +645,7 @@ class PlatformStore:
         data = dict(row)
         data["offline_mode"] = bool(data["offline_mode"])
         data["notifications"] = bool(data["notifications"])
+        data["email_notifications"] = bool(data.get("email_notifications", 0))
         data["high_contrast"] = bool(data["high_contrast"])
         return data
 
@@ -563,13 +661,14 @@ class PlatformStore:
             self._connection.execute(
                 """
                 UPDATE settings SET theme = ?, offline_mode = ?, notifications = ?,
-                    high_contrast = ?, workspace_id = ?, updated_at = ?
+                    email_notifications = ?, high_contrast = ?, workspace_id = ?, updated_at = ?
                 WHERE user_id = ?
                 """,
                 (
                     theme,
                     int(bool(payload.get("offline_mode", current["offline_mode"]))),
                     int(bool(payload.get("notifications", current["notifications"]))),
+                    int(bool(payload.get("email_notifications", current["email_notifications"]))),
                     int(bool(payload.get("high_contrast", current["high_contrast"]))),
                     workspace_id,
                     iso(),
@@ -768,6 +867,25 @@ class PlatformStore:
                 (user_id, workspace_id, title, body, kind, iso()),
             )
             self._connection.commit()
+        self._deliver_email(user_id, title, body)
+
+    def _deliver_email(self, user_id: str, subject: str, body: str) -> None:
+        host = str(self.smtp.get("host") or "")
+        if not host:
+            return
+        if not self.settings(user_id).get("email_notifications"):
+            return
+        with self._lock:
+            row = self._connection.execute(
+                "SELECT email FROM users WHERE user_id = ?", (user_id,)
+            ).fetchone()
+        if not row:
+            return
+        recipient = str(row["email"])
+        smtp = dict(self.smtp)
+        threading.Thread(
+            target=_send_email, args=(smtp, recipient, subject, body), daemon=True
+        ).start()
 
     def notifications(self, user_id: str, workspace_id: str, limit: int = 50) -> list[dict[str, Any]]:
         with self._lock:
@@ -1066,7 +1184,29 @@ def task_summary(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def analytics_payload(rows: list[dict[str, Any]], providers: list[dict[str, Any]]) -> dict[str, Any]:
+def _percentile(values: list[float], fraction: float) -> float:
+    if not values:
+        return 0.0
+    ordered = sorted(values)
+    index = min(len(ordered) - 1, max(0, round((len(ordered) - 1) * fraction)))
+    return round(ordered[index], 1)
+
+
+def _result_payload(row: dict[str, Any]) -> dict[str, Any]:
+    payload = row.get("result_json") or row.get("result") or {}
+    if isinstance(payload, str):
+        try:
+            payload = json.loads(payload)
+        except json.JSONDecodeError:
+            payload = {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def analytics_payload(
+    rows: list[dict[str, Any]],
+    providers: list[dict[str, Any]],
+    tool_providers: dict[str, str] | None = None,
+) -> dict[str, Any]:
     summaries = [task_summary(row) for row in rows]
     total = len(summaries)
     completed = sum(1 for item in summaries if item["status"] == "completed")
@@ -1075,6 +1215,23 @@ def analytics_payload(rows: list[dict[str, Any]], providers: list[dict[str, Any]
     tool_counts: Counter[str] = Counter()
     capability_counts: Counter[str] = Counter()
     failures = 0
+    provider_calls: Counter[str] = Counter()
+    provider_failures: Counter[str] = Counter()
+    provider_latencies: dict[str, list[float]] = defaultdict(list)
+    mapping = tool_providers or {}
+    for row in rows:
+        payload = _result_payload(row)
+        steps = ((payload.get("plan") or {}).get("steps") or []) if payload else []
+        for step in steps:
+            provider_id = mapping.get(str(step.get("tool_id") or ""))
+            if not provider_id:
+                continue
+            provider_calls[provider_id] += 1
+            latency = float(step.get("latency_ms") or 0)
+            if latency:
+                provider_latencies[provider_id].append(latency)
+            if step.get("status") not in {"completed", "substituted"}:
+                provider_failures[provider_id] += 1
     for item in summaries:
         day = str(item["created_at"] or "")[:10]
         if day:
@@ -1086,21 +1243,15 @@ def analytics_payload(rows: list[dict[str, Any]], providers: list[dict[str, Any]
         if item["status"] != "completed":
             failures += 1
     days = sorted(by_day)[-14:]
-    return {
-        "totals": {
-            "tasks": total,
-            "completed": completed,
-            "failed": failures,
-            "success_rate": round(completed / total, 3) if total else 0.0,
-            "average_latency_ms": round(sum(durations) / len(durations), 1) if durations else 0.0,
-        },
-        "by_day": [{"date": day, "tasks": by_day[day]} for day in days],
-        "top_tools": [{"tool_id": tool, "tasks": count} for tool, count in tool_counts.most_common(8)],
-        "top_capabilities": [
-            {"capability": capability, "tasks": count}
-            for capability, count in capability_counts.most_common(8)
-        ],
-        "providers": [
+    provider_rows = []
+    for item in providers:
+        provider_id = str(item.get("provider_id") or "")
+        calls = int(item.get("calls", 0) or 0)
+        failures_for_provider = int(provider_failures.get(provider_id, 0))
+        observed = provider_calls.get(provider_id, 0) or calls
+        latencies = provider_latencies.get(provider_id, [])
+        success_ratio = 1.0 - failures_for_provider / observed if observed else 1.0
+        provider_rows.append(
             {
                 "provider_id": item.get("provider_id"),
                 "tool_name": item.get("tool_name"),
@@ -1109,7 +1260,26 @@ def analytics_payload(rows: list[dict[str, Any]], providers: list[dict[str, Any]
                 "probes": item.get("probes", 0),
                 "contradictions": item.get("contradictions", 0),
                 "status": "paused" if item.get("demoted") else "healthy",
+                "uptime": round(max(0.0, min(1.0, success_ratio)), 3),
+                "error_rate": round(1.0 - max(0.0, min(1.0, success_ratio)), 3),
+                "latency_p50_ms": _percentile(latencies, 0.5),
+                "latency_p95_ms": _percentile(latencies, 0.95),
             }
-            for item in providers
+        )
+    return {
+        "totals": {
+            "tasks": total,
+            "completed": completed,
+            "failed": failures,
+            "success_rate": round(completed / total, 3) if total else 0.0,
+            "average_latency_ms": round(sum(durations) / len(durations), 1) if durations else 0.0,
+            "latency_p95_ms": _percentile(durations, 0.95),
+        },
+        "by_day": [{"date": day, "tasks": by_day[day]} for day in days],
+        "top_tools": [{"tool_id": tool, "tasks": count} for tool, count in tool_counts.most_common(8)],
+        "top_capabilities": [
+            {"capability": capability, "tasks": count}
+            for capability, count in capability_counts.most_common(8)
         ],
+        "providers": provider_rows,
     }
